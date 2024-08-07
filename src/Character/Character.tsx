@@ -17,7 +17,7 @@ const forwardVector = new Vector3();
 const rightVector = new Vector3();
 const upVector = new Vector3();
 
-export const CHARACTER_HEIGHT = 60;
+export const CHARACTER_HEIGHT = 250;
 
 const Character = ({ position }: CharacterProps) => {
   const playerRef = useRef<Mesh>();
@@ -127,7 +127,7 @@ const Character = ({ position }: CharacterProps) => {
       const closest = intersects[0];
       
       player.position.add(direction);
-      player.position.addScaledVector(upVector, closest.point.dot(upVector) + -CHARACTER_HEIGHT - player.position.dot(upVector));
+      player.position.addScaledVector(upVector, closest.point.dot(upVector) + -(CHARACTER_HEIGHT / 2) - player.position.dot(upVector));
       }
   });
 
