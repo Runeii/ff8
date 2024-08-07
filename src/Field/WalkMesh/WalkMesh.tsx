@@ -2,7 +2,6 @@ import { Line } from "@react-three/drei";
 import type { FieldData } from "../Field";
 import { BufferAttribute, BufferGeometry, DoubleSide, Float32BufferAttribute, Group, Mesh, ShapeUtils, Vector3 } from "three";
 import { useMemo } from "react";
-import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 
 type WalkMeshProps = {
   walkmesh: FieldData["walkmesh"];

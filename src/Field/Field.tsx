@@ -21,12 +21,12 @@ const Field = ({ data, texture, setField, setCharacterPosition }: FieldProps) =>
   const [target, setTarget] = useState(new Vector3(0, 0, 0));
 
   useThree(({ camera }) => {
-    const {camera_axis,camera_position} = data.cameras[0];
+    const {camera_axis,camera_position,camera_zoom} = data.cameras[0];
     const camAxisX = new Vector3(camera_axis[0].x, camera_axis[0].y, camera_axis[0].z).divideScalar(4096);
     const camAxisY = new Vector3(camera_axis[1].x, camera_axis[1].y, camera_axis[1].z).clone().negate().divideScalar(4096);
     const camAxisZ = new Vector3(camera_axis[2].x, camera_axis[2].y, camera_axis[2].z).divideScalar(4096);
 
-    const camPos = new Vector3(...camera_position).clone()
+    const camPos = new Vector3(...camera_position).clone().divideScalar(4096);
     camPos.y = -camPos.y; // Negate Y to match the original logic
 
     // Calculate the translation components
@@ -49,7 +49,7 @@ const Field = ({ data, texture, setField, setCharacterPosition }: FieldProps) =>
 
     // 320 is a hack here...but it seems
 
-    (camera as PerspectiveCamera).fov = (2 * Math.atan(240.0/(2.0 * (camera.zoom * texture.image.width)))) * 57.29577951;
+    (camera as PerspectiveCamera).fov = (2 * Math.atan(240.0/(2.0 * camera_zoom))) * 57.29577951;
     camera.updateProjectionMatrix();
   });
   
