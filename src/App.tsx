@@ -5,7 +5,7 @@ import Character from './Character/Character'
 
 
 export default function App() {
-  const [field, setField] = useState('bgroad_5')
+  const [field, setField] = useState('dotown1a')
   const [characterPosition, setCharacterPosition] = useState({
     x: -180,
     y: -20,
