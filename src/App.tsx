@@ -4,13 +4,13 @@ import Field from './Field/Field'
 import Character from './Character/Character'
 
 export default function App() {
-  const [field, setField] = useState('dotown1a')
+  const [field, setField] = useState('dotown3a')
   const [characterPosition, setCharacterPosition] = useState({
     x: -180,
     y: -20,
     z: 2
   })
-
+console.log(field)
   return (
     <Canvas camera={{
       near: 0.001,

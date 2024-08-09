@@ -3,6 +3,8 @@ import type { FieldData } from "../../Field";
 import { DoubleSide, type Texture} from 'three';
 import { useThree } from "@react-three/fiber";
 import { useRef } from "react";
+import { vectorComponents } from "three/webgpu";
+import { vectorToFloatingPoint } from "../../../utils";
 
 type TileSpriteProps = {
   index: number;
@@ -28,9 +30,9 @@ function TileSprite({ index, tile, texture }: TileSpriteProps) {
 
   texture.offset.set(offsetX, offsetY);
   texture.repeat.set(repeatX, repeatY);
-console.log(layerID, X,Y,Z)
+
   return (
-    <sprite position={[104 + index, -208, 9996]}  scale={1}>
+    <sprite position={vectorToFloatingPoint({x: X, y: Y, z: Z})} scale={1} >
       <spriteMaterial map={texture} />
     </sprite>
   );
