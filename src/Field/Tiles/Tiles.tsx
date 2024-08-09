@@ -38,7 +38,6 @@ function getMeshPositionToFitInView(mesh: Mesh, camera: PerspectiveCamera): Vect
 }
 
 
-
 type TilesProps = {
   texture: Texture;
   tiles: FieldData["tiles"];

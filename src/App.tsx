@@ -3,7 +3,6 @@ import { Canvas } from '@react-three/fiber'
 import Field from './Field/Field'
 import Character from './Character/Character'
 
-
 export default function App() {
   const [field, setField] = useState('dotown1a')
   const [characterPosition, setCharacterPosition] = useState({

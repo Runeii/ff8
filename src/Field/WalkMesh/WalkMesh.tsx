@@ -1,10 +1,10 @@
-import { Line } from "@react-three/drei";
 import type { FieldData } from "../Field";
-import { BufferAttribute, BufferGeometry, DoubleSide, Float32BufferAttribute, Group, Mesh, ShapeUtils, Vector3 } from "three";
+import { BufferAttribute, BufferGeometry, DoubleSide, Vector3 } from "three";
 import { useMemo } from "react";
 import { vectorToFloatingPoint } from "../../utils";
 
 type WalkMeshProps = {
+  setCharacterPosition: (position: Vector3) => void;
   walkmesh: FieldData["walkmesh"];
 };
 

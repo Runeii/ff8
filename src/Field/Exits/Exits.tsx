@@ -7,7 +7,7 @@ import { vectorToFloatingPoint } from "../../utils"
 
 type ExitsProps = {
   exits: FieldData["exits"]
-  setCharacterPosition: (position: FieldData["exits"][0]["destinationPoint"]) => void
+  setCharacterPosition: (position: Vector3) => void
   setField: (fieldId: string) => void
 }
 
