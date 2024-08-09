@@ -17,7 +17,7 @@ const forwardVector = new Vector3();
 const rightVector = new Vector3();
 const upVector = new Vector3();
 
-export const CHARACTER_HEIGHT = 250;
+export const CHARACTER_HEIGHT = 0.08;
 
 const Character = ({ position }: CharacterProps) => {
   const playerRef = useRef<Mesh>();
@@ -90,7 +90,7 @@ const Character = ({ position }: CharacterProps) => {
     }
 
     const player = playerRef.current;
-    const speed = 10;
+    const speed = 0.002;
 
 
     camera.getWorldDirection(forwardVector);
@@ -128,11 +128,11 @@ const Character = ({ position }: CharacterProps) => {
       
       player.position.add(direction);
       player.position.addScaledVector(upVector, closest.point.dot(upVector) + -(CHARACTER_HEIGHT / 2) - player.position.dot(upVector));
-      }
+    }
   });
 
   return (
-    <Box args={[50, 30, CHARACTER_HEIGHT]} position={[position.x, position.y, position.z + CHARACTER_HEIGHT]} ref={playerRef} renderOrder={3} name="character">
+    <Box args={[0.03, 0.03, CHARACTER_HEIGHT]} position={[position.x, position.y, position.z + CHARACTER_HEIGHT / 2]} ref={playerRef} renderOrder={3} name="character">
       <meshBasicMaterial color={0xff0000} side={DoubleSide} />
     </Box>
   )

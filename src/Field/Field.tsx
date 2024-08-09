@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import type data from '../../public/output/bcgate1a.json';
 import Tiles from './Tiles/Tiles';
 import Exits from './Exits/Exits';
+import { vectorToFloatingPoint } from '../utils';
 export type FieldData = typeof data;
 
 type FieldProps = {
@@ -22,11 +23,11 @@ const Field = ({ data, texture, setField, setCharacterPosition }: FieldProps) =>
 
   useThree(({ camera }) => {
     const {camera_axis,camera_position,camera_zoom} = data.cameras[0];
-    const camAxisX = new Vector3(camera_axis[0].x, camera_axis[0].y, camera_axis[0].z).divideScalar(4096);
-    const camAxisY = new Vector3(camera_axis[1].x, camera_axis[1].y, camera_axis[1].z).clone().negate().divideScalar(4096);
-    const camAxisZ = new Vector3(camera_axis[2].x, camera_axis[2].y, camera_axis[2].z).divideScalar(4096);
+    const camAxisX = vectorToFloatingPoint(camera_axis[0])
+    const camAxisY = vectorToFloatingPoint(camera_axis[1]).negate();
+    const camAxisZ = vectorToFloatingPoint(camera_axis[2])
 
-    const camPos = new Vector3(...camera_position).clone().divideScalar(4096);
+    const camPos = vectorToFloatingPoint(new Vector3(...camera_position));
     camPos.y = -camPos.y; // Negate Y to match the original logic
 
     // Calculate the translation components
@@ -40,12 +41,12 @@ const Field = ({ data, texture, setField, setCharacterPosition }: FieldProps) =>
       tz + camAxisZ.z
     );
 
+    camera.up.set(camAxisY.x, camAxisY.y, camAxisY.z);
     camera.position.set(tx, ty, tz);
     camera.lookAt(lookAtTarget);
     if (target.x !== lookAtTarget.x || target.y !== lookAtTarget.y || target.z !== lookAtTarget.z) {
       setTarget(lookAtTarget);
     }
-    camera.up.set(camAxisY.x, camAxisY.y, camAxisY.z);
 
     // 320 is a hack here...but it seems
 

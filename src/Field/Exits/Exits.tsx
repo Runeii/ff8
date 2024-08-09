@@ -3,6 +3,7 @@ import type { FieldData } from "../Field"
 import { useFrame } from "@react-three/fiber"
 import { Mesh, Raycaster, Vector3 } from "three"
 import { CHARACTER_HEIGHT } from "../../Character/Character"
+import { vectorToFloatingPoint } from "../../utils"
 
 type ExitsProps = {
   exits: FieldData["exits"]
@@ -16,7 +17,7 @@ let direction = new Vector3();
 const Exits = ({ exits, setCharacterPosition, setField }: ExitsProps) => {
   const handleTransition = (exit: FieldData['exits'][0]) => {
     setField(exit.fieldId);
-    setCharacterPosition(exit.destinationPoint);
+    setCharacterPosition(vectorToFloatingPoint(exit.destinationPoint));
   }
 
   useFrame(({ scene }) => {
@@ -28,8 +29,11 @@ const Exits = ({ exits, setCharacterPosition, setField }: ExitsProps) => {
 
     exits.forEach((exit) => {
       const {exitLine: [start, end]} = exit;
-      const lineStart = new Vector3(start.x, start.y, start.z + CHARACTER_HEIGHT / 2);
-      const lineEnd = new Vector3(end.x, end.y, end.z + CHARACTER_HEIGHT / 2);
+      const lineStart = vectorToFloatingPoint(start);
+      const lineEnd = vectorToFloatingPoint(end);
+
+      lineStart.z += CHARACTER_HEIGHT / 2;
+      lineEnd.z += CHARACTER_HEIGHT / 2;
     
       direction.set(0, 0, 0);
       direction = direction.subVectors(lineEnd, lineStart).normalize();
@@ -50,7 +54,11 @@ const Exits = ({ exits, setCharacterPosition, setField }: ExitsProps) => {
   return exits.filter(exit => exit.fieldId !== 'Unamed').map(exit => (
     <Line
       key={`${exit.fieldId}-${exit.exitLine[0].x}-${exit.exitLine[0].y}-${exit.exitLine[0].z}`}
-      points={exit.exitLine.map(point => [point.x, point.y, point.z + CHARACTER_HEIGHT * 1.5])}
+      points={exit.exitLine.map(point => {
+        const vector = vectorToFloatingPoint(point)
+        vector.z += CHARACTER_HEIGHT / 2;
+        return vector
+      })}
       color="blue"
       lineWidth={5}
       onClick={() => handleTransition(exit)}
