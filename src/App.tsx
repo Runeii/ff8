@@ -1,3 +1,4 @@
+import './index.css'
 import { Suspense, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Field from './Field/Field'
@@ -10,16 +11,13 @@ export default function App() {
     y: -20,
     z: 2
   })
-console.log(field)
+
   return (
     <Canvas camera={{
+      aspect: 320 / 240,
       near: 0.001,
       far: 1000000,
-      aspect: 320 / 224,
-    }} style={{
-      aspectRatio: 320 / 224,
-      height: 'auto'
-    }}>
+    }} className="canvas">
       <ambientLight />
       <Suspense>
         <Character position={characterPosition} />

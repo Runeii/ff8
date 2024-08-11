@@ -31,7 +31,7 @@ const WalkMesh = ({ setCharacterPosition, walkmesh }: WalkMeshProps) => {
   }, [walkmesh]);
 
   return (
-    <group name="walkmesh" renderOrder={2}>
+    <group name="walkmesh">
       {meshGeometry.map((geometry, index) => (
         <mesh key={index} name="walkmesh-triangle" geometry={geometry} onClick={(e) => {
           setCharacterPosition(e.point)

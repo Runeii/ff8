@@ -1,8 +1,6 @@
-import { Texture, TextureLoader, Vector3 } from 'three';
-import { useLoader } from '@react-three/fiber';
-
-import WalkMesh from './WalkMesh/WalkMesh';
 import { useEffect, useState } from 'react';
+import { Vector3 } from 'three';
+import WalkMesh from './WalkMesh/WalkMesh';
 
 import type data from '../../public/output/bcgate1a.json';
 import Tiles from './Tiles/Tiles';
@@ -12,23 +10,22 @@ export type FieldData = typeof data;
 
 type FieldProps = {
   data: FieldData,
-  texture: Texture,
   setField: (fieldId: string) => void,
   setCharacterPosition: (position: Vector3) => void
 }
 
-const Field = ({ data, texture, setField, setCharacterPosition }: FieldProps) => {
+const Field = ({ data, setField, setCharacterPosition }: FieldProps) => {
   return (
     <>
       <Camera cameras={data.cameras} />
-      <Tiles texture={texture} tiles={data.tiles} />
+      <Tiles backgroundDetails={data.backgroundDetails} tiles={data.tiles} />
       <WalkMesh setCharacterPosition={setCharacterPosition} walkmesh={data.walkmesh} />
       <Exits exits={data.exits} setField={setField} setCharacterPosition={setCharacterPosition} />
     </>
   );
 }
 
-type FieldLoaderProps = Omit<FieldProps, 'data' | 'texture'> & {
+type FieldLoaderProps = Omit<FieldProps, 'data'> & {
   id: string
 }
 
@@ -38,14 +35,12 @@ const FieldLoader = ({ id, ...props }: FieldLoaderProps) => {
   useEffect(() => {
     fetch(`/output/${id}.json`).then(response => response.json()).then(setData);
   }, [id]);
-
-  const texture = useLoader(TextureLoader, `/output/sprites/${id}.png`);
   
-  if (!data || !texture) {
+  if (!data) {
     return null;
   }
   
-  return <Field data={data} texture={texture} {...props}/>
+  return <Field data={data} {...props}/>
 }
 
 export default FieldLoader

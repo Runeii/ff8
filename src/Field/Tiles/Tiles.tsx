@@ -1,17 +1,15 @@
-import { Box3, CanvasTexture, DoubleSide, MathUtils, Mesh, PerspectiveCamera, PlaneGeometry, Texture, Vector3 } from "three";
+import { Box3, Group, MathUtils, Object3D, PerspectiveCamera, TextureLoader, Vector3 } from "three";
 import type { FieldData } from "../Field";
-import TileSprite from "./TileSprite/TileSprite";
-import { Plane } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useLoader } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
-import { vectorToFloatingPoint } from "../../utils";
+import Layer from "./Layer/Layer";
 
-function getMeshPositionToFitInView(mesh: Mesh, camera: PerspectiveCamera, xScale: number = 1, yScale: number = 1): Vector3 {
+function getPositionToFitInView(object: Object3D, camera: PerspectiveCamera, xScale: number = 1, yScale: number = 1): Vector3 {
   // Get the field of view in radians
   const fov = MathUtils.degToRad(camera.fov);
 
   // Calculate the bounding box of the mesh
-  const boundingBox = new Box3().setFromObject(mesh);
+  const boundingBox = new Box3().setFromObject(object);
   const meshWidth = boundingBox.max.x - boundingBox.min.x;
   const meshHeight = boundingBox.max.y - boundingBox.min.y;
 
@@ -43,77 +41,55 @@ function getMeshPositionToFitInView(mesh: Mesh, camera: PerspectiveCamera, xScal
 }
 
 type TilesProps = {
-  texture: Texture;
+  backgroundDetails: FieldData["backgroundDetails"];
   tiles: FieldData["tiles"];
 };
 
 // 16x16 tiles
-const TILE_SIZE = 16
-const Tiles = ({ texture, tiles }: TilesProps) => {
-  const planeRef = useRef<Mesh>(null);
+const Tiles = ({ backgroundDetails, tiles }: TilesProps) => {
+  const groupRef = useRef<Group>(null);
 
-  texture.repeat.set(1, 1);
+  const tilesTexture = useLoader(TextureLoader, `/output/sprites/${backgroundDetails.sprite}`);
   
   useFrame(({ camera }) => {
-    if (!planeRef.current) {
+    if (!groupRef.current) {
       return;
     }
 
-    const xScale = 320 / texture.image.width;
-    const yScale = 240 / texture.image.height
+    const xScale = Math.min(backgroundDetails.width / 320, 1);
+    const yScale = Math.min(backgroundDetails.height / 240, 1);
 
-    const position = getMeshPositionToFitInView(planeRef.current, camera as PerspectiveCamera, 1, 1);
+    const position = getPositionToFitInView(groupRef.current, camera as PerspectiveCamera, xScale, yScale);
 
-    planeRef.current.position.copy(position);
-    planeRef.current.quaternion.copy(camera.quaternion);
+  //  groupRef.current.position.copy(position);
+    groupRef.current.quaternion.copy(camera.quaternion);
   });
 
-  const backgroundTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 320;
-    canvas.height = 240;
-    const context = canvas.getContext('2d');
-  
-    if (!context) {
-      throw new Error('Could not get canvas context');
-    }
-  
-    // Clear the canvas with transparent color
-    context.clearRect(0, 0, canvas.width, canvas.height);
+  // Create an array of arrays of tiles, grouped by the Z value
+   const groupedTiles = useMemo(() => {
+     const groupedTiles: FieldData["tiles"][] = []
+     tiles.forEach((tile) => {
+       if (!groupedTiles[tile.Z]) {
+         groupedTiles[tile.Z] = [];
+       }
+       groupedTiles[tile.Z].push(tile);
+     });
+     return groupedTiles
+   }, [tiles]);
 
-    //18
-    // Loop through the squares and draw them
-    tiles.sort((a, b) => a.Z - b.Z).forEach((square) => {
-      const { X, Y, index } = square;
-      const adjustedY = Y + canvas.height / 2;
-      const adjustedX = X + canvas.width / 2;
-
-      context.drawImage(
-        texture.image,
-        0, index * TILE_SIZE, TILE_SIZE, TILE_SIZE, // Source image coordinates
-        adjustedX, adjustedY, TILE_SIZE, TILE_SIZE    // Destination canvas coordinates
-      );
-
-      console.log(adjustedX, adjustedY)
-    });
-
-    // Create a texture from the canvas
-  const canvasTexture = new CanvasTexture(canvas);
-  canvasTexture.repeat.set(1, 1);
-  canvasTexture.needsUpdate = true;
-  canvasTexture.premultiplyAlpha = true; // Ensures transparency is handled correctly
-
-  return canvasTexture;
-  }, [tiles, texture.image]);  
-  
   return (
-    <Plane args={[320, 240]} ref={planeRef} >
-      <meshBasicMaterial map={backgroundTexture} side={DoubleSide} depthWrite={false} transparent />
-    </Plane>
-  )
-  return tiles.map((tile, index) => {
-    return <TileSprite key={index} index={index} tile={tile} texture={texture} />;
-  });
+    <group ref={groupRef} >
+      {groupedTiles.map((layerTiles, index) => (
+        <Layer
+          backgroundDetails={backgroundDetails}
+          key={`${backgroundDetails.sprite}--${layerTiles[0].Z}`}
+          colorIndex={index}
+          tiles={layerTiles}
+          texture={tilesTexture}
+        />
+      ))}
+    </group>
+  );
 }
 
 export default Tiles;

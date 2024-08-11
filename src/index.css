@@ -28,3 +28,20 @@ body,
   place-items: center;
   background-color: black;
 }
+
+.canvas,
+.canvas > div {
+  display: flex;
+  flex-direction: column;
+  place-content: center;
+  place-items: center;
+  width: 100vw !important;
+  height: calc(100vw / (320 / 240)) !important;
+}
+
+.canvas canvas {
+  aspect-ratio: 320 / 240;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+}

@@ -90,7 +90,7 @@ const Character = ({ position }: CharacterProps) => {
     }
 
     const player = playerRef.current;
-    const speed = 0.002;
+    const speed = 0.004;
 
 
     camera.getWorldDirection(forwardVector);
@@ -132,7 +132,7 @@ const Character = ({ position }: CharacterProps) => {
   });
 
   return (
-    <Box args={[0.03, 0.03, CHARACTER_HEIGHT]} position={[position.x, position.y, position.z + CHARACTER_HEIGHT / 2]} ref={playerRef} renderOrder={3} name="character">
+    <Box args={[0.03, 0.03, CHARACTER_HEIGHT]} position={[position.x, position.y, position.z + CHARACTER_HEIGHT / 2]} ref={playerRef}  name="character">
       <meshBasicMaterial color={0xff0000} side={DoubleSide} />
     </Box>
   )

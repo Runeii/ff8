@@ -1,5 +1,5 @@
 import { useThree } from "@react-three/fiber";
-import { type PerspectiveCamera, Vector3 } from 'three';
+import { PerspectiveCamera, Vector3 } from 'three';
 import { vectorToFloatingPoint } from "../../utils";
 import { FieldData } from "../Field";
 
