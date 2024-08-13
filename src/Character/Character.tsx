@@ -1,7 +1,7 @@
-import { Box, Sphere } from "@react-three/drei"
-import { useFrame, useThree } from "@react-three/fiber";
+import { Box } from "@react-three/drei"
+import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import { BufferGeometry, DoubleSide, Group, Line, LineBasicMaterial, Mesh, Object3D, PerspectiveCamera, Raycaster, Vector3 } from "three";
+import { DoubleSide, Group, Mesh, Raycaster, Vector3 } from "three";
 
 type CharacterProps = {
   position: {
@@ -21,7 +21,6 @@ export const CHARACTER_HEIGHT = 0.08;
 
 const Character = ({ position }: CharacterProps) => {
   const playerRef = useRef<Mesh>();
-
 
   const [isMovingForward, setIsMovingForward] = useState(false);
   const [isMovingBackward, setIsMovingBackward] = useState(false);
@@ -90,7 +89,7 @@ const Character = ({ position }: CharacterProps) => {
     }
 
     const player = playerRef.current;
-    const speed = 0.004;
+    const speed = 0.01;
 
 
     camera.getWorldDirection(forwardVector);
@@ -132,8 +131,13 @@ const Character = ({ position }: CharacterProps) => {
   });
 
   return (
-    <Box args={[0.03, 0.03, CHARACTER_HEIGHT]} position={[position.x, position.y, position.z + CHARACTER_HEIGHT / 2]} ref={playerRef}  name="character">
-      <meshBasicMaterial color={0xff0000} side={DoubleSide} />
+    <Box
+      args={[0.03, 0.03, CHARACTER_HEIGHT]}
+      position={[position.x, position.y, position.z + CHARACTER_HEIGHT / 2]}
+      ref={playerRef}
+      name="character"
+    >
+      <meshBasicMaterial color={0xff0000} side={DoubleSide}  />
     </Box>
   )
 }

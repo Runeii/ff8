@@ -1,89 +1,67 @@
 import { Box3, Group, MathUtils, Object3D, PerspectiveCamera, TextureLoader, Vector3 } from "three";
 import type { FieldData } from "../Field";
-import { useFrame, useLoader } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
+import {  useMemo, useRef } from "react";
 import Layer from "./Layer/Layer";
+import { OrbitControls } from "@react-three/drei";
+import { lerp } from "three/src/math/MathUtils.js";
+import { getPositionToFitInView } from "./utils";
 
-function getPositionToFitInView(object: Object3D, camera: PerspectiveCamera, xScale: number = 1, yScale: number = 1): Vector3 {
-  // Get the field of view in radians
-  const fov = MathUtils.degToRad(camera.fov);
-
-  // Calculate the bounding box of the mesh
-  const boundingBox = new Box3().setFromObject(object);
-  const meshWidth = boundingBox.max.x - boundingBox.min.x;
-  const meshHeight = boundingBox.max.y - boundingBox.min.y;
-
-  // Calculate the aspect ratio of the camera
-  const aspect = camera.aspect;
-
-  // Adjust the mesh dimensions based on the scale factors
-  const scaledMeshWidth = meshWidth * xScale;
-  const scaledMeshHeight = meshHeight * yScale;
-
-  // Calculate the distance from the camera required to fit the scaled mesh height within the camera's view
-  const distanceHeight = (scaledMeshHeight / 2) / Math.tan(fov / 2);
-
-  // Adjust the distance based on the camera's aspect ratio and scaled mesh width to ensure the width fits as well
-  const distanceWidth = (scaledMeshWidth / 2) / (Math.tan(fov / 2) * aspect);
-  const finalDistance = Math.max(distanceHeight, distanceWidth);
-
-  // Get the camera's direction vector
-  const direction = new Vector3();
-  camera.getWorldDirection(direction);
-
-  // Calculate the position where the mesh should be placed
-  const position = direction.multiplyScalar(finalDistance);
-
-  // Align the position with the camera's world position
-  position.add(camera.position);
-
-  return position;
-}
 
 type TilesProps = {
   backgroundDetails: FieldData["backgroundDetails"];
+  sceneBoundingBox: Box3;
   tiles: FieldData["tiles"];
 };
 
+
 // 16x16 tiles
-const Tiles = ({ backgroundDetails, tiles }: TilesProps) => {
+const Tiles = ({ backgroundDetails, sceneBoundingBox, tiles }: TilesProps) => {
   const groupRef = useRef<Group>(null);
 
   const tilesTexture = useLoader(TextureLoader, `/output/sprites/${backgroundDetails.sprite}`);
-  
   useFrame(({ camera }) => {
     if (!groupRef.current) {
       return;
     }
 
-    const xScale = Math.min(backgroundDetails.width / 320, 1);
-    const yScale = Math.min(backgroundDetails.height / 240, 1);
+    const xScale = Math.max(backgroundDetails.width / 320, 1);
+    const yScale = Math.max(backgroundDetails.height / 240, 1);
 
     const position = getPositionToFitInView(groupRef.current, camera as PerspectiveCamera, xScale, yScale);
 
-  //  groupRef.current.position.copy(position);
-    groupRef.current.quaternion.copy(camera.quaternion);
+    groupRef.current.position.copy(position);
+   groupRef.current.quaternion.copy(camera.quaternion);
   });
 
-  // Create an array of arrays of tiles, grouped by the Z value
-   const groupedTiles = useMemo(() => {
+  const groupedTiles = useMemo(() => {
      const groupedTiles: FieldData["tiles"][] = []
      tiles.forEach((tile) => {
+       //4094: background
+       //451: window light
+       //432: right doorway
+       //396: left window
+       //395: random stuff
+       //221: car
+      //6: light aura
+      if (tile.Z !== 432) {
+       // return;
+      }
        if (!groupedTiles[tile.Z]) {
          groupedTiles[tile.Z] = [];
        }
        groupedTiles[tile.Z].push(tile);
      });
      return groupedTiles
-   }, [tiles]);
+  }, [tiles]);
 
   return (
-    <group ref={groupRef} >
-      {groupedTiles.map((layerTiles, index) => (
+    <group ref={groupRef}>
+      {groupedTiles.map((layerTiles) => (
         <Layer
           backgroundDetails={backgroundDetails}
+          sceneBoundingBox={sceneBoundingBox}
           key={`${backgroundDetails.sprite}--${layerTiles[0].Z}`}
-          colorIndex={index}
           tiles={layerTiles}
           texture={tilesTexture}
         />

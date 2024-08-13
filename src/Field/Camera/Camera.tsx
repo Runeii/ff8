@@ -1,4 +1,4 @@
-import { useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { PerspectiveCamera, Vector3 } from 'three';
 import { vectorToFloatingPoint } from "../../utils";
 import { FieldData } from "../Field";
@@ -9,7 +9,8 @@ type CameraProps = {
 
 const Camera = ({ cameras }: CameraProps) => {
   // NOTES: 320 x 240 (224?) is standard map size
-  useThree(({ camera }) => {
+  useThree(({ camera, gl }) => {
+    gl.autoClear = false;
     const {camera_axis,camera_position,camera_zoom} = cameras[0];
     const camAxisX = vectorToFloatingPoint(camera_axis[0])
     const camAxisY = vectorToFloatingPoint(camera_axis[1]).negate();
@@ -36,6 +37,7 @@ const Camera = ({ cameras }: CameraProps) => {
 
     (camera as PerspectiveCamera).fov = (2 * Math.atan(240.0/(2.0 * camera_zoom))) * 57.29577951;
     camera.updateProjectionMatrix();
+
   });
 
   return null;

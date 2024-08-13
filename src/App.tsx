@@ -5,7 +5,7 @@ import Field from './Field/Field'
 import Character from './Character/Character'
 
 export default function App() {
-  const [field, setField] = useState('dotown3a')
+  const [field, setField] = useState<string>('dotown3a')
   const [characterPosition, setCharacterPosition] = useState({
     x: -180,
     y: -20,
@@ -21,7 +21,11 @@ export default function App() {
       <ambientLight />
       <Suspense>
         <Character position={characterPosition} />
-        <Field id={field} setField={setField} setCharacterPosition={setCharacterPosition} />
+        <Field
+          id={field}
+          setField={setField}
+          setCharacterPosition={setCharacterPosition}
+        />
       </Suspense>
     </Canvas>
   )

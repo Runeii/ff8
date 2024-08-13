@@ -51,7 +51,7 @@ const Exits = ({ exits, setCharacterPosition, setField }: ExitsProps) => {
     })
   });
 
-  return exits.filter(exit => exit.fieldId !== 'Unamed').map(exit => (
+  return exits.map(exit => (
     <Line
       key={`${exit.fieldId}-${exit.exitLine[0].x}-${exit.exitLine[0].y}-${exit.exitLine[0].z}`}
       points={exit.exitLine.map(point => {
