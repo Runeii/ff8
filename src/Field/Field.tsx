@@ -17,7 +17,7 @@ type FieldProps = {
 const Field = ({ data, setField, setCharacterPosition }: FieldProps) => {
   return (
     <>
-      <Camera cameras={data.cameras} />
+      <Camera backgroundDetails={data.backgroundDetails} cameras={data.cameras} />
       <Tiles backgroundDetails={data.backgroundDetails} tiles={data.tiles} />
       <WalkMesh setCharacterPosition={setCharacterPosition} walkmesh={data.walkmesh} />
       <Exits exits={data.exits} setField={setField} setCharacterPosition={setCharacterPosition} />

@@ -20,7 +20,7 @@ colors[432] = 'purple';
 colors[451] = 'brown';
 colors[4094] = 'white';
 
-const Layer = ({ backgroundDetails, colorIndex, tiles, texture }: LayerProps) => {
+const Layer = ({ backgroundDetails, tiles, texture }: LayerProps) => {
   const layerTexture = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = backgroundDetails.width;
@@ -33,8 +33,6 @@ const Layer = ({ backgroundDetails, colorIndex, tiles, texture }: LayerProps) =>
   
     // Clear the canvas with transparent color
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.strokeStyle = 'yellow';
-    context.strokeRect(0, 0, canvas.width, canvas.height);
 
     //18
     // Loop through the squares and draw them
