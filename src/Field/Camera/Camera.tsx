@@ -1,17 +1,20 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { PerspectiveCamera, Vector3 } from 'three';
-import { vectorToFloatingPoint } from "../../utils";
+import { Box3, Mesh, PerspectiveCamera, Vector3 } from 'three';
+import { calculatePannedCameraPosition, inverseLerpSymmetric, vectorToFloatingPoint } from "../../utils";
 import { FieldData } from "../Field";
-import {  MathUtils } from "three/src/math/MathUtils.js";
+import { MutableRefObject, useMemo } from "react";
+import { clamp } from "three/src/math/MathUtils.js";
 
 type CameraProps = {
+  backgroundPanRef: MutableRefObject<{ x: number, y: number }>;
   backgroundDetails: FieldData['backgroundDetails'],
-  cameras: FieldData['cameras']
+  cameras: FieldData['cameras'],
+  sceneBoundingBox: Box3
 }
 
-const Camera = ({ backgroundDetails, cameras }: CameraProps) => {
+const Camera = ({ backgroundPanRef, backgroundDetails, cameras, sceneBoundingBox }: CameraProps) => {
   // NOTES: 320 x 240 (224?) is standard map size
-  const lookAtRotation = useThree(({ camera }) => {
+  const initialCameraPosition = useThree(({ camera }) => {
     const {camera_axis,camera_position,camera_zoom} = cameras[0];
     const camAxisX = vectorToFloatingPoint(camera_axis[0])
     const camAxisY = vectorToFloatingPoint(camera_axis[1]).negate();
@@ -35,40 +38,80 @@ const Camera = ({ backgroundDetails, cameras }: CameraProps) => {
     camera.position.set(tx, ty, tz);
     camera.lookAt(lookAtTarget);
 
-
+    
     (camera as PerspectiveCamera).fov = (2 * Math.atan(240.0/(2.0 * camera_zoom))) * 57.29577951;
     camera.updateProjectionMatrix();
 
-    return camera.rotation.clone();
+    return camera.position.clone();
   });
 
+  const safePanZone = useMemo(() => {
+    const box = sceneBoundingBox.clone();
 
-  const character = useThree(({ scene }) => scene.getObjectByName('character'));
-  useFrame(({camera}) => {
-    if (!character) {
+    const visibleWidth = (320 / backgroundDetails.width);
+    const visibleHeight = (240 / backgroundDetails.height);
+
+    const halfScreenWidthBuffer = (visibleWidth / 2);
+    const halfScreenHeightBuffer = (visibleHeight / 2);
+
+    const boxXLength = box.max.x - box.min.x;
+    const boxXAdjustment = Math.min(boxXLength * 0.5, boxXLength * halfScreenWidthBuffer);
+    
+    const boxYLength = box.max.y - box.min.y;
+    const boxYAdjustment = Math.min(boxYLength * 0.5, boxYLength * halfScreenHeightBuffer);
+
+    box.min.x += boxXAdjustment;
+    box.max.x -= boxXAdjustment;
+  
+    box.min.y += boxYAdjustment;
+    box.max.y -= boxYAdjustment
+    
+    box.min.z = 0;
+    box.max.z = 0;
+
+    return box;
+  }, [backgroundDetails.height, backgroundDetails.width, sceneBoundingBox]);
+
+  const character = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
+  const camera = useThree(({ camera }) => camera as PerspectiveCamera);
+
+  // To avoid re-creating the vectors for camera direction every frame, as camera is static
+  const cameraDirection = new Vector3();
+  const screenRight = new Vector3();
+  const screenUp = new Vector3();
+
+  camera.getWorldDirection(cameraDirection);
+  screenRight.set(0, 0, 0).crossVectors(camera.up, cameraDirection).normalize();
+  screenUp.copy(camera.up).normalize();
+
+  useFrame(() => {
+    if (!camera && !character) {
       return;
     }
-    
-    // x is up/down
-    // y is left/right
-    const maxAngleY = ((backgroundDetails.width/320) - 1) / 2;
-    const maxAngleX = ((backgroundDetails.height/240) - 1) / 2;
-    
-    camera.lookAt(character.position);
-    const lookedAtCameraRotation = camera.rotation.clone();
-    
-    const desiredY = lookedAtCameraRotation.y;
-    const desiredX = lookedAtCameraRotation.x;
 
-    // Clamp the desired rotations within the maxAngle constraints
-    const clampedX = MathUtils.clamp(desiredY, lookAtRotation.y - maxAngleY, lookAtRotation.y + maxAngleY);
-    const clampedY = MathUtils.clamp(desiredX, lookAtRotation.x - maxAngleX, lookAtRotation.x + maxAngleX);
+    if (safePanZone.getSize(new Vector3()).length() === 0) {
+      backgroundPanRef.current.x = 0;
+      backgroundPanRef.current.y = 0;
+      return;
+    }
 
-    // Apply the clamped rotations to the camera
-    camera.rotation.y = clampedX;
-    camera.rotation.x = clampedY;
-    camera.rotation.z = lookAtRotation.z;
-  })
+    const {min, max} = safePanZone;
+
+    const x = inverseLerpSymmetric(min.x, max.x, character.position.x);
+    const y = inverseLerpSymmetric(min.y, max.y, character.position.y);
+
+    backgroundPanRef.current.x = clamp(x, -1, 1);
+    backgroundPanRef.current.y = clamp(y, -1, 1);
+
+    const xPan = (sceneBoundingBox.max.x - sceneBoundingBox.min.x) / -14;
+    const yPan = (sceneBoundingBox.max.y - sceneBoundingBox.min.y) / 27;
+
+    const pannedPosition = initialCameraPosition.clone()
+      .addScaledVector(screenRight, backgroundPanRef.current.x * xPan)
+      .addScaledVector(screenUp, backgroundPanRef.current.y * yPan);
+
+      camera.position.copy(pannedPosition);
+  });
 
   return null;
 }

@@ -11,3 +11,11 @@ export const vectorToFloatingPoint = (value: Vector3 | { x: number, y: number, z
 
   return vector
 }
+
+export const inverseLerpSymmetric = (a: number, b: number, v: number) => {
+  if (a === b) {
+    return 0;
+  }
+  const t = (v - a) / (b - a);
+  return 2 * t - 1;
+}

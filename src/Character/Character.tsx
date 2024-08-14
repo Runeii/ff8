@@ -1,7 +1,7 @@
-import { Box, Sphere } from "@react-three/drei"
-import { useFrame, useThree } from "@react-three/fiber";
+import { Box } from "@react-three/drei"
+import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import { BufferGeometry, DoubleSide, Group, Line, LineBasicMaterial, Mesh, Object3D, PerspectiveCamera, Raycaster, Vector3 } from "three";
+import { DoubleSide, Group, Mesh, Raycaster, Vector3 } from "three";
 
 type CharacterProps = {
   position: {
@@ -90,7 +90,7 @@ const Character = ({ position }: CharacterProps) => {
     }
 
     const player = playerRef.current;
-    const speed = 0.004;
+    const speed = 0.008;
 
 
     camera.getWorldDirection(forwardVector);

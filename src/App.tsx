@@ -7,9 +7,9 @@ import Character from './Character/Character'
 export default function App() {
   const [field, setField] = useState('dotown3a')
   const [characterPosition, setCharacterPosition] = useState({
-    x: -180,
-    y: -20,
-    z: 2
+    x: -0.014479771137232533,
+    y: -0.40804282104605955,
+    z: 0
   })
 
   return (
