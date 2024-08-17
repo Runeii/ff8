@@ -130,6 +130,7 @@ const Character = ({ position }: CharacterProps) => {
       player.position.addScaledVector(upVector, closest.point.dot(upVector) + -(CHARACTER_HEIGHT / 2) - player.position.dot(upVector));
     }
   });
+  
 
   return (
     <Box args={[0.03, 0.03, CHARACTER_HEIGHT]} position={[position.x, position.y, position.z + CHARACTER_HEIGHT / 2]} ref={playerRef}  name="character">

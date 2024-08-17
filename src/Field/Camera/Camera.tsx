@@ -1,6 +1,6 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { Box3, Mesh, PerspectiveCamera, Vector3 } from 'three';
-import { calculatePannedCameraPosition, inverseLerpSymmetric, vectorToFloatingPoint } from "../../utils";
+import { inverseLerpSymmetric, vectorToFloatingPoint } from "../../utils";
 import { FieldData } from "../Field";
 import { MutableRefObject, useMemo } from "react";
 import { clamp } from "three/src/math/MathUtils.js";
@@ -103,8 +103,10 @@ const Camera = ({ backgroundPanRef, backgroundDetails, cameras, sceneBoundingBox
     backgroundPanRef.current.x = clamp(x, -1, 1);
     backgroundPanRef.current.y = clamp(y, -1, 1);
 
-    const xPan = (sceneBoundingBox.max.x - sceneBoundingBox.min.x) / -14;
-    const yPan = (sceneBoundingBox.max.y - sceneBoundingBox.min.y) / 27;
+    const xModifier = backgroundDetails.width / -35;
+    const yModifier = backgroundDetails.height / 10;
+    const xPan = (sceneBoundingBox.max.x - sceneBoundingBox.min.x) / xModifier;
+    const yPan = (sceneBoundingBox.max.y - sceneBoundingBox.min.y) / yModifier;
 
     const pannedPosition = initialCameraPosition.clone()
       .addScaledVector(screenRight, backgroundPanRef.current.x * xPan)

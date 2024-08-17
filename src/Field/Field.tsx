@@ -18,28 +18,34 @@ type FieldProps = {
 const Field = ({ data, setField, setCharacterPosition }: FieldProps) => {
   const [sceneBoundingBox, setSceneBoundingBox] = useState(new Box3());
 
-  const orthoCamera = useThree(({ scene }) => scene.getObjectByName('orthoCamera') as OrthographicCamera);
-  useFrame(({ camera, gl, scene }) => {
-    const perspectiveCamera = camera as PerspectiveCamera;
+    const orthoCamera = useThree(({ scene }) => scene.getObjectByName('orthoCamera') as OrthographicCamera);
+    useFrame(({ camera, gl, scene }) => {
+      const perspectiveCamera = camera as PerspectiveCamera;
 
-    if (!orthoCamera) {
-      return;
-    }
+      if (!orthoCamera) {
+        return;
+      }
 
-    gl.clear()
-    gl.autoClear = false;
-    gl.clearDepth();
-    orthoCamera.layers.disable(0);
-    orthoCamera.layers.disable(1);
-    orthoCamera.layers.enable(2);
-    gl.render(scene, orthoCamera);
+      gl.clear()
+      gl.autoClear = false;
+      gl.clearDepth();
+      orthoCamera.layers.disable(0);
+      orthoCamera.layers.enable(1);
+      orthoCamera.layers.disable(2);
+      gl.render(scene, orthoCamera);
+      
+      gl.clearDepth();
+      perspectiveCamera.layers.enable(0);
+      perspectiveCamera.layers.disable(1);
+      perspectiveCamera.layers.disable(2);
+      gl.render(scene, perspectiveCamera);
 
-    gl.clearDepth();
-    perspectiveCamera.layers.enable(0);
-    perspectiveCamera.layers.enable(1);
-    perspectiveCamera.layers.disable(2);
-    gl.render(scene, perspectiveCamera);
-  }, 1);
+      gl.clearDepth();
+      orthoCamera.layers.disable(0);
+      orthoCamera.layers.disable(1);
+      orthoCamera.layers.enable(2);
+      gl.render(scene, orthoCamera);
+    }, 1);
 
   const backgroundPanRef = useRef<{x: number, y: number}>({x: 0, y: 0});
 
@@ -49,6 +55,7 @@ const Field = ({ data, setField, setCharacterPosition }: FieldProps) => {
       <Background backgroundPanRef={backgroundPanRef} backgroundDetails={data.backgroundDetails} tiles={data.tiles} />
       <WalkMesh setCharacterPosition={setCharacterPosition} setSceneBoundingBox={setSceneBoundingBox} walkmesh={data.walkmesh} />
       <Exits exits={data.exits} setField={setField} setCharacterPosition={setCharacterPosition} />
+      <ambientLight intensity={0.5} />
     </>
   );
 }
