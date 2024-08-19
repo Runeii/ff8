@@ -1,9 +1,13 @@
+use base64;
 use byteorder::{LittleEndian, ReadBytesExt};
+use gltf::json::{self, validation::Checked, Index, Root};
+use serde_json;
+use std::collections::BTreeMap;
 use std::convert::TryInto;
 use std::fs::File;
 use std::io::{self, Cursor, Write};
 use std::path::Path;
-
+use json::extras::Void
 #[repr(C)]
 #[derive(Debug, Clone)]
 pub struct Header {
@@ -17,6 +21,9 @@ pub struct Model {
     pub faces: Vec<Face>,
     pub vertices: Vec<Vertex>,
     pub bones: Vec<Bone>,
+    pub texture_animations: Vec<TextureAnimation>,
+    pub skins: Vec<Skin>,
+    pub animation_data: AnimationData,
 }
 
 #[derive(Debug)]
@@ -70,6 +77,59 @@ pub struct Face {
     pub padding1: u16,
     pub texture_index: u16,
     pub padding2: [u32; 2],
+}
+
+#[derive(Debug)]
+pub struct Skin {
+    pub first_vertex_index: u16,
+    pub vertex_count: u16,
+    pub bone_id: u16,
+    pub unknown: u16,
+}
+
+#[derive(Debug)]
+pub struct UVPair {
+    pub u: u8,
+    pub v: u8,
+}
+
+#[derive(Debug)]
+pub struct TextureAnimation {
+    pub unknown1: u8,
+    pub total_textures: u8,
+    pub unknown2: u8,
+    pub u_size: u8,
+    pub v_size: u8,
+    pub replacement_section_count: u8,
+    pub original_area_coords: UVPair,
+    pub unknown3: [u8; 2],
+    pub replacement_coords: Vec<UVPair>,
+}
+
+#[derive(Debug)]
+pub struct Rotation {
+    pub x: i16,
+    pub y: i16,
+    pub z: i16,
+}
+
+#[derive(Debug)]
+pub struct AnimationFrame {
+    pub coordinates_shift: [i16; 3], // YXZ order
+    pub rotations: Vec<Rotation>,    // ZXY order, applied as YXZ
+}
+
+#[derive(Debug)]
+pub struct Animation {
+    pub frame_count: u16,
+    pub bone_count: u16,
+    pub frames: Vec<AnimationFrame>,
+}
+
+#[derive(Debug)]
+pub struct AnimationData {
+    pub animation_count: u16,
+    pub animations: Vec<Animation>,
 }
 
 fn read_header(data: &[u8]) -> Header {
@@ -156,12 +216,138 @@ fn load_model(data: &[u8], offset: u32) -> Model {
     let bones = load_bones(data, offset + offset_bones, num_skeleton_bones);
     let vertices = load_vertices(data, offset + offset_vertices, num_vertices);
     let faces = load_faces(data, offset + offset_faces, num_faces);
+    let skins = load_skin_data(data, offset + offset_skin_objects, num_skin_objects);
+    let texture_animations = load_texture_animation_data(
+        data,
+        offset + offset_texture_animations,
+        num_texture_animations,
+    );
+    let animation_data = load_animation_data(data, offset + offset_animation_data);
 
     Model {
         header,
         bones,
         vertices,
         faces,
+        texture_animations,
+        skins,
+        animation_data,
+    }
+}
+
+fn load_texture_animation_data(data: &[u8], offset: u32, count: u32) -> Vec<TextureAnimation> {
+    let mut animations = Vec::with_capacity(count as usize);
+    let mut current_offset = offset as usize;
+
+    for _ in 0..count {
+        // Read the fixed part of the structure
+        let unknown1 = data[current_offset];
+        let total_textures = data[current_offset + 1];
+        let unknown2 = data[current_offset + 2];
+        let u_size = data[current_offset + 3];
+        let v_size = data[current_offset + 4];
+        let replacement_section_count = data[current_offset + 5];
+
+        let original_area_coords = UVPair {
+            u: data[current_offset + 6],
+            v: data[current_offset + 7],
+        };
+
+        let unknown3 = [data[current_offset + 8], data[current_offset + 9]];
+
+        // Move the offset to the replacement coordinates section
+        current_offset += 10;
+
+        // Read the replacement coordinates
+        let mut replacement_coords = Vec::with_capacity(replacement_section_count as usize);
+        for _ in 0..replacement_section_count {
+            let u = data[current_offset];
+            let v = data[current_offset + 1];
+            replacement_coords.push(UVPair { u, v });
+            current_offset += 2;
+        }
+
+        // Create a TextureAnimation struct and add it to the vector
+        animations.push(TextureAnimation {
+            unknown1,
+            total_textures,
+            unknown2,
+            u_size,
+            v_size,
+            replacement_section_count,
+            original_area_coords,
+            unknown3,
+            replacement_coords,
+        });
+    }
+
+    animations
+}
+
+fn load_animation_data(data: &[u8], offset: u32) -> AnimationData {
+    let mut current_offset = offset as usize;
+
+    // Read the number of animations
+    let animation_count = u16::from_le_bytes([data[current_offset], data[current_offset + 1]]);
+    current_offset += 2;
+
+    let mut animations = Vec::with_capacity(animation_count as usize);
+
+    for _ in 0..animation_count {
+        // Read the number of frames and bones for this animation
+        let frame_count = u16::from_le_bytes([data[current_offset], data[current_offset + 1]]);
+        let bone_count = u16::from_le_bytes([data[current_offset + 2], data[current_offset + 3]]);
+        current_offset += 4;
+
+        let mut frames = Vec::with_capacity(frame_count as usize);
+
+        for _ in 0..frame_count {
+            // Read the coordinates shift (3 * s16)
+            let coordinates_shift = [
+                i16::from_le_bytes([data[current_offset], data[current_offset + 1]]), // Y
+                i16::from_le_bytes([data[current_offset + 2], data[current_offset + 3]]), // X
+                i16::from_le_bytes([data[current_offset + 4], data[current_offset + 5]]), // Z
+            ];
+            current_offset += 6;
+
+            let mut rotations = Vec::with_capacity(bone_count as usize);
+
+            for _ in 0..bone_count {
+                let rots = [
+                    data[current_offset],
+                    data[current_offset + 1],
+                    data[current_offset + 2],
+                    data[current_offset + 3],
+                ];
+                let rotation_x = ((rots[0] as i16) << 2) | (((rots[3] >> 0) & 0b11) as i16) << 10;
+                let rotation_y = ((rots[1] as i16) << 2) | (((rots[3] >> 2) & 0b11) as i16) << 10;
+                let rotation_z = ((rots[2] as i16) << 2) | (((rots[3] >> 4) & 0b11) as i16) << 10;
+
+                rotations.push(Rotation {
+                    x: rotation_x,
+                    y: rotation_y,
+                    z: rotation_z,
+                });
+
+                current_offset += 4;
+            }
+
+            frames.push(AnimationFrame {
+                coordinates_shift,
+                rotations,
+            });
+        }
+
+        animations.push(Animation {
+            frame_count,
+            bone_count,
+            frames,
+        });
+    }
+
+    AnimationData {
+        animation_count,
+        animations,
     }
 }
 
@@ -415,19 +601,35 @@ fn load_faces(data: &[u8], offset: u32, count: u32) -> Vec<Face> {
     faces
 }
 
-fn find_all_offsets(data: &[u8], pattern: u32) -> Vec<usize> {
-    let pattern_bytes: [u8; 4] = pattern.to_le_bytes(); // Convert the target value to a little-endian byte array
-    let mut offsets = Vec::new();
+fn load_skin_data(data: &[u8], offset: u32, count: u32) -> Vec<Skin> {
+    let mut skins = Vec::with_capacity(count as usize);
 
-    for i in 0..(data.len() - 3) {
-        // Loop through the data, ensuring we don't go out of bounds
-        if &data[i..i + 4] == pattern_bytes {
-            offsets.push(i); // Add the offset to the results vector
-        }
+    for i in 0..count {
+        let base_offset = (offset as usize) + (i as usize) * 8; // Each skin-object is 8 bytes
+
+        // Read the first vertex index (SHORT)
+        let first_vertex_index = u16::from_le_bytes([data[base_offset], data[base_offset + 1]]);
+
+        // Read the number of vertices (SHORT)
+        let vertex_count = u16::from_le_bytes([data[base_offset + 2], data[base_offset + 3]]);
+
+        // Read the Bone ID (SHORT)
+        let bone_id = u16::from_le_bytes([data[base_offset + 4], data[base_offset + 5]]);
+
+        // Read the unknown field (SHORT)
+        let unknown = u16::from_le_bytes([data[base_offset + 6], data[base_offset + 7]]);
+
+        skins.push(Skin {
+            first_vertex_index,
+            vertex_count,
+            bone_id,
+            unknown,
+        });
     }
 
-    offsets
+    skins
 }
+
 fn create_obj<P: AsRef<Path>>(model: Model, output_path: P) -> io::Result<()> {
     let mut file = File::create(output_path)?;
 
@@ -474,11 +676,196 @@ fn create_obj<P: AsRef<Path>>(model: Model, output_path: P) -> io::Result<()> {
 
     Ok(())
 }
+
+fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> {
+    let mut root = Root {
+        accessors: Vec::new(),
+        animations: Vec::new(),
+        buffers: Vec::new(),
+        buffer_views: Vec::new(),
+        meshes: Vec::new(),
+        nodes: Vec::new(),
+        skins: Vec::new(),
+        scenes: vec![json::Scene {
+            nodes: vec![],
+            name: Some("Scene".to_string()),
+            extensions: Void,
+            extras: Void,
+        }],
+        extensions_used: Void,
+        extensions_required: Void,
+        extensions: Void,
+        extras: Void,
+        names: Void,
+    };
+
+    // Convert vertices to buffer
+    let mut vertex_data: Vec<f32> = Vec::new();
+    for vertex in &model.vertices {
+        vertex_data.push(vertex.x as f32);
+        vertex_data.push(vertex.y as f32);
+        vertex_data.push(vertex.z as f32);
+    }
+
+    let buffer_length = (vertex_data.len() * std::mem::size_of::<f32>()) as u64;
+    let buffer = json::Buffer {
+        byte_length: buffer_length.into(),
+        uri: Some(
+            "data:application/octet-stream;base64,".to_owned() + &base64::encode(&vertex_data),
+        ),
+        extensions: Void,
+        extras: Void,
+        name: Void,
+    };
+
+    let buffer_index = Index::new(0);
+    root.buffers.push(buffer);
+
+    let buffer_view = json::buffer::View {
+        buffer: buffer_index,
+        byte_length: buffer_length.into(),
+        byte_offset: Void,
+        byte_stride: Void,
+        name: Void,
+        target: Some(Checked::Valid(json::buffer::Target::ArrayBuffer)),
+        extensions: Void,
+        extras: Void,
+    };
+    let buffer_view_index = Index::new(0);
+    root.buffer_views.push(buffer_view);
+
+    let accessor = json::Accessor {
+        buffer_view: Some(buffer_view_index),
+        byte_offset: Some(0),
+        count: model.vertices.len() as u64,
+        component_type: Checked::Valid(json::accessor::GenericComponentType::F32),
+        type_: Checked::Valid(json::accessor::Type::Vec3),
+        name: Some("vertices".to_string()),
+        normalized: false,
+        min: Void,
+        max: Void,
+        sparse: Void,
+        extensions: Void,
+        extras: Void,
+    };
+    let accessor_index = Index::new(0);
+    root.accessors.push(accessor);
+
+    // Convert faces to GLTF indices
+    let mut indices: Vec<u32> = Vec::new();
+    for face in &model.faces {
+        indices.push(face.vertices[0] as u32);
+        indices.push(face.vertices[1] as u32);
+        indices.push(face.vertices[2] as u32);
+        if face.vertices[3] != 0 {
+            indices.push(face.vertices[2] as u32);
+            indices.push(face.vertices[3] as u32);
+        }
+    }
+
+    let indices_length = (indices.len() * std::mem::size_of::<u32>()) as u64;
+    let indices_buffer_view = json::buffer::View {
+        buffer: buffer_index,
+        byte_length: indices_length.into(),
+        byte_offset: Void,
+        byte_stride: Void,
+        name: Void,
+        target: Some(Checked::Valid(json::buffer::Target::ElementArrayBuffer)),
+        extensions: Void,
+        extras: Void,
+    };
+    let indices_buffer_view_index = Index::new(1);
+    root.buffer_views.push(indices_buffer_view);
+
+    let indices_accessor = json::Accessor {
+        buffer_view: Some(indices_buffer_view_index),
+        byte_offset: Some(0),
+        count: indices.len() as u64,
+        component_type: Checked::Valid(json::accessor::GenericComponentType::U32),
+        type_: Checked::Valid(json::accessor::Type::Scalar),
+        name: Some("indices".to_string()),
+        normalized: false,
+        min: Void,
+        max: Void,
+        sparse: Void,
+        extensions: Void,
+        extras: Void,
+    };
+    let indices_accessor_index = Index::new(1);
+    root.accessors.push(indices_accessor);
+
+    // Create a mesh with the vertices and indices
+    let mesh = json::Mesh {
+        primitives: vec![json::mesh::Primitive {
+            attributes: {
+                let mut map = BTreeMap::new();
+                map.insert(
+                    Checked::Valid(json::mesh::Semantic::Positions),
+                    accessor_index,
+                );
+                map
+            },
+            indices: Some(indices_accessor_index),
+            material: Void,
+            mode: Checked::Valid(json::mesh::Mode::Triangles),
+            targets: Void,
+            extensions: Void,
+            extras: Void,
+        }],
+        weights: Void,
+        name: Some("mesh".to_string()),
+        extensions: Void,
+        extras: Void,
+    };
+    let mesh_index = Index::new(0);
+    root.meshes.push(mesh);
+
+    // Add bones (nodes) to GLTF
+    for (i, bone) in model.bones.iter().enumerate() {
+        let node = json::Node {
+            mesh: Some(mesh_index),
+            skin: Void,
+            translation: Some([0.0, 0.0, 0.0]), // This should be set according to bone transformations
+            rotation: Void,
+            scale: Void,
+            children: Some(Vec::new()), // Initially set as empty
+            name: Some(format!("Bone_{}", i)),
+            camera: Void,
+            extensions: Void,
+            extras: Void,
+            matrix: Void,
+            weights: Void,
+        };
+        let node_index = Index::new(i as u32);
+        root.nodes.push(node);
+    }
+
+    // Create skin for bones
+    let skin = json::Skin {
+        inverse_bind_matrices: Void, // This would contain the inverse bind matrices if needed
+        joints: root.nodes.iter().map(|_| Index::new(0)).collect(), // This should map to actual node indices
+        skeleton: Some(Index::new(0)),
+        name: Some("skin".to_string()),
+        extensions: Void,
+        extras: Void,
+    };
+    root.skins.push(skin);
+
+    // TODO: Add code to convert texture animations and animation data to GLTF animation objects.
+
+    // Write the GLTF file
+    let mut file = File::create(output_path)?;
+    serde_json::to_writer_pretty(&mut file, &root)?;
+
+    Ok(())
+}
+
 fn main() -> io::Result<()> {
     let data = include_bytes!("d001.mch");
 
     let header = read_header(data);
     let model = load_model(data, header.model_data_offset);
-    create_obj(model, "output.obj")?;
+
+    export_gltf(&model, "output.gltf")?;
     Ok(())
 }
