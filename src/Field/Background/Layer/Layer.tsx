@@ -1,5 +1,5 @@
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
-import { AdditiveBlending, CanvasTexture, ClampToEdgeWrapping, DoubleSide, NearestFilter, NoBlending, NormalBlending, RGBAFormat, Sprite, SpriteMaterial, SubtractiveBlending, Texture, TextureLoader } from "three";
+import { AdditiveBlending, CanvasTexture, ClampToEdgeWrapping, DoubleSide, NearestFilter, NoBlending, NormalBlending, RGBAFormat, Sprite, SpriteMaterial, SubtractiveBlending, Texture, TextureLoader, Vector3 } from "three";
 import { FieldData } from "../../Field";
 import { useMemo, useState } from "react";
 import { numberToFloatingPoint } from "../../../utils";
@@ -28,19 +28,30 @@ const Layer = ({ tiles, tilesTexture }: LayerProps) => {
   const camera = useThree(({ camera }) => camera);
 
   const character = useThree(({ scene }) => scene.getObjectByName('character'));
-  
+
+  const planePosition = useMemo(() => {
+    const direction = camera.getWorldDirection(new Vector3());
+    const lerpValue = numberToFloatingPoint(tiles[0].Z);
+    const nearFarDistance = camera.near + lerpValue * (camera.far - camera.near);
+    return camera.position.clone().add(direction.multiplyScalar(nearFarDistance * 0.1));
+  }, [camera, tiles]);
+
   const [isAbove, setIsAbove] = useState(false);
   useFrame(() => {
     if (!character) {
       return;
     }
 
-    const y = character.position.y * 4096;
-    setIsAbove(y > tiles[0].Z);
+    setIsAbove(planePosition.y < character.position.y)
   })
 
+  const STATE = 0;
+
   const textures = useMemo(() => {
-    return tiles.map(({ X, Y, Z, index, isBlended, blendType }) => {
+    return tiles.map(({ X, Y, Z, index, isBlended, blendType, state }) => {
+      if (state !== STATE) {
+        return null;
+      }
       const texture = tilesTexture.clone();
 
       // Calculate the column and row based on index
@@ -56,8 +67,9 @@ const Layer = ({ tiles, tilesTexture }: LayerProps) => {
       return (
         <sprite
           key={`${Z}-${index}`}
-          position={[X, -Y, -1]}
-          scale={[TILE_SIZE + 1, TILE_SIZE + 1, 1]}
+          position={[X + TILE_SIZE / 2, -Y - TILE_SIZE / 2, -2]}
+          scale={[TILE_SIZE, TILE_SIZE, 1]}
+          layers={isAbove ? 2 : 1}
         >
           <spriteMaterial
             map={texture}
@@ -67,10 +79,10 @@ const Layer = ({ tiles, tilesTexture }: LayerProps) => {
         </sprite>
       );
     });
-  }, [textureHeightInTiles, textureWidthInTiles, tiles, tilesTexture]);
+  }, [isAbove, textureHeightInTiles, textureWidthInTiles, tiles, tilesTexture]);
 
   return (
-    <group position={[0,0,numberToFloatingPoint(tiles[0].Z)]}>
+    <group position={[0,0,0]}>
       {textures}
     </group>
   );

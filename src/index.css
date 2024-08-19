@@ -36,12 +36,21 @@ body,
   place-content: center;
   place-items: center;
   width: 100vw !important;
-  height: calc(100vw / (320 / 240)) !important;
+  height: calc(100vw / (320 / 224)) !important;
 }
 
 .canvas canvas {
-  aspect-ratio: 320 / 240;
+  aspect-ratio: 320 / 224;
   width: 100% !important;
   height: 100% !important;
   object-fit: contain;
+}
+
+.debug {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 999;
+  padding: 0.5rem;
+  color: lightgreen;
 }

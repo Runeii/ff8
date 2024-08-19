@@ -29,21 +29,15 @@ const Field = ({ data, setField, setCharacterPosition }: FieldProps) => {
       gl.clear()
       gl.autoClear = false;
       gl.clearDepth();
-      orthoCamera.layers.disable(0);
-      orthoCamera.layers.enable(1);
-      orthoCamera.layers.disable(2);
+      orthoCamera.layers.set(1);
       gl.render(scene, orthoCamera);
       
       gl.clearDepth();
-      perspectiveCamera.layers.enable(0);
-      perspectiveCamera.layers.disable(1);
-      perspectiveCamera.layers.disable(2);
+      perspectiveCamera.layers.set(0);
       gl.render(scene, perspectiveCamera);
 
       gl.clearDepth();
-      orthoCamera.layers.disable(0);
-      orthoCamera.layers.disable(1);
-      orthoCamera.layers.enable(2);
+      orthoCamera.layers.set(2);
       gl.render(scene, orthoCamera);
     }, 1);
 

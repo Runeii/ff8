@@ -7,7 +7,7 @@ import Character from './Character/Character'
 window.debug = {} as Record<string, string>;
 
 export default function App() {
-  const [field, setField] = useState('dotown3a')
+  const [field, setField] = useState('dotown2a')
   const [characterPosition, setCharacterPosition] = useState({
     x: 94,
     y: 386,
@@ -26,9 +26,9 @@ export default function App() {
   return (
     <>
     <Canvas camera={{
-      aspect: 320 / 240,
+      aspect: 320 / 224,
       near: 0.001,
-      far: 1000,
+      far: 40,
     }} className="canvas" >
       <ambientLight />
       <Suspense>
@@ -36,7 +36,7 @@ export default function App() {
         <Field id={field} setField={setField} setCharacterPosition={setCharacterPosition} />
       </Suspense>
     </Canvas>
-    <div>
+    <div className="debug"> 
       {Object.values(strings).map((value, index) => (
         <div key={index}>{value}</div>
       ))}

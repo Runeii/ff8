@@ -47,7 +47,7 @@ const WalkMesh = ({ setCharacterPosition, setSceneBoundingBox, walkmesh }: WalkM
         <mesh key={index} name="walkmesh-triangle" geometry={geometry} onClick={(e) => {
           setCharacterPosition(e.point)
         }}>
-          <meshBasicMaterial wireframe color={0x0000ff}transparent opacity={0.5}side={DoubleSide} />
+          <meshBasicMaterial color={0x0000ff}transparent opacity={0.5}side={DoubleSide} />
         </mesh>
       ))}
     </group>

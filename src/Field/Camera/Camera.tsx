@@ -13,8 +13,8 @@ type CameraProps = {
 }
 
 const Camera = ({ backgroundPanRef, backgroundDetails, cameras, sceneBoundingBox }: CameraProps) => {
-  // NOTES: 320 x 240 (224?) is standard map size
-  const initialCameraPosition = useThree(({ camera }) => {
+  // NOTES: 320 x 224 is standard map size
+  const centreCameraRotation = useThree(({ camera }) => {
     const {camera_axis,camera_position,camera_zoom} = cameras[0];
     const camAxisX = vectorToFloatingPoint(camera_axis[0])
     const camAxisY = vectorToFloatingPoint(camera_axis[1]).negate();
@@ -37,26 +37,25 @@ const Camera = ({ backgroundPanRef, backgroundDetails, cameras, sceneBoundingBox
     camera.up.set(camAxisY.x, camAxisY.y, camAxisY.z);
     camera.position.set(tx, ty, tz);
     camera.lookAt(lookAtTarget);
-
     
-    (camera as PerspectiveCamera).fov = (2 * Math.atan(240.0/(2.0 * camera_zoom))) * 57.29577951;
+    (camera as PerspectiveCamera).fov = (2 * Math.atan(224.0/(2.0 * camera_zoom))) * 57.29577951;
     camera.updateProjectionMatrix();
 
-    return camera.position.clone();
+    return camera.rotation.clone();
   });
 
   const safePanZone = useMemo(() => {
     const box = sceneBoundingBox.clone();
 
     const visibleWidth = (320 / backgroundDetails.width);
-    const visibleHeight = (240 / backgroundDetails.height);
+    const visibleHeight = (224 / backgroundDetails.height);
 
     const halfScreenWidthBuffer = (visibleWidth / 2);
     const halfScreenHeightBuffer = (visibleHeight / 2);
 
     const boxXLength = box.max.x - box.min.x;
     const boxXAdjustment = Math.min(boxXLength * 0.5, boxXLength * halfScreenWidthBuffer);
-    
+
     const boxYLength = box.max.y - box.min.y;
     const boxYAdjustment = Math.min(boxYLength * 0.5, boxYLength * halfScreenHeightBuffer);
 
@@ -84,7 +83,7 @@ const Camera = ({ backgroundPanRef, backgroundDetails, cameras, sceneBoundingBox
   screenRight.set(0, 0, 0).crossVectors(camera.up, cameraDirection).normalize();
   screenUp.copy(camera.up).normalize();
 
-  useFrame(() => {
+  useFrame(({scene}) => {
     if (!camera && !character) {
       return;
     }
@@ -100,20 +99,31 @@ const Camera = ({ backgroundPanRef, backgroundDetails, cameras, sceneBoundingBox
     const x = inverseLerpSymmetric(min.x, max.x, character.position.x);
     const y = inverseLerpSymmetric(min.y, max.y, character.position.y);
 
-    backgroundPanRef.current.x = clamp(x, -1, 1);
-    backgroundPanRef.current.y = clamp(y, -1, 1);
+    const offsetX = clamp(x, -1, 1);
+    const offsetY = clamp(y, -1, 1);
+    window.debug['offsetX'] = `Offset X: ${offsetX}`;
+    window.debug['offsetY'] = `Offset Y: ${offsetY}`;
+    //const offsetY = clamp(y, -1, 1);
 
-    const xModifier = backgroundDetails.width / -35;
-    const yModifier = backgroundDetails.height / 10;
-    const xPan = (sceneBoundingBox.max.x - sceneBoundingBox.min.x) / xModifier;
-    const yPan = (sceneBoundingBox.max.y - sceneBoundingBox.min.y) / yModifier;
+    // Synchronise BG pan
+    backgroundPanRef.current.x = offsetX
+    backgroundPanRef.current.y = offsetY
 
-    const pannedPosition = initialCameraPosition.clone()
-      .addScaledVector(screenRight, backgroundPanRef.current.x * xPan)
-      .addScaledVector(screenUp, backgroundPanRef.current.y * yPan);
+    camera.lookAt(character.position);
+)
+    // horizontal?
+    //top right
+    //0 1
+    // camera.rotation.y = centreCameraRotation.y + 0.078;
+    // camera.rotation.x = centreCameraRotation.x + 0.2; 
+    
+    //bottom left
+    //0 -1
 
-      camera.position.copy(pannedPosition);
-  });
+    camera.rotation.y = centreCameraRotation.y + 0.15;
+    //camera.rotation.x = centreCameraRotation.x - 0.24; 
+
+  })
 
   return null;
 }

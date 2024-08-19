@@ -82,7 +82,7 @@ const Character = ({ position }: CharacterProps) => {
     };
   }, []);
 
-  useFrame(({camera, scene}) => {
+  useFrame(({camera, scene, clock}) => {
     const walkmesh = scene.getObjectByName('walkmesh') as Group | undefined;
 
     if (!playerRef.current || !walkmesh) {
@@ -90,8 +90,7 @@ const Character = ({ position }: CharacterProps) => {
     }
 
     const player = playerRef.current;
-    const speed = 0.008;
-
+    const speed = clock.getDelta() * 100;
 
     camera.getWorldDirection(forwardVector);
     forwardVector.normalize();
