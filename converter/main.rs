@@ -1,3 +1,4 @@
+use crate::json::extras::Void;
 use base64;
 use byteorder::{LittleEndian, ReadBytesExt};
 use gltf::json::{self, validation::Checked, Index, Root};
@@ -7,7 +8,6 @@ use std::convert::TryInto;
 use std::fs::File;
 use std::io::{self, Cursor, Write};
 use std::path::Path;
-use json::extras::Void
 #[repr(C)]
 #[derive(Debug, Clone)]
 pub struct Header {
@@ -689,14 +689,14 @@ fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> 
         scenes: vec![json::Scene {
             nodes: vec![],
             name: Some("Scene".to_string()),
-            extensions: Void,
-            extras: Void,
+            extensions: Void {},
+            extras: Void {},
         }],
-        extensions_used: Void,
-        extensions_required: Void,
-        extensions: Void,
-        extras: Void,
-        names: Void,
+        extensions_used: Void {},
+        extensions_required: Void {},
+        extensions: Void {},
+        extras: Void {},
+        names: Void {},
     };
 
     // Convert vertices to buffer
@@ -713,9 +713,9 @@ fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> 
         uri: Some(
             "data:application/octet-stream;base64,".to_owned() + &base64::encode(&vertex_data),
         ),
-        extensions: Void,
-        extras: Void,
-        name: Void,
+        extensions: Void {},
+        extras: Void {},
+        name: Void {},
     };
 
     let buffer_index = Index::new(0);
@@ -724,12 +724,12 @@ fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> 
     let buffer_view = json::buffer::View {
         buffer: buffer_index,
         byte_length: buffer_length.into(),
-        byte_offset: Void,
-        byte_stride: Void,
-        name: Void,
+        byte_offset: Void {},
+        byte_stride: Void {},
+        name: Void {},
         target: Some(Checked::Valid(json::buffer::Target::ArrayBuffer)),
-        extensions: Void,
-        extras: Void,
+        extensions: Void {},
+        extras: Void {},
     };
     let buffer_view_index = Index::new(0);
     root.buffer_views.push(buffer_view);
@@ -742,11 +742,11 @@ fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> 
         type_: Checked::Valid(json::accessor::Type::Vec3),
         name: Some("vertices".to_string()),
         normalized: false,
-        min: Void,
-        max: Void,
-        sparse: Void,
-        extensions: Void,
-        extras: Void,
+        min: Void {},
+        max: Void {},
+        sparse: Void {},
+        extensions: Void {},
+        extras: Void {},
     };
     let accessor_index = Index::new(0);
     root.accessors.push(accessor);
@@ -767,12 +767,12 @@ fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> 
     let indices_buffer_view = json::buffer::View {
         buffer: buffer_index,
         byte_length: indices_length.into(),
-        byte_offset: Void,
-        byte_stride: Void,
-        name: Void,
+        byte_offset: Void {},
+        byte_stride: Void {},
+        name: Void {},
         target: Some(Checked::Valid(json::buffer::Target::ElementArrayBuffer)),
-        extensions: Void,
-        extras: Void,
+        extensions: Void {},
+        extras: Void {},
     };
     let indices_buffer_view_index = Index::new(1);
     root.buffer_views.push(indices_buffer_view);
@@ -785,11 +785,11 @@ fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> 
         type_: Checked::Valid(json::accessor::Type::Scalar),
         name: Some("indices".to_string()),
         normalized: false,
-        min: Void,
-        max: Void,
-        sparse: Void,
-        extensions: Void,
-        extras: Void,
+        min: Void {},
+        max: Void {},
+        sparse: Void {},
+        extensions: Void {},
+        extras: Void {},
     };
     let indices_accessor_index = Index::new(1);
     root.accessors.push(indices_accessor);
@@ -806,16 +806,16 @@ fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> 
                 map
             },
             indices: Some(indices_accessor_index),
-            material: Void,
+            material: Void {},
             mode: Checked::Valid(json::mesh::Mode::Triangles),
-            targets: Void,
-            extensions: Void,
-            extras: Void,
+            targets: Void {},
+            extensions: Void {},
+            extras: Void {},
         }],
-        weights: Void,
+        weights: Void {},
         name: Some("mesh".to_string()),
-        extensions: Void,
-        extras: Void,
+        extensions: Void {},
+        extras: Void {},
     };
     let mesh_index = Index::new(0);
     root.meshes.push(mesh);
@@ -824,17 +824,17 @@ fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> 
     for (i, bone) in model.bones.iter().enumerate() {
         let node = json::Node {
             mesh: Some(mesh_index),
-            skin: Void,
+            skin: Void {},
             translation: Some([0.0, 0.0, 0.0]), // This should be set according to bone transformations
-            rotation: Void,
-            scale: Void,
+            rotation: Void {},
+            scale: Void {},
             children: Some(Vec::new()), // Initially set as empty
             name: Some(format!("Bone_{}", i)),
-            camera: Void,
-            extensions: Void,
-            extras: Void,
-            matrix: Void,
-            weights: Void,
+            camera: Void {},
+            extensions: Void {},
+            extras: Void {},
+            matrix: Void {},
+            weights: Void {},
         };
         let node_index = Index::new(i as u32);
         root.nodes.push(node);
@@ -842,12 +842,12 @@ fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> 
 
     // Create skin for bones
     let skin = json::Skin {
-        inverse_bind_matrices: Void, // This would contain the inverse bind matrices if needed
+        inverse_bind_matrices: Void {},
         joints: root.nodes.iter().map(|_| Index::new(0)).collect(), // This should map to actual node indices
         skeleton: Some(Index::new(0)),
         name: Some("skin".to_string()),
-        extensions: Void,
-        extras: Void,
+        extensions: Void {},
+        extras: Void {},
     };
     root.skins.push(skin);
 
