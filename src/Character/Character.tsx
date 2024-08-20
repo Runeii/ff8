@@ -90,7 +90,7 @@ const Character = ({ position }: CharacterProps) => {
     }
 
     const player = playerRef.current;
-    const speed = clock.getDelta() * 100;
+    const speed = 0.004;
 
     camera.getWorldDirection(forwardVector);
     forwardVector.normalize();

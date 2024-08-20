@@ -7,7 +7,7 @@ import Character from './Character/Character'
 window.debug = {} as Record<string, string>;
 
 export default function App() {
-  const [field, setField] = useState('dotown2a')
+  const [field, setField] = useState('dotown3a')
   const [characterPosition, setCharacterPosition] = useState({
     x: 94,
     y: 386,
