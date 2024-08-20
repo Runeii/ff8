@@ -633,6 +633,8 @@ fn load_skin_data(data: &[u8], offset: u32, count: u32) -> Vec<Skin> {
 fn create_obj<P: AsRef<Path>>(model: Model, output_path: P) -> io::Result<()> {
     let mut file = File::create(output_path)?;
 
+    writeln!(file, "mtllib unused.mtl")?;
+    writeln!(file, "g")?;
     // Write the vertices with adjusted scaling and axis reordering
     for vertex in &model.vertices {
         writeln!(
@@ -677,195 +679,12 @@ fn create_obj<P: AsRef<Path>>(model: Model, output_path: P) -> io::Result<()> {
     Ok(())
 }
 
-fn export_gltf<P: AsRef<Path>>(model: &Model, output_path: P) -> io::Result<()> {
-    let mut root = Root {
-        accessors: Vec::new(),
-        animations: Vec::new(),
-        buffers: Vec::new(),
-        buffer_views: Vec::new(),
-        meshes: Vec::new(),
-        nodes: Vec::new(),
-        skins: Vec::new(),
-        scenes: vec![json::Scene {
-            nodes: vec![],
-            name: Some("Scene".to_string()),
-            extensions: Void {},
-            extras: Void {},
-        }],
-        extensions_used: Void {},
-        extensions_required: Void {},
-        extensions: Void {},
-        extras: Void {},
-        names: Void {},
-    };
-
-    // Convert vertices to buffer
-    let mut vertex_data: Vec<f32> = Vec::new();
-    for vertex in &model.vertices {
-        vertex_data.push(vertex.x as f32);
-        vertex_data.push(vertex.y as f32);
-        vertex_data.push(vertex.z as f32);
-    }
-
-    let buffer_length = (vertex_data.len() * std::mem::size_of::<f32>()) as u64;
-    let buffer = json::Buffer {
-        byte_length: buffer_length.into(),
-        uri: Some(
-            "data:application/octet-stream;base64,".to_owned() + &base64::encode(&vertex_data),
-        ),
-        extensions: Void {},
-        extras: Void {},
-        name: Void {},
-    };
-
-    let buffer_index = Index::new(0);
-    root.buffers.push(buffer);
-
-    let buffer_view = json::buffer::View {
-        buffer: buffer_index,
-        byte_length: buffer_length.into(),
-        byte_offset: Void {},
-        byte_stride: Void {},
-        name: Void {},
-        target: Some(Checked::Valid(json::buffer::Target::ArrayBuffer)),
-        extensions: Void {},
-        extras: Void {},
-    };
-    let buffer_view_index = Index::new(0);
-    root.buffer_views.push(buffer_view);
-
-    let accessor = json::Accessor {
-        buffer_view: Some(buffer_view_index),
-        byte_offset: Some(0),
-        count: model.vertices.len() as u64,
-        component_type: Checked::Valid(json::accessor::GenericComponentType::F32),
-        type_: Checked::Valid(json::accessor::Type::Vec3),
-        name: Some("vertices".to_string()),
-        normalized: false,
-        min: Void {},
-        max: Void {},
-        sparse: Void {},
-        extensions: Void {},
-        extras: Void {},
-    };
-    let accessor_index = Index::new(0);
-    root.accessors.push(accessor);
-
-    // Convert faces to GLTF indices
-    let mut indices: Vec<u32> = Vec::new();
-    for face in &model.faces {
-        indices.push(face.vertices[0] as u32);
-        indices.push(face.vertices[1] as u32);
-        indices.push(face.vertices[2] as u32);
-        if face.vertices[3] != 0 {
-            indices.push(face.vertices[2] as u32);
-            indices.push(face.vertices[3] as u32);
-        }
-    }
-
-    let indices_length = (indices.len() * std::mem::size_of::<u32>()) as u64;
-    let indices_buffer_view = json::buffer::View {
-        buffer: buffer_index,
-        byte_length: indices_length.into(),
-        byte_offset: Void {},
-        byte_stride: Void {},
-        name: Void {},
-        target: Some(Checked::Valid(json::buffer::Target::ElementArrayBuffer)),
-        extensions: Void {},
-        extras: Void {},
-    };
-    let indices_buffer_view_index = Index::new(1);
-    root.buffer_views.push(indices_buffer_view);
-
-    let indices_accessor = json::Accessor {
-        buffer_view: Some(indices_buffer_view_index),
-        byte_offset: Some(0),
-        count: indices.len() as u64,
-        component_type: Checked::Valid(json::accessor::GenericComponentType::U32),
-        type_: Checked::Valid(json::accessor::Type::Scalar),
-        name: Some("indices".to_string()),
-        normalized: false,
-        min: Void {},
-        max: Void {},
-        sparse: Void {},
-        extensions: Void {},
-        extras: Void {},
-    };
-    let indices_accessor_index = Index::new(1);
-    root.accessors.push(indices_accessor);
-
-    // Create a mesh with the vertices and indices
-    let mesh = json::Mesh {
-        primitives: vec![json::mesh::Primitive {
-            attributes: {
-                let mut map = BTreeMap::new();
-                map.insert(
-                    Checked::Valid(json::mesh::Semantic::Positions),
-                    accessor_index,
-                );
-                map
-            },
-            indices: Some(indices_accessor_index),
-            material: Void {},
-            mode: Checked::Valid(json::mesh::Mode::Triangles),
-            targets: Void {},
-            extensions: Void {},
-            extras: Void {},
-        }],
-        weights: Void {},
-        name: Some("mesh".to_string()),
-        extensions: Void {},
-        extras: Void {},
-    };
-    let mesh_index = Index::new(0);
-    root.meshes.push(mesh);
-
-    // Add bones (nodes) to GLTF
-    for (i, bone) in model.bones.iter().enumerate() {
-        let node = json::Node {
-            mesh: Some(mesh_index),
-            skin: Void {},
-            translation: Some([0.0, 0.0, 0.0]), // This should be set according to bone transformations
-            rotation: Void {},
-            scale: Void {},
-            children: Some(Vec::new()), // Initially set as empty
-            name: Some(format!("Bone_{}", i)),
-            camera: Void {},
-            extensions: Void {},
-            extras: Void {},
-            matrix: Void {},
-            weights: Void {},
-        };
-        let node_index = Index::new(i as u32);
-        root.nodes.push(node);
-    }
-
-    // Create skin for bones
-    let skin = json::Skin {
-        inverse_bind_matrices: Void {},
-        joints: root.nodes.iter().map(|_| Index::new(0)).collect(), // This should map to actual node indices
-        skeleton: Some(Index::new(0)),
-        name: Some("skin".to_string()),
-        extensions: Void {},
-        extras: Void {},
-    };
-    root.skins.push(skin);
-
-    // TODO: Add code to convert texture animations and animation data to GLTF animation objects.
-
-    // Write the GLTF file
-    let mut file = File::create(output_path)?;
-    serde_json::to_writer_pretty(&mut file, &root)?;
-
-    Ok(())
-}
-
 fn main() -> io::Result<()> {
-    let data = include_bytes!("d001.mch");
+    let data = include_bytes!("d000.mch");
 
     let header = read_header(data);
     let model = load_model(data, header.model_data_offset);
 
-    export_gltf(&model, "output.gltf")?;
+    create_obj(model, "output/d000.obj")?;
     Ok(())
 }
