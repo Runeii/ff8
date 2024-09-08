@@ -128,6 +128,7 @@ const Character = ({ position }: CharacterProps) => {
       player.position.add(direction);
       player.position.addScaledVector(upVector, closest.point.dot(upVector) + -(CHARACTER_HEIGHT / 2) - player.position.dot(upVector));
     }
+
   });
   
 

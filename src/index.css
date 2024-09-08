@@ -36,13 +36,13 @@ body,
   place-content: center;
   place-items: center;
   width: 100vw !important;
-  height: calc(100vw / (320 / 224)) !important;
 }
 
 .canvas canvas {
   aspect-ratio: 320 / 224;
   width: 100% !important;
   height: 100% !important;
+  max-height: 80vh;
   object-fit: contain;
 }
 

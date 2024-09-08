@@ -19,6 +19,10 @@ const entrance = exits[initialField]?.[0] || {
 
 export default function App() {
   const [field, setField] = useState(initialField)
+
+  useEffect(() => {
+    window.history.pushState({}, '', `?field=${field}`);
+  }, [field])
   const [characterPosition, setCharacterPosition] = useState(entrance)
 
   const [strings, setStrings] = useState({})

@@ -41,7 +41,7 @@ const Field = ({ data, setField, setCharacterPosition }: FieldProps) => {
       gl.render(scene, orthoCamera);
     }, 1);
 
-  const backgroundPanRef = useRef<{x: number, y: number}>({x: 0, y: 0});
+  const backgroundPanRef = useRef<{x: number, y: number, width: number, height: number}>({x: 0, y: 0, width: 0, height: 0});
 
   return (
     <>

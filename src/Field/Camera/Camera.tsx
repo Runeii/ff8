@@ -12,9 +12,67 @@ type CameraProps = {
   sceneBoundingBox: Box3
 }
 
+const calculateRotation = (x: number, unitRange: number, fov: number, midpointRotation: number) => {
+  // Calculate the midpoint of the unit range
+  const midpoint = unitRange / 2;
+
+  // Calculate the total rotation range proportional to the FOV
+  // (The value of 0.037 used here is based on your examples and can be adjusted if necessary)
+  const rotationRange = fov * 0.037; // This factor is derived from the examples you provided
+
+  // The rotation difference from the midpoint to unit 0 or max unit is half of the rotation range
+  const rotationAtExtreme = rotationRange / 2;
+
+  // Calculate the slope (m)
+  const m = rotationAtExtreme / midpoint;
+
+  // Calculate the rotation at the given unit (x)
+  const rotation = m * (x - midpoint) + midpointRotation;
+
+  return rotation;
+}
+const calculateUnitFromRotation = (
+  rotation: number,          // The desired rotation
+  unitRange: number,         // The total range of units (e.g., 816 or 960)
+  fov: number,               // The field of view (FOV)
+  midpointRotation: number   // The known midpoint rotation
+): number => {
+  // Calculate the midpoint of the unit range
+  const midpoint = unitRange / 2;
+
+  // Calculate the total rotation range proportional to the FOV
+  const rotationRange = fov * 0.037; // Use the same scaling factor from the previous function
+
+  // The rotation difference from the midpoint to unit 0 or max unit is half of the rotation range
+  const rotationAtExtreme = rotationRange / 2;
+
+  // Calculate the slope (m)
+  const m = rotationAtExtreme / midpoint;
+
+  // Calculate the unit (x) for the given rotation
+  const x = ((rotation - midpointRotation) / m) + midpoint;
+
+  return x;
+}
+
+function lookAtWithClamp(
+  camera: PerspectiveCamera, 
+  targetPosition: Vector3, 
+  maxY: number, 
+): void {
+  const startRotation = camera.rotation.clone();
+  camera.lookAt(targetPosition);
+  const newRotation = camera.rotation.clone();
+
+  const clampedY = clamp(newRotation.y, startRotation.y - maxY, startRotation.y + maxY);
+
+  // Apply the clamped rotation values back to the camera
+  camera.rotation.set(startRotation.x, clampedY, startRotation.z);
+}
+
 const Camera = ({ backgroundPanRef, backgroundDetails, cameras, sceneBoundingBox }: CameraProps) => {
   // NOTES: 320 x 224 is standard map size
-  const centreCameraRotation = useThree(({ camera }) => {
+  const [centreCameraPosition,centreCameraTargetPosition] = useThree(({ camera }) => {
     const {camera_axis,camera_position,camera_zoom} = cameras[0];
     const camAxisX = vectorToFloatingPoint(camera_axis[0])
     const camAxisY = vectorToFloatingPoint(camera_axis[1]).negate();
@@ -37,94 +95,87 @@ const Camera = ({ backgroundPanRef, backgroundDetails, cameras, sceneBoundingBox
     camera.up.set(camAxisY.x, camAxisY.y, camAxisY.z);
     camera.position.set(tx, ty, tz);
     camera.lookAt(lookAtTarget);
-    
     (camera as PerspectiveCamera).fov = (2 * Math.atan(224.0/(2.0 * camera_zoom))) * 57.29577951;
     camera.updateProjectionMatrix();
 
-    return camera.rotation.clone();
+    return [camera.position.clone(), lookAtTarget.clone()];
   });
 
-  const safePanZone = useMemo(() => {
-    const box = sceneBoundingBox.clone();
+  const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
 
-    const visibleWidth = (320 / backgroundDetails.width);
-    const visibleHeight = (224 / backgroundDetails.height);
+    /// CURRENT THINKING
+    // * Camera position adjusts for up and down screen movement
+    // * Camera rotates for left and right screen movement
+    // * Z may be adjusted for up and down screen movement somehow (not important atm)
 
-    const halfScreenWidthBuffer = (visibleWidth / 2);
-    const halfScreenHeightBuffer = (visibleHeight / 2);
+    // The x bound passed to clamp needs to be derived from bg width vs screen width and likely zoom
+    // bghall_5 is around 0.28
 
-    const boxXLength = box.max.x - box.min.x;
-    const boxXAdjustment = Math.min(boxXLength * 0.5, boxXLength * halfScreenWidthBuffer);
-
-    const boxYLength = box.max.y - box.min.y;
-    const boxYAdjustment = Math.min(boxYLength * 0.5, boxYLength * halfScreenHeightBuffer);
-
-    box.min.x += boxXAdjustment;
-    box.max.x -= boxXAdjustment;
-  
-    box.min.y += boxYAdjustment;
-    box.max.y -= boxYAdjustment
-    
-    box.min.z = 0;
-    box.max.z = 0;
-
-    return box;
-  }, [backgroundDetails.height, backgroundDetails.width, sceneBoundingBox]);
-
-  const character = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
-  const camera = useThree(({ camera }) => camera as PerspectiveCamera);
-
-  // To avoid re-creating the vectors for camera direction every frame, as camera is static
-  const cameraDirection = new Vector3();
-  const screenRight = new Vector3();
-  const screenUp = new Vector3();
-
-  camera.getWorldDirection(cameraDirection);
-  screenRight.set(0, 0, 0).crossVectors(camera.up, cameraDirection).normalize();
-  screenUp.copy(camera.up).normalize();
-
-  useFrame(({scene}) => {
-    if (!camera && !character) {
+  useFrame(({ camera }) => {
+    if (!player) {
       return;
     }
 
-    if (safePanZone.getSize(new Vector3()).length() === 0) {
-      backgroundPanRef.current.x = 0;
-      backgroundPanRef.current.y = 0;
+    // STARTY / ((BGWIDTH / SCREENWIDTH) * (UNITS / SCREENWIDTH))
+    
+    camera.lookAt(centreCameraTargetPosition);
+
+    // note: in the notes Y is , for ease
+    /* bghall_5
+    const CENTRE_X = -0.0034178633602187773;
+    const ZOOM = 783;
+    const BGWIDTH = 816;
+    const VERTICAL_FOV = 16.280693096101423
+    const SCREENWIDTH = 320;
+    
+    lookAtWithClamp(camera as PerspectiveCamera, player.position, 0.3588755529077225, 0);
+    */
+
+    /* tmmura1
+
+    const ZOOM = 614
+    const SCREENWIDTH = 320
+    const BGWIDTH = 960
+    const CENTRE_X = 0.20109850432971224
+    const VERTICAL_FOV = 20.675380266012716
+
+    */
+    const BGWIDTH = backgroundPanRef.current.width;
+
+    if (BGWIDTH <= 320) {
+      backgroundPanRef.current.x = BGWIDTH / 2;
       return;
     }
 
-    const {min, max} = safePanZone;
+    const midpointRotation = camera.rotation.y;
+    const leftX = calculateRotation(160, BGWIDTH, camera.fov, midpointRotation);
+    const rightX = calculateRotation(BGWIDTH - 160, BGWIDTH, camera.fov, midpointRotation);
 
-    const x = inverseLerpSymmetric(min.x, max.x, character.position.x);
-    const y = inverseLerpSymmetric(min.y, max.y, character.position.y);
+    const range = (rightX - leftX / 2);
 
-    const offsetX = clamp(x, -1, 1);
-    const offsetY = clamp(y, -1, 1);
-    window.debug['offsetX'] = `Offset X: ${offsetX}`;
-    window.debug['offsetY'] = `Offset Y: ${offsetY}`;
-    //const offsetY = clamp(y, -1, 1);
+    lookAtWithClamp(camera as PerspectiveCamera, player.position, range);
 
-    // Synchronise BG pan
-    backgroundPanRef.current.x = offsetX
-    backgroundPanRef.current.y = offsetY
+    backgroundPanRef.current.x = calculateUnitFromRotation(camera.rotation.y, BGWIDTH, camera.fov, midpointRotation);
+  });
 
-    camera.lookAt(character.position);
-)
-    // horizontal?
-    //top right
-    //0 1
-    // camera.rotation.y = centreCameraRotation.y + 0.078;
-    // camera.rotation.x = centreCameraRotation.x + 0.2; 
-    
-    //bottom left
-    //0 -1
+  useFrame(({ camera }) => {
+    const upAxis = new Vector3().copy(camera.up);
+    const forwardAxis = new Vector3();
+    camera.getWorldDirection(forwardAxis);
+    const rightAxis = new Vector3().crossVectors(forwardAxis, upAxis);
 
-    camera.rotation.y = centreCameraRotation.y + 0.15;
-    //camera.rotation.x = centreCameraRotation.x - 0.24; 
+    const multiple = 720 //correct for dollet
+    //const multiple = 300
+    const movementVectorX = rightAxis.clone().multiplyScalar(-window.debug.x / multiple);
+    const movementVectorY = upAxis.clone().multiplyScalar(-window.debug.y / multiple);
+    const movementVectorZ = forwardAxis.clone().multiplyScalar(window.debug.x / multiple / 4);
 
+    camera.position.set(centreCameraPosition.x, centreCameraPosition.y, centreCameraPosition.z);
+
+    //camera.position.add(movementVectorX);
+    //camera.position.add(movementVectorY);
+    //camera.position.add(movementVectorZ);
   })
-
   return null;
 }
 

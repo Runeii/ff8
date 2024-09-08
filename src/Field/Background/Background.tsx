@@ -2,8 +2,9 @@ import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { CanvasTexture, ClampToEdgeWrapping, Mesh, NearestFilter, type OrthographicCamera as OrthographicCameraType, PerspectiveCamera, RGBAFormat, TextureLoader } from "three";
 import type { FieldData } from "../Field";
 import { OrthographicCamera, Plane } from "@react-three/drei";
-import { MutableRefObject, useMemo, useRef, useState } from "react";
+import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import Layer from "./Layer/Layer";
+import { lerp } from "three/src/math/MathUtils.js";
 
 
 type BackgroundProps = {
@@ -27,31 +28,22 @@ const Background = ({ backgroundPanRef, backgroundDetails, tiles }: BackgroundPr
     return [maxX * 2, maxY * 2];
   },[tiles])
 
-  const visibleWidth = (WIDTH / BGWIDTH);
-  const visibleHeight = (HEIGHT / BGHEIGHT);
-
-  const horizontalPan = ((1 - visibleWidth) / 2) * BGWIDTH;
-  const verticalPan = ((1 - visibleHeight) / 2) * BGHEIGHT;
+  useEffect(() => {
+    backgroundPanRef.current.width = BGWIDTH;
+    backgroundPanRef.current.height = BGHEIGHT;
+  }, [BGWIDTH, BGHEIGHT, backgroundPanRef]);
 
   useFrame(() => {
-    if (!cameraRef.current) {
+    if (!cameraRef.current || !planesRef.current) {
       return;
     }
 
-    const offsetX = 0;
-    const adjustmentX = backgroundPanRef.current.x * horizontalPan;
+    const normalizedX = backgroundPanRef.current.x / BGWIDTH;
 
-    const offsetY = 0;
-    const adjustmentY = backgroundPanRef.current.y * verticalPan;
-
-    //cameraRef.current.position.x = adjustmentX;
-    //cameraRef.current.position.y = adjustmentY;
-
-   // planesRef.current.position.x = (horizontalPan * backgroundPanRef.current.x) * -BGWIDTH;
-   // planesRef.current.position.y = (verticalPan * backgroundPanRef.current.y) * -BGHEIGHT;
-
-    window.debug['orthoX'] = `OrthoX centre: ${cameraRef.current.position.x + BGWIDTH / 2}`;
-    window.debug['orthoY'] = `OrthoY centre: ${cameraRef.current.position.y + BGHEIGHT / 2}`;
+    // Pan at 0
+    const start = 240
+    const end = 0 - start;
+   planesRef.current.position.x = lerp(end, start, normalizedX);
   });
 
   const groupedTiles = useMemo(() => {
