@@ -6,13 +6,20 @@ import Character from './Character/Character'
 
 window.debug = {} as Record<string, string>;
 
+window.debug.x = 0;
+window.debug.y = 0;
+
+import exits from '../public/exits.json';
+const initialField = new URLSearchParams(window.location.search).get('field') || 'bghall_5';
+const entrance = exits[initialField]?.[0] || {
+  "x": -0.1180252408915847,
+  "y": 0.24768221206328023,
+  "z": 0.027119858250365655
+}
+
 export default function App() {
-  const [field, setField] = useState('dotown3a')
-  const [characterPosition, setCharacterPosition] = useState({
-    x: 94,
-    y: 386,
-    z: 1120
-  })
+  const [field, setField] = useState(initialField)
+  const [characterPosition, setCharacterPosition] = useState(entrance)
 
   const [strings, setStrings] = useState({})
 
@@ -40,6 +47,12 @@ export default function App() {
       {Object.values(strings).map((value, index) => (
         <div key={index}>{value}</div>
       ))}
+      <input type="number" min={-400} max={400} step={1} value={window.debug.x} onChange={(e) => {
+        window.debug.x = parseInt(e.target.value)
+      }} />
+      <input type="number" min={-400} max={400} step={1} value={window.debug.y} onChange={(e) => {
+        window.debug.y = parseInt(e.target.value)
+      }} />
     </div>
     </>
   )
