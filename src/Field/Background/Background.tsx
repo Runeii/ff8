@@ -1,10 +1,11 @@
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
-import { CanvasTexture, ClampToEdgeWrapping, Mesh, NearestFilter, type OrthographicCamera as OrthographicCameraType, PerspectiveCamera, RGBAFormat, TextureLoader, Vector3 } from "three";
+import { ClampToEdgeWrapping, Mesh, NearestFilter, type OrthographicCamera as OrthographicCameraType, PerspectiveCamera, RGBAFormat, TextureLoader, Vector3 } from "three";
 import type { FieldData } from "../Field";
-import { OrthographicCamera, Plane } from "@react-three/drei";
-import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
+import { OrthographicCamera } from "@react-three/drei";
+import { MutableRefObject, useEffect, useMemo, useRef } from "react";
 import Layer from "./Layer/Layer";
 import { lerp } from "three/src/math/MathUtils.js";
+import { getCameraDirections } from "../../utils";
 
 
 type BackgroundProps = {
@@ -40,13 +41,7 @@ const Background = ({ backgroundPanRef, backgroundDetails, tiles }: BackgroundPr
     
     const camera = cameraRef.current;
 
-    const cameraForward = new Vector3();
-    camera.getWorldDirection(cameraForward);
-
-    // Step 2: Calculate the right vector as the cross product of the camera's up and forward vectors
-    const cameraRight = new Vector3();
-    cameraRight.crossVectors(camera.up, cameraForward).normalize();
-
+    const { rightVector } = getCameraDirections(camera);
     const normalizedX = backgroundPanRef.current.x / BGWIDTH;
     const start = BGWIDTH / 2;
     const end = 0 - start;
@@ -55,7 +50,7 @@ const Background = ({ backgroundPanRef, backgroundDetails, tiles }: BackgroundPr
 
     // Apply the movement to the plane's position
     planesRef.current.position.set(0,0,0)
-    planesRef.current.position.addScaledVector(cameraRight, movementDistance);    
+    planesRef.current.position.addScaledVector(rightVector, movementDistance);    
 
   });
 

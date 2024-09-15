@@ -99,15 +99,16 @@ const Character = ({ position }: CharacterProps) => {
     };
   }, [camera]);
 
-  const hasSetupPositionOnCurrentSceneRef = useRef(false);
-
   useEffect(() => {
+    if (!playerRef.current) {
+      return;
+    }
     console.log('Received a new start position')
-    hasSetupPositionOnCurrentSceneRef.current = false;
+    playerRef.current.userData.hasBeenPlacedInScene = false;
   }, [position]);
 
   useFrame(() => {
-    if (hasSetupPositionOnCurrentSceneRef.current) {
+    if (!playerRef.current || playerRef.current.userData.hasBeenPlacedInScene) {
       return;
     }
 
@@ -128,11 +129,11 @@ const Character = ({ position }: CharacterProps) => {
       newPosition.y,
       newPosition.z
     );
-
-    hasSetupPositionOnCurrentSceneRef.current = true;
+console.log('trigger')
+    playerRef.current.userData.hasBeenPlacedInScene = true;
   });
 
-  useFrame(() => {
+  useFrame(({ clock}) => {
     const walkmesh = scene.getObjectByName("walkmesh");
     const player = playerRef.current;
     const movementFlags = movementFlagsRef.current;
@@ -169,6 +170,7 @@ const Character = ({ position }: CharacterProps) => {
     }
     
     if (direction.lengthSq() > 0) {
+      const delta = clock.getDelta();
       direction.normalize().multiplyScalar(SPEED);
     }
   

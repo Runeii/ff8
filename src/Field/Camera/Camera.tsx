@@ -1,8 +1,8 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { Box3, Euler, Matrix4, Mesh, PerspectiveCamera, Vector3 } from 'three';
-import { inverseLerpSymmetric, vectorToFloatingPoint } from "../../utils";
+import { vectorToFloatingPoint } from "../../utils";
 import { FieldData } from "../Field";
-import { MutableRefObject, useEffect, useMemo, useState } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 import { clamp } from "three/src/math/MathUtils.js";
 
 type CameraProps = {
@@ -56,22 +56,18 @@ function lookAtWithClamp(
   camera: PerspectiveCamera, 
   targetPosition: Vector3, 
   maxY: number, 
-  maxX: number, // Add maxX for vertical panning clamping
 ): void {
   const startRotation = camera.rotation.clone();
   camera.lookAt(targetPosition);
   const newRotation = camera.rotation.clone();
-
+console.log(newRotation.y, startRotation.y - maxY, startRotation.y + maxY);
   const clampedY = clamp(newRotation.y, startRotation.y - maxY, startRotation.y + maxY);
-  const clampedX = clamp(newRotation.x, startRotation.x - maxX, startRotation.x + maxX); // Clamp pitch (vertical rotation)
 
   // Apply the clamped rotation values back to the camera
-  camera.rotation.set(clampedX, clampedY, startRotation.z);
+  camera.rotation.set(startRotation.x, clampedY, startRotation.z);
 }
 
-const Camera = ({ backgroundPanRef, backgroundDetails, cameras, sceneBoundingBox }: CameraProps) => {
-  // NOTES: 320 x 224 is standard map size
-
+const Camera = ({ backgroundPanRef, cameras }: CameraProps) => {
   const [initialCameraPosition, setInitialCameraPosition] = useState(new Vector3());
   const [initialCameraTargetPosition, setInitialCameraTargetPosition] = useState(new Vector3());
 
@@ -108,63 +104,35 @@ const Camera = ({ backgroundPanRef, backgroundDetails, cameras, sceneBoundingBox
 
   const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
 
+
   useFrame(({ camera }) => {
-    if (!player.userData.hasBeenPlacedInScene) {
+    if (!player) {
       return;
     }
     
     camera.lookAt(initialCameraTargetPosition);
+
     const BGWIDTH = backgroundPanRef.current.width;
-    const BGHEIGHT = backgroundPanRef.current.height; // Assuming you have the height for the vertical pan
-
-    const cameraForward = new Vector3();
-    camera.getWorldDirection(cameraForward);
-    
-    const cameraRight = new Vector3();
-    cameraRight.crossVectors(camera.up, cameraForward).normalize();
-        
-    // Step 3: Get the camera's rotation matrix
-    const cameraRotationMatrix = new Matrix4();
-    cameraRotationMatrix.makeRotationFromQuaternion(camera.quaternion);
-
-    // Step 4: Extract the rotation along the camera's right axis
-    const euler = new Euler();
-    euler.setFromRotationMatrix(cameraRotationMatrix, 'XYZ');
-
-    // The rotation along the camera's right axis corresponds to the rotation around the X-axis in local space
-    const eulerX = euler.x;
-
-    // Horizontal camera rotation calculation
-    const midpointRotationY = camera.rotation.y;
-
-    const leftX = calculateRotation(160, BGWIDTH, camera.fov, eulerX);
-    const rightX = calculateRotation(BGWIDTH - 160, BGWIDTH, camera.fov, eulerX);
-    let horizontalRange = (rightX - leftX) / 2;
-  
-    // Vertical camera rotation calculation
-    const midpointRotationX = camera.rotation.x;
-    const topY = calculateRotation(112, BGHEIGHT, camera.fov, midpointRotationX); // Adjust for the vertical FOV
-    const bottomY = calculateRotation(BGHEIGHT - 112, BGHEIGHT, camera.fov, midpointRotationX);
-    let verticalRange = (topY - bottomY) / 2;
 
     if (BGWIDTH <= 320) {
       backgroundPanRef.current.x = BGWIDTH / 2;
-      horizontalRange = 0; // Disable horizontal panning
-    }
-    
-    if (BGHEIGHT <= 224) {
-      backgroundPanRef.current.y = BGHEIGHT / 2; // Center the vertical position
-      verticalRange = 0; // Disable vertical panning
+      return;
     }
 
-    // Update camera rotation
-    lookAtWithClamp(camera as PerspectiveCamera, player.position, horizontalRange, 0);
+    const midpointRotation = camera.rotation.y;
 
-    // Update the camera pan based on its current rotation
-    backgroundPanRef.current.x = calculateUnitFromRotation(camera.rotation.y, BGWIDTH, camera.fov, eulerX);
-    backgroundPanRef.current.y = calculateUnitFromRotation(camera.rotation.x, BGHEIGHT, camera.fov, midpointRotationX);
+    const SCREEN_WIDTH = 320;
+    const HALF_SCREEN_WIDTH = SCREEN_WIDTH / 2;
+    const leftX = calculateRotation(HALF_SCREEN_WIDTH, BGWIDTH, camera.fov, midpointRotation);
+    const rightX = calculateRotation(BGWIDTH - HALF_SCREEN_WIDTH, BGWIDTH, camera.fov, midpointRotation);
 
+    const range = (rightX - leftX / 2);
+
+    lookAtWithClamp(camera as PerspectiveCamera, player.position, range);
+
+    backgroundPanRef.current.x = calculateUnitFromRotation(camera.rotation.y, BGWIDTH, camera.fov, midpointRotation);
   });
+
 
   return null;
 }
