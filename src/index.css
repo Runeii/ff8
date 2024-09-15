@@ -20,6 +20,7 @@ body,
   padding: 0;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 #root {
@@ -27,6 +28,11 @@ body,
   place-content: center;
   place-items: center;
   background-color: black;
+}
+
+.canvas {
+  height: auto !important;
+  aspect-ratio: 320 / 224;
 }
 
 .canvas,

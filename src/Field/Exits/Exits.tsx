@@ -47,6 +47,7 @@ const Exits = ({ exits, setCharacterPosition, setField }: ExitsProps) => {
     
       if (intersects.length > 0) {        
         handleTransition(exit)
+        mesh.userData.hasBeenPlacedInScene = false;
       }
     })
   });

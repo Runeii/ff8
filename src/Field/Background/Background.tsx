@@ -1,5 +1,5 @@
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
-import { CanvasTexture, ClampToEdgeWrapping, Mesh, NearestFilter, type OrthographicCamera as OrthographicCameraType, PerspectiveCamera, RGBAFormat, TextureLoader } from "three";
+import { CanvasTexture, ClampToEdgeWrapping, Mesh, NearestFilter, type OrthographicCamera as OrthographicCameraType, PerspectiveCamera, RGBAFormat, TextureLoader, Vector3 } from "three";
 import type { FieldData } from "../Field";
 import { OrthographicCamera, Plane } from "@react-three/drei";
 import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
@@ -37,13 +37,26 @@ const Background = ({ backgroundPanRef, backgroundDetails, tiles }: BackgroundPr
     if (!cameraRef.current || !planesRef.current) {
       return;
     }
+    
+    const camera = cameraRef.current;
+
+    const cameraForward = new Vector3();
+    camera.getWorldDirection(cameraForward);
+
+    // Step 2: Calculate the right vector as the cross product of the camera's up and forward vectors
+    const cameraRight = new Vector3();
+    cameraRight.crossVectors(camera.up, cameraForward).normalize();
 
     const normalizedX = backgroundPanRef.current.x / BGWIDTH;
-
-    // Pan at 0
-    const start = 240
+    const start = BGWIDTH / 2;
     const end = 0 - start;
-   planesRef.current.position.x = lerp(end, start, normalizedX);
+
+    const movementDistance = lerp(end, start, normalizedX);
+
+    // Apply the movement to the plane's position
+    planesRef.current.position.set(0,0,0)
+    planesRef.current.position.addScaledVector(cameraRight, movementDistance);    
+
   });
 
   const groupedTiles = useMemo(() => {

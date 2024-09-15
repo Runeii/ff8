@@ -42,7 +42,7 @@ const Layer = ({ tiles, tilesTexture }: LayerProps) => {
       return;
     }
 
-    setIsAbove(planePosition.y < character.position.y)
+   // setIsAbove(planePosition.y < character.position.y)
   })
 
   const STATE = 0;

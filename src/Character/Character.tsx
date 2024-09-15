@@ -1,142 +1,196 @@
-import { Box } from "@react-three/drei"
-import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
-import { DoubleSide, Group, Mesh, Raycaster, Vector3 } from "three";
+import { Box } from "@react-three/drei";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { DoubleSide, Mesh, Object3D, Raycaster, Vector3 } from "three";
+import { getCameraDirections } from "../utils";
 
 type CharacterProps = {
   position: {
-    x: number,
-    y: number,
-    z: number
-  }
-}
+    x: number;
+    y: number;
+    z: number;
+  };
+};
+
+export const CHARACTER_HEIGHT = 0.08;
+export const SPEED = 0.004;
 
 const direction = new Vector3();
 
-const forwardVector = new Vector3();
-const rightVector = new Vector3();
-const upVector = new Vector3();
+const handleKeyChange = (movementFlags: any, value: boolean) => (event: KeyboardEvent) => {
+  switch (event.code) {
+    case "ArrowUp":
+    case "KeyW":
+      movementFlags.current.forward = value;
+      break;
+    case "ArrowDown":
+    case "KeyS":
+      movementFlags.current.backward = value;
+      break;
+    case "ArrowLeft":
+    case "KeyA":
+      movementFlags.current.left = value;
+      break;
+    case "ArrowRight":
+    case "KeyD":
+      movementFlags.current.right = value;
+      break;
+  }
+};
 
-export const CHARACTER_HEIGHT = 0.08;
+const raycaster = new Raycaster();
+const getPositionOnWalkmesh = (desiredPosition: Vector3, walkmesh: Object3D, maxDistance?: number) => {
+  let intersects = [];
+  raycaster.set(desiredPosition, new Vector3(0, 0, -1));
+  intersects.push(raycaster.intersectObject(walkmesh, true));
+
+  raycaster.set(desiredPosition, new Vector3(0, 0, 1));
+  intersects.push(raycaster.intersectObject(walkmesh, true));
+
+  intersects = intersects.flat()
+  
+  if (maxDistance) {
+    intersects = intersects.filter((intersect) =>  intersect.distance < maxDistance);
+  }
+
+  if (intersects.length === 0) {
+    return null;
+  }
+
+  const sortedIntersects = intersects.sort((a, b) => {
+    return a.distance - b.distance;
+  });
+
+
+  sortedIntersects[0].point.z += CHARACTER_HEIGHT / 2;
+  return sortedIntersects[0].point;
+}
 
 const Character = ({ position }: CharacterProps) => {
+  const camera = useThree((state) => state.camera);
+  const scene = useThree((state) => state.scene);
+
   const playerRef = useRef<Mesh>();
+  const movementFlagsRef = useRef({
+    forward: false,
+    backward: false,
+    left: false,
+    right: false,
+  });
 
+  const [{forwardVector, rightVector, upVector}, setCameraDirections] = useState(getCameraDirections(camera));
 
-  const [isMovingForward, setIsMovingForward] = useState(false);
-  const [isMovingBackward, setIsMovingBackward] = useState(false);
-  const [isMovingLeft, setIsMovingLeft] = useState(false);
-  const [isMovingRight, setIsMovingRight] = useState(false);
-
-  // Key press handlers
   useEffect(() => {
-    // Key press handlers
-    const handleKeyDown = (event: KeyboardEvent) => {
-      switch (event.code) {
-        case 'ArrowUp':
-        case 'KeyW':
-          setIsMovingForward(true);
-          break;
-        case 'ArrowDown':
-        case 'KeyS':
-          setIsMovingBackward(true);
-          break;
-        case 'ArrowLeft':
-        case 'KeyA':
-          setIsMovingLeft(true);
-          break;
-        case 'ArrowRight':
-        case 'KeyD':
-          setIsMovingRight(true);
-          break;
-      }
-    };
-  
-    const handleKeyUp = (event: KeyboardEvent) => {
-      switch (event.code) {
-        case 'ArrowUp':
-        case 'KeyW':
-          setIsMovingForward(false);
-          break;
-        case 'ArrowDown':
-        case 'KeyS':
-          setIsMovingBackward(false);
-          break;
-        case 'ArrowLeft':
-        case 'KeyA':
-          setIsMovingLeft(false);
-          break;
-        case 'ArrowRight':
-        case 'KeyD':
-          setIsMovingRight(false);
-          break;
-      }
-    };
+    const handleKeyDown = handleKeyChange(movementFlagsRef, true);
+    const handleKeyUp = handleKeyChange(movementFlagsRef, false);
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    const calculateMovementDirections = () => {
+      setCameraDirections(getCameraDirections(camera));
+    }
 
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("keyup", calculateMovementDirections);
+    
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("keyup", calculateMovementDirections);
     };
-  }, []);
+  }, [camera]);
 
-  useFrame(({camera, scene, clock}) => {
-    const walkmesh = scene.getObjectByName('walkmesh') as Group | undefined;
+  const hasSetupPositionOnCurrentSceneRef = useRef(false);
+
+  useEffect(() => {
+    console.log('Received a new start position')
+    hasSetupPositionOnCurrentSceneRef.current = false;
+  }, [position]);
+
+  useFrame(() => {
+    if (hasSetupPositionOnCurrentSceneRef.current) {
+      return;
+    }
+
+    const walkmesh = scene.getObjectByName("walkmesh");
 
     if (!playerRef.current || !walkmesh) {
-      return
+      return;
     }
 
-    const player = playerRef.current;
-    const speed = 0.004;
+    const newPosition = getPositionOnWalkmesh(new Vector3(position.x, position.y, position.z), walkmesh);
+    if (!newPosition) {
+      console.warn('Tried to set character position to an invalid position');
+      return;
+    }
+    
+    playerRef.current.position.set(
+      newPosition.x,
+      newPosition.y,
+      newPosition.z
+    );
 
-    camera.getWorldDirection(forwardVector);
-    forwardVector.normalize();
-    rightVector.crossVectors(forwardVector, camera.up).normalize();
-    upVector.crossVectors(rightVector, forwardVector).normalize();
+    hasSetupPositionOnCurrentSceneRef.current = true;
+  });
+
+  useFrame(() => {
+    const walkmesh = scene.getObjectByName("walkmesh");
+    const player = playerRef.current;
+    const movementFlags = movementFlagsRef.current;
+
+    if (!player || !walkmesh) {
+      return;
+    }
 
     direction.set(0, 0, 0);
-    if (isMovingForward) {
-      direction.add(forwardVector);
+    
+    let characterForwardsVector = upVector;
+
+    if (Math.abs(forwardVector.z) < 0.9) {
+      forwardVector.setZ(0)
+      rightVector.setZ(0)
+
+      characterForwardsVector = forwardVector;
     }
-    if (isMovingBackward) {
-      direction.sub(forwardVector);
+
+    if (movementFlags.forward) {
+      direction.add(characterForwardsVector);
     }
-    if (isMovingLeft) {
+
+    if (movementFlags.backward) {
+      direction.sub(characterForwardsVector);
+    }
+
+    if (movementFlags.left) {
       direction.sub(rightVector);
     }
-    if (isMovingRight) {
+
+    if (movementFlags.right) {
       direction.add(rightVector);
+    }
+    
+    if (direction.lengthSq() > 0) {
+      direction.normalize().multiplyScalar(SPEED);
     }
   
     if (direction.lengthSq() === 0) {
       return;
     }
 
-    direction.normalize().multiplyScalar(speed);
-
-    const potentialPosition = player.position.clone().add(direction);
-
-    const raycaster = new Raycaster(potentialPosition, upVector.negate());
-    const intersects = raycaster.intersectObject(walkmesh, true);
-
-    if (intersects.length > 0) {
-      const closest = intersects[0];
-      
-      player.position.add(direction);
-      player.position.addScaledVector(upVector, closest.point.dot(upVector) + -(CHARACTER_HEIGHT / 2) - player.position.dot(upVector));
+    const desiredPosition = player.position.clone().add(direction);
+    const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT);
+   
+    if (!newPosition) {
+      return
     }
 
+    player.position.set(newPosition.x, newPosition.y, newPosition.z);
   });
-  
 
   return (
-    <Box args={[0.03, 0.03, CHARACTER_HEIGHT]} position={[position.x, position.y, position.z + CHARACTER_HEIGHT / 2]} ref={playerRef}  name="character">
+    <Box args={[0.03, 0.03, CHARACTER_HEIGHT]} ref={playerRef} name="character">
       <meshBasicMaterial color={0xff0000} side={DoubleSide} />
     </Box>
-  )
-}
+  );
+};
 
 export default Character;
