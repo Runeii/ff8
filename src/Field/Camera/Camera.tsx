@@ -138,7 +138,7 @@ const Camera = ({ backgroundPanRef, cameras }: CameraProps) => {
     const rangeX = (rightX - leftX) / 2;
     
     const midpointRotationY = camera.rotation.x;
-    const SCREEN_HEIGHT = 240;
+    const SCREEN_HEIGHT = 224;
     const HALF_SCREEN_HEIGHT = SCREEN_HEIGHT / 2;
     const horizontalFov = getHorizontalFov(camera as PerspectiveCamera);
     const rotationRangeY = horizontalFov * 0.037;
@@ -151,7 +151,7 @@ const Camera = ({ backgroundPanRef, cameras }: CameraProps) => {
     backgroundPanRef.current.x = BGWIDTH <= 320 ? BGWIDTH / 2 : calculateUnitFromRotation(camera.rotation.y, BGWIDTH, rotationRangeX, midpointRotationX);
 
     backgroundPanRef.current.y = BGHEIGHT / 2;
-    // backgroundPanRef.current.y = BGHEIGHT <= 240 ? BGHEIGHT / 2 : calculateUnitFromRotation(camera.rotation.x, BGHEIGHT, rotationRangeY, midpointRotationY);
+    backgroundPanRef.current.y = BGHEIGHT <= 224 ? BGHEIGHT / 2 : calculateUnitFromRotation(camera.rotation.x, BGHEIGHT, rotationRangeY, midpointRotationY);
   });
 
 
