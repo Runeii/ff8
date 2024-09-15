@@ -13,7 +13,7 @@ type CharacterProps = {
 };
 
 export const CHARACTER_HEIGHT = 0.08;
-export const SPEED = 0.004;
+export const SPEED = 0.04;
 
 const direction = new Vector3();
 

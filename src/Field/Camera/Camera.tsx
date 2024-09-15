@@ -3,7 +3,7 @@ import { Box3, Euler, Matrix4, Mesh, PerspectiveCamera, Vector3 } from 'three';
 import { vectorToFloatingPoint } from "../../utils";
 import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useState } from "react";
-import { clamp } from "three/src/math/MathUtils.js";
+import { clamp, MathUtils } from "three/src/math/MathUtils.js";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<{ x: number, y: number }>;
@@ -12,10 +12,25 @@ type CameraProps = {
   sceneBoundingBox: Box3
 }
 
-const calculateRotation = (x: number, unitRange: number, fov: number, midpointRotation: number) => {
-  const midpoint = unitRange / 2;
+const getHorizontalFov = (camera: PerspectiveCamera) => {
+  // Assuming you have an existing camera
+  const verticalFov = camera.fov; // Vertical FOV in degrees
+  const aspectRatio = camera.aspect; // Typically canvas width divided by height
 
-  const rotationRange = fov * 0.037;
+  // Convert vertical FOV to radians
+  const verticalFovRadians = MathUtils.degToRad(verticalFov);
+
+  // Calculate horizontal FOV in radians
+  const horizontalFovRadians = 2 * Math.atan(Math.tan(verticalFovRadians / 2) * aspectRatio);
+
+  // Convert horizontal FOV to degrees
+  const horizontalFov = MathUtils.radToDeg(horizontalFovRadians);
+
+  return horizontalFov;
+}
+
+const calculateRotation = (x: number, unitRange: number, rotationRange: number, midpointRotation: number) => {
+  const midpoint = unitRange / 2;
 
   // The rotation difference from the midpoint to unit 0 or max unit is half of the rotation range
   const rotationAtExtreme = rotationRange / 2;
@@ -31,14 +46,11 @@ const calculateRotation = (x: number, unitRange: number, fov: number, midpointRo
 const calculateUnitFromRotation = (
   rotation: number,
   unitRange: number,
-  fov: number,
+  rotationRange: number,
   midpointRotation: number 
 ): number => {
   // Calculate the midpoint of the unit range
   const midpoint = unitRange / 2;
-
-  // Calculate the total rotation range proportional to the FOV
-  const rotationRange = fov * 0.037; // Use the same scaling factor from the previous function
 
   // The rotation difference from the midpoint to unit 0 or max unit is half of the rotation range
   const rotationAtExtreme = rotationRange / 2;
@@ -55,16 +67,18 @@ const calculateUnitFromRotation = (
 function lookAtWithClamp(
   camera: PerspectiveCamera, 
   targetPosition: Vector3, 
+  maxX: number, 
   maxY: number, 
 ): void {
   const startRotation = camera.rotation.clone();
   camera.lookAt(targetPosition);
   const newRotation = camera.rotation.clone();
-console.log(newRotation.y, startRotation.y - maxY, startRotation.y + maxY);
-  const clampedY = clamp(newRotation.y, startRotation.y - maxY, startRotation.y + maxY);
+
+  const clampedX = clamp(newRotation.y, startRotation.y - maxX, startRotation.y + maxX);
+  const clampedY = clamp(newRotation.x, startRotation.x - maxY, startRotation.x + maxY);
 
   // Apply the clamped rotation values back to the camera
-  camera.rotation.set(startRotation.x, clampedY, startRotation.z);
+  camera.rotation.set(startRotation.x, clampedX, startRotation.z);
 }
 
 const Camera = ({ backgroundPanRef, cameras }: CameraProps) => {
@@ -104,7 +118,6 @@ const Camera = ({ backgroundPanRef, cameras }: CameraProps) => {
 
   const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
 
-
   useFrame(({ camera }) => {
     if (!player) {
       return;
@@ -113,24 +126,32 @@ const Camera = ({ backgroundPanRef, cameras }: CameraProps) => {
     camera.lookAt(initialCameraTargetPosition);
 
     const BGWIDTH = backgroundPanRef.current.width;
+    const BGHEIGHT = backgroundPanRef.current.height;
 
-    if (BGWIDTH <= 320) {
-      backgroundPanRef.current.x = BGWIDTH / 2;
-      return;
-    }
-
-    const midpointRotation = camera.rotation.y;
-
+    const midpointRotationX = camera.rotation.y;
     const SCREEN_WIDTH = 320;
     const HALF_SCREEN_WIDTH = SCREEN_WIDTH / 2;
-    const leftX = calculateRotation(HALF_SCREEN_WIDTH, BGWIDTH, camera.fov, midpointRotation);
-    const rightX = calculateRotation(BGWIDTH - HALF_SCREEN_WIDTH, BGWIDTH, camera.fov, midpointRotation);
+    const rotationRangeX = camera.fov * 0.037;
 
-    const range = (rightX - leftX / 2);
+    const leftX = calculateRotation(HALF_SCREEN_WIDTH, BGWIDTH, rotationRangeX, midpointRotationX);
+    const rightX = calculateRotation(BGWIDTH - HALF_SCREEN_WIDTH, BGWIDTH, rotationRangeX, midpointRotationX);
+    const rangeX = (rightX - leftX) / 2;
+    
+    const midpointRotationY = camera.rotation.x;
+    const SCREEN_HEIGHT = 240;
+    const HALF_SCREEN_HEIGHT = SCREEN_HEIGHT / 2;
+    const horizontalFov = getHorizontalFov(camera as PerspectiveCamera);
+    const rotationRangeY = horizontalFov * 0.037;
+    const leftY = calculateRotation(HALF_SCREEN_HEIGHT, BGHEIGHT, rotationRangeY, midpointRotationY);
+    const rightY = calculateRotation(BGHEIGHT - HALF_SCREEN_HEIGHT, BGHEIGHT, rotationRangeY, midpointRotationY);
+    const rangeY = (rightY - leftY) / 2;
 
-    lookAtWithClamp(camera as PerspectiveCamera, player.position, range);
+    lookAtWithClamp(camera as PerspectiveCamera, player.position, rangeX, rangeY);
 
-    backgroundPanRef.current.x = calculateUnitFromRotation(camera.rotation.y, BGWIDTH, camera.fov, midpointRotation);
+    backgroundPanRef.current.x = BGWIDTH <= 320 ? BGWIDTH / 2 : calculateUnitFromRotation(camera.rotation.y, BGWIDTH, rotationRangeX, midpointRotationX);
+
+    backgroundPanRef.current.y = BGHEIGHT / 2;
+    // backgroundPanRef.current.y = BGHEIGHT <= 240 ? BGHEIGHT / 2 : calculateUnitFromRotation(camera.rotation.x, BGHEIGHT, rotationRangeY, midpointRotationY);
   });
 
 

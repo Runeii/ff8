@@ -41,16 +41,23 @@ const Background = ({ backgroundPanRef, backgroundDetails, tiles }: BackgroundPr
     
     const camera = cameraRef.current;
 
-    const { rightVector } = getCameraDirections(camera);
+    const { rightVector, upVector } = getCameraDirections(camera);
     const normalizedX = backgroundPanRef.current.x / BGWIDTH;
-    const start = BGWIDTH / 2;
-    const end = 0 - start;
+    const startX = BGWIDTH / 2;
+    const endX = 0 - startX;
+    console.log(BGWIDTH, WIDTH)
+    const movementDistanceX = lerp(endX, startX, normalizedX);
 
-    const movementDistance = lerp(end, start, normalizedX);
+    const normalizedY = backgroundPanRef.current.y / BGHEIGHT;
+    const startY = BGHEIGHT / 2;
+    const endY = 0 - startY;
+
+    const movementDistanceY = lerp(endY, startY, normalizedY);
 
     // Apply the movement to the plane's position
     planesRef.current.position.set(0,0,0)
-    planesRef.current.position.addScaledVector(rightVector, movementDistance);    
+    planesRef.current.position.addScaledVector(rightVector, movementDistanceX);    
+    planesRef.current.position.addScaledVector(upVector, movementDistanceY);    
 
   });
 
