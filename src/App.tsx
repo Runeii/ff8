@@ -6,8 +6,10 @@ import Character from './Character/Character'
 
 window.debug = {} as Record<string, string>;
 
-window.debug.x = 0;
-window.debug.y = 0;
+window.debug.bgX = 0;
+window.debug.camX = 0;
+window.debug.bgY = 0;
+window.debug.camY = 0;
 
 import exits from '../public/exits.json';
 const initialField = new URLSearchParams(window.location.search).get('field') || 'bghall_5';
@@ -51,11 +53,32 @@ export default function App() {
       {Object.values(strings).map((value, index) => (
         <div key={index}>{value}</div>
       ))}
-      <input type="number" min={-400} max={400} step={1} value={window.debug.x} onChange={(e) => {
-        window.debug.x = parseInt(e.target.value)
+      Camera:
+      <input type="range" min={-100} max={100} step={1} value={window.debug.camX} onChange={(e) => {
+        window.debug.camX = parseInt(e.target.value)
       }} />
-      <input type="number" min={-400} max={400} step={1} value={window.debug.y} onChange={(e) => {
-        window.debug.y = parseInt(e.target.value)
+      <input type="number" min={-100} max={100} step={1} value={window.debug.camX} onChange={(e) => {
+        window.debug.camX = parseInt(e.target.value)
+      }} />
+
+      <input type="range" min={-100} max={100} step={1} value={window.debug.camY} onChange={(e) => {
+        window.debug.camY = parseInt(e.target.value)
+      }} />
+      <input type="number" min={-100} max={100} step={1} value={window.debug.camY} onChange={(e) => {
+        window.debug.camY = parseInt(e.target.value)
+      }} />
+      BG:
+      <input type="range" min={-100} max={100} step={1} value={window.debug.bgX} onChange={(e) => {
+        window.debug.bgX = parseInt(e.target.value)
+      }} />
+      <input type="number" min={-100} max={100} step={1} value={window.debug.bgX} onChange={(e) => {
+        window.debug.bgX = parseInt(e.target.value)
+      }} />
+      <input type="range" min={-100} max={100} step={1} value={window.debug.bgY} onChange={(e) => {
+        window.debug.bgY = parseInt(e.target.value)
+      }} />
+      <input type="number" min={-100} max={100} step={1} value={window.debug.bgY} onChange={(e) => {
+        window.debug.bgY = parseInt(e.target.value)
       }} />
     </div>
     </>

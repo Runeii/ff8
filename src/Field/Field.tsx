@@ -45,8 +45,8 @@ const Field = ({ data, setField, setCharacterPosition }: FieldProps) => {
 
   return (
     <>
-      <Camera backgroundPanRef={backgroundPanRef} backgroundDetails={data.backgroundDetails} cameras={data.cameras} sceneBoundingBox={sceneBoundingBox} />
-      <Background backgroundPanRef={backgroundPanRef} backgroundDetails={data.backgroundDetails} tiles={data.tiles} />
+      <Camera backgroundPanRef={backgroundPanRef} data={data} />
+      <Background backgroundPanRef={backgroundPanRef} data={data} />
       <WalkMesh setCharacterPosition={setCharacterPosition} setSceneBoundingBox={setSceneBoundingBox} walkmesh={data.walkmesh} />
       <Exits exits={data.exits} setField={setField} setCharacterPosition={setCharacterPosition} />
       <ambientLight intensity={0.5} />

@@ -10,11 +10,12 @@ import { getCameraDirections } from "../../utils";
 
 type BackgroundProps = {
   backgroundPanRef: MutableRefObject<{ x: number, y: number }>;
-  backgroundDetails: FieldData["backgroundDetails"];
-  tiles: FieldData["tiles"];
+  data: FieldData;
 };
 
-const Background = ({ backgroundPanRef, backgroundDetails, tiles }: BackgroundProps) => {
+const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
+  const { backgroundDetails, limits, tiles } = data;
+
   const perspectiveCamera = useThree(({ camera }) => camera as PerspectiveCamera);
   const planesRef = useRef<Mesh>(null);
   const cameraRef = useRef<OrthographicCameraType>(null);
@@ -42,23 +43,10 @@ const Background = ({ backgroundPanRef, backgroundDetails, tiles }: BackgroundPr
     const camera = cameraRef.current;
 
     const { rightVector, upVector } = getCameraDirections(camera);
-    const normalizedX = backgroundPanRef.current.x / BGWIDTH;
-    const startX = BGWIDTH / 2;
-    const endX = 0 - startX;
-    console.log(BGWIDTH, WIDTH)
-    const movementDistanceX = lerp(endX, startX, normalizedX);
 
-    const normalizedY = backgroundPanRef.current.y / BGHEIGHT;
-    const startY = BGHEIGHT / 2;
-    const endY = 0 - startY;
-
-    const movementDistanceY = lerp(endY, startY, normalizedY);
-
-    // Apply the movement to the plane's position
     planesRef.current.position.set(0,0,0)
-    planesRef.current.position.addScaledVector(rightVector, movementDistanceX);    
-    planesRef.current.position.addScaledVector(upVector, movementDistanceY);    
-
+    planesRef.current.position.addScaledVector(rightVector, backgroundPanRef.current.x);    
+    planesRef.current.position.addScaledVector(upVector, backgroundPanRef.current.y);
   });
 
   const groupedTiles = useMemo(() => {
