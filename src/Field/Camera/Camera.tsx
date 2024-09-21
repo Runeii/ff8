@@ -90,7 +90,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     
     const topBoundary = limits.cameraRange.top + limits.screenRange.bottom / 2;
     const bottomBoundary = limits.cameraRange.bottom - limits.screenRange.bottom / 2;
-console.log(limits.cameraRange.top, limits.screenRange.bottom)
+
     if (topBoundary <= panY && panY <= bottomBoundary) {
       backgroundPanRef.current.y = panY;
       camera.rotation.x = desiredCameraRotation.x;

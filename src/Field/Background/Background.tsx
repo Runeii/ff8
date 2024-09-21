@@ -23,18 +23,6 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
   const WIDTH = 320
   const HEIGHT = 224
 
-  const [BGWIDTH, BGHEIGHT] = useMemo(() => {
-    //Find the largest X and Y values in tiles, using Math.abs to handle negative values
-    const maxX = Math.max(...tiles.map(tile => Math.abs(tile.X)));
-    const maxY = Math.max(...tiles.map(tile => Math.abs(tile.Y)));
-    return [maxX * 2, maxY * 2];
-  },[tiles])
-
-  useEffect(() => {
-    backgroundPanRef.current.width = BGWIDTH;
-    backgroundPanRef.current.height = BGHEIGHT;
-  }, [BGWIDTH, BGHEIGHT, backgroundPanRef]);
-
   useFrame(() => {
     if (!cameraRef.current || !planesRef.current) {
       return;
@@ -45,8 +33,8 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
     const { rightVector, upVector } = getCameraDirections(camera);
 
     planesRef.current.position.set(0,0,0)
-    planesRef.current.position.addScaledVector(rightVector, backgroundPanRef.current.x);    
-    planesRef.current.position.addScaledVector(upVector, backgroundPanRef.current.y);
+    planesRef.current.position.x = backgroundPanRef.current.x;
+    planesRef.current.position.y = backgroundPanRef.current.y;
   });
 
   const groupedTiles = useMemo(() => {
