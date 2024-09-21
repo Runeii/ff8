@@ -1,10 +1,9 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { Box3, Mesh, PerspectiveCamera, Vector3 } from 'three';
-import { vectorToFloatingPoint } from "../../utils";
+import {  Mesh, PerspectiveCamera, Vector3 } from 'three';
+import { getCameraDirections, vectorToFloatingPoint } from "../../utils";
 import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useState } from "react";
-import { calculateHorizontalFOV, calculatePitchFromTranslationWithDepth, calculateTranslationsWithDepth, calculateYawFromTranslationWithDepth} from "./backgroundCamera";
-import { calculateParallax } from "./perspectiveCameraUtils";
+import { calculateParallax, calculateTotalRotationInDirection } from "./perspectiveCameraUtils";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<{ x: number, y: number }>;
@@ -14,8 +13,8 @@ type CameraProps = {
 const Camera = ({ backgroundPanRef, data }: CameraProps) => {
   const { backgroundDetails, cameras, limits } = data;
 
-  const [initialCameraPosition, setInitialCameraPosition] = useState(new Vector3());
   const [initialCameraTargetPosition, setInitialCameraTargetPosition] = useState(new Vector3());
+
 
   const camera = useThree(({ camera }) => camera as PerspectiveCamera);
   useEffect(() => {
@@ -43,10 +42,9 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     camera.lookAt(lookAtTarget);
     (camera as PerspectiveCamera).fov = (2 * Math.atan(224.0/(2.0 * camera_zoom))) * 57.29577951;
     camera.updateProjectionMatrix();
-
-    setInitialCameraPosition(camera.position.clone());
+    backgroundPanRef.current = { x: 0, y: 0 };
     setInitialCameraTargetPosition(lookAtTarget.clone());
-  }, [camera, cameras]);
+  }, [backgroundPanRef, camera, cameras]);
 
   const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
 
@@ -58,19 +56,33 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
 
     camera.lookAt(initialCameraTargetPosition);
     const initialCameraRotation = camera.rotation.clone();
-
+    const { upVector, rightVector } = getCameraDirections(camera);
+//console.log(rightVector)
     camera.lookAt(player.position);
   
     const backgroundDepth = cameras[0].camera_zoom;
+
+    const horizontalRotation = calculateTotalRotationInDirection(
+      initialCameraRotation,
+      camera.rotation,
+      rightVector,
+      camera.up
+    )
+
     const panX = calculateParallax(
-      camera.rotation.y,
-      initialCameraRotation.y,
+      horizontalRotation,
       backgroundDepth
     );
 
+    const verticalRotation = calculateTotalRotationInDirection(
+      initialCameraRotation,
+      camera.rotation,
+      upVector,
+      camera.up
+    )
+
     const panY = -1 * calculateParallax(
-      camera.rotation.x,
-      initialCameraRotation.x,
+      verticalRotation,
       backgroundDepth
     );
 
@@ -83,19 +95,18 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
 
     if (leftBoundary <= panX && panX <= rightBoundary) {
       backgroundPanRef.current.x = panX;
-      camera.rotation.y = desiredCameraRotation.y;
+
     } else {
-      console.log('x out of bounds', panX)
+      //console.log('x out of bounds', panX)
     }
-    
+
     const topBoundary = limits.cameraRange.top + limits.screenRange.bottom / 2;
     const bottomBoundary = limits.cameraRange.bottom - limits.screenRange.bottom / 2;
 
     if (topBoundary <= panY && panY <= bottomBoundary) {
       backgroundPanRef.current.y = panY;
-      camera.rotation.x = desiredCameraRotation.x;
     } else {
-      console.log('y out of bounds', panY)
+   //   console.log('y out of bounds', panY)
     }
     
   });

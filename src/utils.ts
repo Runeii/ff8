@@ -31,7 +31,6 @@ export const getCameraDirections = (
   camera: Camera,
   forwardVector: Vector3 = new Vector3(),
   rightVector: Vector3 = new Vector3(),
-  upVector: Vector3 = new Vector3()
 ): CameraDirections => {
 
   // Step 1: Get the forward direction in world space (mutates forwardVector)
