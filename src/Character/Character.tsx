@@ -1,8 +1,8 @@
 import { Box } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { DoubleSide, Mesh, Object3D, Raycaster, Vector3 } from "three";
-import { getCameraDirections } from "../utils";
+import { getCameraDirections } from "../Field/Camera/cameraUtils";
 
 type CharacterProps = {
   position: {
@@ -78,24 +78,16 @@ const Character = ({ position }: CharacterProps) => {
     right: false,
   });
 
-  const [{forwardVector, rightVector, upVector}, setCameraDirections] = useState(getCameraDirections(camera));
-
   useEffect(() => {
     const handleKeyDown = handleKeyChange(movementFlagsRef, true);
     const handleKeyUp = handleKeyChange(movementFlagsRef, false);
 
-    const calculateMovementDirections = () => {
-      setCameraDirections(getCameraDirections(camera));
-    }
-
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-    window.addEventListener("keyup", calculateMovementDirections);
     
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
-      window.removeEventListener("keyup", calculateMovementDirections);
     };
   }, [camera]);
 
@@ -119,6 +111,7 @@ const Character = ({ position }: CharacterProps) => {
     }
 
     const newPosition = getPositionOnWalkmesh(new Vector3(position.x, position.y, position.z), walkmesh);
+
     if (!newPosition) {
       console.warn('Tried to set character position to an invalid position');
       return;
@@ -129,11 +122,11 @@ const Character = ({ position }: CharacterProps) => {
       newPosition.y,
       newPosition.z
     );
-console.log('trigger')
+
     playerRef.current.userData.hasBeenPlacedInScene = true;
   });
 
-  useFrame(({ clock}) => {
+  useFrame(() => {
     const walkmesh = scene.getObjectByName("walkmesh");
     const player = playerRef.current;
     const movementFlags = movementFlagsRef.current;
@@ -143,7 +136,8 @@ console.log('trigger')
     }
 
     direction.set(0, 0, 0);
-    
+    const {upVector, forwardVector, rightVector} = getCameraDirections(camera);
+
     let characterForwardsVector = upVector;
 
     if (Math.abs(forwardVector.z) < 0.9) {
@@ -170,7 +164,6 @@ console.log('trigger')
     }
     
     if (direction.lengthSq() > 0) {
-      const delta = clock.getDelta();
       direction.normalize().multiplyScalar(SPEED);
     }
   

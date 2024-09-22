@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Box3, OrthographicCamera, PerspectiveCamera, Vector3 } from 'three';
+import {  OrthographicCamera, PerspectiveCamera, Vector3 } from 'three';
 import WalkMesh from './WalkMesh/WalkMesh';
 
 import type data from '../../public/output/bcgate1a.json';
@@ -16,8 +16,6 @@ type FieldProps = {
 }
 
 const Field = ({ data, setField, setCharacterPosition }: FieldProps) => {
-  const [sceneBoundingBox, setSceneBoundingBox] = useState(new Box3());
-
     const orthoCamera = useThree(({ scene }) => scene.getObjectByName('orthoCamera') as OrthographicCamera);
     useFrame(({ camera, gl, scene }) => {
       const perspectiveCamera = camera as PerspectiveCamera;
@@ -47,7 +45,7 @@ const Field = ({ data, setField, setCharacterPosition }: FieldProps) => {
     <>
       <Camera backgroundPanRef={backgroundPanRef} data={data} />
       <Background backgroundPanRef={backgroundPanRef} data={data} />
-      <WalkMesh setCharacterPosition={setCharacterPosition} setSceneBoundingBox={setSceneBoundingBox} walkmesh={data.walkmesh} />
+      <WalkMesh setCharacterPosition={setCharacterPosition} walkmesh={data.walkmesh} />
       <Exits exits={data.exits} setField={setField} setCharacterPosition={setCharacterPosition} />
       <ambientLight intensity={0.5} />
     </>

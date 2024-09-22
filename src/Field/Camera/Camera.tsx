@@ -1,9 +1,10 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import {  Mesh, PerspectiveCamera, Vector3 } from 'three';
-import { getCameraDirections, vectorToFloatingPoint } from "../../utils";
+import {  Mesh, PerspectiveCamera, Quaternion, Vector3 } from 'three';
+import { vectorToFloatingPoint, WORLD_DIRECTIONS } from "../../utils";
 import { FieldData } from "../Field";
-import { MutableRefObject, useEffect, useState } from "react";
-import { calculateParallax, calculateTotalRotationInDirection } from "./perspectiveCameraUtils";
+import { MutableRefObject, useEffect, useMemo, useState } from "react";
+import { calculateAngleForParallax, calculateParallax, getRotationAngleAroundAxis } from "./cameraUtils";
+import { clamp } from "three/src/math/MathUtils.js";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<{ x: number, y: number }>;
@@ -11,13 +12,18 @@ type CameraProps = {
 }
 
 const Camera = ({ backgroundPanRef, data }: CameraProps) => {
-  const { backgroundDetails, cameras, limits } = data;
+  const { cameras, limits } = data;
 
   const [initialCameraTargetPosition, setInitialCameraTargetPosition] = useState(new Vector3());
 
-
   const camera = useThree(({ camera }) => camera as PerspectiveCamera);
+  const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
+
   useEffect(() => {
+    if (!player.userData.hasBeenPlacedInScene) {
+      return
+    }
+
     const {camera_axis,camera_position,camera_zoom} = cameras[0];
     const camAxisX = vectorToFloatingPoint(camera_axis[0])
     const camAxisY = vectorToFloatingPoint(camera_axis[1]).negate();
@@ -44,71 +50,82 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     camera.updateProjectionMatrix();
     backgroundPanRef.current = { x: 0, y: 0 };
     setInitialCameraTargetPosition(lookAtTarget.clone());
-  }, [backgroundPanRef, camera, cameras]);
+  }, [backgroundPanRef, camera, cameras, player.userData.hasBeenPlacedInScene]);
 
-  const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
+  // Precompute boundaries
+  const leftBoundary = useMemo(
+    () => limits.cameraRange.left + limits.screenRange.right / 2,
+    [limits]
+  );
+  const rightBoundary = useMemo(
+    () => limits.cameraRange.right - limits.screenRange.right / 2,
+    [limits]
+  );
+  const topBoundary = useMemo(
+    () => limits.cameraRange.top + limits.screenRange.bottom / 2,
+    [limits]
+  );
+  const bottomBoundary = useMemo(
+    () => limits.cameraRange.bottom - limits.screenRange.bottom / 2,
+    [limits]
+  );
 
+  // This is the main logic for the camera movement
   useFrame(() => {
     if (!initialCameraTargetPosition) {
       return
     }
-    const previousCameraRotation = camera.rotation.clone();
+
+    if (!player.userData.hasBeenPlacedInScene) {
+      return;
+    }
 
     camera.lookAt(initialCameraTargetPosition);
     const initialCameraRotation = camera.rotation.clone();
-    const { upVector, rightVector } = getCameraDirections(camera);
-//console.log(rightVector)
-    camera.lookAt(player.position);
-  
-    const backgroundDepth = cameras[0].camera_zoom;
+    const initialCameraQuaternion = new Quaternion().setFromEuler(initialCameraRotation);
 
-    const horizontalRotation = calculateTotalRotationInDirection(
-      initialCameraRotation,
-      camera.rotation,
-      rightVector,
+    const { UP, RIGHT } = WORLD_DIRECTIONS;
+
+    camera.lookAt(player.position);
+    const currentCameraQuaternion = new Quaternion().setFromEuler(camera.rotation);
+
+    const yawAngle = getRotationAngleAroundAxis(
+      initialCameraQuaternion,
+      currentCameraQuaternion,
       camera.up
-    )
+    );
+    
+    const pitchAngle = getRotationAngleAroundAxis(
+      initialCameraQuaternion,
+      currentCameraQuaternion,
+      RIGHT
+    );
+
+    const backgroundDepth = data.cameras[0].camera_zoom;
 
     const panX = calculateParallax(
-      horizontalRotation,
-      backgroundDepth
+      yawAngle,
+      backgroundDepth,
     );
 
-    const verticalRotation = calculateTotalRotationInDirection(
-      initialCameraRotation,
-      camera.rotation,
-      upVector,
-      camera.up
-    )
-
-    const panY = -1 * calculateParallax(
-      verticalRotation,
-      backgroundDepth
+    const panY = calculateParallax(
+      -pitchAngle,
+      backgroundDepth,
     );
 
-    const desiredCameraRotation = camera.rotation.clone();
-  
-    camera.rotation.copy(previousCameraRotation);
-  
-    const leftBoundary = limits.cameraRange.left + limits.screenRange.right / 2;
-    const rightBoundary = limits.cameraRange.right - limits.screenRange.right / 2;
-
-    if (leftBoundary <= panX && panX <= rightBoundary) {
-      backgroundPanRef.current.x = panX;
-
-    } else {
-      //console.log('x out of bounds', panX)
-    }
-
-    const topBoundary = limits.cameraRange.top + limits.screenRange.bottom / 2;
-    const bottomBoundary = limits.cameraRange.bottom - limits.screenRange.bottom / 2;
-
-    if (topBoundary <= panY && panY <= bottomBoundary) {
-      backgroundPanRef.current.y = panY;
-    } else {
-   //   console.log('y out of bounds', panY)
-    }
+    camera.rotation.copy(initialCameraRotation);
     
+    const finalPanX = clamp(panX, leftBoundary, rightBoundary);
+    const finalPanY = clamp(panY, topBoundary, bottomBoundary);
+
+    backgroundPanRef.current.x = finalPanX;
+    backgroundPanRef.current.y = finalPanY;
+
+    const yawRotation = new Quaternion().setFromAxisAngle(UP, calculateAngleForParallax(finalPanX, backgroundDepth));
+    camera.quaternion.multiply(yawRotation);
+    
+    const pitchRotation = new Quaternion().setFromAxisAngle(RIGHT, -calculateAngleForParallax(finalPanY, backgroundDepth));
+    camera.quaternion.multiply(pitchRotation);
   });
 
   return null;
