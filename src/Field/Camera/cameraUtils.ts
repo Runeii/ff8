@@ -1,5 +1,6 @@
 import { Camera, Quaternion, Vector3 } from "three";
 import { WORLD_DIRECTIONS } from "../../utils";
+import { FieldData } from "../Field";
 
 export const getRotationAngleAroundAxis = (initialRotation: Quaternion, currentRotation: Quaternion, axis: Vector3) => {
   // Ensure the axis is normalized
@@ -86,3 +87,11 @@ export const getCameraDirections = (camera: Camera) => {
     forwardVector
   };
 };
+
+
+export const getBoundaries = (limits: FieldData['limits']) => ({
+  left: limits.cameraRange.left + limits.screenRange.right / 2,
+  right: limits.cameraRange.right - limits.screenRange.right / 2,
+  top: limits.cameraRange.top + limits.screenRange.bottom / 2,
+  bottom: limits.cameraRange.bottom - limits.screenRange.bottom / 2,
+})

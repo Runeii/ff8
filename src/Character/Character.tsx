@@ -6,7 +6,8 @@ import { getCameraDirections } from "../Field/Camera/cameraUtils";
 import { getPositionOnWalkmesh } from "../utils";
 import { onMovementKeyPress } from "./characterUtils";
 
-export const CHARACTER_HEIGHT = 0.08;
+export const CHARACTER_HEIGHT = 0.06;
+const CHARACTER_WIDTH = 0.02;
 export const SPEED = 0.004;
 
 const direction = new Vector3();
@@ -125,7 +126,7 @@ const Character = ({ position, setHasPlacedCharacter }: CharacterProps) => {
   });
 
   return (
-    <Box args={[0.03, 0.03, CHARACTER_HEIGHT]} ref={playerRef} name="character">
+    <Box args={[CHARACTER_WIDTH, CHARACTER_WIDTH, CHARACTER_HEIGHT]} ref={playerRef} name="character">
       <meshBasicMaterial color={0xff0000} side={DoubleSide} />
     </Box>
   );

@@ -40,7 +40,17 @@ const Field = ({ data, setField }: FieldProps) => {
     gl.render(scene, orthoCamera);
   }, 1);
 
-  const backgroundPanRef = useRef<{x: number, y: number, width: number, height: number}>({x: 0, y: 0, width: 0, height: 0});
+  const backgroundPanRef = useRef<CameraPanAngle>({
+    yaw: 0,
+    pitch: 0,
+    cameraZoom: 0,
+    boundaries: {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    },
+  });
 
   const [characterPosition, setCharacterPosition] = useState(getInitialEntrance(data));
 
@@ -55,7 +65,6 @@ const Field = ({ data, setField }: FieldProps) => {
 
   return (
     <group key={data.id}>
-      <Background backgroundPanRef={backgroundPanRef} data={data} />
       <WalkMesh
         setCharacterPosition={setCharacterPosition}
         setHasPlacedWalkmesh={setHasPlacedWalkmesh}
@@ -63,6 +72,7 @@ const Field = ({ data, setField }: FieldProps) => {
       />
       {hasPlacedWalkmesh && (
         <>
+          <Background backgroundPanRef={backgroundPanRef} data={data} />
           <Character
             position={characterPosition}
             setHasPlacedCharacter={setHasPlacedCharacter}

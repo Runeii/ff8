@@ -1,10 +1,14 @@
-import { useFrame, useLoader, useThree } from "@react-three/fiber";
-import { AdditiveBlending, CanvasTexture, ClampToEdgeWrapping, DoubleSide, NearestFilter, NoBlending, NormalBlending, RGBAFormat, Sprite, SpriteMaterial, SubtractiveBlending, Texture, TextureLoader, Vector3 } from "three";
+import { useFrame, useThree } from "@react-three/fiber";
+import { AdditiveBlending, Group,  NoBlending, NormalBlending, Object3D, OrthographicCamera, SubtractiveBlending, Texture } from "three";
 import { FieldData } from "../../Field";
-import { useMemo, useState } from "react";
-import { numberToFloatingPoint } from "../../../utils";
+import { MutableRefObject, useMemo, useRef, useState } from "react";
+import { calculateParallax } from "../../Camera/cameraUtils";
+import { clamp } from "three/src/math/MathUtils.js";
 
 type LayerProps = {
+  backgroundPanRef: React.MutableRefObject<CameraPanAngle>;
+  cameraZoom: number;
+  playerDepthRef: MutableRefObject<number>;
   tiles: FieldData["tiles"];
   tilesTexture: Texture;
 }
@@ -20,32 +24,60 @@ const BLENDS = {
 const TILE_SIZE = 16;
 const TILES_PER_COLUMN = 64;
 
-const Layer = ({ tiles, tilesTexture }: LayerProps) => {
-  // Calculate the number of columns in the spritesheet
+const Layer = ({ backgroundPanRef, playerDepthRef, tiles, tilesTexture }: LayerProps) => {
   const textureWidthInTiles = tilesTexture.image.width / TILE_SIZE;
   const textureHeightInTiles = TILES_PER_COLUMN;
 
-  const camera = useThree(({ camera }) => camera);
+  const layerRef = useRef<Group & {position: Object3D['position']}>(null);
 
-  const character = useThree(({ scene }) => scene.getObjectByName('character'));
-
-  const planePosition = useMemo(() => {
-    const direction = camera.getWorldDirection(new Vector3());
-    const lerpValue = numberToFloatingPoint(tiles[0].Z);
-    const nearFarDistance = camera.near + lerpValue * (camera.far - camera.near);
-    return camera.position.clone().add(direction.multiplyScalar(nearFarDistance * 0.1));
-  }, [camera, tiles]);
-
-  const [isAbove, setIsAbove] = useState(false);
   useFrame(() => {
-    if (!character) {
+    if (!layerRef.current) {
       return;
     }
 
-   // setIsAbove(planePosition.y < character.position.y)
-  })
+    layerRef.current.position.set(0,0,0)
+
+    const {
+      yaw,
+      pitch,
+      cameraZoom,
+      boundaries
+    } = backgroundPanRef.current;
+
+    if (!boundaries) {
+      return;
+    }
+
+    const panX = calculateParallax(yaw, cameraZoom);
+    const panY = calculateParallax(-pitch, cameraZoom);
+
+    const finalPanX = clamp(panX, boundaries.left, boundaries.right);
+    const finalPanY = clamp(panY, boundaries.top, boundaries.bottom);
+
+    layerRef.current.position.x = finalPanX;
+    layerRef.current.position.y = finalPanY;
+  });
 
   const STATE = 0;
+  const [isAbove, setIsAbove] = useState(false);
+
+  const orthographicCamera = useThree(({ scene }) => scene.getObjectByName('orthoCamera') as OrthographicCamera);
+  useFrame(() => {
+    if (!playerDepthRef.current || !orthographicCamera || !layerRef.current) {
+      return;
+    }
+
+    const normalisedZ = tiles[0].Z / 4096 
+// 2.0, 0.95
+  console.log(normalisedZ, playerDepthRef.current)
+    if (playerDepthRef.current > normalisedZ && !isAbove) {
+      setIsAbove(true);
+      //console.log(tiles[0].Z, 'became above');
+    } else if (playerDepthRef.current < normalisedZ && isAbove) {
+      setIsAbove(false);
+      //console.log(tiles[0].Z, 'became below');
+    }
+  });
 
   const textures = useMemo(() => {
     return tiles.map(({ X, Y, Z, index, isBlended, blendType, state }) => {
@@ -82,7 +114,7 @@ const Layer = ({ tiles, tilesTexture }: LayerProps) => {
   }, [isAbove, textureHeightInTiles, textureWidthInTiles, tiles, tilesTexture]);
 
   return (
-    <group position={[0,0,0]}>
+    <group position={[0,0,tiles[0].Z]} ref={layerRef}>
       {textures}
     </group>
   );
