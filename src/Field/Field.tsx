@@ -1,54 +1,86 @@
-import { useEffect, useRef, useState } from 'react';
-import {  OrthographicCamera, PerspectiveCamera, Vector3 } from 'three';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {  OrthographicCamera, PerspectiveCamera } from 'three';
 import WalkMesh from './WalkMesh/WalkMesh';
 
 import type data from '../../public/output/bcgate1a.json';
-import Exits from './Exits/Exits';
+import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
 import { useFrame, useThree } from '@react-three/fiber';
+import Character from '../Character/Character';
+import { getInitialEntrance } from '../utils';
 export type FieldData = typeof data;
 
 type FieldProps = {
   data: FieldData,
   setField: (fieldId: string) => void,
-  setCharacterPosition: (position: Vector3) => void
 }
 
-const Field = ({ data, setField, setCharacterPosition }: FieldProps) => {
-    const orthoCamera = useThree(({ scene }) => scene.getObjectByName('orthoCamera') as OrthographicCamera);
-    useFrame(({ camera, gl, scene }) => {
-      const perspectiveCamera = camera as PerspectiveCamera;
+const Field = ({ data, setField }: FieldProps) => {
+  const orthoCamera = useThree(({ scene }) => scene.getObjectByName('orthoCamera') as OrthographicCamera);
+  useFrame(({ camera, gl, scene }) => {
+    const perspectiveCamera = camera as PerspectiveCamera;
 
-      if (!orthoCamera) {
-        return;
-      }
+    if (!orthoCamera) {
+      return;
+    }
 
-      gl.clear()
-      gl.autoClear = false;
-      gl.clearDepth();
-      orthoCamera.layers.set(1);
-      gl.render(scene, orthoCamera);
-      
-      gl.clearDepth();
-      perspectiveCamera.layers.set(0);
-      gl.render(scene, perspectiveCamera);
+    gl.clear()
+    gl.autoClear = false;
+    gl.clearDepth();
+    orthoCamera.layers.set(1);
+    gl.render(scene, orthoCamera);
+    
+    gl.clearDepth();
+    perspectiveCamera.layers.set(0);
+    gl.render(scene, perspectiveCamera);
 
-      gl.clearDepth();
-      orthoCamera.layers.set(2);
-      gl.render(scene, orthoCamera);
-    }, 1);
+    gl.clearDepth();
+    orthoCamera.layers.set(2);
+    gl.render(scene, orthoCamera);
+  }, 1);
 
   const backgroundPanRef = useRef<{x: number, y: number, width: number, height: number}>({x: 0, y: 0, width: 0, height: 0});
 
+  const [characterPosition, setCharacterPosition] = useState(getInitialEntrance(data));
+
+  const [hasPlacedWalkmesh, setHasPlacedWalkmesh] = useState(false);
+  const [hasPlacedCharacter, setHasPlacedCharacter] = useState(false);
+
+  const handleTransitionField = useCallback((field: FieldData['id']) => {
+    setHasPlacedCharacter(false);
+    setHasPlacedWalkmesh(false);
+    setField(field);
+  }, [setField]);
+
   return (
-    <>
-      <Camera backgroundPanRef={backgroundPanRef} data={data} />
+    <group key={data.id}>
       <Background backgroundPanRef={backgroundPanRef} data={data} />
-      <WalkMesh setCharacterPosition={setCharacterPosition} walkmesh={data.walkmesh} />
-      <Exits exits={data.exits} setField={setField} setCharacterPosition={setCharacterPosition} />
+      <WalkMesh
+        setCharacterPosition={setCharacterPosition}
+        setHasPlacedWalkmesh={setHasPlacedWalkmesh}
+        walkmesh={data.walkmesh}
+      />
+      {hasPlacedWalkmesh && (
+        <>
+          <Character
+            position={characterPosition}
+            setHasPlacedCharacter={setHasPlacedCharacter}
+          />
+        </>
+      )}
+      {hasPlacedCharacter && (
+        <>
+          <Gateways
+            gateways={data.gateways}
+            setField={handleTransitionField}
+            setCharacterPosition={setCharacterPosition}
+          />
+          <Camera backgroundPanRef={backgroundPanRef} data={data} />
+        </>
+      )}
       <ambientLight intensity={0.5} />
-    </>
+    </group>
   );
 }
 

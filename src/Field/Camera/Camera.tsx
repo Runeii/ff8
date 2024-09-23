@@ -18,11 +18,8 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
 
   const camera = useThree(({ camera }) => camera as PerspectiveCamera);
   const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
-
+console.log('go')
   useEffect(() => {
-    if (!player.userData.hasBeenPlacedInScene) {
-      return
-    }
 
     const {camera_axis,camera_position,camera_zoom} = cameras[0];
     const camAxisX = vectorToFloatingPoint(camera_axis[0])
@@ -50,7 +47,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     camera.updateProjectionMatrix();
     backgroundPanRef.current = { x: 0, y: 0 };
     setInitialCameraTargetPosition(lookAtTarget.clone());
-  }, [backgroundPanRef, camera, cameras, player.userData.hasBeenPlacedInScene]);
+  }, [backgroundPanRef, camera, cameras]);
 
   // Precompute boundaries
   const leftBoundary = useMemo(
@@ -74,10 +71,6 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
   useFrame(() => {
     if (!initialCameraTargetPosition) {
       return
-    }
-
-    if (!player.userData.hasBeenPlacedInScene) {
-      return;
     }
 
     camera.lookAt(initialCameraTargetPosition);

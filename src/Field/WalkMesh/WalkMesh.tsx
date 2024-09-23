@@ -1,14 +1,15 @@
 import type { FieldData } from "../Field";
 import { BufferAttribute, BufferGeometry, DoubleSide, Vector3 } from "three";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { vectorToFloatingPoint } from "../../utils";
 
 type WalkMeshProps = {
   setCharacterPosition: (position: Vector3) => void;
+  setHasPlacedWalkmesh: (value: boolean) => void;
   walkmesh: FieldData["walkmesh"];
 };
 
-const WalkMesh = ({ setCharacterPosition, walkmesh }: WalkMeshProps) => {
+const WalkMesh = ({ setCharacterPosition, setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
   const meshGeometry = useMemo(() => {
     const geometries = walkmesh.flat().map(triangle => {
       const geometry = new BufferGeometry();
@@ -29,6 +30,11 @@ const WalkMesh = ({ setCharacterPosition, walkmesh }: WalkMeshProps) => {
 
     return geometries;
   }, [walkmesh]);
+
+  useEffect(() => {
+    console.log('run')
+    setHasPlacedWalkmesh(true);
+  }, [setHasPlacedWalkmesh]);
 
   return (
     <group name="walkmesh">

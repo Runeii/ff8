@@ -1,5 +1,5 @@
-import { Vector3 } from "three";
-import exits from "./exits";
+import { Object3D, Raycaster, Vector3 } from "three";
+import { FieldData } from "./Field/Field";
 
 export const numberToFloatingPoint = (value: number) => value / 4096;
 
@@ -24,8 +24,36 @@ export const getInitialField = () => {
   return initialField;
 }
 
-export const getInitialEntrance = (initialField: keyof typeof exits) => {
-  const entrance = exits[initialField]?.entrances?.[0]?.destinationPoint ?? { x: 0, y: 0, z: 0 };
+export const getInitialEntrance = (initialField: FieldData) => {
+  const entrance = initialField.gateways[0].destinationPoint;
 
   return vectorToFloatingPoint(entrance);
+}
+
+
+const raycaster = new Raycaster();
+export const getPositionOnWalkmesh = (desiredPosition: Vector3, walkmesh: Object3D, maxDistance?: number) => {
+  let intersects = [];
+  raycaster.set(desiredPosition, new Vector3(0, 0, -1));
+  intersects.push(raycaster.intersectObject(walkmesh, true));
+
+  raycaster.set(desiredPosition, new Vector3(0, 0, 1));
+  intersects.push(raycaster.intersectObject(walkmesh, true));
+
+  intersects = intersects.flat()
+
+  if (maxDistance) {
+    intersects = intersects.filter((intersect) => intersect.distance < maxDistance);
+  }
+
+  if (intersects.length === 0) {
+    return null;
+  }
+
+  const sortedIntersects = intersects.sort((a, b) => {
+    return a.distance - b.distance;
+  });
+
+
+  return sortedIntersects[0].point;
 }
