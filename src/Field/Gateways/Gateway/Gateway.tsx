@@ -19,7 +19,6 @@ const Gateway = ({
       return;
     }
   
-  
     if (checkForIntersection(player, gateway)) {        
       onIntersect(gateway)
       player.userData.hasBeenPlacedInScene = false;
@@ -31,8 +30,6 @@ const Gateway = ({
       points={gateway.sourceLine}
       color="green"
       lineWidth={5}
-      onClick={() => onIntersect(gateway)}
-      
     />
   )
 }

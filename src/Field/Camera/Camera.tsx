@@ -9,9 +9,10 @@ import { clamp } from "three/src/math/MathUtils.js";
 type CameraProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
   data: FieldData,
+  setHasPlacedCamera: (value: boolean) => void,
 }
 
-const Camera = ({ backgroundPanRef, data }: CameraProps) => {
+const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => {
   const { cameras, limits } = data;
 
   const [initialCameraTargetPosition, setInitialCameraTargetPosition] = useState(new Vector3());
@@ -47,8 +48,19 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     (camera as PerspectiveCamera).fov = (2 * Math.atan(224.0/(2.0 * camera_zoom))) * 57.29577951;
     camera.updateProjectionMatrix();
 
+    const direction = new Vector3(0, 0, -1); // Default forward direction in Three.js
+    direction.applyQuaternion(new Quaternion().setFromEuler(camera.rotation));
+  
+    camera.userData = {
+      initialPosition: camPos,
+      initialRotation: camAxisZ,
+      initialLookAt: lookAtTarget,
+      initialDirection: direction,
+    }
+
     setInitialCameraTargetPosition(lookAtTarget.clone());
-  }, [backgroundPanRef, camera, cameras]);
+    setHasPlacedCamera(true);
+  }, [backgroundPanRef, camera, cameras, data, setHasPlacedCamera]);
 
   // Precompute boundaries
   const boundaries = useMemo(
@@ -96,7 +108,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     );
 
     camera.rotation.copy(initialCameraRotation);
-    
+
     const finalPanX = clamp(panX, boundaries.left, boundaries.right);
     const finalPanY = clamp(panY, boundaries.top, boundaries.bottom);
 

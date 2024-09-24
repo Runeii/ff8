@@ -32,7 +32,6 @@ const WalkMesh = ({ setCharacterPosition, setHasPlacedWalkmesh, walkmesh }: Walk
   }, [walkmesh]);
 
   useEffect(() => {
-    console.log('run')
     setHasPlacedWalkmesh(true);
   }, [setHasPlacedWalkmesh]);
 
@@ -42,7 +41,7 @@ const WalkMesh = ({ setCharacterPosition, setHasPlacedWalkmesh, walkmesh }: Walk
         <mesh key={index} name="walkmesh-triangle" geometry={geometry} onClick={(e) => {
           setCharacterPosition(e.point)
         }}>
-          <meshBasicMaterial color={0x0000ff}transparent opacity={0.5}side={DoubleSide} />
+          <meshBasicMaterial color={0x0000ff}transparent opacity={0.2}side={DoubleSide} />
         </mesh>
       ))}
     </group>

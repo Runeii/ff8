@@ -1,5 +1,6 @@
 import { Object3D, Raycaster, Vector3 } from "three";
 import { FieldData } from "./Field/Field";
+import { CHARACTER_HEIGHT } from "./Character/Character";
 
 export const numberToFloatingPoint = (value: number) => value / 4096;
 
@@ -25,6 +26,15 @@ export const getInitialField = () => {
 }
 
 export const getInitialEntrance = (initialField: FieldData) => {
+  const exits = initialField.gateways.filter((gateway) => gateway.id.startsWith('exit'));
+
+  if (exits.length > 0) {
+    const exit = exits[0].sourceLine.map((point) => vectorToFloatingPoint(point));
+    const midpoint = new Vector3().addVectors(exit[0], exit[1]).divideScalar(2);
+    midpoint.z += CHARACTER_HEIGHT / 2
+    return midpoint;
+  }
+
   const entrance = initialField.gateways[0].destinationPoint;
 
   return vectorToFloatingPoint(entrance);

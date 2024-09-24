@@ -1,7 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { AdditiveBlending, Group,  NoBlending, NormalBlending, Object3D, OrthographicCamera, SubtractiveBlending, Texture } from "three";
 import { FieldData } from "../../Field";
-import { MutableRefObject, useMemo, useRef, useState } from "react";
+import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { calculateParallax } from "../../Camera/cameraUtils";
 import { clamp } from "three/src/math/MathUtils.js";
 
@@ -29,6 +29,25 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles, tilesTexture }: LayerP
   const textureHeightInTiles = TILES_PER_COLUMN;
 
   const layerRef = useRef<Group & {position: Object3D['position']}>(null);
+
+  const animationFrameRef = useRef(0);
+
+  useEffect(() => {
+    const maxFrames = tiles.map(tile => tile.state).sort((a, b) => b - a)[0];
+    if (maxFrames === 0) {
+      return;
+    }
+    
+    const handleFrame = () => {
+      animationFrameRef.current = (animationFrameRef.current % maxFrames) + 1
+    }
+
+    const interval = setInterval(handleFrame, 1000);
+
+    return () => {
+      clearInterval(interval);
+    }
+  }, [tiles]);
 
   useFrame(() => {
     if (!layerRef.current) {
@@ -58,7 +77,6 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles, tilesTexture }: LayerP
     layerRef.current.position.y = finalPanY;
   });
 
-  const STATE = 0;
   const [isAbove, setIsAbove] = useState(false);
 
   const orthographicCamera = useThree(({ scene }) => scene.getObjectByName('orthoCamera') as OrthographicCamera);
@@ -67,9 +85,8 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles, tilesTexture }: LayerP
       return;
     }
 
-    const normalisedZ = tiles[0].Z / 4096 
-// 2.0, 0.95
-  console.log(normalisedZ, playerDepthRef.current)
+    const normalisedZ = tiles[0].Z / 1000 
+console.log(playerDepthRef.current, normalisedZ)
     if (playerDepthRef.current > normalisedZ && !isAbove) {
       setIsAbove(true);
       //console.log(tiles[0].Z, 'became above');
@@ -81,9 +98,6 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles, tilesTexture }: LayerP
 
   const textures = useMemo(() => {
     return tiles.map(({ X, Y, Z, index, isBlended, blendType, state }) => {
-      if (state !== STATE) {
-        return null;
-      }
       const texture = tilesTexture.clone();
 
       // Calculate the column and row based on index
@@ -102,6 +116,7 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles, tilesTexture }: LayerP
           position={[X + TILE_SIZE / 2, -Y - TILE_SIZE / 2, -2]}
           scale={[TILE_SIZE, TILE_SIZE, 1]}
           layers={isAbove ? 2 : 1}
+          visible={animationFrameRef.current === state}
         >
           <spriteMaterial
             map={texture}
@@ -111,7 +126,7 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles, tilesTexture }: LayerP
         </sprite>
       );
     });
-  }, [isAbove, textureHeightInTiles, textureWidthInTiles, tiles, tilesTexture]);
+  }, [ isAbove, textureHeightInTiles, textureWidthInTiles, tiles, tilesTexture]);
 
   return (
     <group position={[0,0,tiles[0].Z]} ref={layerRef}>

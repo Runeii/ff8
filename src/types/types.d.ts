@@ -15,5 +15,5 @@ type CameraPanAngle = {
     right: number,
     top: number,
     bottom: number
-  }
+  } | null
 }

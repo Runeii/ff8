@@ -54,11 +54,9 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
     boundingBox.setFromObject(walkmesh);
 
     if (!boundingBox) {
-      console.warn('No bounding box found for walkmesh');
-        return 0;
+      return 0;
     }
 
-    // Define the eight corners of the bounding box
     const corners = [
         new Vector3(boundingBox.min.x, boundingBox.min.y, boundingBox.min.z),
         new Vector3(boundingBox.min.x, boundingBox.min.y, boundingBox.max.z),
@@ -70,10 +68,8 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
         new Vector3(boundingBox.max.x, boundingBox.max.y, boundingBox.max.z),
     ];
 
-    // Transform corners to world space
     corners.forEach(corner => corner.applyMatrix4(walkmesh.matrixWorld));
 
-    // Compute maxDepth using the corners
     let maxDepth = 0;
     corners.forEach(corner => {
         const cameraToCorner = new Vector3().subVectors(corner, perspectiveCamera.position);
@@ -81,7 +77,6 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
         if (depth > maxDepth) {
             maxDepth = depth;
         }
-        console.log(corner, depth)
     });
 
     return maxDepth;
@@ -94,15 +89,17 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
       return;
     }
 
-    const playerWorldPosition = new Vector3();
-    player.getWorldPosition(playerWorldPosition);
+    // Step 2: Calculate vector to the target
+    const toTarget = new Vector3();
+    toTarget.subVectors(player.position, camera.position);
 
-    const cameraDirection = new Vector3();
-    camera.getWorldDirection(cameraDirection);
-    const vectorToPlayer = new Vector3();
-    vectorToPlayer.subVectors(playerWorldPosition, camera.position);
+    // Step 3: Project the vector onto the direction vector
+    const distanceInDirection = toTarget.dot(camera.userData.initialDirection);
 
-    playerDepthRef.current = vectorToPlayer.dot(cameraDirection) / walkmeshMaxDepth;
+
+    //vectorToPlayer.subVectors(new Vector3(0.04823856485351777, -0.0690052893906769, 0.0817578125), camera.position);
+
+    playerDepthRef.current = distanceInDirection;
   });
 
   return (

@@ -17,8 +17,8 @@ type FieldProps = {
 }
 
 const Field = ({ data, setField }: FieldProps) => {
-  const orthoCamera = useThree(({ scene }) => scene.getObjectByName('orthoCamera') as OrthographicCamera);
   useFrame(({ camera, gl, scene }) => {
+    const orthoCamera = scene.getObjectByName('orthoCamera') as OrthographicCamera;
     const perspectiveCamera = camera as PerspectiveCamera;
 
     if (!orthoCamera) {
@@ -44,50 +44,47 @@ const Field = ({ data, setField }: FieldProps) => {
     yaw: 0,
     pitch: 0,
     cameraZoom: 0,
-    boundaries: {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-    },
+    boundaries: null
   });
 
   const [characterPosition, setCharacterPosition] = useState(getInitialEntrance(data));
 
   const [hasPlacedWalkmesh, setHasPlacedWalkmesh] = useState(false);
   const [hasPlacedCharacter, setHasPlacedCharacter] = useState(false);
+  const [hasPlacedCamera, setHasPlacedCamera] = useState(false);
 
   const handleTransitionField = useCallback((field: FieldData['id']) => {
     setHasPlacedCharacter(false);
     setHasPlacedWalkmesh(false);
+    setHasPlacedCamera(false);
     setField(field);
   }, [setField]);
 
   return (
-    <group key={data.id}>
+    <group >
       <WalkMesh
         setCharacterPosition={setCharacterPosition}
         setHasPlacedWalkmesh={setHasPlacedWalkmesh}
         walkmesh={data.walkmesh}
       />
       {hasPlacedWalkmesh && (
-        <>
-          <Background backgroundPanRef={backgroundPanRef} data={data} />
-          <Character
-            position={characterPosition}
-            setHasPlacedCharacter={setHasPlacedCharacter}
-          />
-        </>
+        <Character
+          position={characterPosition}
+          setHasPlacedCharacter={setHasPlacedCharacter}
+        />
       )}
       {hasPlacedCharacter && (
         <>
           <Gateways
-            gateways={data.gateways}
+            fieldId={data.id}
             setField={handleTransitionField}
             setCharacterPosition={setCharacterPosition}
           />
-          <Camera backgroundPanRef={backgroundPanRef} data={data} />
+          <Camera backgroundPanRef={backgroundPanRef} data={data} setHasPlacedCamera={setHasPlacedCamera} />
         </>
+      )}
+      {hasPlacedCamera && (
+        <Background backgroundPanRef={backgroundPanRef} data={data} />
       )}
       <ambientLight intensity={0.5} />
     </group>
@@ -101,10 +98,13 @@ type FieldLoaderProps = Omit<FieldProps, 'data'> & {
 const FieldLoader = ({ id, ...props }: FieldLoaderProps) => {
   const [data, setData] = useState<FieldData | null>(null);
 
+  const gl = useThree(({ gl }) => gl);
   useEffect(() => {
+    setData(null);
+    gl.clear();
     fetch(`/output/${id}.json`).then(response => response.json()).then(setData);
-  }, [id]);
-  
+  }, [gl, id]);
+
   if (!data) {
     return null;
   }

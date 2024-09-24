@@ -1,7 +1,7 @@
 import { Box } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
-import { DoubleSide, Mesh, Object3D, Vector3 } from "three";
+import { Box3, DoubleSide, Group, Mesh, MeshBasicMaterial, Object3D, SphereGeometry, Vector3 } from "three";
 import { getCameraDirections } from "../Field/Camera/cameraUtils";
 import { getPositionOnWalkmesh } from "../utils";
 import { onMovementKeyPress } from "./characterUtils";
@@ -46,7 +46,7 @@ const Character = ({ position, setHasPlacedCharacter }: CharacterProps) => {
   }, []);
 
   useEffect(() => {
-    const walkmesh = scene.getObjectByName("walkmesh") as Object3D;
+    const walkmesh = scene.getObjectByName("walkmesh") as Group;
 
     if (!walkmesh) {
       return;
@@ -63,7 +63,13 @@ const Character = ({ position, setHasPlacedCharacter }: CharacterProps) => {
         newPosition.z
       );
     } else {
-      console.warn("Tried to set character position to an invalid position");
+      // Create a yellow sphere and add to scene at position
+
+      const sphere = new Mesh(new SphereGeometry(0.05, 32, 32), new MeshBasicMaterial({color: 'yellow'}));
+      sphere.position.copy(position);
+      scene.add(sphere);
+
+      console.warn("Tried to set character position to an invalid position", position);
 
     }
     setHasPlacedCharacter(true);
