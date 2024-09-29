@@ -68,7 +68,7 @@ export const calculateAngleForParallax = (pan: number, depth: number): number =>
   }
 
   // Calculate and return the angle in radians
-  return Math.asin(sinAngle);
+  return Math.asin(sinAngle) * 0.92; /// 0.92 is a magic number to adjust the angle
 }
 
 export const getCameraDirections = (camera: Camera) => {
