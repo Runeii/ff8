@@ -26,7 +26,7 @@ export const getInitialField = () => {
 }
 
 export const getInitialEntrance = (initialField: FieldData) => {
-  const exits = initialField.gateways.filter((gateway) => gateway.id.startsWith('exit'));
+  const exits = initialField.gateways;
 
   if (exits.length > 0) {
     const exit = exits[0].sourceLine.map((point) => vectorToFloatingPoint(point));

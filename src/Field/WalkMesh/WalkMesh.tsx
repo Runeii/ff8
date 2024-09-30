@@ -1,43 +1,20 @@
-import type { FieldData } from "../Field";
-import { BufferAttribute, BufferGeometry, DoubleSide, Vector3 } from "three";
-import { useEffect, useMemo } from "react";
-import { vectorToFloatingPoint } from "../../utils";
+import { BufferGeometry, DoubleSide, Vector3 } from "three";
+import { useEffect } from "react";
 
 type WalkMeshProps = {
   setCharacterPosition: (position: Vector3) => void;
   setHasPlacedWalkmesh: (value: boolean) => void;
-  walkmesh: FieldData["walkmesh"];
+  walkmesh: BufferGeometry[];
 };
 
 const WalkMesh = ({ setCharacterPosition, setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
-  const meshGeometry = useMemo(() => {
-    const geometries = walkmesh.flat().map(triangle => {
-      const geometry = new BufferGeometry();
-      const vertices = new Float32Array([
-        ...vectorToFloatingPoint(triangle.vertices[0]).toArray(),
-        ...vectorToFloatingPoint(triangle.vertices[1]).toArray(),
-        ...vectorToFloatingPoint(triangle.vertices[2]).toArray(),
-        ...vectorToFloatingPoint(triangle.vertices[0]).toArray(),
-      ]);
-      // Set the vertices attribute in the geometry
-      geometry.setAttribute('position', new BufferAttribute(vertices, 3));
-      
-      // Optionally, compute normals for lighting (useful for shaded rendering)
-      geometry.computeVertexNormals();
-      
-      return geometry;
-    });
-
-    return geometries;
-  }, [walkmesh]);
-
   useEffect(() => {
     setHasPlacedWalkmesh(true);
   }, [setHasPlacedWalkmesh]);
 
   return (
     <group name="walkmesh">
-      {meshGeometry.map((geometry, index) => (
+      {walkmesh.map((geometry, index) => (
         <mesh key={index} name="walkmesh-triangle" geometry={geometry} onClick={(e) => {
           setCharacterPosition(e.point)
         }}>

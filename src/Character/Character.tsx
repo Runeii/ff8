@@ -1,7 +1,7 @@
 import { Box } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
-import { Box3, DoubleSide, Group, Mesh, MeshBasicMaterial, Object3D, SphereGeometry, Vector3 } from "three";
+import { DoubleSide, Group, Mesh, MeshBasicMaterial, SphereGeometry, Vector3 } from "three";
 import { getCameraDirections } from "../Field/Camera/cameraUtils";
 import { getPositionOnWalkmesh } from "../utils";
 import { onMovementKeyPress } from "./characterUtils";

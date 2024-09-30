@@ -1,12 +1,13 @@
-import {  Mesh, Vector3 } from "three"
-import { getPositionOnWalkmesh, vectorToFloatingPoint } from "../../utils"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import {  Group, Mesh, Raycaster, Vector3 } from "three"
+import { vectorToFloatingPoint } from "../../utils"
+import {  useCallback, useEffect, useMemo, useState } from "react"
 import { FieldData } from "../Field"
 import Gateway from "./Gateway/Gateway"
+import GeneratedGateway from "./GeneratedGateway/GeneratedGateway"
 import { useThree } from "@react-three/fiber"
-import { CHARACTER_HEIGHT } from "../../Character/Character"
-import { checkForIntersection } from "./gatewayUtils"
+import { checkForIntersection, findShortestLineForPointOnMesh } from "./gatewayUtils"
 import gatewaysMapping from '../../gateways';
+import { CHARACTER_HEIGHT } from "../../Character/Character"
 
 const gateways = gatewaysMapping as unknown as Record<FieldData['id'], typeof gatewaysMapping.bghall_5>
 
@@ -16,132 +17,83 @@ type GatewaysProps = {
   setField: (fieldId: string) => void
 }
 
-export type FormattedGateway = Omit<FieldData['gateways'][number], 'sourceLine'> & {
+export type FormattedGateway = Omit<FieldData['gateways'][number], 'sourceLine' | 'destinationPoint'> & {
   sourceLine: Vector3[]
+  destinationPoint: Vector3
 }
 
-
-function rotateAroundPoint(point, center, angle) {
-  const translatedPoint = new Vector3().subVectors(point, center);
-  const rotatedPoint = new Vector3(
-    translatedPoint.x * Math.cos(angle) - translatedPoint.z * Math.sin(angle),
-    translatedPoint.y,  // Keep y-axis unchanged
-    translatedPoint.x * Math.sin(angle) + translatedPoint.z * Math.cos(angle)
-  );
-  return rotatedPoint.add(center);
-}
-
-const Gateways = ({ fieldId, setCharacterPosition, setField }: GatewaysProps) => {
-  const [hasActiveGateways, setHasActiveGateways] = useState(false);
-
-  const walkmesh = useThree(({ scene }) => scene.getObjectByName('walkmesh') as Mesh);
-
+const Gateways = ({ fieldId, setCharacterPosition, setField, walkMeshGeometry }: GatewaysProps) => {
   const formattedGateways:  FormattedGateway[] = useMemo(() => {
-    const exits = gateways[fieldId].exits.map(exit => {
+    const {exits} = gateways[fieldId];
+
+    return exits.map(exit => {
       const {
         destinationPoint: originalDestinationPoint,
         sourceLine: originalSourceLine
         } = exit;
 
-        const sourceLine = originalSourceLine.map(vectorToFloatingPoint)
-        const midpoint = new Vector3();
-        midpoint.addVectors(sourceLine[0], sourceLine[1]).divideScalar(2);
-        const walkmeshZ = getPositionOnWalkmesh(midpoint, walkmesh);
-        if (walkmeshZ) {
-          walkmeshZ.z += CHARACTER_HEIGHT / 2;
-          sourceLine[0].z = walkmeshZ.z;
-          sourceLine[1].z = walkmeshZ.z;
-        }
-
+        const sourceLine = originalSourceLine.map(vectorToFloatingPoint);
+        
+        sourceLine[0].z += CHARACTER_HEIGHT / 2;
+        sourceLine[1].z += CHARACTER_HEIGHT / 2;
         return {
           ...exit,
           destinationPoint: vectorToFloatingPoint(originalDestinationPoint),
           sourceLine,
         }
     });
+  }, [fieldId]);
 
-    const entrances = gateways[fieldId].entrances.map(entrance => {
+  const walkmesh = useThree(({ scene }) => scene.getObjectByName('walkmesh') as Group);
+  const formattedEntrances: FormattedGateway[] = useMemo(() => {
+    const { entrances } = gateways[fieldId];
+
+    return entrances.map(entrance => {
       const {
-          destinationPoint: originalDestinationPoint,
-          sourceLine: originalSourceLine
-        } = entrance;
+        destinationPoint: originalDestinationPoint,
+        sourceLine
+      } = entrance;
 
       const destinationPoint = vectorToFloatingPoint(originalDestinationPoint);
-      const walkmeshZ = getPositionOnWalkmesh(destinationPoint, walkmesh);
-      if (walkmeshZ) {
-        walkmeshZ.z += CHARACTER_HEIGHT / 2;
-        destinationPoint.z = walkmeshZ.z;
+      const { x, y } = destinationPoint;
+      const origin = new Vector3(x, y, 1000);
+      const direction = new Vector3(0, 0, -1);
+      direction.normalize();
+      const raycaster = new Raycaster(origin, direction);
+      const intersects = raycaster.intersectObject(walkmesh);
+
+      if (intersects.length === 0) {
+        console.log("Bad gateway, no intersection found at x,y point on the mesh.");
       }
-    
-      const sourceLine = originalSourceLine.map(vectorToFloatingPoint);
 
-      const newDestinationPoint = new Vector3().addVectors(sourceLine[0], sourceLine[1]).multiplyScalar(0.5);
-      
-    
-      const direction1 = new Vector3().subVectors(destinationPoint, sourceLine[0]);
-      const direction2 = new Vector3().subVectors(destinationPoint, sourceLine[1]);
+      const intersectionPoint = intersects[0].point;
+      const z = intersectionPoint.z; 
+      destinationPoint.z = z
 
-      const angle = 0;
-
-      const oppositePoint1 = new Vector3().addVectors(destinationPoint, direction1);
-      const oppositePoint2 = new Vector3().addVectors(destinationPoint, direction2);
-      
-      const rotatedPoint1 = rotateAroundPoint(oppositePoint1, destinationPoint, angle);
-      const rotatedPoint2 = rotateAroundPoint(oppositePoint2, destinationPoint, angle);
-      
+      const line = findShortestLineForPointOnMesh(walkMeshGeometry, destinationPoint);
       return {
         ...entrance,
-        destinationPoint: newDestinationPoint,
-        sourceLine: [rotatedPoint1, rotatedPoint2],
-        target: entrance.source,
+        destinationPoint: destinationPoint, 
+        sourceLine: line
       }
     });
-
-    return [
-      ...exits,
-    ];
-  }, [fieldId, walkmesh]);
-
+  }, [fieldId, walkmesh,walkMeshGeometry]);
 
   const handleTransition = useCallback((gateway: FieldData["gateways"][number]) => {
-    if (!hasActiveGateways) {
-      return;
-    }
 
     console.log('Transitioning to', gateway.target, 'via gateway', gateway.id, gateway);
     setField(gateway.target);
     setCharacterPosition(vectorToFloatingPoint(gateway.destinationPoint));
-  }, [hasActiveGateways, setField, setCharacterPosition]);
+  }, [setField, setCharacterPosition]);
   
-
-  useEffect(() => {
-    setHasActiveGateways(false);
-  }, [gateways, setHasActiveGateways]);
-
-  const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
-
-  useEffect(() => {
-    if (hasActiveGateways) {
-      return;
-    }
-
-    const onKeyDown = () => {
-      const isIntersectingAnyGateways = formattedGateways.some((gateway) => checkForIntersection(player, gateway));
-      if (!isIntersectingAnyGateways) {
-        setHasActiveGateways(true);
-      }
-    }
-    window.addEventListener('keydown', onKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-    }
-  }, [formattedGateways, hasActiveGateways, player]);
 
   return (
     <>
       {formattedGateways.map(gateway => ( 
         <Gateway key={gateway.id} gateway={gateway} onIntersect={handleTransition} />
+      ))}
+      {formattedEntrances.map(entrance => (
+        <GeneratedGateway key={entrance.id} gateway={entrance} onIntersect={handleTransition} />
       ))}
     </>
   )

@@ -86,13 +86,11 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles, tilesTexture }: LayerP
     }
 
     const normalisedZ = tiles[0].Z / 1000 
-console.log(playerDepthRef.current, normalisedZ)
+
     if (playerDepthRef.current > normalisedZ && !isAbove) {
       setIsAbove(true);
-      //console.log(tiles[0].Z, 'became above');
     } else if (playerDepthRef.current < normalisedZ && isAbove) {
       setIsAbove(false);
-      //console.log(tiles[0].Z, 'became below');
     }
   });
 
