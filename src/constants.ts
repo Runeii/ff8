@@ -1,1 +1,4 @@
-export const ASPECT_RATIO = 320 / 224;
+export const SCREEN_WIDTH = 320
+export const SCREEN_HEIGHT = 224
+
+export const ASPECT_RATIO = SCREEN_WIDTH / SCREEN_HEIGHT

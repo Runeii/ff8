@@ -5,6 +5,7 @@ import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useMemo, useState } from "react";
 import { calculateAngleForParallax, calculateParallax, getBoundaries, getRotationAngleAroundAxis } from "./cameraUtils";
 import { clamp } from "three/src/math/MathUtils.js";
+import { SCREEN_HEIGHT } from "../../constants";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
@@ -45,7 +46,7 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
     camera.up.set(camAxisY.x, camAxisY.y, camAxisY.z);
     camera.position.set(tx, ty, tz);
     camera.lookAt(lookAtTarget);
-    (camera as PerspectiveCamera).fov = (2 * Math.atan(224.0/(2.0 * camera_zoom))) * 57.29577951;
+    (camera as PerspectiveCamera).fov = (2 * Math.atan(SCREEN_HEIGHT/(2.0 * camera_zoom))) * 57.29577951;
     camera.updateProjectionMatrix();
 
     const direction = new Vector3(0, 0, -1); // Default forward direction in Three.js
@@ -60,7 +61,7 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
 
     setInitialCameraTargetPosition(lookAtTarget.clone());
     setHasPlacedCamera(true);
-  }, [backgroundPanRef, camera, cameras, data, setHasPlacedCamera]);
+  }, [camera, cameras, data, setHasPlacedCamera]);
 
   // Precompute boundaries
   const boundaries = useMemo(

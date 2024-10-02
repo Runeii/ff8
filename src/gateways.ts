@@ -29,8 +29,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcsta1a",
-        "id": "exit-1"
+        "target": "bcsta1a"
       },
       {
         "destinationPoint": {
@@ -50,8 +49,7 @@ export const exits = {
             "z": -62
           }
         ],
-        "target": "bcsaka1a",
-        "id": "exit-2"
+        "target": "bcsaka1a"
       },
       {
         "destinationPoint": {
@@ -71,8 +69,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcgate1a",
-        "id": "exit-3"
+        "target": "bcgate1a"
       },
       {
         "destinationPoint": {
@@ -92,8 +89,7 @@ export const exits = {
             "z": -141
           }
         ],
-        "target": "bcmin11a",
-        "id": "exit-4"
+        "target": "bcmin11a"
       },
       {
         "destinationPoint": {
@@ -113,8 +109,7 @@ export const exits = {
             "z": -140
           }
         ],
-        "target": "bcmin21a",
-        "id": "exit-5"
+        "target": "bcmin21a"
       }
     ],
     "entrances": [],
@@ -140,8 +135,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcsta_1",
-        "id": "exit-6"
+        "target": "bcsta_1"
       },
       {
         "destinationPoint": {
@@ -161,8 +155,7 @@ export const exits = {
             "z": -62
           }
         ],
-        "target": "bcsaka_1",
-        "id": "exit-7"
+        "target": "bcsaka_1"
       },
       {
         "destinationPoint": {
@@ -182,8 +175,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcgate_1",
-        "id": "exit-8"
+        "target": "bcgate_1"
       },
       {
         "destinationPoint": {
@@ -203,8 +195,7 @@ export const exits = {
             "z": -141
           }
         ],
-        "target": "bcmin1_1",
-        "id": "exit-9"
+        "target": "bcmin1_1"
       },
       {
         "destinationPoint": {
@@ -224,8 +215,7 @@ export const exits = {
             "z": -140
           }
         ],
-        "target": "bcmin2_1",
-        "id": "exit-10"
+        "target": "bcmin2_1"
       }
     ],
     "entrances": [],
@@ -251,8 +241,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcsta1a",
-        "id": "exit-11"
+        "target": "bcsta1a"
       },
       {
         "destinationPoint": {
@@ -272,8 +261,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcsta1a",
-        "id": "exit-12"
+        "target": "bcsta1a"
       }
     ],
     "entrances": [],
@@ -299,8 +287,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcsta_1",
-        "id": "exit-13"
+        "target": "bcsta_1"
       },
       {
         "destinationPoint": {
@@ -320,8 +307,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcsta_1",
-        "id": "exit-14"
+        "target": "bcsta_1"
       }
     ],
     "entrances": [],
@@ -347,8 +333,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bccent1a",
-        "id": "exit-15"
+        "target": "bccent1a"
       },
       {
         "destinationPoint": {
@@ -368,8 +353,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bccent1a",
-        "id": "exit-16"
+        "target": "bccent1a"
       }
     ],
     "entrances": [],
@@ -395,8 +379,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bccent_1",
-        "id": "exit-17"
+        "target": "bccent_1"
       },
       {
         "destinationPoint": {
@@ -416,8 +399,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bccent_1",
-        "id": "exit-18"
+        "target": "bccent_1"
       }
     ],
     "entrances": [],
@@ -443,8 +425,7 @@ export const exits = {
             "z": 222
           }
         ],
-        "target": "bchtr1a",
-        "id": "exit-19"
+        "target": "bchtr1a"
       },
       {
         "destinationPoint": {
@@ -464,8 +445,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcsaka1a",
-        "id": "exit-20"
+        "target": "bcsaka1a"
       }
     ],
     "entrances": [],
@@ -491,8 +471,7 @@ export const exits = {
             "z": 222
           }
         ],
-        "target": "bchtr_1",
-        "id": "exit-21"
+        "target": "bchtr_1"
       },
       {
         "destinationPoint": {
@@ -512,8 +491,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcsaka_1",
-        "id": "exit-22"
+        "target": "bcsaka_1"
       }
     ],
     "entrances": [],
@@ -539,8 +517,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bchtl1a",
-        "id": "exit-23"
+        "target": "bchtl1a"
       }
     ],
     "entrances": [],
@@ -566,8 +543,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bchtl_1",
-        "id": "exit-24"
+        "target": "bchtl_1"
       }
     ],
     "entrances": [],
@@ -593,8 +569,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bccent1a",
-        "id": "exit-25"
+        "target": "bccent1a"
       }
     ],
     "entrances": [],
@@ -620,8 +595,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bccent_1",
-        "id": "exit-26"
+        "target": "bccent_1"
       }
     ],
     "entrances": [],
@@ -647,8 +621,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bccent1a",
-        "id": "exit-27"
+        "target": "bccent1a"
       },
       {
         "destinationPoint": {
@@ -668,8 +641,7 @@ export const exits = {
             "z": 222
           }
         ],
-        "target": "bcmin22a",
-        "id": "exit-28"
+        "target": "bcmin22a"
       },
       {
         "destinationPoint": {
@@ -689,8 +661,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcmin23a",
-        "id": "exit-29"
+        "target": "bcmin23a"
       }
     ],
     "entrances": [],
@@ -716,8 +687,7 @@ export const exits = {
             "z": -19
           }
         ],
-        "target": "bcmin21a",
-        "id": "exit-30"
+        "target": "bcmin21a"
       }
     ],
     "entrances": [],
@@ -743,8 +713,7 @@ export const exits = {
             "z": -3
           }
         ],
-        "target": "bcmin21a",
-        "id": "exit-31"
+        "target": "bcmin21a"
       }
     ],
     "entrances": [],
@@ -770,8 +739,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bccent_1",
-        "id": "exit-32"
+        "target": "bccent_1"
       },
       {
         "destinationPoint": {
@@ -791,8 +759,7 @@ export const exits = {
             "z": 222
           }
         ],
-        "target": "bcmin2_2",
-        "id": "exit-33"
+        "target": "bcmin2_2"
       },
       {
         "destinationPoint": {
@@ -812,8 +779,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcmin2_3",
-        "id": "exit-34"
+        "target": "bcmin2_3"
       }
     ],
     "entrances": [],
@@ -839,8 +805,7 @@ export const exits = {
             "z": -19
           }
         ],
-        "target": "bcmin2_1",
-        "id": "exit-35"
+        "target": "bcmin2_1"
       }
     ],
     "entrances": [],
@@ -866,8 +831,7 @@ export const exits = {
             "z": -3
           }
         ],
-        "target": "bcmin2_1",
-        "id": "exit-36"
+        "target": "bcmin2_1"
       }
     ],
     "entrances": [],
@@ -898,8 +862,7 @@ export const exits = {
             "z": 200
           }
         ],
-        "target": "bcsaka1a",
-        "id": "exit-37"
+        "target": "bcsaka1a"
       }
     ],
     "entrances": [],
@@ -930,8 +893,7 @@ export const exits = {
             "z": 200
           }
         ],
-        "target": "bcsaka_1",
-        "id": "exit-38"
+        "target": "bcsaka_1"
       }
     ],
     "entrances": [],
@@ -962,8 +924,7 @@ export const exits = {
             "z": -24
           }
         ],
-        "target": "bcport1b",
-        "id": "exit-39"
+        "target": "bcport1b"
       },
       {
         "destinationPoint": {
@@ -983,32 +944,32 @@ export const exits = {
             "z": 434
           }
         ],
-        "target": "bccent1a",
-        "id": "exit-40"
-      },
+        "target": "bccent1a"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1406",
-        "target": "bchtl1a",
         "destinationPoint": {
-          "x": 27,
-          "y": -520,
+          "x": -274,
+          "y": -245,
           "z": 0
         },
         "sourceLine": [
           {
-            "x": -653.3386822772001,
-            "y": -472.42608490650656,
+            "x": -655,
+            "y": -520,
             "z": 0
           },
           {
-            "x": 707.3386822772001,
-            "y": -567.5739150934935,
+            "x": 709,
+            "y": -520,
             "z": 0
           }
-        ]
+        ],
+        "target": "bcsaka1a",
+        "source": "bchtl1a"
       }
     ],
-    "entrances": [],
     "orientation": 124
   },
   "bcsaka_1": {
@@ -1031,8 +992,7 @@ export const exits = {
             "z": 248
           }
         ],
-        "target": "bchtl_1",
-        "id": "exit-41"
+        "target": "bchtl_1"
       },
       {
         "destinationPoint": {
@@ -1052,32 +1012,32 @@ export const exits = {
             "z": 434
           }
         ],
-        "target": "bccent_1",
-        "id": "exit-42"
-      },
+        "target": "bccent_1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1407",
-        "target": "bcport_1",
         "destinationPoint": {
-          "x": 534,
-          "y": -3062,
-          "z": 200
+          "x": 1205,
+          "y": 1426,
+          "z": 108
         },
         "sourceLine": [
           {
-            "x": 68.13758852866209,
-            "y": -3029.4237267614935,
+            "x": 67,
+            "y": -3062,
             "z": 200
           },
           {
-            "x": 999.862411471338,
-            "y": -3094.5762732385065,
+            "x": 1001,
+            "y": -3062,
             "z": 200
           }
-        ]
+        ],
+        "target": "bcsaka_1",
+        "source": "bcport_1"
       }
     ],
-    "entrances": [],
     "orientation": 124
   },
   "bcsta1a": {
@@ -1100,8 +1060,7 @@ export const exits = {
             "z": -220
           }
         ],
-        "target": "bccent1a",
-        "id": "exit-43"
+        "target": "bccent1a"
       },
       {
         "destinationPoint": {
@@ -1121,8 +1080,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcform1a",
-        "id": "exit-44"
+        "target": "bcform1a"
       }
     ],
     "entrances": [],
@@ -1148,8 +1106,7 @@ export const exits = {
             "z": -220
           }
         ],
-        "target": "bccent_1",
-        "id": "exit-45"
+        "target": "bccent_1"
       },
       {
         "destinationPoint": {
@@ -1169,8 +1126,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bcform_1",
-        "id": "exit-46"
+        "target": "bcform_1"
       }
     ],
     "entrances": [],
@@ -1196,8 +1152,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bdin1",
-        "id": "exit-47"
+        "target": "bdin1"
       },
       {
         "destinationPoint": {
@@ -1217,8 +1172,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bdview1",
-        "id": "exit-48"
+        "target": "bdview1"
       }
     ],
     "entrances": [],
@@ -1244,8 +1198,7 @@ export const exits = {
             "z": 46
           }
         ],
-        "target": "bdin5",
-        "id": "exit-49"
+        "target": "bdin5"
       }
     ],
     "entrances": [],
@@ -1271,8 +1224,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bdin2",
-        "id": "exit-50"
+        "target": "bdin2"
       },
       {
         "destinationPoint": {
@@ -1292,32 +1244,32 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bdenter1",
-        "id": "exit-51"
-      },
+        "target": "bdenter1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1408",
-        "target": "bgroom1a",
         "destinationPoint": {
-          "x": 1418.5,
-          "y": -3501,
-          "z": 0
+          "x": -4067,
+          "y": -5754,
+          "z": 169
         },
         "sourceLine": [
           {
-            "x": 1391.7700299865671,
-            "y": -3583.266388659531,
+            "x": 1332,
+            "y": -3501,
             "z": 0
           },
           {
-            "x": 1445.2299700134329,
-            "y": -3418.733611340469,
+            "x": 1505,
+            "y": -3501,
             "z": 0
           }
-        ]
+        ],
+        "target": "bdin1",
+        "source": "bgroom1a"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "bdin2": {
@@ -1340,8 +1292,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bdin3",
-        "id": "exit-52"
+        "target": "bdin3"
       },
       {
         "destinationPoint": {
@@ -1361,8 +1312,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bdin1",
-        "id": "exit-53"
+        "target": "bdin1"
       }
     ],
     "entrances": [],
@@ -1388,8 +1338,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bdin4",
-        "id": "exit-54"
+        "target": "bdin4"
       },
       {
         "destinationPoint": {
@@ -1409,8 +1358,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bdin2",
-        "id": "exit-55"
+        "target": "bdin2"
       }
     ],
     "entrances": [],
@@ -1436,8 +1384,7 @@ export const exits = {
             "z": 24
           }
         ],
-        "target": "bdin5",
-        "id": "exit-56"
+        "target": "bdin5"
       },
       {
         "destinationPoint": {
@@ -1457,8 +1404,7 @@ export const exits = {
             "z": 24
           }
         ],
-        "target": "bdin3",
-        "id": "exit-57"
+        "target": "bdin3"
       }
     ],
     "entrances": [],
@@ -1484,8 +1430,7 @@ export const exits = {
             "z": 16
           }
         ],
-        "target": "bdin4",
-        "id": "exit-58"
+        "target": "bdin4"
       },
       {
         "destinationPoint": {
@@ -1505,8 +1450,7 @@ export const exits = {
             "z": 16
           }
         ],
-        "target": "bdifrit1",
-        "id": "exit-59"
+        "target": "bdifrit1"
       }
     ],
     "entrances": [],
@@ -1532,59 +1476,58 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bdenter1",
-        "id": "exit-60"
+        "target": "bdenter1"
       }
     ],
     "entrances": [],
     "orientation": 128
   },
   "bg2f_1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1409",
-        "target": "bg2f_2",
         "destinationPoint": {
-          "x": 19,
-          "y": -5504.5,
-          "z": 8341
+          "x": -14,
+          "y": -5203,
+          "z": 72
         },
         "sourceLine": [
           {
-            "x": -304.6088988270534,
-            "y": -5457.504993882946,
+            "x": -308,
+            "y": -5503,
             "z": 8341
           },
           {
-            "x": 342.6088988270534,
-            "y": -5551.495006117054,
+            "x": 346,
+            "y": -5506,
             "z": 8341
           }
-        ]
+        ],
+        "target": "bg2f_1",
+        "source": "bg2f_2"
       },
       {
-        "id": "entrance-1410",
-        "target": "bg2f_22",
         "destinationPoint": {
-          "x": 19,
-          "y": -5504.5,
-          "z": 8341
+          "x": -14,
+          "y": -5203,
+          "z": 72
         },
         "sourceLine": [
           {
-            "x": -304.6088988270534,
-            "y": -5457.504993882946,
+            "x": -308,
+            "y": -5503,
             "z": 8341
           },
           {
-            "x": 342.6088988270534,
-            "y": -5551.495006117054,
+            "x": 346,
+            "y": -5506,
             "z": 8341
           }
-        ]
+        ],
+        "target": "bg2f_1",
+        "source": "bg2f_22"
       }
     ],
-    "entrances": [],
     "orientation": 192
   },
   "bg2f_11": {
@@ -1607,8 +1550,7 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bg2f_21",
-        "id": "exit-61"
+        "target": "bg2f_21"
       }
     ],
     "entrances": [],
@@ -1639,8 +1581,7 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bg2f_3",
-        "id": "exit-62"
+        "target": "bg2f_3"
       },
       {
         "destinationPoint": {
@@ -1660,8 +1601,7 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bgroom_1",
-        "id": "exit-63"
+        "target": "bgroom_1"
       },
       {
         "destinationPoint": {
@@ -1681,8 +1621,7 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bg2f_1",
-        "id": "exit-64"
+        "target": "bg2f_1"
       }
     ],
     "entrances": [],
@@ -1708,8 +1647,7 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bg2f_31",
-        "id": "exit-65"
+        "target": "bg2f_31"
       },
       {
         "destinationPoint": {
@@ -1729,8 +1667,7 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bgroom_3",
-        "id": "exit-66"
+        "target": "bgroom_3"
       },
       {
         "destinationPoint": {
@@ -1750,8 +1687,7 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bg2f_11",
-        "id": "exit-67"
+        "target": "bg2f_11"
       }
     ],
     "entrances": [],
@@ -1777,8 +1713,7 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bg2f_3",
-        "id": "exit-68"
+        "target": "bg2f_3"
       },
       {
         "destinationPoint": {
@@ -1798,8 +1733,7 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bg2f_1",
-        "id": "exit-69"
+        "target": "bg2f_1"
       },
       {
         "destinationPoint": {
@@ -1819,22 +1753,20 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bgroom_1",
-        "id": "exit-70"
+        "target": "bgroom_1"
       }
     ],
     "entrances": [],
     "orientation": 200
   },
   "bg2f_3": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1411",
-        "target": "bg2f_2",
         "destinationPoint": {
-          "x": -4736,
-          "y": -4665.5,
-          "z": 8341
+          "x": -2466,
+          "y": -5997,
+          "z": 37
         },
         "sourceLine": [
           {
@@ -1847,15 +1779,15 @@ export const exits = {
             "y": -5027,
             "z": 8341
           }
-        ]
+        ],
+        "target": "bg2f_3",
+        "source": "bg2f_2"
       },
       {
-        "id": "entrance-1412",
-        "target": "bg2f_22",
         "destinationPoint": {
-          "x": -4736,
-          "y": -4665.5,
-          "z": 8341
+          "x": -3008,
+          "y": -5781,
+          "z": 51
         },
         "sourceLine": [
           {
@@ -1868,73 +1800,74 @@ export const exits = {
             "y": -5027,
             "z": 8341
           }
-        ]
+        ],
+        "target": "bg2f_3",
+        "source": "bg2f_22"
       },
       {
-        "id": "entrance-1413",
-        "target": "fhdeck1",
         "destinationPoint": {
-          "x": -7463,
-          "y": 285.5,
-          "z": 179
+          "x": -4679,
+          "y": -4666,
+          "z": 8
         },
         "sourceLine": [
           {
-            "x": -7526.38929153265,
-            "y": 325.02274938549647,
+            "x": -7445,
+            "y": 358,
             "z": 179
           },
           {
-            "x": -7399.61070846735,
-            "y": 245.97725061450353,
+            "x": -7481,
+            "y": 213,
             "z": 179
           }
-        ]
+        ],
+        "target": "bg2f_3",
+        "source": "fhdeck1"
       },
       {
-        "id": "entrance-1414",
-        "target": "fhdeck2",
         "destinationPoint": {
-          "x": -7463,
-          "y": 285.5,
-          "z": 179
+          "x": -4679,
+          "y": -4666,
+          "z": 8
         },
         "sourceLine": [
           {
-            "x": -7526.38929153265,
-            "y": 325.02274938549647,
+            "x": -7445,
+            "y": 358,
             "z": 179
           },
           {
-            "x": -7399.61070846735,
-            "y": 245.97725061450353,
+            "x": -7481,
+            "y": 213,
             "z": 179
           }
-        ]
+        ],
+        "target": "bg2f_3",
+        "source": "fhdeck2"
       },
       {
-        "id": "entrance-1415",
-        "target": "fhdeck6",
         "destinationPoint": {
-          "x": -7463,
-          "y": 285.5,
-          "z": 179
+          "x": -4679,
+          "y": -4666,
+          "z": 8
         },
         "sourceLine": [
           {
-            "x": -7526.38929153265,
-            "y": 325.02274938549647,
+            "x": -7445,
+            "y": 358,
             "z": 179
           },
           {
-            "x": -7399.61070846735,
-            "y": 245.97725061450353,
+            "x": -7481,
+            "y": 213,
             "z": 179
           }
-        ]
+        ],
+        "target": "bg2f_3",
+        "source": "fhdeck6"
       }
     ],
-    "entrances": [],
     "orientation": 200
   },
   "bg2f_31": {
@@ -1957,8 +1890,7 @@ export const exits = {
             "z": 8341
           }
         ],
-        "target": "bg2f_21",
-        "id": "exit-71"
+        "target": "bg2f_21"
       }
     ],
     "entrances": [],
@@ -1989,8 +1921,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgbook3a",
-        "id": "exit-72"
+        "target": "bgbook3a"
       },
       {
         "destinationPoint": {
@@ -2010,8 +1941,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgbook3a",
-        "id": "exit-73"
+        "target": "bgbook3a"
       },
       {
         "destinationPoint": {
@@ -2031,8 +1961,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgbook2a",
-        "id": "exit-74"
+        "target": "bgbook2a"
       }
     ],
     "entrances": [],
@@ -2063,8 +1992,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgbook1a",
-        "id": "exit-75"
+        "target": "bgbook1a"
       }
     ],
     "entrances": [],
@@ -2090,8 +2018,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgbook1a",
-        "id": "exit-76"
+        "target": "bgbook1a"
       }
     ],
     "entrances": [],
@@ -2142,8 +2069,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgroad_1",
-        "id": "exit-77"
+        "target": "bgroad_1"
       },
       {
         "destinationPoint": {
@@ -2163,8 +2089,7 @@ export const exits = {
             "z": 85
           }
         ],
-        "target": "bgeat2a",
-        "id": "exit-78"
+        "target": "bgeat2a"
       }
     ],
     "entrances": [],
@@ -2190,8 +2115,7 @@ export const exits = {
             "z": 87
           }
         ],
-        "target": "bgeat1a",
-        "id": "exit-79"
+        "target": "bgeat1a"
       }
     ],
     "entrances": [],
@@ -2217,8 +2141,7 @@ export const exits = {
             "z": 85
           }
         ],
-        "target": "bgeat_2",
-        "id": "exit-80"
+        "target": "bgeat_2"
       }
     ],
     "entrances": [],
@@ -2244,8 +2167,7 @@ export const exits = {
             "z": 87
           }
         ],
-        "target": "bgeat_1",
-        "id": "exit-81"
+        "target": "bgeat_1"
       }
     ],
     "entrances": [],
@@ -2276,8 +2198,7 @@ export const exits = {
             "z": 427
           }
         ],
-        "target": "bghall1a",
-        "id": "exit-82"
+        "target": "bghall1a"
       },
       {
         "destinationPoint": {
@@ -2297,8 +2218,7 @@ export const exits = {
             "z": 664
           }
         ],
-        "target": "bghall1a",
-        "id": "exit-83"
+        "target": "bghall1a"
       }
     ],
     "entrances": [],
@@ -2324,8 +2244,7 @@ export const exits = {
             "z": 485
           }
         ],
-        "target": "bggate_2",
-        "id": "exit-84"
+        "target": "bggate_2"
       },
       {
         "destinationPoint": {
@@ -2345,8 +2264,7 @@ export const exits = {
             "z": 11
           }
         ],
-        "target": "bgpark_1",
-        "id": "exit-85"
+        "target": "bgpark_1"
       }
     ],
     "entrances": [],
@@ -2372,8 +2290,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bggate_4",
-        "id": "exit-86"
+        "target": "bggate_4"
       },
       {
         "destinationPoint": {
@@ -2393,8 +2310,7 @@ export const exits = {
             "z": 481
           }
         ],
-        "target": "bggate_1",
-        "id": "exit-87"
+        "target": "bggate_1"
       }
     ],
     "entrances": [],
@@ -2420,8 +2336,7 @@ export const exits = {
             "z": 484
           }
         ],
-        "target": "bggate_5",
-        "id": "exit-88"
+        "target": "bggate_5"
       },
       {
         "destinationPoint": {
@@ -2441,8 +2356,7 @@ export const exits = {
             "z": 484
           }
         ],
-        "target": "bggate_5",
-        "id": "exit-89"
+        "target": "bggate_5"
       },
       {
         "destinationPoint": {
@@ -2462,8 +2376,7 @@ export const exits = {
             "z": 484
           }
         ],
-        "target": "bggate_5",
-        "id": "exit-90"
+        "target": "bggate_5"
       },
       {
         "destinationPoint": {
@@ -2483,8 +2396,7 @@ export const exits = {
             "z": 6
           }
         ],
-        "target": "bggate_2",
-        "id": "exit-91"
+        "target": "bggate_2"
       }
     ],
     "entrances": [],
@@ -2510,8 +2422,7 @@ export const exits = {
             "z": 425
           }
         ],
-        "target": "bggate_4",
-        "id": "exit-92"
+        "target": "bggate_4"
       },
       {
         "destinationPoint": {
@@ -2531,8 +2442,7 @@ export const exits = {
             "z": 425
           }
         ],
-        "target": "bggate_4",
-        "id": "exit-93"
+        "target": "bggate_4"
       },
       {
         "destinationPoint": {
@@ -2552,8 +2462,7 @@ export const exits = {
             "z": 425
           }
         ],
-        "target": "bggate_4",
-        "id": "exit-94"
+        "target": "bggate_4"
       },
       {
         "destinationPoint": {
@@ -2573,8 +2482,7 @@ export const exits = {
             "z": 425
           }
         ],
-        "target": "bggate_6",
-        "id": "exit-95"
+        "target": "bggate_6"
       },
       {
         "destinationPoint": {
@@ -2594,8 +2502,7 @@ export const exits = {
             "z": 425
           }
         ],
-        "target": "bggate_6",
-        "id": "exit-96"
+        "target": "bggate_6"
       },
       {
         "destinationPoint": {
@@ -2615,8 +2522,7 @@ export const exits = {
             "z": 425
           }
         ],
-        "target": "bggate_6",
-        "id": "exit-97"
+        "target": "bggate_6"
       }
     ],
     "entrances": [],
@@ -2642,16 +2548,15 @@ export const exits = {
             "z": 664
           }
         ],
-        "target": "bghall_1",
-        "id": "exit-98"
-      },
+        "target": "bghall_1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1416",
-        "target": "bggate_5",
         "destinationPoint": {
-          "x": 1050,
-          "y": 1911,
-          "z": 425
+          "x": -1312,
+          "y": -1007,
+          "z": 62
         },
         "sourceLine": [
           {
@@ -2664,15 +2569,15 @@ export const exits = {
             "y": 1911,
             "z": 425
           }
-        ]
+        ],
+        "target": "bggate_6",
+        "source": "bggate_5"
       },
       {
-        "id": "entrance-1417",
-        "target": "bggate_5",
         "destinationPoint": {
-          "x": 5.5,
-          "y": 1911,
-          "z": 425
+          "x": -1312,
+          "y": -1007,
+          "z": 62
         },
         "sourceLine": [
           {
@@ -2685,15 +2590,15 @@ export const exits = {
             "y": 1911,
             "z": 425
           }
-        ]
+        ],
+        "target": "bggate_6",
+        "source": "bggate_5"
       },
       {
-        "id": "entrance-1418",
-        "target": "bggate_5",
         "destinationPoint": {
-          "x": -1048,
-          "y": 1911,
-          "z": 425
+          "x": -1312,
+          "y": -1007,
+          "z": 62
         },
         "sourceLine": [
           {
@@ -2706,15 +2611,15 @@ export const exits = {
             "y": 1911,
             "z": 425
           }
-        ]
+        ],
+        "target": "bggate_6",
+        "source": "bggate_5"
       },
       {
-        "id": "entrance-1419",
-        "target": "bghall1b",
         "destinationPoint": {
-          "x": -652.5,
-          "y": -11211,
-          "z": 567
+          "x": -1280,
+          "y": 229,
+          "z": 4
         },
         "sourceLine": [
           {
@@ -2727,15 +2632,15 @@ export const exits = {
             "y": -11211,
             "z": 567
           }
-        ]
+        ],
+        "target": "bggate_6",
+        "source": "bghall1b"
       },
       {
-        "id": "entrance-1420",
-        "target": "bghall1b",
         "destinationPoint": {
-          "x": -203.5,
-          "y": -11216,
-          "z": 567
+          "x": -1280,
+          "y": 229,
+          "z": 4
         },
         "sourceLine": [
           {
@@ -2748,15 +2653,15 @@ export const exits = {
             "y": -11211,
             "z": 567
           }
-        ]
+        ],
+        "target": "bggate_6",
+        "source": "bghall1b"
       },
       {
-        "id": "entrance-1421",
-        "target": "bghall1b",
         "destinationPoint": {
-          "x": 329,
-          "y": -11123,
-          "z": 567
+          "x": -1280,
+          "y": 229,
+          "z": 4
         },
         "sourceLine": [
           {
@@ -2769,10 +2674,11 @@ export const exits = {
             "y": -11025,
             "z": 567
           }
-        ]
+        ],
+        "target": "bggate_6",
+        "source": "bghall1b"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "bghall1a": {
@@ -2795,8 +2701,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bggate6a",
-        "id": "exit-99"
+        "target": "bggate6a"
       },
       {
         "destinationPoint": {
@@ -2816,8 +2721,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bggate6a",
-        "id": "exit-100"
+        "target": "bggate6a"
       },
       {
         "destinationPoint": {
@@ -2837,8 +2741,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bggate6a",
-        "id": "exit-101"
+        "target": "bggate6a"
       },
       {
         "destinationPoint": {
@@ -2858,8 +2761,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bghall2a",
-        "id": "exit-102"
+        "target": "bghall2a"
       },
       {
         "destinationPoint": {
@@ -2879,8 +2781,7 @@ export const exits = {
             "z": 1323
           }
         ],
-        "target": "bghall4a",
-        "id": "exit-103"
+        "target": "bghall4a"
       }
     ],
     "entrances": [],
@@ -2906,8 +2807,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bggate_6",
-        "id": "exit-104"
+        "target": "bggate_6"
       },
       {
         "destinationPoint": {
@@ -2927,8 +2827,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bggate_6",
-        "id": "exit-105"
+        "target": "bggate_6"
       },
       {
         "destinationPoint": {
@@ -2948,8 +2847,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bggate_6",
-        "id": "exit-106"
+        "target": "bggate_6"
       },
       {
         "destinationPoint": {
@@ -2969,8 +2867,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bghall_2",
-        "id": "exit-107"
+        "target": "bghall_2"
       },
       {
         "destinationPoint": {
@@ -2990,8 +2887,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bghall3a",
-        "id": "exit-108"
+        "target": "bghall3a"
       },
       {
         "destinationPoint": {
@@ -3011,8 +2907,7 @@ export const exits = {
             "z": 1323
           }
         ],
-        "target": "bghall_4",
-        "id": "exit-109"
+        "target": "bghall_4"
       }
     ],
     "entrances": [],
@@ -3038,8 +2933,7 @@ export const exits = {
             "z": 582
           }
         ],
-        "target": "bghall1a",
-        "id": "exit-110"
+        "target": "bghall1a"
       },
       {
         "destinationPoint": {
@@ -3059,8 +2953,7 @@ export const exits = {
             "z": 582
           }
         ],
-        "target": "bgkote_3",
-        "id": "exit-111"
+        "target": "bgkote_3"
       }
     ],
     "entrances": [],
@@ -3086,32 +2979,32 @@ export const exits = {
             "z": 566
           }
         ],
-        "target": "bghall_5",
-        "id": "exit-112"
-      },
+        "target": "bghall_5"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1422",
-        "target": "bghall1b",
         "destinationPoint": {
-          "x": 2339.5,
-          "y": -5430.5,
-          "z": 567
+          "x": 2874,
+          "y": -5292,
+          "z": 111
         },
         "sourceLine": [
           {
-            "x": 2598.932313004889,
-            "y": -5147.42867512068,
+            "x": 2383,
+            "y": -5049,
             "z": 567
           },
           {
-            "x": 2080.067686995111,
-            "y": -5713.57132487932,
+            "x": 2296,
+            "y": -5812,
             "z": 567
           }
-        ]
+        ],
+        "target": "bghall3a",
+        "source": "bghall1b"
       }
     ],
-    "entrances": [],
     "orientation": 92
   },
   "bghall4a": {
@@ -3134,8 +3027,7 @@ export const exits = {
             "z": 1344
           }
         ],
-        "target": "bghall1a",
-        "id": "exit-113"
+        "target": "bghall1a"
       },
       {
         "destinationPoint": {
@@ -3155,8 +3047,7 @@ export const exits = {
             "z": 1344
           }
         ],
-        "target": "bghall1a",
-        "id": "exit-114"
+        "target": "bghall1a"
       },
       {
         "destinationPoint": {
@@ -3176,8 +3067,7 @@ export const exits = {
             "z": 1344
           }
         ],
-        "target": "bghall1a",
-        "id": "exit-115"
+        "target": "bghall1a"
       }
     ],
     "entrances": [],
@@ -3208,8 +3098,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bggate_6",
-        "id": "exit-116"
+        "target": "bggate_6"
       },
       {
         "destinationPoint": {
@@ -3229,8 +3118,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bggate_6",
-        "id": "exit-117"
+        "target": "bggate_6"
       },
       {
         "destinationPoint": {
@@ -3250,8 +3138,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bggate_6",
-        "id": "exit-118"
+        "target": "bggate_6"
       },
       {
         "destinationPoint": {
@@ -3271,8 +3158,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bghall_2",
-        "id": "exit-119"
+        "target": "bghall_2"
       },
       {
         "destinationPoint": {
@@ -3292,8 +3178,7 @@ export const exits = {
             "z": 567
           }
         ],
-        "target": "bghall_3",
-        "id": "exit-120"
+        "target": "bghall_3"
       },
       {
         "destinationPoint": {
@@ -3313,8 +3198,7 @@ export const exits = {
             "z": 1323
           }
         ],
-        "target": "bghall_4",
-        "id": "exit-121"
+        "target": "bghall_4"
       }
     ],
     "entrances": [],
@@ -3340,116 +3224,116 @@ export const exits = {
             "z": 582
           }
         ],
-        "target": "bghall_5",
-        "id": "exit-122"
-      },
-      {
-        "id": "entrance-1423",
-        "target": "bghall1b",
-        "destinationPoint": {
-          "x": -3133,
-          "y": -5093,
-          "z": 567
-        },
-        "sourceLine": [
-          {
-            "x": -3104.9733050821396,
-            "y": -4912.222500371365,
-            "z": 567
-          },
-          {
-            "x": -3161.0266949178604,
-            "y": -5273.777499628635,
-            "z": 567
-          }
-        ]
-      },
-      {
-        "id": "entrance-1424",
-        "target": "bghall_1",
-        "destinationPoint": {
-          "x": -3133,
-          "y": -5093,
-          "z": 567
-        },
-        "sourceLine": [
-          {
-            "x": -3104.9733050821396,
-            "y": -4912.222500371365,
-            "z": 567
-          },
-          {
-            "x": -3161.0266949178604,
-            "y": -5273.777499628635,
-            "z": 567
-          }
-        ]
-      },
-      {
-        "id": "entrance-1425",
-        "target": "bgkote3a",
-        "destinationPoint": {
-          "x": 2225.5,
-          "y": -43,
-          "z": 559
-        },
-        "sourceLine": [
-          {
-            "x": 2186.1988257890357,
-            "y": 476.174024490478,
-            "z": 559
-          },
-          {
-            "x": 2264.8011742109643,
-            "y": -562.174024490478,
-            "z": 559
-          }
-        ]
-      },
-      {
-        "id": "entrance-1426",
-        "target": "bgkote_3",
-        "destinationPoint": {
-          "x": 2225.5,
-          "y": -43,
-          "z": 559
-        },
-        "sourceLine": [
-          {
-            "x": 2186.1988257890357,
-            "y": 476.174024490478,
-            "z": 559
-          },
-          {
-            "x": 2264.8011742109643,
-            "y": -562.174024490478,
-            "z": 559
-          }
-        ]
-      },
-      {
-        "id": "entrance-1427",
-        "target": "bgroad_4",
-        "destinationPoint": {
-          "x": -4894.5,
-          "y": -2,
-          "z": -256
-        },
-        "sourceLine": [
-          {
-            "x": -4849.619844127514,
-            "y": 318.33111245843935,
-            "z": -256
-          },
-          {
-            "x": -4939.380155872486,
-            "y": -322.33111245843935,
-            "z": -256
-          }
-        ]
+        "target": "bghall_5"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": -2913,
+          "y": -5288,
+          "z": 103
+        },
+        "sourceLine": [
+          {
+            "x": -3068,
+            "y": -4922,
+            "z": 567
+          },
+          {
+            "x": -3198,
+            "y": -5264,
+            "z": 567
+          }
+        ],
+        "target": "bghall_2",
+        "source": "bghall1b"
+      },
+      {
+        "destinationPoint": {
+          "x": -2913,
+          "y": -5288,
+          "z": 103
+        },
+        "sourceLine": [
+          {
+            "x": -3068,
+            "y": -4922,
+            "z": 567
+          },
+          {
+            "x": -3198,
+            "y": -5264,
+            "z": 567
+          }
+        ],
+        "target": "bghall_2",
+        "source": "bghall_1"
+      },
+      {
+        "destinationPoint": {
+          "x": -9480,
+          "y": 996,
+          "z": 239
+        },
+        "sourceLine": [
+          {
+            "x": 2295,
+            "y": 473,
+            "z": 559
+          },
+          {
+            "x": 2156,
+            "y": -559,
+            "z": 559
+          }
+        ],
+        "target": "bghall_2",
+        "source": "bgkote3a"
+      },
+      {
+        "destinationPoint": {
+          "x": -9480,
+          "y": 996,
+          "z": 239
+        },
+        "sourceLine": [
+          {
+            "x": 2295,
+            "y": 473,
+            "z": 559
+          },
+          {
+            "x": 2156,
+            "y": -559,
+            "z": 559
+          }
+        ],
+        "target": "bghall_2",
+        "source": "bgkote_3"
+      },
+      {
+        "destinationPoint": {
+          "x": -6062,
+          "y": -6167,
+          "z": 198
+        },
+        "sourceLine": [
+          {
+            "x": -4784,
+            "y": 302,
+            "z": -256
+          },
+          {
+            "x": -5005,
+            "y": -306,
+            "z": -256
+          }
+        ],
+        "target": "bghall_2",
+        "source": "bgroad_4"
+      }
+    ],
     "orientation": 140
   },
   "bghall_3": {
@@ -3472,43 +3356,42 @@ export const exits = {
             "z": 566
           }
         ],
-        "target": "bghall_5",
-        "id": "exit-123"
-      },
+        "target": "bghall_5"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1428",
-        "target": "bghall_1",
         "destinationPoint": {
-          "x": 2339.5,
-          "y": -5430.5,
-          "z": 567
+          "x": 2874,
+          "y": -5292,
+          "z": 111
         },
         "sourceLine": [
           {
-            "x": 2598.932313004889,
-            "y": -5147.42867512068,
+            "x": 2383,
+            "y": -5049,
             "z": 567
           },
           {
-            "x": 2080.067686995111,
-            "y": -5713.57132487932,
+            "x": 2296,
+            "y": -5812,
             "z": 567
           }
-        ]
+        ],
+        "target": "bghall_3",
+        "source": "bghall_1"
       }
     ],
-    "entrances": [],
     "orientation": 92
   },
   "bghall_4": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1429",
-        "target": "bghall1b",
         "destinationPoint": {
-          "x": 7.5,
-          "y": -3737,
-          "z": 1323
+          "x": -73,
+          "y": -3182,
+          "z": 57
         },
         "sourceLine": [
           {
@@ -3521,15 +3404,15 @@ export const exits = {
             "y": -3737,
             "z": 1323
           }
-        ]
+        ],
+        "target": "bghall_4",
+        "source": "bghall1b"
       },
       {
-        "id": "entrance-1430",
-        "target": "bghall_1",
         "destinationPoint": {
-          "x": 7.5,
-          "y": -3737,
-          "z": 1323
+          "x": -73,
+          "y": -3182,
+          "z": 57
         },
         "sourceLine": [
           {
@@ -3542,10 +3425,11 @@ export const exits = {
             "y": -3737,
             "z": 1323
           }
-        ]
+        ],
+        "target": "bghall_4",
+        "source": "bghall_1"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "bghall_5": {
@@ -3568,137 +3452,137 @@ export const exits = {
             "z": 580
           }
         ],
-        "target": "bghall_2",
-        "id": "exit-124"
-      },
-      {
-        "id": "entrance-1431",
-        "target": "bghall3a",
-        "destinationPoint": {
-          "x": 5708.5,
-          "y": 1496.5,
-          "z": 566
-        },
-        "sourceLine": [
-          {
-            "x": 5452.941751109211,
-            "y": 1270.6538545295195,
-            "z": 566
-          },
-          {
-            "x": 5964.058248890789,
-            "y": 1722.3461454704805,
-            "z": 566
-          }
-        ]
-      },
-      {
-        "id": "entrance-1432",
-        "target": "bghall_3",
-        "destinationPoint": {
-          "x": 5708.5,
-          "y": 1496.5,
-          "z": 566
-        },
-        "sourceLine": [
-          {
-            "x": 5452.941751109211,
-            "y": 1270.6538545295195,
-            "z": 566
-          },
-          {
-            "x": 5964.058248890789,
-            "y": 1722.3461454704805,
-            "z": 566
-          }
-        ]
-      },
-      {
-        "id": "entrance-1433",
-        "target": "bgroad_1",
-        "destinationPoint": {
-          "x": 568.5,
-          "y": 0,
-          "z": -256
-        },
-        "sourceLine": [
-          {
-            "x": 861.792199925086,
-            "y": 149.1674745482519,
-            "z": -256
-          },
-          {
-            "x": 275.20780007491396,
-            "y": -149.1674745482519,
-            "z": -256
-          }
-        ]
-      },
-      {
-        "id": "entrance-1434",
-        "target": "bgroad_2",
-        "destinationPoint": {
-          "x": 702.5,
-          "y": 37.5,
-          "z": -245
-        },
-        "sourceLine": [
-          {
-            "x": 420.04579410467534,
-            "y": -146.43510152236186,
-            "z": -245
-          },
-          {
-            "x": 984.9542058953247,
-            "y": 221.43510152236186,
-            "z": -245
-          }
-        ]
-      },
-      {
-        "id": "entrance-1435",
-        "target": "bgroad_5",
-        "destinationPoint": {
-          "x": -781,
-          "y": 7,
-          "z": -275
-        },
-        "sourceLine": [
-          {
-            "x": -1332.4432250336204,
-            "y": 279.2946374141801,
-            "z": -275
-          },
-          {
-            "x": -229.55677496637952,
-            "y": -265.2946374141801,
-            "z": -275
-          }
-        ]
-      },
-      {
-        "id": "entrance-1436",
-        "target": "bgroad_9",
-        "destinationPoint": {
-          "x": -781,
-          "y": 7,
-          "z": -275
-        },
-        "sourceLine": [
-          {
-            "x": -1332.4432250336204,
-            "y": 279.2946374141801,
-            "z": -275
-          },
-          {
-            "x": -229.55677496637952,
-            "y": -265.2946374141801,
-            "z": -275
-          }
-        ]
+        "target": "bghall_2"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 4447,
+          "y": 3921,
+          "z": 166
+        },
+        "sourceLine": [
+          {
+            "x": 5369,
+            "y": 1464,
+            "z": 566
+          },
+          {
+            "x": 6048,
+            "y": 1529,
+            "z": 566
+          }
+        ],
+        "target": "bghall_5",
+        "source": "bghall3a"
+      },
+      {
+        "destinationPoint": {
+          "x": 4447,
+          "y": 3921,
+          "z": 166
+        },
+        "sourceLine": [
+          {
+            "x": 5369,
+            "y": 1464,
+            "z": 566
+          },
+          {
+            "x": 6048,
+            "y": 1529,
+            "z": 566
+          }
+        ],
+        "target": "bghall_5",
+        "source": "bghall_3"
+      },
+      {
+        "destinationPoint": {
+          "x": -5827,
+          "y": 7110,
+          "z": 351
+        },
+        "sourceLine": [
+          {
+            "x": 563,
+            "y": 329,
+            "z": -256
+          },
+          {
+            "x": 574,
+            "y": -329,
+            "z": -256
+          }
+        ],
+        "target": "bghall_5",
+        "source": "bgroad_1"
+      },
+      {
+        "destinationPoint": {
+          "x": 5915,
+          "y": 7248,
+          "z": 183
+        },
+        "sourceLine": [
+          {
+            "x": 744,
+            "y": -297,
+            "z": -245
+          },
+          {
+            "x": 661,
+            "y": 372,
+            "z": -245
+          }
+        ],
+        "target": "bghall_5",
+        "source": "bgroad_2"
+      },
+      {
+        "destinationPoint": {
+          "x": -1,
+          "y": 9390,
+          "z": 12
+        },
+        "sourceLine": [
+          {
+            "x": -778,
+            "y": 622,
+            "z": -275
+          },
+          {
+            "x": -784,
+            "y": -608,
+            "z": -275
+          }
+        ],
+        "target": "bghall_5",
+        "source": "bgroad_5"
+      },
+      {
+        "destinationPoint": {
+          "x": -1,
+          "y": 9390,
+          "z": 12
+        },
+        "sourceLine": [
+          {
+            "x": -778,
+            "y": 622,
+            "z": -275
+          },
+          {
+            "x": -784,
+            "y": -608,
+            "z": -275
+          }
+        ],
+        "target": "bghall_5",
+        "source": "bgroad_9"
+      }
+    ],
     "orientation": 128
   },
   "bghall_6": {
@@ -3717,14 +3601,13 @@ export const exits = {
     "orientation": 128
   },
   "bghoke_1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1437",
-        "target": "bgroad_4",
         "destinationPoint": {
-          "x": -7900,
-          "y": -2,
-          "z": -256
+          "x": 331,
+          "y": -106,
+          "z": 110
         },
         "sourceLine": [
           {
@@ -3737,10 +3620,11 @@ export const exits = {
             "y": -306,
             "z": -256
           }
-        ]
+        ],
+        "target": "bghoke_1",
+        "source": "bgroad_4"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "bghoke_2": {
@@ -3773,8 +3657,7 @@ export const exits = {
             "z": -698
           }
         ],
-        "target": "bgkote3a",
-        "id": "exit-125"
+        "target": "bgkote3a"
       }
     ],
     "entrances": [],
@@ -3800,8 +3683,7 @@ export const exits = {
             "z": -718
           }
         ],
-        "target": "bgkote1a",
-        "id": "exit-126"
+        "target": "bgkote1a"
       },
       {
         "destinationPoint": {
@@ -3821,8 +3703,7 @@ export const exits = {
             "z": 559
           }
         ],
-        "target": "bghall_2",
-        "id": "exit-127"
+        "target": "bghall_2"
       }
     ],
     "entrances": [],
@@ -3848,8 +3729,7 @@ export const exits = {
             "z": -698
           }
         ],
-        "target": "bgkote_3",
-        "id": "exit-128"
+        "target": "bgkote_3"
       }
     ],
     "entrances": [],
@@ -3875,8 +3755,7 @@ export const exits = {
             "z": -698
           }
         ],
-        "target": "bgkote_3",
-        "id": "exit-129"
+        "target": "bgkote_3"
       }
     ],
     "entrances": [],
@@ -3902,8 +3781,7 @@ export const exits = {
             "z": -718
           }
         ],
-        "target": "bgkote_1",
-        "id": "exit-130"
+        "target": "bgkote_1"
       },
       {
         "destinationPoint": {
@@ -3923,74 +3801,74 @@ export const exits = {
             "z": 559
           }
         ],
-        "target": "bghall_2",
-        "id": "exit-131"
-      },
-      {
-        "id": "entrance-1438",
-        "target": "bghall2a",
-        "destinationPoint": {
-          "x": -10017.5,
-          "y": 1017,
-          "z": 582
-        },
-        "sourceLine": [
-          {
-            "x": -9864.823220140968,
-            "y": 1439.4891133412514,
-            "z": 582
-          },
-          {
-            "x": -10170.176779859032,
-            "y": 594.5108866587486,
-            "z": 582
-          }
-        ]
-      },
-      {
-        "id": "entrance-1439",
-        "target": "bgkote_2",
-        "destinationPoint": {
-          "x": -1481.5,
-          "y": -2753,
-          "z": -698
-        },
-        "sourceLine": [
-          {
-            "x": -1891.3269138226087,
-            "y": -2532.9496632435294,
-            "z": -698
-          },
-          {
-            "x": -1071.6730861773913,
-            "y": -2973.0503367564706,
-            "z": -698
-          }
-        ]
-      },
-      {
-        "id": "entrance-1440",
-        "target": "bgkote_5",
-        "destinationPoint": {
-          "x": -1480.5,
-          "y": -2763.5,
-          "z": -698
-        },
-        "sourceLine": [
-          {
-            "x": -1857.3293656938492,
-            "y": -2551.660133235571,
-            "z": -698
-          },
-          {
-            "x": -1103.6706343061508,
-            "y": -2975.339866764429,
-            "z": -698
-          }
-        ]
+        "target": "bghall_2"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 2056,
+          "y": -45,
+          "z": 392
+        },
+        "sourceLine": [
+          {
+            "x": -9956,
+            "y": 1462,
+            "z": 582
+          },
+          {
+            "x": -10079,
+            "y": 572,
+            "z": 582
+          }
+        ],
+        "target": "bgkote_3",
+        "source": "bghall2a"
+      },
+      {
+        "destinationPoint": {
+          "x": -2244,
+          "y": -5083,
+          "z": 14
+        },
+        "sourceLine": [
+          {
+            "x": -1654,
+            "y": -2321,
+            "z": -698
+          },
+          {
+            "x": -1309,
+            "y": -3185,
+            "z": -698
+          }
+        ],
+        "target": "bgkote_3",
+        "source": "bgkote_2"
+      },
+      {
+        "destinationPoint": {
+          "x": -2244,
+          "y": -5083,
+          "z": 14
+        },
+        "sourceLine": [
+          {
+            "x": -1633,
+            "y": -2359,
+            "z": -698
+          },
+          {
+            "x": -1328,
+            "y": -3168,
+            "z": -698
+          }
+        ],
+        "target": "bgkote_3",
+        "source": "bgkote_5"
+      }
+    ],
     "orientation": 128
   },
   "bgkote_4": {
@@ -4013,8 +3891,7 @@ export const exits = {
             "z": 398
           }
         ],
-        "target": "bgkote_5",
-        "id": "exit-132"
+        "target": "bgkote_5"
       },
       {
         "destinationPoint": {
@@ -4034,8 +3911,7 @@ export const exits = {
             "z": 398
           }
         ],
-        "target": "bgkote_5",
-        "id": "exit-133"
+        "target": "bgkote_5"
       }
     ],
     "entrances": [],
@@ -4061,53 +3937,53 @@ export const exits = {
             "z": -698
           }
         ],
-        "target": "bgkote_3",
-        "id": "exit-134"
-      },
+        "target": "bgkote_3"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1441",
-        "target": "bgkote_4",
         "destinationPoint": {
-          "x": -100.5,
-          "y": -904,
-          "z": 398.5
+          "x": -7116,
+          "y": -4113,
+          "z": 36
         },
         "sourceLine": [
           {
-            "x": -539.8653290403456,
-            "y": -1098.5234115402793,
+            "x": -581,
+            "y": -903,
             "z": 399
           },
           {
-            "x": 338.86532904034556,
-            "y": -709.4765884597207,
+            "x": 380,
+            "y": -905,
             "z": 398
           }
-        ]
+        ],
+        "target": "bgkote_5",
+        "source": "bgkote_4"
       },
       {
-        "id": "entrance-1442",
-        "target": "bgkote_4",
         "destinationPoint": {
-          "x": 503.5,
-          "y": -775,
-          "z": 398
+          "x": -7116,
+          "y": -4113,
+          "z": 36
         },
         "sourceLine": [
           {
-            "x": 1090.4114313229188,
-            "y": 15.019127478874907,
+            "x": 1361,
+            "y": -292,
             "z": 398
           },
           {
-            "x": -83.4114313229187,
-            "y": -1565.019127478875,
+            "x": -354,
+            "y": -1258,
             "z": 398
           }
-        ]
+        ],
+        "target": "bgkote_5",
+        "source": "bgkote_4"
       }
     ],
-    "entrances": [],
     "orientation": 88
   },
   "bgmast_1": {
@@ -4140,38 +4016,37 @@ export const exits = {
             "z": 9
           }
         ],
-        "target": "bgmast_4",
-        "id": "exit-135"
+        "target": "bgmast_4"
       }
     ],
     "entrances": [],
     "orientation": 128
   },
   "bgmast_4": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1443",
-        "target": "bgmast_3",
         "destinationPoint": {
-          "x": 1408.5,
-          "y": -1539,
-          "z": 9
+          "x": 1653,
+          "y": 2000,
+          "z": 3
         },
         "sourceLine": [
           {
-            "x": 1178.1871509983916,
-            "y": -1557.6612321340901,
+            "x": 1565,
+            "y": -1709,
             "z": 9
           },
           {
-            "x": 1638.8128490016084,
-            "y": -1520.3387678659099,
+            "x": 1252,
+            "y": -1369,
             "z": 9
           }
-        ]
+        ],
+        "target": "bgmast_4",
+        "source": "bgmast_3"
       }
     ],
-    "entrances": [],
     "orientation": 0
   },
   "bgmast_5": {
@@ -4204,8 +4079,7 @@ export const exits = {
             "z": 56
           }
         ],
-        "target": "bgmd1_2",
-        "id": "exit-136"
+        "target": "bgmd1_2"
       }
     ],
     "entrances": [],
@@ -4231,8 +4105,7 @@ export const exits = {
             "z": 51
           }
         ],
-        "target": "bgmd1_1",
-        "id": "exit-137"
+        "target": "bgmd1_1"
       }
     ],
     "entrances": [],
@@ -4258,8 +4131,7 @@ export const exits = {
             "z": 49
           }
         ],
-        "target": "bgmd1_4",
-        "id": "exit-138"
+        "target": "bgmd1_4"
       }
     ],
     "entrances": [],
@@ -4285,8 +4157,7 @@ export const exits = {
             "z": 28
           }
         ],
-        "target": "bgmd1_3",
-        "id": "exit-139"
+        "target": "bgmd1_3"
       }
     ],
     "entrances": [],
@@ -4312,8 +4183,7 @@ export const exits = {
             "z": -2076
           }
         ],
-        "target": "bgmd2_3",
-        "id": "exit-140"
+        "target": "bgmd2_3"
       }
     ],
     "entrances": [],
@@ -4339,8 +4209,7 @@ export const exits = {
             "z": 1668
           }
         ],
-        "target": "bgmd2_1",
-        "id": "exit-141"
+        "target": "bgmd2_1"
       },
       {
         "destinationPoint": {
@@ -4360,8 +4229,7 @@ export const exits = {
             "z": 962
           }
         ],
-        "target": "bgmd2_4",
-        "id": "exit-142"
+        "target": "bgmd2_4"
       },
       {
         "destinationPoint": {
@@ -4381,8 +4249,7 @@ export const exits = {
             "z": 962
           }
         ],
-        "target": "bgmd2_4",
-        "id": "exit-143"
+        "target": "bgmd2_4"
       }
     ],
     "entrances": [],
@@ -4408,8 +4275,7 @@ export const exits = {
             "z": 963
           }
         ],
-        "target": "bgmd2_3",
-        "id": "exit-144"
+        "target": "bgmd2_3"
       },
       {
         "destinationPoint": {
@@ -4429,8 +4295,7 @@ export const exits = {
             "z": 963
           }
         ],
-        "target": "bgmd2_3",
-        "id": "exit-145"
+        "target": "bgmd2_3"
       }
     ],
     "entrances": [],
@@ -4476,8 +4341,7 @@ export const exits = {
             "z": 86
           }
         ],
-        "target": "bgmd3_2",
-        "id": "exit-146"
+        "target": "bgmd3_2"
       }
     ],
     "entrances": [],
@@ -4503,8 +4367,7 @@ export const exits = {
             "z": -1751
           }
         ],
-        "target": "bgmd3_1",
-        "id": "exit-147"
+        "target": "bgmd3_1"
       }
     ],
     "entrances": [],
@@ -4565,8 +4428,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgmon_2",
-        "id": "exit-148"
+        "target": "bgmon_2"
       },
       {
         "destinationPoint": {
@@ -4586,32 +4448,32 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgmon_4",
-        "id": "exit-149"
-      },
+        "target": "bgmon_4"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1444",
-        "target": "bgroad_3",
         "destinationPoint": {
-          "x": -3774.5,
-          "y": 72,
-          "z": -242
+          "x": -2310,
+          "y": -9374,
+          "z": 67
         },
         "sourceLine": [
           {
-            "x": -3436.9502237721213,
-            "y": 169.04328193393337,
+            "x": -3787,
+            "y": 423,
             "z": -242
           },
           {
-            "x": -4112.049776227879,
-            "y": -25.043281933933386,
+            "x": -3762,
+            "y": -279,
             "z": -242
           }
-        ]
+        ],
+        "target": "bgmon_1",
+        "source": "bgroad_3"
       }
     ],
-    "entrances": [],
     "orientation": 116
   },
   "bgmon_2": {
@@ -4634,8 +4496,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgmon_1",
-        "id": "exit-150"
+        "target": "bgmon_1"
       }
     ],
     "entrances": [],
@@ -4661,8 +4522,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgmon_1",
-        "id": "exit-151"
+        "target": "bgmon_1"
       }
     ],
     "entrances": [],
@@ -4698,32 +4558,32 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bggate_1",
-        "id": "exit-152"
-      },
+        "target": "bggate_1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1445",
-        "target": "bgroad_2",
         "destinationPoint": {
-          "x": -1605.5,
-          "y": 3.5,
-          "z": -245
+          "x": -346,
+          "y": -708,
+          "z": 95
         },
         "sourceLine": [
           {
-            "x": -1268.6851179624907,
-            "y": 89.02330231029859,
+            "x": -1607,
+            "y": 351,
             "z": -245
           },
           {
-            "x": -1942.3148820375093,
-            "y": -82.02330231029859,
+            "x": -1604,
+            "y": -344,
             "z": -245
           }
-        ]
+        ],
+        "target": "bgpark_1",
+        "source": "bgroad_2"
       }
     ],
-    "entrances": [],
     "orientation": 116
   },
   "bgpaty_1": {
@@ -4761,32 +4621,32 @@ export const exits = {
             "z": -256
           }
         ],
-        "target": "bghall_5",
-        "id": "exit-153"
-      },
+        "target": "bghall_5"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1446",
-        "target": "bgeat1a",
         "destinationPoint": {
-          "x": 430.5,
-          "y": -2169,
-          "z": 0
+          "x": -3029,
+          "y": 12,
+          "z": 63
         },
         "sourceLine": [
           {
-            "x": 327.36662263154193,
-            "y": -2272.6279714776624,
+            "x": 305,
+            "y": -2094,
             "z": 0
           },
           {
-            "x": 533.633377368458,
-            "y": -2065.3720285223376,
+            "x": 556,
+            "y": -2244,
             "z": 0
           }
-        ]
+        ],
+        "target": "bgroad_1",
+        "source": "bgeat1a"
       }
     ],
-    "entrances": [],
     "orientation": 192
   },
   "bgroad_2": {
@@ -4809,8 +4669,7 @@ export const exits = {
             "z": -245
           }
         ],
-        "target": "bgpark_1",
-        "id": "exit-154"
+        "target": "bgpark_1"
       },
       {
         "destinationPoint": {
@@ -4830,8 +4689,7 @@ export const exits = {
             "z": -245
           }
         ],
-        "target": "bghall_5",
-        "id": "exit-155"
+        "target": "bghall_5"
       }
     ],
     "entrances": [],
@@ -4857,8 +4715,7 @@ export const exits = {
             "z": -242
           }
         ],
-        "target": "bgmon_1",
-        "id": "exit-156"
+        "target": "bgmon_1"
       }
     ],
     "entrances": [],
@@ -4884,8 +4741,7 @@ export const exits = {
             "z": -256
           }
         ],
-        "target": "bghoke_1",
-        "id": "exit-157"
+        "target": "bghoke_1"
       },
       {
         "destinationPoint": {
@@ -4905,8 +4761,7 @@ export const exits = {
             "z": -256
           }
         ],
-        "target": "bghall_2",
-        "id": "exit-158"
+        "target": "bghall_2"
       }
     ],
     "entrances": [],
@@ -4932,8 +4787,7 @@ export const exits = {
             "z": -275
           }
         ],
-        "target": "bghall_5",
-        "id": "exit-159"
+        "target": "bghall_5"
       }
     ],
     "entrances": [],
@@ -4969,8 +4823,7 @@ export const exits = {
             "z": -275
           }
         ],
-        "target": "bghall_5",
-        "id": "exit-160"
+        "target": "bghall_5"
       }
     ],
     "entrances": [],
@@ -4996,8 +4849,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bdin1",
-        "id": "exit-161"
+        "target": "bdin1"
       }
     ],
     "entrances": [],
@@ -5023,32 +4875,32 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bg2f_2",
-        "id": "exit-162"
-      },
+        "target": "bg2f_2"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1447",
-        "target": "bg2f_22",
         "destinationPoint": {
-          "x": -4458.5,
-          "y": -6021,
-          "z": 8341
+          "x": 0,
+          "y": 0,
+          "z": 315
         },
         "sourceLine": [
           {
-            "x": -4625.870079230595,
-            "y": -6017.758614749176,
+            "x": -4325,
+            "y": -6122,
             "z": 8341
           },
           {
-            "x": -4291.129920769405,
-            "y": -6024.241385250824,
+            "x": -4592,
+            "y": -5920,
             "z": 8341
           }
-        ]
+        ],
+        "target": "bgroom_1",
+        "source": "bg2f_22"
       }
     ],
-    "entrances": [],
     "orientation": 56
   },
   "bgroom_2": {
@@ -5076,8 +4928,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bg2f_21",
-        "id": "exit-163"
+        "target": "bg2f_21"
       }
     ],
     "entrances": [],
@@ -5118,8 +4969,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgryo1_2",
-        "id": "exit-164"
+        "target": "bgryo1_2"
       },
       {
         "destinationPoint": {
@@ -5139,8 +4989,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgryo1_4",
-        "id": "exit-165"
+        "target": "bgryo1_4"
       }
     ],
     "entrances": [],
@@ -5166,8 +5015,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgryo1_1",
-        "id": "exit-166"
+        "target": "bgryo1_1"
       }
     ],
     "entrances": [],
@@ -5198,8 +5046,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgryo1_1",
-        "id": "exit-167"
+        "target": "bgryo1_1"
       }
     ],
     "entrances": [],
@@ -5225,8 +5072,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgryo1_7",
-        "id": "exit-168"
+        "target": "bgryo1_7"
       }
     ],
     "entrances": [],
@@ -5252,8 +5098,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgryo1_7",
-        "id": "exit-169"
+        "target": "bgryo1_7"
       }
     ],
     "entrances": [],
@@ -5279,8 +5124,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgryo1_6",
-        "id": "exit-170"
+        "target": "bgryo1_6"
       },
       {
         "destinationPoint": {
@@ -5300,8 +5144,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgryo1_5",
-        "id": "exit-171"
+        "target": "bgryo1_5"
       }
     ],
     "entrances": [],
@@ -5352,8 +5195,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgsido5a",
-        "id": "exit-172"
+        "target": "bgsido5a"
       }
     ],
     "entrances": [],
@@ -5379,22 +5221,20 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgsido1a",
-        "id": "exit-173"
+        "target": "bgsido1a"
       }
     ],
     "entrances": [],
     "orientation": 128
   },
   "bgsido_1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1448",
-        "target": "bgsido_2",
         "destinationPoint": {
-          "x": 8,
-          "y": 394,
-          "z": 0
+          "x": -25,
+          "y": 1622,
+          "z": 66
         },
         "sourceLine": [
           {
@@ -5407,10 +5247,11 @@ export const exits = {
             "y": 394,
             "z": 0
           }
-        ]
+        ],
+        "target": "bgsido_1",
+        "source": "bgsido_2"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "bgsido_2": {
@@ -5433,8 +5274,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bgsido_1",
-        "id": "exit-174"
+        "target": "bgsido_1"
       }
     ],
     "entrances": [],
@@ -5510,8 +5350,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bvtr_2",
-        "id": "exit-175"
+        "target": "bvtr_2"
       }
     ],
     "entrances": [],
@@ -5523,30 +5362,30 @@ export const exits = {
     "orientation": 0
   },
   "bvtr_2": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1449",
-        "target": "bvtr_1",
         "destinationPoint": {
-          "x": 279,
-          "y": -585.5,
-          "z": 0
+          "x": 940,
+          "y": 217,
+          "z": 21
         },
         "sourceLine": [
           {
-            "x": 239.99346769646726,
-            "y": -615.9752430286201,
+            "x": 279,
+            "y": -536,
             "z": 0
           },
           {
-            "x": 318.0065323035327,
-            "y": -555.0247569713799,
+            "x": 279,
+            "y": -635,
             "z": 0
           }
-        ]
+        ],
+        "target": "bvtr_2",
+        "source": "bvtr_1"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "bvtr_3": {
@@ -5574,38 +5413,37 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "bvtr_5",
-        "id": "exit-176"
+        "target": "bvtr_5"
       }
     ],
     "entrances": [],
     "orientation": 0
   },
   "bvtr_5": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1450",
-        "target": "bvtr_4",
         "destinationPoint": {
-          "x": -35.5,
-          "y": -134,
-          "z": 0
+          "x": 301,
+          "y": 72,
+          "z": 6
         },
         "sourceLine": [
           {
-            "x": 4.210165158504957,
-            "y": -184.82669360763356,
+            "x": -100,
+            "y": -134,
             "z": 0
           },
           {
-            "x": -75.21016515850496,
-            "y": -83.17330639236643,
+            "x": 29,
+            "y": -134,
             "z": 0
           }
-        ]
+        ],
+        "target": "bvtr_5",
+        "source": "bvtr_4"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "cdfield1": {
@@ -5628,8 +5466,7 @@ export const exits = {
             "z": -1889
           }
         ],
-        "target": "cdfield2",
-        "id": "exit-177"
+        "target": "cdfield2"
       }
     ],
     "entrances": [],
@@ -5655,8 +5492,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "cdfield4",
-        "id": "exit-178"
+        "target": "cdfield4"
       },
       {
         "destinationPoint": {
@@ -5676,8 +5512,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "cdfield1",
-        "id": "exit-179"
+        "target": "cdfield1"
       }
     ],
     "entrances": [],
@@ -5703,8 +5538,7 @@ export const exits = {
             "z": 11
           }
         ],
-        "target": "cdfield5",
-        "id": "exit-180"
+        "target": "cdfield5"
       }
     ],
     "entrances": [],
@@ -5730,8 +5564,7 @@ export const exits = {
             "z": 795
           }
         ],
-        "target": "cdfield2",
-        "id": "exit-181"
+        "target": "cdfield2"
       }
     ],
     "entrances": [],
@@ -5757,8 +5590,7 @@ export const exits = {
             "z": 56
           }
         ],
-        "target": "ebexit2",
-        "id": "exit-182"
+        "target": "ebexit2"
       },
       {
         "destinationPoint": {
@@ -5778,8 +5610,7 @@ export const exits = {
             "z": 56
           }
         ],
-        "target": "cdfield3",
-        "id": "exit-183"
+        "target": "cdfield3"
       }
     ],
     "entrances": [],
@@ -5805,8 +5636,7 @@ export const exits = {
             "z": -732
           }
         ],
-        "target": "ebexit5",
-        "id": "exit-184"
+        "target": "ebexit5"
       },
       {
         "destinationPoint": {
@@ -5826,8 +5656,7 @@ export const exits = {
             "z": -732
           }
         ],
-        "target": "ebexit5",
-        "id": "exit-185"
+        "target": "ebexit5"
       }
     ],
     "entrances": [],
@@ -5853,8 +5682,7 @@ export const exits = {
             "z": 371
           }
         ],
-        "target": "ebexit3",
-        "id": "exit-186"
+        "target": "ebexit3"
       },
       {
         "destinationPoint": {
@@ -5874,8 +5702,7 @@ export const exits = {
             "z": -65
           }
         ],
-        "target": "cdfield8",
-        "id": "exit-187"
+        "target": "cdfield8"
       }
     ],
     "entrances": [],
@@ -5901,8 +5728,7 @@ export const exits = {
             "z": 10
           }
         ],
-        "target": "cdfield7",
-        "id": "exit-188"
+        "target": "cdfield7"
       },
       {
         "destinationPoint": {
@@ -5922,8 +5748,7 @@ export const exits = {
             "z": 52
           }
         ],
-        "target": "ebexit4",
-        "id": "exit-189"
+        "target": "ebexit4"
       }
     ],
     "entrances": [],
@@ -5949,8 +5774,7 @@ export const exits = {
             "z": 1052
           }
         ],
-        "target": "cropen1",
-        "id": "exit-190"
+        "target": "cropen1"
       },
       {
         "destinationPoint": {
@@ -5970,8 +5794,7 @@ export const exits = {
             "z": 31
           }
         ],
-        "target": "crview1",
-        "id": "exit-191"
+        "target": "crview1"
       }
     ],
     "entrances": [],
@@ -5997,8 +5820,7 @@ export const exits = {
             "z": 2
           }
         ],
-        "target": "crtower3",
-        "id": "exit-192"
+        "target": "crtower3"
       }
     ],
     "entrances": [],
@@ -6024,8 +5846,7 @@ export const exits = {
             "z": 5940
           }
         ],
-        "target": "crsanc1",
-        "id": "exit-193"
+        "target": "crsanc1"
       },
       {
         "destinationPoint": {
@@ -6045,8 +5866,7 @@ export const exits = {
             "z": 3311
           }
         ],
-        "target": "crenter1",
-        "id": "exit-194"
+        "target": "crenter1"
       }
     ],
     "entrances": [],
@@ -6072,8 +5892,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "crtower2",
-        "id": "exit-195"
+        "target": "crtower2"
       }
     ],
     "entrances": [],
@@ -6099,8 +5918,7 @@ export const exits = {
             "z": 18066
           }
         ],
-        "target": "crtower3",
-        "id": "exit-196"
+        "target": "crtower3"
       }
     ],
     "entrances": [],
@@ -6126,8 +5944,7 @@ export const exits = {
             "z": 7499
           }
         ],
-        "target": "crsphi1",
-        "id": "exit-197"
+        "target": "crsphi1"
       },
       {
         "destinationPoint": {
@@ -6147,8 +5964,7 @@ export const exits = {
             "z": 6395
           }
         ],
-        "target": "cropen1",
-        "id": "exit-198"
+        "target": "cropen1"
       }
     ],
     "entrances": [],
@@ -6174,8 +5990,7 @@ export const exits = {
             "z": 545
           }
         ],
-        "target": "crsanc1",
-        "id": "exit-199"
+        "target": "crsanc1"
       }
     ],
     "entrances": [],
@@ -6201,8 +6016,7 @@ export const exits = {
             "z": 10803
           }
         ],
-        "target": "crtower2",
-        "id": "exit-200"
+        "target": "crtower2"
       }
     ],
     "entrances": [],
@@ -6228,8 +6042,7 @@ export const exits = {
             "z": 13387
           }
         ],
-        "target": "crtower1",
-        "id": "exit-201"
+        "target": "crtower1"
       },
       {
         "destinationPoint": {
@@ -6249,8 +6062,7 @@ export const exits = {
             "z": 14959
           }
         ],
-        "target": "crtower3",
-        "id": "exit-202"
+        "target": "crtower3"
       },
       {
         "destinationPoint": {
@@ -6270,8 +6082,7 @@ export const exits = {
             "z": 15039
           }
         ],
-        "target": "crpower1",
-        "id": "exit-203"
+        "target": "crpower1"
       }
     ],
     "entrances": [],
@@ -6297,8 +6108,7 @@ export const exits = {
             "z": 16247
           }
         ],
-        "target": "crodin1",
-        "id": "exit-204"
+        "target": "crodin1"
       },
       {
         "destinationPoint": {
@@ -6318,8 +6128,7 @@ export const exits = {
             "z": 16104
           }
         ],
-        "target": "crtower2",
-        "id": "exit-205"
+        "target": "crtower2"
       },
       {
         "destinationPoint": {
@@ -6339,8 +6148,7 @@ export const exits = {
             "z": 17094
           }
         ],
-        "target": "crroof1",
-        "id": "exit-206"
+        "target": "crroof1"
       }
     ],
     "entrances": [],
@@ -6366,8 +6174,7 @@ export const exits = {
             "z": -401
           }
         ],
-        "target": "crenter1",
-        "id": "exit-207"
+        "target": "crenter1"
       },
       {
         "destinationPoint": {
@@ -6387,8 +6194,7 @@ export const exits = {
             "z": -415
           }
         ],
-        "target": "crenter1",
-        "id": "exit-208"
+        "target": "crenter1"
       },
       {
         "destinationPoint": {
@@ -6408,8 +6214,7 @@ export const exits = {
             "z": -350
           }
         ],
-        "target": "crenter1",
-        "id": "exit-209"
+        "target": "crenter1"
       }
     ],
     "entrances": [],
@@ -6470,8 +6275,7 @@ export const exits = {
             "z": 281
           }
         ],
-        "target": "ddruins2",
-        "id": "exit-210"
+        "target": "ddruins2"
       },
       {
         "destinationPoint": {
@@ -6491,8 +6295,7 @@ export const exits = {
             "z": 1504
           }
         ],
-        "target": "ddtower6",
-        "id": "exit-211"
+        "target": "ddtower6"
       }
     ],
     "entrances": [],
@@ -6518,8 +6321,7 @@ export const exits = {
             "z": -2190
           }
         ],
-        "target": "ddruins3",
-        "id": "exit-212"
+        "target": "ddruins3"
       },
       {
         "destinationPoint": {
@@ -6539,8 +6341,7 @@ export const exits = {
             "z": 430
           }
         ],
-        "target": "ddruins1",
-        "id": "exit-213"
+        "target": "ddruins1"
       }
     ],
     "entrances": [],
@@ -6566,8 +6367,7 @@ export const exits = {
             "z": -87
           }
         ],
-        "target": "ddruins4",
-        "id": "exit-214"
+        "target": "ddruins4"
       },
       {
         "destinationPoint": {
@@ -6587,8 +6387,7 @@ export const exits = {
             "z": 1560
           }
         ],
-        "target": "ddruins2",
-        "id": "exit-215"
+        "target": "ddruins2"
       }
     ],
     "entrances": [],
@@ -6614,8 +6413,7 @@ export const exits = {
             "z": 300
           }
         ],
-        "target": "ddruins5",
-        "id": "exit-216"
+        "target": "ddruins5"
       },
       {
         "destinationPoint": {
@@ -6635,8 +6433,7 @@ export const exits = {
             "z": 1258
           }
         ],
-        "target": "ddruins3",
-        "id": "exit-217"
+        "target": "ddruins3"
       }
     ],
     "entrances": [],
@@ -6662,8 +6459,7 @@ export const exits = {
             "z": -176
           }
         ],
-        "target": "ddruins6",
-        "id": "exit-218"
+        "target": "ddruins6"
       },
       {
         "destinationPoint": {
@@ -6683,8 +6479,7 @@ export const exits = {
             "z": 1625
           }
         ],
-        "target": "ddruins4",
-        "id": "exit-219"
+        "target": "ddruins4"
       }
     ],
     "entrances": [],
@@ -6710,8 +6505,7 @@ export const exits = {
             "z": 602
           }
         ],
-        "target": "ddruins5",
-        "id": "exit-220"
+        "target": "ddruins5"
       }
     ],
     "entrances": [],
@@ -6737,8 +6531,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ddtower3",
-        "id": "exit-221"
+        "target": "ddtower3"
       },
       {
         "destinationPoint": {
@@ -6758,22 +6551,20 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ddtower3",
-        "id": "exit-222"
+        "target": "ddtower3"
       }
     ],
     "entrances": [],
     "orientation": 112
   },
   "ddtower1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1451",
-        "target": "ddtower2",
         "destinationPoint": {
-          "x": 448,
-          "y": 2135.5,
-          "z": 860.5
+          "x": 942,
+          "y": 134,
+          "z": 8
         },
         "sourceLine": [
           {
@@ -6786,10 +6577,11 @@ export const exits = {
             "y": 2213,
             "z": 866
           }
-        ]
+        ],
+        "target": "ddtower1",
+        "source": "ddtower2"
       }
     ],
-    "entrances": [],
     "orientation": 96
   },
   "ddtower2": {
@@ -6812,32 +6604,32 @@ export const exits = {
             "z": 866
           }
         ],
-        "target": "ddtower1",
-        "id": "exit-223"
-      },
+        "target": "ddtower1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1452",
-        "target": "ddtower3",
         "destinationPoint": {
-          "x": 582.5,
-          "y": -17.5,
-          "z": 1020.5
+          "x": 999,
+          "y": 110,
+          "z": 8
         },
         "sourceLine": [
           {
-            "x": 552.6698886215613,
-            "y": -111.47161515665219,
+            "x": 607,
+            "y": -113,
             "z": 1024
           },
           {
-            "x": 612.3301113784387,
-            "y": 76.47161515665219,
+            "x": 558,
+            "y": 78,
             "z": 1017
           }
-        ]
+        ],
+        "target": "ddtower2",
+        "source": "ddtower3"
       }
     ],
-    "entrances": [],
     "orientation": 96
   },
   "ddtower3": {
@@ -6860,8 +6652,7 @@ export const exits = {
             "z": 1017
           }
         ],
-        "target": "ddtower2",
-        "id": "exit-224"
+        "target": "ddtower2"
       },
       {
         "destinationPoint": {
@@ -6881,32 +6672,32 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ddsteam1",
-        "id": "exit-225"
-      },
+        "target": "ddsteam1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1453",
-        "target": "ddtower4",
         "destinationPoint": {
-          "x": 638.5,
-          "y": 4,
-          "z": 973
+          "x": 718,
+          "y": -637,
+          "z": 75
         },
         "sourceLine": [
           {
-            "x": 691.2888777964424,
-            "y": -88.03577772253719,
+            "x": 671,
+            "y": -97,
             "z": 973
           },
           {
-            "x": 585.7111222035576,
-            "y": 96.03577772253719,
+            "x": 606,
+            "y": 105,
             "z": 973
           }
-        ]
+        ],
+        "target": "ddtower3",
+        "source": "ddtower4"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "ddtower4": {
@@ -6929,16 +6720,15 @@ export const exits = {
             "z": 973
           }
         ],
-        "target": "ddtower3",
-        "id": "exit-226"
-      },
+        "target": "ddtower3"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1454",
-        "target": "ddtower5",
         "destinationPoint": {
-          "x": 605.5,
-          "y": -12,
-          "z": 1003.5
+          "x": 853,
+          "y": -397,
+          "z": 50
         },
         "sourceLine": [
           {
@@ -6951,10 +6741,11 @@ export const exits = {
             "y": 85,
             "z": 997
           }
-        ]
+        ],
+        "target": "ddtower4",
+        "source": "ddtower5"
       }
     ],
-    "entrances": [],
     "orientation": 116
   },
   "ddtower5": {
@@ -6977,8 +6768,7 @@ export const exits = {
             "z": 997
           }
         ],
-        "target": "ddtower4",
-        "id": "exit-227"
+        "target": "ddtower4"
       }
     ],
     "entrances": [],
@@ -7004,8 +6794,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ddruins1",
-        "id": "exit-228"
+        "target": "ddruins1"
       }
     ],
     "entrances": [],
@@ -7031,32 +6820,32 @@ export const exits = {
             "z": -119
           }
         ],
-        "target": "domt3_3",
-        "id": "exit-229"
-      },
+        "target": "domt3_3"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1455",
-        "target": "doani1_1",
         "destinationPoint": {
-          "x": -1078.5,
-          "y": -1863.5,
-          "z": 3968
+          "x": 2951,
+          "y": -31,
+          "z": 20
         },
         "sourceLine": [
           {
-            "x": -1160.1930779433337,
-            "y": -1982.2212744883764,
+            "x": -1200,
+            "y": -1786,
             "z": 3968
           },
           {
-            "x": -996.8069220566662,
-            "y": -1744.7787255116236,
+            "x": -957,
+            "y": -1941,
             "z": 3968
           }
-        ]
+        ],
+        "target": "doan1_1",
+        "source": "doani1_1"
       }
     ],
-    "entrances": [],
     "orientation": 192
   },
   "doan1_2": {
@@ -7079,8 +6868,7 @@ export const exits = {
             "z": -119
           }
         ],
-        "target": "domt3_4",
-        "id": "exit-230"
+        "target": "domt3_4"
       },
       {
         "destinationPoint": {
@@ -7100,8 +6888,7 @@ export const exits = {
             "z": -48
           }
         ],
-        "target": "doani1_2",
-        "id": "exit-231"
+        "target": "doani1_2"
       }
     ],
     "entrances": [],
@@ -7127,38 +6914,37 @@ export const exits = {
             "z": 3968
           }
         ],
-        "target": "doan1_1",
-        "id": "exit-232"
+        "target": "doan1_1"
       }
     ],
     "entrances": [],
     "orientation": 104
   },
   "doani1_2": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1456",
-        "target": "doan1_2",
         "destinationPoint": {
-          "x": 2225,
-          "y": -8,
-          "z": -48
+          "x": -1067,
+          "y": -1864,
+          "z": 6
         },
         "sourceLine": [
           {
-            "x": 1857.2241756569729,
-            "y": -20.8430147865204,
+            "x": 2225,
+            "y": -376,
             "z": -48
           },
           {
-            "x": 2592.775824343027,
-            "y": 4.843014786520397,
+            "x": 2225,
+            "y": 360,
             "z": -48
           }
-        ]
+        ],
+        "target": "doani1_2",
+        "source": "doan1_2"
       }
     ],
-    "entrances": [],
     "orientation": 104
   },
   "doani2_1": {
@@ -7211,8 +6997,7 @@ export const exits = {
             "z": 662
           }
         ],
-        "target": "dotown1a",
-        "id": "exit-233"
+        "target": "dotown1a"
       },
       {
         "destinationPoint": {
@@ -7232,8 +7017,7 @@ export const exits = {
             "z": 662
           }
         ],
-        "target": "doport_1",
-        "id": "exit-234"
+        "target": "doport_1"
       },
       {
         "destinationPoint": {
@@ -7253,8 +7037,7 @@ export const exits = {
             "z": 7
           }
         ],
-        "target": "dosea_1",
-        "id": "exit-235"
+        "target": "dosea_1"
       }
     ],
     "entrances": [],
@@ -7280,32 +7063,32 @@ export const exits = {
             "z": 662
           }
         ],
-        "target": "dotown_1",
-        "id": "exit-236"
-      },
+        "target": "dotown_1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1457",
-        "target": "dosea_2",
         "destinationPoint": {
-          "x": 339.5,
-          "y": 48,
-          "z": 189.5
+          "x": -2216,
+          "y": -2512,
+          "z": 244
         },
         "sourceLine": [
           {
-            "x": 155.38735571759477,
-            "y": -99.33561760599682,
+            "x": 152,
+            "y": 191,
             "z": 182
           },
           {
-            "x": 523.6126442824052,
-            "y": 195.33561760599682,
+            "x": 527,
+            "y": -95,
             "z": 197
           }
-        ]
+        ],
+        "target": "dogate_1",
+        "source": "dosea_2"
       }
     ],
-    "entrances": [],
     "orientation": 96
   },
   "dogate_2": {
@@ -7328,8 +7111,7 @@ export const exits = {
             "z": 108
           }
         ],
-        "target": "doopen1a",
-        "id": "exit-237"
+        "target": "doopen1a"
       },
       {
         "destinationPoint": {
@@ -7349,8 +7131,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "doport_1",
-        "id": "exit-238"
+        "target": "doport_1"
       },
       {
         "destinationPoint": {
@@ -7370,8 +7151,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "doport_1",
-        "id": "exit-239"
+        "target": "doport_1"
       }
     ],
     "entrances": [],
@@ -7397,8 +7177,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "doopen1a",
-        "id": "exit-240"
+        "target": "doopen1a"
       },
       {
         "destinationPoint": {
@@ -7418,8 +7197,7 @@ export const exits = {
             "z": 80
           }
         ],
-        "target": "dohtr_1",
-        "id": "exit-241"
+        "target": "dohtr_1"
       }
     ],
     "entrances": [],
@@ -7445,8 +7223,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dohtl_1",
-        "id": "exit-242"
+        "target": "dohtl_1"
       }
     ],
     "entrances": [],
@@ -7472,8 +7249,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown1a",
-        "id": "exit-243"
+        "target": "dotown1a"
       }
     ],
     "entrances": [],
@@ -7499,8 +7275,7 @@ export const exits = {
             "z": 18
           }
         ],
-        "target": "doopen_1",
-        "id": "exit-244"
+        "target": "doopen_1"
       },
       {
         "destinationPoint": {
@@ -7520,16 +7295,15 @@ export const exits = {
             "z": 18
           }
         ],
-        "target": "domt2_1",
-        "id": "exit-245"
-      },
+        "target": "domt2_1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1458",
-        "target": "doopen1a",
         "destinationPoint": {
-          "x": -1736.5,
-          "y": 1706.5,
-          "z": 0
+          "x": 4200,
+          "y": -408,
+          "z": 3
         },
         "sourceLine": [
           {
@@ -7542,10 +7316,11 @@ export const exits = {
             "y": 1553,
             "z": 0
           }
-        ]
+        ],
+        "target": "domt1_1",
+        "source": "doopen1a"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "domt2_1": {
@@ -7568,8 +7343,7 @@ export const exits = {
             "z": -600
           }
         ],
-        "target": "domt1_1",
-        "id": "exit-246"
+        "target": "domt1_1"
       },
       {
         "destinationPoint": {
@@ -7589,8 +7363,7 @@ export const exits = {
             "z": 1320
           }
         ],
-        "target": "domt5_1",
-        "id": "exit-247"
+        "target": "domt5_1"
       }
     ],
     "entrances": [],
@@ -7626,8 +7399,7 @@ export const exits = {
             "z": 561
           }
         ],
-        "target": "doan1_1",
-        "id": "exit-248"
+        "target": "doan1_1"
       }
     ],
     "entrances": [],
@@ -7653,8 +7425,7 @@ export const exits = {
             "z": 561
           }
         ],
-        "target": "doan1_2",
-        "id": "exit-249"
+        "target": "doan1_2"
       }
     ],
     "entrances": [],
@@ -7685,8 +7456,7 @@ export const exits = {
             "z": -1073
           }
         ],
-        "target": "domt2_1",
-        "id": "exit-250"
+        "target": "domt2_1"
       }
     ],
     "entrances": [],
@@ -7712,8 +7482,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "domt1_1",
-        "id": "exit-251"
+        "target": "domt1_1"
       },
       {
         "destinationPoint": {
@@ -7733,8 +7502,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown3a",
-        "id": "exit-252"
+        "target": "dotown3a"
       },
       {
         "destinationPoint": {
@@ -7754,8 +7522,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dogate_2",
-        "id": "exit-253"
+        "target": "dogate_2"
       },
       {
         "destinationPoint": {
@@ -7775,8 +7542,7 @@ export const exits = {
             "z": 94
           }
         ],
-        "target": "dohtl_1",
-        "id": "exit-254"
+        "target": "dohtl_1"
       }
     ],
     "entrances": [],
@@ -7807,8 +7573,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "domt1_1",
-        "id": "exit-255"
+        "target": "domt1_1"
       },
       {
         "destinationPoint": {
@@ -7828,8 +7593,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown_3",
-        "id": "exit-256"
+        "target": "dotown_3"
       }
     ],
     "entrances": [],
@@ -7860,8 +7624,7 @@ export const exits = {
             "z": 237
           }
         ],
-        "target": "dogate_2",
-        "id": "exit-257"
+        "target": "dogate_2"
       },
       {
         "destinationPoint": {
@@ -7881,8 +7644,7 @@ export const exits = {
             "z": 41
           }
         ],
-        "target": "dogate1a",
-        "id": "exit-258"
+        "target": "dogate1a"
       }
     ],
     "entrances": [],
@@ -7908,8 +7670,7 @@ export const exits = {
             "z": 686
           }
         ],
-        "target": "dopub_2",
-        "id": "exit-259"
+        "target": "dopub_2"
       },
       {
         "destinationPoint": {
@@ -7929,8 +7690,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown2a",
-        "id": "exit-260"
+        "target": "dotown2a"
       }
     ],
     "entrances": [],
@@ -7956,8 +7716,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown2a",
-        "id": "exit-261"
+        "target": "dotown2a"
       },
       {
         "destinationPoint": {
@@ -7977,8 +7736,7 @@ export const exits = {
             "z": -357
           }
         ],
-        "target": "dopub_1",
-        "id": "exit-262"
+        "target": "dopub_1"
       }
     ],
     "entrances": [],
@@ -8004,8 +7762,7 @@ export const exits = {
             "z": 10
           }
         ],
-        "target": "dotown2a",
-        "id": "exit-263"
+        "target": "dotown2a"
       }
     ],
     "entrances": [],
@@ -8031,8 +7788,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dogate1a",
-        "id": "exit-264"
+        "target": "dogate1a"
       }
     ],
     "entrances": [],
@@ -8058,32 +7814,32 @@ export const exits = {
             "z": 197
           }
         ],
-        "target": "dogate_1",
-        "id": "exit-265"
-      },
+        "target": "dogate_1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1459",
-        "target": "ebadele4",
         "destinationPoint": {
-          "x": -281.5,
-          "y": -5848,
-          "z": 94
+          "x": 0,
+          "y": -2926,
+          "z": 19
         },
         "sourceLine": [
           {
-            "x": -70.28688434472349,
-            "y": -5197.952871112262,
+            "x": -965,
+            "y": -5848,
             "z": 94
           },
           {
-            "x": -492.7131156552765,
-            "y": -6498.047128887738,
+            "x": 402,
+            "y": -5848,
             "z": 94
           }
-        ]
+        ],
+        "target": "dosea_2",
+        "source": "ebadele4"
       }
     ],
-    "entrances": [],
     "orientation": 20
   },
   "dotown1a": {
@@ -8106,8 +7862,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dogate1a",
-        "id": "exit-266"
+        "target": "dogate1a"
       },
       {
         "destinationPoint": {
@@ -8127,8 +7882,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown2a",
-        "id": "exit-267"
+        "target": "dotown2a"
       },
       {
         "destinationPoint": {
@@ -8148,8 +7902,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "domin2_1",
-        "id": "exit-268"
+        "target": "domin2_1"
       }
     ],
     "entrances": [],
@@ -8175,8 +7928,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown1a",
-        "id": "exit-269"
+        "target": "dotown1a"
       },
       {
         "destinationPoint": {
@@ -8196,8 +7948,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown3a",
-        "id": "exit-270"
+        "target": "dotown3a"
       },
       {
         "destinationPoint": {
@@ -8217,8 +7968,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dopub_1",
-        "id": "exit-271"
+        "target": "dopub_1"
       },
       {
         "destinationPoint": {
@@ -8238,8 +7988,7 @@ export const exits = {
             "z": 999
           }
         ],
-        "target": "dopub_2",
-        "id": "exit-272"
+        "target": "dopub_2"
       },
       {
         "destinationPoint": {
@@ -8259,8 +8008,7 @@ export const exits = {
             "z": 999
           }
         ],
-        "target": "dopub_3",
-        "id": "exit-273"
+        "target": "dopub_3"
       }
     ],
     "entrances": [],
@@ -8286,8 +8034,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown2a",
-        "id": "exit-274"
+        "target": "dotown2a"
       },
       {
         "destinationPoint": {
@@ -8307,8 +8054,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "doopen1a",
-        "id": "exit-275"
+        "target": "doopen1a"
       }
     ],
     "entrances": [],
@@ -8334,8 +8080,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dogate_1",
-        "id": "exit-276"
+        "target": "dogate_1"
       },
       {
         "destinationPoint": {
@@ -8355,8 +8100,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown_2",
-        "id": "exit-277"
+        "target": "dotown_2"
       }
     ],
     "entrances": [],
@@ -8382,8 +8126,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown_1",
-        "id": "exit-278"
+        "target": "dotown_1"
       },
       {
         "destinationPoint": {
@@ -8403,8 +8146,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown_3",
-        "id": "exit-279"
+        "target": "dotown_3"
       }
     ],
     "entrances": [],
@@ -8430,8 +8172,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "dotown_2",
-        "id": "exit-280"
+        "target": "dotown_2"
       },
       {
         "destinationPoint": {
@@ -8451,8 +8192,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "doopen_1",
-        "id": "exit-281"
+        "target": "doopen_1"
       }
     ],
     "entrances": [],
@@ -8488,8 +8228,7 @@ export const exits = {
             "z": -621
           }
         ],
-        "target": "ebadele2",
-        "id": "exit-282"
+        "target": "ebadele2"
       },
       {
         "destinationPoint": {
@@ -8509,8 +8248,7 @@ export const exits = {
             "z": -621
           }
         ],
-        "target": "ebinhi1a",
-        "id": "exit-283"
+        "target": "ebinhi1a"
       }
     ],
     "entrances": [],
@@ -8536,8 +8274,7 @@ export const exits = {
             "z": -621
           }
         ],
-        "target": "ebadele3",
-        "id": "exit-284"
+        "target": "ebadele3"
       },
       {
         "destinationPoint": {
@@ -8557,8 +8294,7 @@ export const exits = {
             "z": -621
           }
         ],
-        "target": "ebadele1",
-        "id": "exit-285"
+        "target": "ebadele1"
       }
     ],
     "entrances": [],
@@ -8584,8 +8320,7 @@ export const exits = {
             "z": 94
           }
         ],
-        "target": "ebadele2",
-        "id": "exit-286"
+        "target": "ebadele2"
       }
     ],
     "entrances": [],
@@ -8611,8 +8346,7 @@ export const exits = {
             "z": 94
           }
         ],
-        "target": "dosea_2",
-        "id": "exit-287"
+        "target": "dosea_2"
       }
     ],
     "entrances": [],
@@ -8643,8 +8377,7 @@ export const exits = {
             "z": -193
           }
         ],
-        "target": "ebinhi1a",
-        "id": "exit-288"
+        "target": "ebinhi1a"
       },
       {
         "destinationPoint": {
@@ -8664,8 +8397,7 @@ export const exits = {
             "z": -193
           }
         ],
-        "target": "ebinhi1a",
-        "id": "exit-289"
+        "target": "ebinhi1a"
       },
       {
         "destinationPoint": {
@@ -8685,8 +8417,7 @@ export const exits = {
             "z": -193
           }
         ],
-        "target": "ebinhi1a",
-        "id": "exit-290"
+        "target": "ebinhi1a"
       },
       {
         "destinationPoint": {
@@ -8706,8 +8437,7 @@ export const exits = {
             "z": -193
           }
         ],
-        "target": "ebinhi1a",
-        "id": "exit-291"
+        "target": "ebinhi1a"
       }
     ],
     "entrances": [],
@@ -8743,8 +8473,7 @@ export const exits = {
             "z": -10
           }
         ],
-        "target": "ebroad11",
-        "id": "exit-292"
+        "target": "ebroad11"
       }
     ],
     "entrances": [],
@@ -8770,8 +8499,7 @@ export const exits = {
             "z": 429
           }
         ],
-        "target": "ebexit3",
-        "id": "exit-293"
+        "target": "ebexit3"
       },
       {
         "destinationPoint": {
@@ -8791,8 +8519,7 @@ export const exits = {
             "z": -110
           }
         ],
-        "target": "cdfield5",
-        "id": "exit-294"
+        "target": "cdfield5"
       },
       {
         "destinationPoint": {
@@ -8812,8 +8539,7 @@ export const exits = {
             "z": -527
           }
         ],
-        "target": "ebroad21",
-        "id": "exit-295"
+        "target": "ebroad21"
       },
       {
         "destinationPoint": {
@@ -8833,8 +8559,7 @@ export const exits = {
             "z": -522
           }
         ],
-        "target": "ebroad21",
-        "id": "exit-296"
+        "target": "ebroad21"
       },
       {
         "destinationPoint": {
@@ -8854,8 +8579,7 @@ export const exits = {
             "z": -522
           }
         ],
-        "target": "ebroad21",
-        "id": "exit-297"
+        "target": "ebroad21"
       },
       {
         "destinationPoint": {
@@ -8875,8 +8599,7 @@ export const exits = {
             "z": -522
           }
         ],
-        "target": "ebroad21",
-        "id": "exit-298"
+        "target": "ebroad21"
       },
       {
         "destinationPoint": {
@@ -8896,8 +8619,7 @@ export const exits = {
             "z": -554
           }
         ],
-        "target": "ebroad21",
-        "id": "exit-299"
+        "target": "ebroad21"
       }
     ],
     "entrances": [],
@@ -8923,8 +8645,7 @@ export const exits = {
             "z": 904
           }
         ],
-        "target": "ebroad31",
-        "id": "exit-300"
+        "target": "ebroad31"
       },
       {
         "destinationPoint": {
@@ -8944,8 +8665,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "cdfield7",
-        "id": "exit-301"
+        "target": "cdfield7"
       },
       {
         "destinationPoint": {
@@ -8965,8 +8685,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "cdfield7",
-        "id": "exit-302"
+        "target": "cdfield7"
       },
       {
         "destinationPoint": {
@@ -8986,8 +8705,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebexit2",
-        "id": "exit-303"
+        "target": "ebexit2"
       }
     ],
     "entrances": [],
@@ -9013,8 +8731,7 @@ export const exits = {
             "z": 1756
           }
         ],
-        "target": "ebexit5",
-        "id": "exit-304"
+        "target": "ebexit5"
       },
       {
         "destinationPoint": {
@@ -9034,8 +8751,7 @@ export const exits = {
             "z": 391
           }
         ],
-        "target": "ebroad41",
-        "id": "exit-305"
+        "target": "ebroad41"
       },
       {
         "destinationPoint": {
@@ -9055,8 +8771,7 @@ export const exits = {
             "z": 405
           }
         ],
-        "target": "ebroad41",
-        "id": "exit-306"
+        "target": "ebroad41"
       },
       {
         "destinationPoint": {
@@ -9076,8 +8791,7 @@ export const exits = {
             "z": 135
           }
         ],
-        "target": "cdfield8",
-        "id": "exit-307"
+        "target": "cdfield8"
       }
     ],
     "entrances": [],
@@ -9103,8 +8817,7 @@ export const exits = {
             "z": -741
           }
         ],
-        "target": "cdfield6",
-        "id": "exit-308"
+        "target": "cdfield6"
       },
       {
         "destinationPoint": {
@@ -9124,8 +8837,7 @@ export const exits = {
             "z": -554
           }
         ],
-        "target": "ebexit4",
-        "id": "exit-309"
+        "target": "ebexit4"
       }
     ],
     "entrances": [],
@@ -9156,8 +8868,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebroad9",
-        "id": "exit-310"
+        "target": "ebroad9"
       }
     ],
     "entrances": [],
@@ -9183,8 +8894,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebroad9a",
-        "id": "exit-311"
+        "target": "ebroad9a"
       }
     ],
     "entrances": [],
@@ -9210,8 +8920,7 @@ export const exits = {
             "z": -257
           }
         ],
-        "target": "ebgate4",
-        "id": "exit-312"
+        "target": "ebgate4"
       }
     ],
     "entrances": [],
@@ -9237,8 +8946,7 @@ export const exits = {
             "z": -257
           }
         ],
-        "target": "ebgate4a",
-        "id": "exit-313"
+        "target": "ebgate4a"
       }
     ],
     "entrances": [],
@@ -9264,8 +8972,7 @@ export const exits = {
             "z": 1431
           }
         ],
-        "target": "ebinlow1",
-        "id": "exit-314"
+        "target": "ebinlow1"
       }
     ],
     "entrances": [],
@@ -9291,8 +8998,7 @@ export const exits = {
             "z": 1431
           }
         ],
-        "target": "ebinlow2",
-        "id": "exit-315"
+        "target": "ebinlow2"
       }
     ],
     "entrances": [],
@@ -9318,8 +9024,7 @@ export const exits = {
             "z": -263
           }
         ],
-        "target": "ebgate2",
-        "id": "exit-316"
+        "target": "ebgate2"
       },
       {
         "destinationPoint": {
@@ -9339,8 +9044,7 @@ export const exits = {
             "z": -263
           }
         ],
-        "target": "ebroad8",
-        "id": "exit-317"
+        "target": "ebroad8"
       }
     ],
     "entrances": [],
@@ -9366,8 +9070,7 @@ export const exits = {
             "z": -263
           }
         ],
-        "target": "ebgate2a",
-        "id": "exit-318"
+        "target": "ebgate2a"
       },
       {
         "destinationPoint": {
@@ -9387,8 +9090,7 @@ export const exits = {
             "z": -263
           }
         ],
-        "target": "ebroad8a",
-        "id": "exit-319"
+        "target": "ebroad8a"
       }
     ],
     "entrances": [],
@@ -9414,8 +9116,7 @@ export const exits = {
             "z": -6950
           }
         ],
-        "target": "ebroad9",
-        "id": "exit-320"
+        "target": "ebroad9"
       }
     ],
     "entrances": [],
@@ -9441,8 +9142,7 @@ export const exits = {
             "z": -6950
           }
         ],
-        "target": "ebroad9a",
-        "id": "exit-321"
+        "target": "ebroad9a"
       },
       {
         "destinationPoint": {
@@ -9462,8 +9162,7 @@ export const exits = {
             "z": -2503
           }
         ],
-        "target": "ebadele1",
-        "id": "exit-322"
+        "target": "ebadele1"
       },
       {
         "destinationPoint": {
@@ -9483,8 +9182,7 @@ export const exits = {
             "z": -5714
           }
         ],
-        "target": "ebcont1",
-        "id": "exit-323"
+        "target": "ebcont1"
       }
     ],
     "entrances": [],
@@ -9510,8 +9208,7 @@ export const exits = {
             "z": -411
           }
         ],
-        "target": "ebgate3",
-        "id": "exit-324"
+        "target": "ebgate3"
       }
     ],
     "entrances": [],
@@ -9537,8 +9234,7 @@ export const exits = {
             "z": -411
           }
         ],
-        "target": "ebgate3a",
-        "id": "exit-325"
+        "target": "ebgate3a"
       }
     ],
     "entrances": [],
@@ -9564,8 +9260,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinmid3",
-        "id": "exit-326"
+        "target": "ebinmid3"
       },
       {
         "destinationPoint": {
@@ -9585,8 +9280,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinmid2",
-        "id": "exit-327"
+        "target": "ebinmid2"
       },
       {
         "destinationPoint": {
@@ -9606,8 +9300,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinmid2",
-        "id": "exit-328"
+        "target": "ebinmid2"
       }
     ],
     "entrances": [],
@@ -9633,8 +9326,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinmid1",
-        "id": "exit-329"
+        "target": "ebinmid1"
       },
       {
         "destinationPoint": {
@@ -9654,8 +9346,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinmid1",
-        "id": "exit-330"
+        "target": "ebinmid1"
       },
       {
         "destinationPoint": {
@@ -9675,8 +9366,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebroad32",
-        "id": "exit-331"
+        "target": "ebroad32"
       }
     ],
     "entrances": [],
@@ -9702,8 +9392,7 @@ export const exits = {
             "z": 426
           }
         ],
-        "target": "ebinmid1",
-        "id": "exit-332"
+        "target": "ebinmid1"
       }
     ],
     "entrances": [],
@@ -9729,8 +9418,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinto3",
-        "id": "exit-333"
+        "target": "ebinto3"
       },
       {
         "destinationPoint": {
@@ -9750,8 +9438,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinmid5",
-        "id": "exit-334"
+        "target": "ebinmid5"
       },
       {
         "destinationPoint": {
@@ -9771,8 +9458,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinmid5",
-        "id": "exit-335"
+        "target": "ebinmid5"
       }
     ],
     "entrances": [],
@@ -9798,8 +9484,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinmid4",
-        "id": "exit-336"
+        "target": "ebinmid4"
       },
       {
         "destinationPoint": {
@@ -9819,8 +9504,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinmid4",
-        "id": "exit-337"
+        "target": "ebinmid4"
       },
       {
         "destinationPoint": {
@@ -9840,8 +9524,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebroad33",
-        "id": "exit-338"
+        "target": "ebroad33"
       }
     ],
     "entrances": [],
@@ -9872,8 +9555,7 @@ export const exits = {
             "z": 1
           }
         ],
-        "target": "ebinto2",
-        "id": "exit-339"
+        "target": "ebinto2"
       },
       {
         "destinationPoint": {
@@ -9893,8 +9575,7 @@ export const exits = {
             "z": 227
           }
         ],
-        "target": "rgexit2",
-        "id": "exit-340"
+        "target": "rgexit2"
       },
       {
         "destinationPoint": {
@@ -9914,8 +9595,7 @@ export const exits = {
             "z": 227
           }
         ],
-        "target": "rgexit2",
-        "id": "exit-341"
+        "target": "rgexit2"
       }
     ],
     "entrances": [],
@@ -9941,8 +9621,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinto3",
-        "id": "exit-342"
+        "target": "ebinto3"
       },
       {
         "destinationPoint": {
@@ -9962,8 +9641,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ebinto1",
-        "id": "exit-343"
+        "target": "ebinto1"
       }
     ],
     "entrances": [],
@@ -9989,8 +9667,7 @@ export const exits = {
             "z": 40
           }
         ],
-        "target": "ebinto2",
-        "id": "exit-344"
+        "target": "ebinto2"
       },
       {
         "destinationPoint": {
@@ -10010,8 +9687,7 @@ export const exits = {
             "z": 432
           }
         ],
-        "target": "ebinmid4",
-        "id": "exit-345"
+        "target": "ebinmid4"
       }
     ],
     "entrances": [],
@@ -10037,8 +9713,7 @@ export const exits = {
             "z": -160
           }
         ],
-        "target": "ebroad21",
-        "id": "exit-346"
+        "target": "ebroad21"
       },
       {
         "destinationPoint": {
@@ -10058,8 +9733,7 @@ export const exits = {
             "z": -61
           }
         ],
-        "target": "ebexit1",
-        "id": "exit-347"
+        "target": "ebexit1"
       }
     ],
     "entrances": [],
@@ -10085,8 +9759,7 @@ export const exits = {
             "z": -90
           }
         ],
-        "target": "ebroad6",
-        "id": "exit-348"
+        "target": "ebroad6"
       },
       {
         "destinationPoint": {
@@ -10106,8 +9779,7 @@ export const exits = {
             "z": -90
           }
         ],
-        "target": "ebroad6",
-        "id": "exit-349"
+        "target": "ebroad6"
       },
       {
         "destinationPoint": {
@@ -10127,8 +9799,7 @@ export const exits = {
             "z": -94
           }
         ],
-        "target": "ebroad22",
-        "id": "exit-350"
+        "target": "ebroad22"
       },
       {
         "destinationPoint": {
@@ -10148,8 +9819,7 @@ export const exits = {
             "z": -82
           }
         ],
-        "target": "ebroad22",
-        "id": "exit-351"
+        "target": "ebroad22"
       }
     ],
     "entrances": [],
@@ -10175,8 +9845,7 @@ export const exits = {
             "z": -90
           }
         ],
-        "target": "ebroad6a",
-        "id": "exit-352"
+        "target": "ebroad6a"
       },
       {
         "destinationPoint": {
@@ -10196,8 +9865,7 @@ export const exits = {
             "z": -90
           }
         ],
-        "target": "ebroad6a",
-        "id": "exit-353"
+        "target": "ebroad6a"
       },
       {
         "destinationPoint": {
@@ -10217,8 +9885,7 @@ export const exits = {
             "z": -94
           }
         ],
-        "target": "ebroad23",
-        "id": "exit-354"
+        "target": "ebroad23"
       },
       {
         "destinationPoint": {
@@ -10238,8 +9905,7 @@ export const exits = {
             "z": -82
           }
         ],
-        "target": "ebroad23",
-        "id": "exit-355"
+        "target": "ebroad23"
       }
     ],
     "entrances": [],
@@ -10265,8 +9931,7 @@ export const exits = {
             "z": 783
           }
         ],
-        "target": "ebexit2",
-        "id": "exit-356"
+        "target": "ebexit2"
       },
       {
         "destinationPoint": {
@@ -10286,8 +9951,7 @@ export const exits = {
             "z": -323
           }
         ],
-        "target": "ebroad11",
-        "id": "exit-357"
+        "target": "ebroad11"
       }
     ],
     "entrances": [],
@@ -10313,8 +9977,7 @@ export const exits = {
             "z": -289
           }
         ],
-        "target": "ebroad12",
-        "id": "exit-358"
+        "target": "ebroad12"
       },
       {
         "destinationPoint": {
@@ -10334,8 +9997,7 @@ export const exits = {
             "z": -163
           }
         ],
-        "target": "ebroad7",
-        "id": "exit-359"
+        "target": "ebroad7"
       }
     ],
     "entrances": [],
@@ -10361,8 +10023,7 @@ export const exits = {
             "z": -289
           }
         ],
-        "target": "ebroad13",
-        "id": "exit-360"
+        "target": "ebroad13"
       },
       {
         "destinationPoint": {
@@ -10382,8 +10043,7 @@ export const exits = {
             "z": -163
           }
         ],
-        "target": "ebroad7a",
-        "id": "exit-361"
+        "target": "ebroad7a"
       }
     ],
     "entrances": [],
@@ -10409,8 +10069,7 @@ export const exits = {
             "z": 2097
           }
         ],
-        "target": "ebroad5",
-        "id": "exit-362"
+        "target": "ebroad5"
       },
       {
         "destinationPoint": {
@@ -10430,8 +10089,7 @@ export const exits = {
             "z": -69
           }
         ],
-        "target": "ebexit3",
-        "id": "exit-363"
+        "target": "ebexit3"
       }
     ],
     "entrances": [],
@@ -10457,8 +10115,7 @@ export const exits = {
             "z": -57
           }
         ],
-        "target": "ebinmid2",
-        "id": "exit-364"
+        "target": "ebinmid2"
       },
       {
         "destinationPoint": {
@@ -10478,8 +10135,7 @@ export const exits = {
             "z": -1269
           }
         ],
-        "target": "ebroad8",
-        "id": "exit-365"
+        "target": "ebroad8"
       },
       {
         "destinationPoint": {
@@ -10499,8 +10155,7 @@ export const exits = {
             "z": -1130
           }
         ],
-        "target": "ebroad8",
-        "id": "exit-366"
+        "target": "ebroad8"
       }
     ],
     "entrances": [],
@@ -10526,8 +10181,7 @@ export const exits = {
             "z": -57
           }
         ],
-        "target": "ebinmid5",
-        "id": "exit-367"
+        "target": "ebinmid5"
       },
       {
         "destinationPoint": {
@@ -10547,8 +10201,7 @@ export const exits = {
             "z": -1269
           }
         ],
-        "target": "ebroad8a",
-        "id": "exit-368"
+        "target": "ebroad8a"
       },
       {
         "destinationPoint": {
@@ -10568,8 +10221,7 @@ export const exits = {
             "z": -1130
           }
         ],
-        "target": "ebroad8a",
-        "id": "exit-369"
+        "target": "ebroad8a"
       }
     ],
     "entrances": [],
@@ -10595,8 +10247,7 @@ export const exits = {
             "z": 18
           }
         ],
-        "target": "ebroad5",
-        "id": "exit-370"
+        "target": "ebroad5"
       },
       {
         "destinationPoint": {
@@ -10616,8 +10267,7 @@ export const exits = {
             "z": -586
           }
         ],
-        "target": "ebexit4",
-        "id": "exit-371"
+        "target": "ebexit4"
       }
     ],
     "entrances": [],
@@ -10643,8 +10293,7 @@ export const exits = {
             "z": 1433
           }
         ],
-        "target": "ebroad9",
-        "id": "exit-372"
+        "target": "ebroad9"
       }
     ],
     "entrances": [],
@@ -10670,8 +10319,7 @@ export const exits = {
             "z": 1433
           }
         ],
-        "target": "ebroad9a",
-        "id": "exit-373"
+        "target": "ebroad9a"
       }
     ],
     "entrances": [],
@@ -10697,8 +10345,7 @@ export const exits = {
             "z": 1475
           }
         ],
-        "target": "ebroad41",
-        "id": "exit-374"
+        "target": "ebroad41"
       },
       {
         "destinationPoint": {
@@ -10718,8 +10365,7 @@ export const exits = {
             "z": -259
           }
         ],
-        "target": "ebroad31",
-        "id": "exit-375"
+        "target": "ebroad31"
       }
     ],
     "entrances": [],
@@ -10745,8 +10391,7 @@ export const exits = {
             "z": 16
           }
         ],
-        "target": "ebroad12",
-        "id": "exit-376"
+        "target": "ebroad12"
       },
       {
         "destinationPoint": {
@@ -10766,8 +10411,7 @@ export const exits = {
             "z": 16
           }
         ],
-        "target": "ebroad12",
-        "id": "exit-377"
+        "target": "ebroad12"
       }
     ],
     "entrances": [],
@@ -10793,8 +10437,7 @@ export const exits = {
             "z": 16
           }
         ],
-        "target": "ebroad13",
-        "id": "exit-378"
+        "target": "ebroad13"
       },
       {
         "destinationPoint": {
@@ -10814,8 +10457,7 @@ export const exits = {
             "z": 16
           }
         ],
-        "target": "ebroad13",
-        "id": "exit-379"
+        "target": "ebroad13"
       }
     ],
     "entrances": [],
@@ -10841,8 +10483,7 @@ export const exits = {
             "z": 70
           }
         ],
-        "target": "ebroad22",
-        "id": "exit-380"
+        "target": "ebroad22"
       },
       {
         "destinationPoint": {
@@ -10862,8 +10503,7 @@ export const exits = {
             "z": 2961
           }
         ],
-        "target": "ebroad8",
-        "id": "exit-381"
+        "target": "ebroad8"
       }
     ],
     "entrances": [],
@@ -10889,8 +10529,7 @@ export const exits = {
             "z": 70
           }
         ],
-        "target": "ebroad23",
-        "id": "exit-382"
+        "target": "ebroad23"
       },
       {
         "destinationPoint": {
@@ -10910,8 +10549,7 @@ export const exits = {
             "z": 2961
           }
         ],
-        "target": "ebroad8a",
-        "id": "exit-383"
+        "target": "ebroad8a"
       }
     ],
     "entrances": [],
@@ -10937,8 +10575,7 @@ export const exits = {
             "z": 111
           }
         ],
-        "target": "ebroad32",
-        "id": "exit-384"
+        "target": "ebroad32"
       },
       {
         "destinationPoint": {
@@ -10958,8 +10595,7 @@ export const exits = {
             "z": -321
           }
         ],
-        "target": "ebroad7",
-        "id": "exit-385"
+        "target": "ebroad7"
       },
       {
         "destinationPoint": {
@@ -10979,8 +10615,7 @@ export const exits = {
             "z": -17
           }
         ],
-        "target": "ebgate4",
-        "id": "exit-386"
+        "target": "ebgate4"
       }
     ],
     "entrances": [],
@@ -11006,8 +10641,7 @@ export const exits = {
             "z": 111
           }
         ],
-        "target": "ebroad33",
-        "id": "exit-387"
+        "target": "ebroad33"
       },
       {
         "destinationPoint": {
@@ -11027,8 +10661,7 @@ export const exits = {
             "z": -321
           }
         ],
-        "target": "ebroad7a",
-        "id": "exit-388"
+        "target": "ebroad7a"
       },
       {
         "destinationPoint": {
@@ -11048,8 +10681,7 @@ export const exits = {
             "z": -17
           }
         ],
-        "target": "ebgate4a",
-        "id": "exit-389"
+        "target": "ebgate4a"
       }
     ],
     "entrances": [],
@@ -11075,8 +10707,7 @@ export const exits = {
             "z": 28
           }
         ],
-        "target": "ebroad42",
-        "id": "exit-390"
+        "target": "ebroad42"
       },
       {
         "destinationPoint": {
@@ -11096,8 +10727,7 @@ export const exits = {
             "z": 32
           }
         ],
-        "target": "ebroad42",
-        "id": "exit-391"
+        "target": "ebroad42"
       },
       {
         "destinationPoint": {
@@ -11117,8 +10747,7 @@ export const exits = {
             "z": 580
           }
         ],
-        "target": "ebgate1",
-        "id": "exit-392"
+        "target": "ebgate1"
       },
       {
         "destinationPoint": {
@@ -11138,8 +10767,7 @@ export const exits = {
             "z": 1229
           }
         ],
-        "target": "ebinhi1",
-        "id": "exit-393"
+        "target": "ebinhi1"
       }
     ],
     "entrances": [],
@@ -11165,8 +10793,7 @@ export const exits = {
             "z": 28
           }
         ],
-        "target": "ebroad43",
-        "id": "exit-394"
+        "target": "ebroad43"
       },
       {
         "destinationPoint": {
@@ -11186,8 +10813,7 @@ export const exits = {
             "z": 32
           }
         ],
-        "target": "ebroad43",
-        "id": "exit-395"
+        "target": "ebroad43"
       },
       {
         "destinationPoint": {
@@ -11207,8 +10833,7 @@ export const exits = {
             "z": 580
           }
         ],
-        "target": "ebgate1a",
-        "id": "exit-396"
+        "target": "ebgate1a"
       },
       {
         "destinationPoint": {
@@ -11228,8 +10853,7 @@ export const exits = {
             "z": 1229
           }
         ],
-        "target": "ebinhi1a",
-        "id": "exit-397"
+        "target": "ebinhi1a"
       }
     ],
     "entrances": [],
@@ -11255,8 +10879,7 @@ export const exits = {
             "z": 43
           }
         ],
-        "target": "eccway12",
-        "id": "exit-398"
+        "target": "eccway12"
       },
       {
         "destinationPoint": {
@@ -11276,8 +10899,7 @@ export const exits = {
             "z": 782
           }
         ],
-        "target": "eccway12",
-        "id": "exit-399"
+        "target": "eccway12"
       },
       {
         "destinationPoint": {
@@ -11297,8 +10919,7 @@ export const exits = {
             "z": 782
           }
         ],
-        "target": "ecenter1",
-        "id": "exit-400"
+        "target": "ecenter1"
       },
       {
         "destinationPoint": {
@@ -11318,16 +10939,15 @@ export const exits = {
             "z": 43
           }
         ],
-        "target": "ecenter1",
-        "id": "exit-401"
-      },
+        "target": "ecenter1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1460",
-        "target": "eciway11",
         "destinationPoint": {
-          "x": 3265,
-          "y": -4.5,
-          "z": 1198
+          "x": -3920,
+          "y": 39,
+          "z": 255
         },
         "sourceLine": [
           {
@@ -11340,10 +10960,11 @@ export const exits = {
             "y": -541,
             "z": 1198
           }
-        ]
+        ],
+        "target": "eccway11",
+        "source": "eciway11"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "eccway12": {
@@ -11366,8 +10987,7 @@ export const exits = {
             "z": 1271
           }
         ],
-        "target": "ecopen2",
-        "id": "exit-402"
+        "target": "ecopen2"
       },
       {
         "destinationPoint": {
@@ -11387,8 +11007,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecopen2",
-        "id": "exit-403"
+        "target": "ecopen2"
       },
       {
         "destinationPoint": {
@@ -11408,8 +11027,7 @@ export const exits = {
             "z": -951
           }
         ],
-        "target": "eccway21",
-        "id": "exit-404"
+        "target": "eccway21"
       },
       {
         "destinationPoint": {
@@ -11429,8 +11047,7 @@ export const exits = {
             "z": 1271
           }
         ],
-        "target": "eccway11",
-        "id": "exit-405"
+        "target": "eccway11"
       },
       {
         "destinationPoint": {
@@ -11450,8 +11067,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "eccway11",
-        "id": "exit-406"
+        "target": "eccway11"
       }
     ],
     "entrances": [],
@@ -11477,8 +11093,7 @@ export const exits = {
             "z": 43
           }
         ],
-        "target": "eccway14",
-        "id": "exit-407"
+        "target": "eccway14"
       },
       {
         "destinationPoint": {
@@ -11498,8 +11113,7 @@ export const exits = {
             "z": 782
           }
         ],
-        "target": "eccway14",
-        "id": "exit-408"
+        "target": "eccway14"
       },
       {
         "destinationPoint": {
@@ -11519,8 +11133,7 @@ export const exits = {
             "z": 782
           }
         ],
-        "target": "ecenter3",
-        "id": "exit-409"
+        "target": "ecenter3"
       },
       {
         "destinationPoint": {
@@ -11540,8 +11153,7 @@ export const exits = {
             "z": 43
           }
         ],
-        "target": "ecenter3",
-        "id": "exit-410"
+        "target": "ecenter3"
       },
       {
         "destinationPoint": {
@@ -11561,8 +11173,7 @@ export const exits = {
             "z": 1011
           }
         ],
-        "target": "eciway13",
-        "id": "exit-411"
+        "target": "eciway13"
       }
     ],
     "entrances": [],
@@ -11588,8 +11199,7 @@ export const exits = {
             "z": 1271
           }
         ],
-        "target": "ecopen2a",
-        "id": "exit-412"
+        "target": "ecopen2a"
       },
       {
         "destinationPoint": {
@@ -11609,8 +11219,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecopen2a",
-        "id": "exit-413"
+        "target": "ecopen2a"
       },
       {
         "destinationPoint": {
@@ -11630,8 +11239,7 @@ export const exits = {
             "z": -951
           }
         ],
-        "target": "eccway22",
-        "id": "exit-414"
+        "target": "eccway22"
       },
       {
         "destinationPoint": {
@@ -11651,8 +11259,7 @@ export const exits = {
             "z": 1271
           }
         ],
-        "target": "eccway13",
-        "id": "exit-415"
+        "target": "eccway13"
       },
       {
         "destinationPoint": {
@@ -11672,8 +11279,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "eccway13",
-        "id": "exit-416"
+        "target": "eccway13"
       },
       {
         "destinationPoint": {
@@ -11693,8 +11299,7 @@ export const exits = {
             "z": -951
           }
         ],
-        "target": "eccway42",
-        "id": "exit-417"
+        "target": "eccway42"
       }
     ],
     "entrances": [],
@@ -11720,8 +11325,7 @@ export const exits = {
             "z": 1313
           }
         ],
-        "target": "ecopen3",
-        "id": "exit-418"
+        "target": "ecopen3"
       },
       {
         "destinationPoint": {
@@ -11741,8 +11345,7 @@ export const exits = {
             "z": 841
           }
         ],
-        "target": "ecmway1",
-        "id": "exit-419"
+        "target": "ecmway1"
       },
       {
         "destinationPoint": {
@@ -11762,8 +11365,7 @@ export const exits = {
             "z": -392
           }
         ],
-        "target": "eccway12",
-        "id": "exit-420"
+        "target": "eccway12"
       },
       {
         "destinationPoint": {
@@ -11783,8 +11385,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecopen3",
-        "id": "exit-421"
+        "target": "ecopen3"
       },
       {
         "destinationPoint": {
@@ -11804,8 +11405,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecmway1",
-        "id": "exit-422"
+        "target": "ecmway1"
       },
       {
         "destinationPoint": {
@@ -11825,32 +11425,32 @@ export const exits = {
             "z": 1702
           }
         ],
-        "target": "eciway12",
-        "id": "exit-423"
-      },
+        "target": "eciway12"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1461",
-        "target": "eciway11",
         "destinationPoint": {
-          "x": -2372,
-          "y": -4.5,
-          "z": 1198
+          "x": 3563,
+          "y": 1494,
+          "z": 41
         },
         "sourceLine": [
           {
-            "x": -2628.238875752183,
-            "y": 598.4509835411643,
+            "x": -2748,
+            "y": 532,
             "z": 1198
           },
           {
-            "x": -2115.761124247817,
-            "y": -607.4509835411643,
+            "x": -1996,
+            "y": -541,
             "z": 1198
           }
-        ]
+        ],
+        "target": "eccway21",
+        "source": "eciway11"
       }
     ],
-    "entrances": [],
     "orientation": 116
   },
   "eccway22": {
@@ -11873,8 +11473,7 @@ export const exits = {
             "z": 1313
           }
         ],
-        "target": "ecopen3a",
-        "id": "exit-424"
+        "target": "ecopen3a"
       },
       {
         "destinationPoint": {
@@ -11894,8 +11493,7 @@ export const exits = {
             "z": 841
           }
         ],
-        "target": "ecmway1a",
-        "id": "exit-425"
+        "target": "ecmway1a"
       },
       {
         "destinationPoint": {
@@ -11915,8 +11513,7 @@ export const exits = {
             "z": -392
           }
         ],
-        "target": "eccway14",
-        "id": "exit-426"
+        "target": "eccway14"
       },
       {
         "destinationPoint": {
@@ -11936,8 +11533,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecopen3a",
-        "id": "exit-427"
+        "target": "ecopen3a"
       },
       {
         "destinationPoint": {
@@ -11957,8 +11553,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecmway1a",
-        "id": "exit-428"
+        "target": "ecmway1a"
       },
       {
         "destinationPoint": {
@@ -11978,8 +11573,7 @@ export const exits = {
             "z": 1702
           }
         ],
-        "target": "eciway13",
-        "id": "exit-429"
+        "target": "eciway13"
       },
       {
         "destinationPoint": {
@@ -11999,8 +11593,7 @@ export const exits = {
             "z": 1702
           }
         ],
-        "target": "eciway14",
-        "id": "exit-430"
+        "target": "eciway14"
       }
     ],
     "entrances": [],
@@ -12026,8 +11619,7 @@ export const exits = {
             "z": 1390
           }
         ],
-        "target": "ecopen3",
-        "id": "exit-431"
+        "target": "ecopen3"
       },
       {
         "destinationPoint": {
@@ -12047,8 +11639,7 @@ export const exits = {
             "z": 447
           }
         ],
-        "target": "ecopen3",
-        "id": "exit-432"
+        "target": "ecopen3"
       },
       {
         "destinationPoint": {
@@ -12068,8 +11659,7 @@ export const exits = {
             "z": 447
           }
         ],
-        "target": "eciway12",
-        "id": "exit-433"
+        "target": "eciway12"
       },
       {
         "destinationPoint": {
@@ -12089,8 +11679,7 @@ export const exits = {
             "z": 1390
           }
         ],
-        "target": "ecpway1",
-        "id": "exit-434"
+        "target": "ecpway1"
       },
       {
         "destinationPoint": {
@@ -12110,8 +11699,7 @@ export const exits = {
             "z": 447
           }
         ],
-        "target": "ecpway1",
-        "id": "exit-435"
+        "target": "ecpway1"
       }
     ],
     "entrances": [],
@@ -12137,8 +11725,7 @@ export const exits = {
             "z": 1390
           }
         ],
-        "target": "ecopen3a",
-        "id": "exit-436"
+        "target": "ecopen3a"
       },
       {
         "destinationPoint": {
@@ -12158,8 +11745,7 @@ export const exits = {
             "z": 447
           }
         ],
-        "target": "ecopen3a",
-        "id": "exit-437"
+        "target": "ecopen3a"
       },
       {
         "destinationPoint": {
@@ -12179,8 +11765,7 @@ export const exits = {
             "z": 447
           }
         ],
-        "target": "eciway14",
-        "id": "exit-438"
+        "target": "eciway14"
       },
       {
         "destinationPoint": {
@@ -12200,8 +11785,7 @@ export const exits = {
             "z": 1390
           }
         ],
-        "target": "ecpway1a",
-        "id": "exit-439"
+        "target": "ecpway1a"
       },
       {
         "destinationPoint": {
@@ -12221,8 +11805,7 @@ export const exits = {
             "z": 447
           }
         ],
-        "target": "ecpway1a",
-        "id": "exit-440"
+        "target": "ecpway1a"
       }
     ],
     "entrances": [],
@@ -12248,8 +11831,7 @@ export const exits = {
             "z": 1343
           }
         ],
-        "target": "ecoway3",
-        "id": "exit-441"
+        "target": "ecoway3"
       },
       {
         "destinationPoint": {
@@ -12269,8 +11851,7 @@ export const exits = {
             "z": 1343
           }
         ],
-        "target": "ecopen2",
-        "id": "exit-442"
+        "target": "ecopen2"
       },
       {
         "destinationPoint": {
@@ -12290,8 +11871,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecopen2",
-        "id": "exit-443"
+        "target": "ecopen2"
       }
     ],
     "entrances": [],
@@ -12317,8 +11897,7 @@ export const exits = {
             "z": 1343
           }
         ],
-        "target": "ecoway3a",
-        "id": "exit-444"
+        "target": "ecoway3a"
       },
       {
         "destinationPoint": {
@@ -12338,8 +11917,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecoway3a",
-        "id": "exit-445"
+        "target": "ecoway3a"
       },
       {
         "destinationPoint": {
@@ -12359,8 +11937,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "eccway14",
-        "id": "exit-446"
+        "target": "eccway14"
       },
       {
         "destinationPoint": {
@@ -12380,8 +11957,7 @@ export const exits = {
             "z": 1343
           }
         ],
-        "target": "ecopen2a",
-        "id": "exit-447"
+        "target": "ecopen2a"
       },
       {
         "destinationPoint": {
@@ -12401,8 +11977,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecopen2a",
-        "id": "exit-448"
+        "target": "ecopen2a"
       }
     ],
     "entrances": [],
@@ -12443,8 +12018,7 @@ export const exits = {
             "z": 1334
           }
         ],
-        "target": "eccway11",
-        "id": "exit-449"
+        "target": "eccway11"
       },
       {
         "destinationPoint": {
@@ -12464,8 +12038,7 @@ export const exits = {
             "z": 818
           }
         ],
-        "target": "eccway11",
-        "id": "exit-450"
+        "target": "eccway11"
       },
       {
         "destinationPoint": {
@@ -12485,8 +12058,7 @@ export const exits = {
             "z": 1429
           }
         ],
-        "target": "ecoway1",
-        "id": "exit-451"
+        "target": "ecoway1"
       },
       {
         "destinationPoint": {
@@ -12506,8 +12078,7 @@ export const exits = {
             "z": 1429
           }
         ],
-        "target": "ecoway1",
-        "id": "exit-452"
+        "target": "ecoway1"
       },
       {
         "destinationPoint": {
@@ -12527,8 +12098,7 @@ export const exits = {
             "z": 1429
           }
         ],
-        "target": "ecmall1",
-        "id": "exit-453"
+        "target": "ecmall1"
       },
       {
         "destinationPoint": {
@@ -12548,8 +12118,55 @@ export const exits = {
             "z": 1429
           }
         ],
-        "target": "ecmall1",
-        "id": "exit-454"
+        "target": "ecmall1"
+      },
+      {
+        "destinationPoint": {
+          "x": 111,
+          "y": 2023,
+          "z": 74
+        },
+        "sourceLine": [
+          {
+            "x": -162,
+            "y": -6791,
+            "z": 1311
+          },
+          {
+            "x": 188,
+            "y": -6791,
+            "z": 1311
+          }
+        ],
+        "target": "ecenter2"
+      }
+    ],
+    "entrances": [],
+    "orientation": 128
+  },
+  "ecenter2": {
+    "exits": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 111,
+          "y": 2023,
+          "z": 74
+        },
+        "sourceLine": [
+          {
+            "x": -162,
+            "y": -6791,
+            "z": 1311
+          },
+          {
+            "x": 188,
+            "y": -6791,
+            "z": 1311
+          }
+        ],
+        "target": "ecenter2",
+        "source": "ecenter1"
       },
       {
         "destinationPoint": {
@@ -12570,58 +12187,9 @@ export const exits = {
           }
         ],
         "target": "ecenter2",
-        "id": "exit-455"
+        "source": "ecenter3"
       }
     ],
-    "entrances": [],
-    "orientation": 128
-  },
-  "ecenter2": {
-    "exits": [
-      {
-        "id": "entrance-1462",
-        "target": "ecenter1",
-        "destinationPoint": {
-          "x": 13,
-          "y": -6791,
-          "z": 1311
-        },
-        "sourceLine": [
-          {
-            "x": -63.71495068808855,
-            "y": -6633.711041897645,
-            "z": 1311
-          },
-          {
-            "x": 89.71495068808855,
-            "y": -6948.288958102355,
-            "z": 1311
-          }
-        ]
-      },
-      {
-        "id": "entrance-1463",
-        "target": "ecenter3",
-        "destinationPoint": {
-          "x": 13,
-          "y": -6791,
-          "z": 1311
-        },
-        "sourceLine": [
-          {
-            "x": -63.71495068808855,
-            "y": -6633.711041897645,
-            "z": 1311
-          },
-          {
-            "x": 89.71495068808855,
-            "y": -6948.288958102355,
-            "z": 1311
-          }
-        ]
-      }
-    ],
-    "entrances": [],
     "orientation": 64
   },
   "ecenter3": {
@@ -12644,8 +12212,7 @@ export const exits = {
             "z": 1334
           }
         ],
-        "target": "eccway13",
-        "id": "exit-456"
+        "target": "eccway13"
       },
       {
         "destinationPoint": {
@@ -12665,8 +12232,7 @@ export const exits = {
             "z": 818
           }
         ],
-        "target": "eccway13",
-        "id": "exit-457"
+        "target": "eccway13"
       },
       {
         "destinationPoint": {
@@ -12686,8 +12252,7 @@ export const exits = {
             "z": 1429
           }
         ],
-        "target": "ecoway1a",
-        "id": "exit-458"
+        "target": "ecoway1a"
       },
       {
         "destinationPoint": {
@@ -12707,8 +12272,7 @@ export const exits = {
             "z": 1429
           }
         ],
-        "target": "ecoway1a",
-        "id": "exit-459"
+        "target": "ecoway1a"
       },
       {
         "destinationPoint": {
@@ -12728,8 +12292,7 @@ export const exits = {
             "z": 1429
           }
         ],
-        "target": "ecmall1a",
-        "id": "exit-460"
+        "target": "ecmall1a"
       },
       {
         "destinationPoint": {
@@ -12749,8 +12312,7 @@ export const exits = {
             "z": 1429
           }
         ],
-        "target": "ecmall1a",
-        "id": "exit-461"
+        "target": "ecmall1a"
       },
       {
         "destinationPoint": {
@@ -12770,8 +12332,7 @@ export const exits = {
             "z": 1311
           }
         ],
-        "target": "ecenter2",
-        "id": "exit-462"
+        "target": "ecenter2"
       }
     ],
     "entrances": [],
@@ -12797,8 +12358,7 @@ export const exits = {
             "z": 1198
           }
         ],
-        "target": "eccway11",
-        "id": "exit-463"
+        "target": "eccway11"
       },
       {
         "destinationPoint": {
@@ -12818,8 +12378,7 @@ export const exits = {
             "z": 1198
           }
         ],
-        "target": "eccway21",
-        "id": "exit-464"
+        "target": "eccway21"
       }
     ],
     "entrances": [],
@@ -12845,8 +12404,7 @@ export const exits = {
             "z": 72
           }
         ],
-        "target": "eccway21",
-        "id": "exit-465"
+        "target": "eccway21"
       },
       {
         "destinationPoint": {
@@ -12866,8 +12424,7 @@ export const exits = {
             "z": 72
           }
         ],
-        "target": "eccway31",
-        "id": "exit-466"
+        "target": "eccway31"
       }
     ],
     "entrances": [],
@@ -12893,8 +12450,7 @@ export const exits = {
             "z": 1198
           }
         ],
-        "target": "eccway13",
-        "id": "exit-467"
+        "target": "eccway13"
       },
       {
         "destinationPoint": {
@@ -12914,8 +12470,7 @@ export const exits = {
             "z": 1198
           }
         ],
-        "target": "eccway22",
-        "id": "exit-468"
+        "target": "eccway22"
       }
     ],
     "entrances": [],
@@ -12941,8 +12496,7 @@ export const exits = {
             "z": 72
           }
         ],
-        "target": "eccway22",
-        "id": "exit-469"
+        "target": "eccway22"
       },
       {
         "destinationPoint": {
@@ -12962,8 +12516,7 @@ export const exits = {
             "z": 72
           }
         ],
-        "target": "eccway32",
-        "id": "exit-470"
+        "target": "eccway32"
       }
     ],
     "entrances": [],
@@ -12989,8 +12542,7 @@ export const exits = {
             "z": 1572
           }
         ],
-        "target": "ecoway3",
-        "id": "exit-471"
+        "target": "ecoway3"
       },
       {
         "destinationPoint": {
@@ -13010,8 +12562,7 @@ export const exits = {
             "z": 1572
           }
         ],
-        "target": "ecenter1",
-        "id": "exit-472"
+        "target": "ecenter1"
       },
       {
         "destinationPoint": {
@@ -13031,8 +12582,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecenter1",
-        "id": "exit-473"
+        "target": "ecenter1"
       },
       {
         "destinationPoint": {
@@ -13052,8 +12602,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecenter1",
-        "id": "exit-474"
+        "target": "ecenter1"
       }
     ],
     "entrances": [],
@@ -13079,8 +12628,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecoway3a",
-        "id": "exit-475"
+        "target": "ecoway3a"
       },
       {
         "destinationPoint": {
@@ -13100,8 +12648,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecoway3a",
-        "id": "exit-476"
+        "target": "ecoway3a"
       },
       {
         "destinationPoint": {
@@ -13121,8 +12668,7 @@ export const exits = {
             "z": 1572
           }
         ],
-        "target": "ecoway3a",
-        "id": "exit-477"
+        "target": "ecoway3a"
       },
       {
         "destinationPoint": {
@@ -13142,8 +12688,7 @@ export const exits = {
             "z": 1572
           }
         ],
-        "target": "ecenter3",
-        "id": "exit-478"
+        "target": "ecenter3"
       },
       {
         "destinationPoint": {
@@ -13163,8 +12708,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecenter3",
-        "id": "exit-479"
+        "target": "ecenter3"
       },
       {
         "destinationPoint": {
@@ -13184,8 +12728,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecenter3",
-        "id": "exit-480"
+        "target": "ecenter3"
       }
     ],
     "entrances": [],
@@ -13211,8 +12754,7 @@ export const exits = {
             "z": 4116
           }
         ],
-        "target": "ecmway1",
-        "id": "exit-481"
+        "target": "ecmway1"
       },
       {
         "destinationPoint": {
@@ -13232,8 +12774,7 @@ export const exits = {
             "z": 4235
           }
         ],
-        "target": "emlobby1",
-        "id": "exit-482"
+        "target": "emlobby1"
       }
     ],
     "entrances": [],
@@ -13259,8 +12800,7 @@ export const exits = {
             "z": 4116
           }
         ],
-        "target": "ecmway1a",
-        "id": "exit-483"
+        "target": "ecmway1a"
       },
       {
         "destinationPoint": {
@@ -13280,8 +12820,7 @@ export const exits = {
             "z": 4235
           }
         ],
-        "target": "emlobby1",
-        "id": "exit-484"
+        "target": "emlobby1"
       }
     ],
     "entrances": [],
@@ -13307,8 +12846,7 @@ export const exits = {
             "z": 81
           }
         ],
-        "target": "eccway21",
-        "id": "exit-485"
+        "target": "eccway21"
       },
       {
         "destinationPoint": {
@@ -13328,8 +12866,7 @@ export const exits = {
             "z": -169
           }
         ],
-        "target": "eccway21",
-        "id": "exit-486"
+        "target": "eccway21"
       },
       {
         "destinationPoint": {
@@ -13349,8 +12886,7 @@ export const exits = {
             "z": 120
           }
         ],
-        "target": "ecoway1",
-        "id": "exit-487"
+        "target": "ecoway1"
       },
       {
         "destinationPoint": {
@@ -13370,8 +12906,7 @@ export const exits = {
             "z": 116
           }
         ],
-        "target": "ecoway1",
-        "id": "exit-488"
+        "target": "ecoway1"
       },
       {
         "destinationPoint": {
@@ -13391,8 +12926,7 @@ export const exits = {
             "z": 110
           }
         ],
-        "target": "ecoway2",
-        "id": "exit-489"
+        "target": "ecoway2"
       },
       {
         "destinationPoint": {
@@ -13412,8 +12946,7 @@ export const exits = {
             "z": 113
           }
         ],
-        "target": "ecoway2",
-        "id": "exit-490"
+        "target": "ecoway2"
       },
       {
         "destinationPoint": {
@@ -13433,8 +12966,7 @@ export const exits = {
             "z": 114
           }
         ],
-        "target": "ecmview1",
-        "id": "exit-491"
+        "target": "ecmview1"
       }
     ],
     "entrances": [],
@@ -13460,8 +12992,7 @@ export const exits = {
             "z": 81
           }
         ],
-        "target": "eccway22",
-        "id": "exit-492"
+        "target": "eccway22"
       },
       {
         "destinationPoint": {
@@ -13481,8 +13012,7 @@ export const exits = {
             "z": -169
           }
         ],
-        "target": "eccway22",
-        "id": "exit-493"
+        "target": "eccway22"
       },
       {
         "destinationPoint": {
@@ -13502,8 +13032,7 @@ export const exits = {
             "z": 120
           }
         ],
-        "target": "ecoway1a",
-        "id": "exit-494"
+        "target": "ecoway1a"
       },
       {
         "destinationPoint": {
@@ -13523,8 +13052,7 @@ export const exits = {
             "z": 116
           }
         ],
-        "target": "ecoway1a",
-        "id": "exit-495"
+        "target": "ecoway1a"
       },
       {
         "destinationPoint": {
@@ -13544,8 +13072,7 @@ export const exits = {
             "z": 110
           }
         ],
-        "target": "ecoway2a",
-        "id": "exit-496"
+        "target": "ecoway2a"
       },
       {
         "destinationPoint": {
@@ -13565,8 +13092,7 @@ export const exits = {
             "z": 113
           }
         ],
-        "target": "ecoway2a",
-        "id": "exit-497"
+        "target": "ecoway2a"
       },
       {
         "destinationPoint": {
@@ -13586,8 +13112,7 @@ export const exits = {
             "z": 114
           }
         ],
-        "target": "ecmview2",
-        "id": "exit-498"
+        "target": "ecmview2"
       }
     ],
     "entrances": [],
@@ -13613,8 +13138,7 @@ export const exits = {
             "z": 261
           }
         ],
-        "target": "ecopen2",
-        "id": "exit-499"
+        "target": "ecopen2"
       },
       {
         "destinationPoint": {
@@ -13634,8 +13158,7 @@ export const exits = {
             "z": 261
           }
         ],
-        "target": "ecopen3",
-        "id": "exit-500"
+        "target": "ecopen3"
       },
       {
         "destinationPoint": {
@@ -13655,8 +13178,7 @@ export const exits = {
             "z": 261
           }
         ],
-        "target": "ecopen4",
-        "id": "exit-501"
+        "target": "ecopen4"
       },
       {
         "destinationPoint": {
@@ -13676,8 +13198,7 @@ export const exits = {
             "z": 261
           }
         ],
-        "target": "ecopen4",
-        "id": "exit-502"
+        "target": "ecopen4"
       },
       {
         "destinationPoint": {
@@ -13697,8 +13218,7 @@ export const exits = {
             "z": 261
           }
         ],
-        "target": "ecopen4",
-        "id": "exit-503"
+        "target": "ecopen4"
       }
     ],
     "entrances": [],
@@ -13724,8 +13244,7 @@ export const exits = {
             "z": 261
           }
         ],
-        "target": "ecopen2a",
-        "id": "exit-504"
+        "target": "ecopen2a"
       },
       {
         "destinationPoint": {
@@ -13745,8 +13264,7 @@ export const exits = {
             "z": 261
           }
         ],
-        "target": "ecopen3a",
-        "id": "exit-505"
+        "target": "ecopen3a"
       },
       {
         "destinationPoint": {
@@ -13766,8 +13284,7 @@ export const exits = {
             "z": 261
           }
         ],
-        "target": "ecopen4a",
-        "id": "exit-506"
+        "target": "ecopen4a"
       },
       {
         "destinationPoint": {
@@ -13787,8 +13304,7 @@ export const exits = {
             "z": 261
           }
         ],
-        "target": "ecopen4a",
-        "id": "exit-507"
+        "target": "ecopen4a"
       },
       {
         "destinationPoint": {
@@ -13808,8 +13324,7 @@ export const exits = {
             "z": 261
           }
         ],
-        "target": "ecopen4a",
-        "id": "exit-508"
+        "target": "ecopen4a"
       }
     ],
     "entrances": [],
@@ -13835,8 +13350,7 @@ export const exits = {
             "z": 478
           }
         ],
-        "target": "eccway41",
-        "id": "exit-509"
+        "target": "eccway41"
       },
       {
         "destinationPoint": {
@@ -13856,8 +13370,7 @@ export const exits = {
             "z": 328
           }
         ],
-        "target": "eccway41",
-        "id": "exit-510"
+        "target": "eccway41"
       },
       {
         "destinationPoint": {
@@ -13877,8 +13390,7 @@ export const exits = {
             "z": 184
           }
         ],
-        "target": "eccway12",
-        "id": "exit-511"
+        "target": "eccway12"
       },
       {
         "destinationPoint": {
@@ -13898,8 +13410,7 @@ export const exits = {
             "z": 183
           }
         ],
-        "target": "eccway12",
-        "id": "exit-512"
+        "target": "eccway12"
       },
       {
         "destinationPoint": {
@@ -13919,8 +13430,7 @@ export const exits = {
             "z": 183
           }
         ],
-        "target": "ecopen1",
-        "id": "exit-513"
+        "target": "ecopen1"
       }
     ],
     "entrances": [],
@@ -13946,8 +13456,7 @@ export const exits = {
             "z": 478
           }
         ],
-        "target": "eccway42",
-        "id": "exit-514"
+        "target": "eccway42"
       },
       {
         "destinationPoint": {
@@ -13967,8 +13476,7 @@ export const exits = {
             "z": 328
           }
         ],
-        "target": "eccway42",
-        "id": "exit-515"
+        "target": "eccway42"
       },
       {
         "destinationPoint": {
@@ -13988,8 +13496,7 @@ export const exits = {
             "z": 184
           }
         ],
-        "target": "eccway14",
-        "id": "exit-516"
+        "target": "eccway14"
       },
       {
         "destinationPoint": {
@@ -14009,8 +13516,7 @@ export const exits = {
             "z": 183
           }
         ],
-        "target": "eccway14",
-        "id": "exit-517"
+        "target": "eccway14"
       },
       {
         "destinationPoint": {
@@ -14030,8 +13536,7 @@ export const exits = {
             "z": 183
           }
         ],
-        "target": "ecopen1a",
-        "id": "exit-518"
+        "target": "ecopen1a"
       }
     ],
     "entrances": [],
@@ -14057,8 +13562,7 @@ export const exits = {
             "z": 199
           }
         ],
-        "target": "ecopen1",
-        "id": "exit-519"
+        "target": "ecopen1"
       },
       {
         "destinationPoint": {
@@ -14078,8 +13582,7 @@ export const exits = {
             "z": 199
           }
         ],
-        "target": "eccway21",
-        "id": "exit-520"
+        "target": "eccway21"
       },
       {
         "destinationPoint": {
@@ -14099,8 +13602,7 @@ export const exits = {
             "z": 695
           }
         ],
-        "target": "eccway31",
-        "id": "exit-521"
+        "target": "eccway31"
       }
     ],
     "entrances": [],
@@ -14126,8 +13628,7 @@ export const exits = {
             "z": 199
           }
         ],
-        "target": "ecopen1a",
-        "id": "exit-522"
+        "target": "ecopen1a"
       },
       {
         "destinationPoint": {
@@ -14147,8 +13648,7 @@ export const exits = {
             "z": 199
           }
         ],
-        "target": "eccway22",
-        "id": "exit-523"
+        "target": "eccway22"
       },
       {
         "destinationPoint": {
@@ -14168,8 +13668,7 @@ export const exits = {
             "z": 695
           }
         ],
-        "target": "eccway32",
-        "id": "exit-524"
+        "target": "eccway32"
       }
     ],
     "entrances": [],
@@ -14195,8 +13694,7 @@ export const exits = {
             "z": 321
           }
         ],
-        "target": "ecopen1",
-        "id": "exit-525"
+        "target": "ecopen1"
       },
       {
         "destinationPoint": {
@@ -14216,8 +13714,7 @@ export const exits = {
             "z": 321
           }
         ],
-        "target": "ecopen1",
-        "id": "exit-526"
+        "target": "ecopen1"
       },
       {
         "destinationPoint": {
@@ -14237,8 +13734,7 @@ export const exits = {
             "z": 321
           }
         ],
-        "target": "ecopen1",
-        "id": "exit-527"
+        "target": "ecopen1"
       },
       {
         "destinationPoint": {
@@ -14258,8 +13754,7 @@ export const exits = {
             "z": 321
           }
         ],
-        "target": "ecopen1",
-        "id": "exit-528"
+        "target": "ecopen1"
       }
     ],
     "entrances": [],
@@ -14285,8 +13780,7 @@ export const exits = {
             "z": 321
           }
         ],
-        "target": "ecopen1a",
-        "id": "exit-529"
+        "target": "ecopen1a"
       },
       {
         "destinationPoint": {
@@ -14306,8 +13800,7 @@ export const exits = {
             "z": 321
           }
         ],
-        "target": "ecopen1a",
-        "id": "exit-530"
+        "target": "ecopen1a"
       },
       {
         "destinationPoint": {
@@ -14327,8 +13820,7 @@ export const exits = {
             "z": 321
           }
         ],
-        "target": "ecopen1a",
-        "id": "exit-531"
+        "target": "ecopen1a"
       },
       {
         "destinationPoint": {
@@ -14348,8 +13840,7 @@ export const exits = {
             "z": 321
           }
         ],
-        "target": "ecopen1a",
-        "id": "exit-532"
+        "target": "ecopen1a"
       }
     ],
     "entrances": [],
@@ -14375,8 +13866,7 @@ export const exits = {
             "z": -517
           }
         ],
-        "target": "ecenter1",
-        "id": "exit-533"
+        "target": "ecenter1"
       },
       {
         "destinationPoint": {
@@ -14396,8 +13886,7 @@ export const exits = {
             "z": -401
           }
         ],
-        "target": "ecenter1",
-        "id": "exit-534"
+        "target": "ecenter1"
       },
       {
         "destinationPoint": {
@@ -14417,8 +13906,7 @@ export const exits = {
             "z": -401
           }
         ],
-        "target": "ecenter1",
-        "id": "exit-535"
+        "target": "ecenter1"
       },
       {
         "destinationPoint": {
@@ -14438,8 +13926,7 @@ export const exits = {
             "z": -517
           }
         ],
-        "target": "ecmway1",
-        "id": "exit-536"
+        "target": "ecmway1"
       },
       {
         "destinationPoint": {
@@ -14459,8 +13946,7 @@ export const exits = {
             "z": -401
           }
         ],
-        "target": "ecmway1",
-        "id": "exit-537"
+        "target": "ecmway1"
       },
       {
         "destinationPoint": {
@@ -14480,8 +13966,7 @@ export const exits = {
             "z": -401
           }
         ],
-        "target": "ecmway1",
-        "id": "exit-538"
+        "target": "ecmway1"
       }
     ],
     "entrances": [],
@@ -14507,8 +13992,7 @@ export const exits = {
             "z": -517
           }
         ],
-        "target": "ecenter3",
-        "id": "exit-539"
+        "target": "ecenter3"
       },
       {
         "destinationPoint": {
@@ -14528,8 +14012,7 @@ export const exits = {
             "z": -401
           }
         ],
-        "target": "ecenter3",
-        "id": "exit-540"
+        "target": "ecenter3"
       },
       {
         "destinationPoint": {
@@ -14549,8 +14032,7 @@ export const exits = {
             "z": -401
           }
         ],
-        "target": "ecenter3",
-        "id": "exit-541"
+        "target": "ecenter3"
       },
       {
         "destinationPoint": {
@@ -14570,8 +14052,7 @@ export const exits = {
             "z": -517
           }
         ],
-        "target": "ecmway1a",
-        "id": "exit-542"
+        "target": "ecmway1a"
       },
       {
         "destinationPoint": {
@@ -14591,8 +14072,7 @@ export const exits = {
             "z": -401
           }
         ],
-        "target": "ecmway1a",
-        "id": "exit-543"
+        "target": "ecmway1a"
       },
       {
         "destinationPoint": {
@@ -14612,8 +14092,7 @@ export const exits = {
             "z": -401
           }
         ],
-        "target": "ecmway1a",
-        "id": "exit-544"
+        "target": "ecmway1a"
       }
     ],
     "entrances": [],
@@ -14639,8 +14118,7 @@ export const exits = {
             "z": 7233
           }
         ],
-        "target": "ecmway1",
-        "id": "exit-545"
+        "target": "ecmway1"
       },
       {
         "destinationPoint": {
@@ -14660,8 +14138,7 @@ export const exits = {
             "z": 7233
           }
         ],
-        "target": "ecmway1",
-        "id": "exit-546"
+        "target": "ecmway1"
       },
       {
         "destinationPoint": {
@@ -14681,8 +14158,7 @@ export const exits = {
             "z": 8126
           }
         ],
-        "target": "ecmway1",
-        "id": "exit-547"
+        "target": "ecmway1"
       },
       {
         "destinationPoint": {
@@ -14702,8 +14178,7 @@ export const exits = {
             "z": 8126
           }
         ],
-        "target": "ecpway1",
-        "id": "exit-548"
+        "target": "ecpway1"
       },
       {
         "destinationPoint": {
@@ -14723,8 +14198,7 @@ export const exits = {
             "z": 7233
           }
         ],
-        "target": "ecpway1",
-        "id": "exit-549"
+        "target": "ecpway1"
       }
     ],
     "entrances": [],
@@ -14750,8 +14224,7 @@ export const exits = {
             "z": 7233
           }
         ],
-        "target": "ecmway1a",
-        "id": "exit-550"
+        "target": "ecmway1a"
       },
       {
         "destinationPoint": {
@@ -14771,8 +14244,7 @@ export const exits = {
             "z": 7233
           }
         ],
-        "target": "ecmway1a",
-        "id": "exit-551"
+        "target": "ecmway1a"
       },
       {
         "destinationPoint": {
@@ -14792,8 +14264,7 @@ export const exits = {
             "z": 8126
           }
         ],
-        "target": "ecmway1a",
-        "id": "exit-552"
+        "target": "ecmway1a"
       },
       {
         "destinationPoint": {
@@ -14813,8 +14284,7 @@ export const exits = {
             "z": 8126
           }
         ],
-        "target": "ecpway1a",
-        "id": "exit-553"
+        "target": "ecpway1a"
       },
       {
         "destinationPoint": {
@@ -14834,8 +14304,7 @@ export const exits = {
             "z": 7233
           }
         ],
-        "target": "ecpway1a",
-        "id": "exit-554"
+        "target": "ecpway1a"
       }
     ],
     "entrances": [],
@@ -14861,8 +14330,7 @@ export const exits = {
             "z": 2553
           }
         ],
-        "target": "eccway41",
-        "id": "exit-555"
+        "target": "eccway41"
       },
       {
         "destinationPoint": {
@@ -14882,8 +14350,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "eccway41",
-        "id": "exit-556"
+        "target": "eccway41"
       },
       {
         "destinationPoint": {
@@ -14903,8 +14370,7 @@ export const exits = {
             "z": 1365
           }
         ],
-        "target": "ecmall1",
-        "id": "exit-557"
+        "target": "ecmall1"
       },
       {
         "destinationPoint": {
@@ -14924,8 +14390,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecmall1",
-        "id": "exit-558"
+        "target": "ecmall1"
       }
     ],
     "entrances": [],
@@ -14951,8 +14416,7 @@ export const exits = {
             "z": 2553
           }
         ],
-        "target": "eccway42",
-        "id": "exit-559"
+        "target": "eccway42"
       },
       {
         "destinationPoint": {
@@ -14972,8 +14436,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "eccway42",
-        "id": "exit-560"
+        "target": "eccway42"
       },
       {
         "destinationPoint": {
@@ -14993,8 +14456,7 @@ export const exits = {
             "z": 1365
           }
         ],
-        "target": "ecmall1a",
-        "id": "exit-561"
+        "target": "ecmall1a"
       },
       {
         "destinationPoint": {
@@ -15014,8 +14476,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecmall1a",
-        "id": "exit-562"
+        "target": "ecmall1a"
       }
     ],
     "entrances": [],
@@ -15041,8 +14502,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecpway1",
-        "id": "exit-563"
+        "target": "ecpway1"
       }
     ],
     "entrances": [],
@@ -15068,8 +14528,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecpway1a",
-        "id": "exit-564"
+        "target": "ecpway1a"
       }
     ],
     "entrances": [],
@@ -15095,8 +14554,7 @@ export const exits = {
             "z": 796
           }
         ],
-        "target": "eccway31",
-        "id": "exit-565"
+        "target": "eccway31"
       },
       {
         "destinationPoint": {
@@ -15116,8 +14574,7 @@ export const exits = {
             "z": 796
           }
         ],
-        "target": "ecoway2",
-        "id": "exit-566"
+        "target": "ecoway2"
       },
       {
         "destinationPoint": {
@@ -15137,8 +14594,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecoway2",
-        "id": "exit-567"
+        "target": "ecoway2"
       },
       {
         "destinationPoint": {
@@ -15158,8 +14614,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecoway2",
-        "id": "exit-568"
+        "target": "ecoway2"
       },
       {
         "destinationPoint": {
@@ -15179,8 +14634,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "eccway31",
-        "id": "exit-569"
+        "target": "eccway31"
       },
       {
         "destinationPoint": {
@@ -15200,8 +14654,7 @@ export const exits = {
             "z": -1
           }
         ],
-        "target": "ecpview1",
-        "id": "exit-570"
+        "target": "ecpview1"
       },
       {
         "destinationPoint": {
@@ -15221,8 +14674,7 @@ export const exits = {
             "z": -1
           }
         ],
-        "target": "ecpview1",
-        "id": "exit-571"
+        "target": "ecpview1"
       }
     ],
     "entrances": [],
@@ -15248,8 +14700,7 @@ export const exits = {
             "z": 796
           }
         ],
-        "target": "eccway32",
-        "id": "exit-572"
+        "target": "eccway32"
       },
       {
         "destinationPoint": {
@@ -15269,8 +14720,7 @@ export const exits = {
             "z": 796
           }
         ],
-        "target": "ecoway2a",
-        "id": "exit-573"
+        "target": "ecoway2a"
       },
       {
         "destinationPoint": {
@@ -15290,8 +14740,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecoway2a",
-        "id": "exit-574"
+        "target": "ecoway2a"
       },
       {
         "destinationPoint": {
@@ -15311,8 +14760,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ecoway2a",
-        "id": "exit-575"
+        "target": "ecoway2a"
       },
       {
         "destinationPoint": {
@@ -15332,8 +14780,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "eccway32",
-        "id": "exit-576"
+        "target": "eccway32"
       },
       {
         "destinationPoint": {
@@ -15353,8 +14800,7 @@ export const exits = {
             "z": -1
           }
         ],
-        "target": "ecpview2",
-        "id": "exit-577"
+        "target": "ecpview2"
       },
       {
         "destinationPoint": {
@@ -15374,8 +14820,7 @@ export const exits = {
             "z": -1
           }
         ],
-        "target": "ecpview2",
-        "id": "exit-578"
+        "target": "ecpview2"
       }
     ],
     "entrances": [],
@@ -15397,30 +14842,30 @@ export const exits = {
     "orientation": 128
   },
   "edlabo1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1464",
-        "target": "edview2",
         "destinationPoint": {
-          "x": 138.5,
-          "y": 3853,
-          "z": -143
+          "x": 140,
+          "y": 1239,
+          "z": 65
         },
         "sourceLine": [
           {
-            "x": 61.232423540070556,
-            "y": 3774.4190122993546,
+            "x": 34,
+            "y": 3888,
             "z": -143
           },
           {
-            "x": 215.76757645992944,
-            "y": 3931.5809877006454,
+            "x": 243,
+            "y": 3818,
             "z": -143
           }
-        ]
+        ],
+        "target": "edlabo1",
+        "source": "edview2"
       }
     ],
-    "entrances": [],
     "orientation": 192
   },
   "edlabo1a": {
@@ -15473,8 +14918,7 @@ export const exits = {
             "z": -143
           }
         ],
-        "target": "edlabo1",
-        "id": "exit-579"
+        "target": "edlabo1"
       }
     ],
     "entrances": [],
@@ -15500,8 +14944,7 @@ export const exits = {
             "z": 1471
           }
         ],
-        "target": "eeview1",
-        "id": "exit-580"
+        "target": "eeview1"
       },
       {
         "destinationPoint": {
@@ -15521,8 +14964,7 @@ export const exits = {
             "z": 388
           }
         ],
-        "target": "eein3",
-        "id": "exit-581"
+        "target": "eein3"
       }
     ],
     "entrances": [],
@@ -15548,8 +14990,7 @@ export const exits = {
             "z": 1471
           }
         ],
-        "target": "eeview2",
-        "id": "exit-582"
+        "target": "eeview2"
       },
       {
         "destinationPoint": {
@@ -15569,8 +15010,7 @@ export const exits = {
             "z": 388
           }
         ],
-        "target": "eein31",
-        "id": "exit-583"
+        "target": "eein31"
       }
     ],
     "entrances": [],
@@ -15596,8 +15036,7 @@ export const exits = {
             "z": 1471
           }
         ],
-        "target": "eeview3",
-        "id": "exit-584"
+        "target": "eeview3"
       },
       {
         "destinationPoint": {
@@ -15617,8 +15056,7 @@ export const exits = {
             "z": 388
           }
         ],
-        "target": "eein32",
-        "id": "exit-585"
+        "target": "eein32"
       }
     ],
     "entrances": [],
@@ -15659,8 +15097,7 @@ export const exits = {
             "z": 405
           }
         ],
-        "target": "eein1",
-        "id": "exit-586"
+        "target": "eein1"
       }
     ],
     "entrances": [],
@@ -15686,8 +15123,7 @@ export const exits = {
             "z": 405
           }
         ],
-        "target": "eein11",
-        "id": "exit-587"
+        "target": "eein11"
       }
     ],
     "entrances": [],
@@ -15713,8 +15149,7 @@ export const exits = {
             "z": 405
           }
         ],
-        "target": "eein12",
-        "id": "exit-588"
+        "target": "eein12"
       }
     ],
     "entrances": [],
@@ -15755,8 +15190,7 @@ export const exits = {
             "z": 1875
           }
         ],
-        "target": "eein1",
-        "id": "exit-589"
+        "target": "eein1"
       }
     ],
     "entrances": [],
@@ -15782,8 +15216,7 @@ export const exits = {
             "z": 1875
           }
         ],
-        "target": "eein11",
-        "id": "exit-590"
+        "target": "eein11"
       }
     ],
     "entrances": [],
@@ -15809,8 +15242,7 @@ export const exits = {
             "z": 1875
           }
         ],
-        "target": "eein12",
-        "id": "exit-591"
+        "target": "eein12"
       }
     ],
     "entrances": [],
@@ -15841,8 +15273,7 @@ export const exits = {
             "z": 1143
           }
         ],
-        "target": "sspack1",
-        "id": "exit-592"
+        "target": "sspack1"
       },
       {
         "destinationPoint": {
@@ -15862,8 +15293,7 @@ export const exits = {
             "z": 694
           }
         ],
-        "target": "efview1",
-        "id": "exit-593"
+        "target": "efview1"
       },
       {
         "destinationPoint": {
@@ -15883,8 +15313,7 @@ export const exits = {
             "z": 694
           }
         ],
-        "target": "efview1",
-        "id": "exit-594"
+        "target": "efview1"
       }
     ],
     "entrances": [],
@@ -15910,8 +15339,7 @@ export const exits = {
             "z": 1143
           }
         ],
-        "target": "sspack1",
-        "id": "exit-595"
+        "target": "sspack1"
       },
       {
         "destinationPoint": {
@@ -15931,8 +15359,7 @@ export const exits = {
             "z": 694
           }
         ],
-        "target": "efview2",
-        "id": "exit-596"
+        "target": "efview2"
       },
       {
         "destinationPoint": {
@@ -15952,8 +15379,7 @@ export const exits = {
             "z": 694
           }
         ],
-        "target": "efview2",
-        "id": "exit-597"
+        "target": "efview2"
       }
     ],
     "entrances": [],
@@ -15979,8 +15405,7 @@ export const exits = {
             "z": 16
           }
         ],
-        "target": "sspack1",
-        "id": "exit-598"
+        "target": "sspack1"
       }
     ],
     "entrances": [],
@@ -16011,8 +15436,7 @@ export const exits = {
             "z": 1143
           }
         ],
-        "target": "efenter1",
-        "id": "exit-599"
+        "target": "efenter1"
       }
     ],
     "entrances": [],
@@ -16043,8 +15467,7 @@ export const exits = {
             "z": 1143
           }
         ],
-        "target": "efenter2",
-        "id": "exit-600"
+        "target": "efenter2"
       }
     ],
     "entrances": [],
@@ -16070,8 +15493,7 @@ export const exits = {
             "z": 32
           }
         ],
-        "target": "ehroom1",
-        "id": "exit-601"
+        "target": "ehroom1"
       },
       {
         "destinationPoint": {
@@ -16091,8 +15513,7 @@ export const exits = {
             "z": -270
           }
         ],
-        "target": "ehsea1",
-        "id": "exit-602"
+        "target": "ehsea1"
       }
     ],
     "entrances": [],
@@ -16118,8 +15539,7 @@ export const exits = {
             "z": 32
           }
         ],
-        "target": "ehblan3",
-        "id": "exit-603"
+        "target": "ehblan3"
       }
     ],
     "entrances": [],
@@ -16145,8 +15565,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ehroom1",
-        "id": "exit-604"
+        "target": "ehroom1"
       },
       {
         "destinationPoint": {
@@ -16166,8 +15585,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ehenter1",
-        "id": "exit-605"
+        "target": "ehenter1"
       }
     ],
     "entrances": [],
@@ -16193,8 +15611,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ehroom1a",
-        "id": "exit-606"
+        "target": "ehroom1a"
       },
       {
         "destinationPoint": {
@@ -16214,8 +15631,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ehenter3",
-        "id": "exit-607"
+        "target": "ehenter3"
       }
     ],
     "entrances": [],
@@ -16246,8 +15662,7 @@ export const exits = {
             "z": -68
           }
         ],
-        "target": "ehdrug1",
-        "id": "exit-608"
+        "target": "ehdrug1"
       },
       {
         "destinationPoint": {
@@ -16267,8 +15682,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ehback2",
-        "id": "exit-609"
+        "target": "ehback2"
       },
       {
         "destinationPoint": {
@@ -16288,8 +15702,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ehenter2",
-        "id": "exit-610"
+        "target": "ehenter2"
       }
     ],
     "entrances": [],
@@ -16315,8 +15728,7 @@ export const exits = {
             "z": 175
           }
         ],
-        "target": "ehblan3",
-        "id": "exit-611"
+        "target": "ehblan3"
       }
     ],
     "entrances": [],
@@ -16342,8 +15754,7 @@ export const exits = {
             "z": 41
           }
         ],
-        "target": "ehroom1",
-        "id": "exit-612"
+        "target": "ehroom1"
       },
       {
         "destinationPoint": {
@@ -16363,8 +15774,7 @@ export const exits = {
             "z": 223
           }
         ],
-        "target": "ehblan1",
-        "id": "exit-613"
+        "target": "ehblan1"
       }
     ],
     "entrances": [],
@@ -16390,8 +15800,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ehhana1",
-        "id": "exit-614"
+        "target": "ehhana1"
       },
       {
         "destinationPoint": {
@@ -16411,8 +15820,7 @@ export const exits = {
             "z": 223
           }
         ],
-        "target": "ehblan3",
-        "id": "exit-615"
+        "target": "ehblan3"
       }
     ],
     "entrances": [],
@@ -16438,8 +15846,7 @@ export const exits = {
             "z": 41
           }
         ],
-        "target": "ehroom1a",
-        "id": "exit-616"
+        "target": "ehroom1a"
       },
       {
         "destinationPoint": {
@@ -16459,8 +15866,7 @@ export const exits = {
             "z": 223
           }
         ],
-        "target": "ehblan1a",
-        "id": "exit-617"
+        "target": "ehblan1a"
       }
     ],
     "entrances": [],
@@ -16491,8 +15897,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ehenter2",
-        "id": "exit-618"
+        "target": "ehenter2"
       }
     ],
     "entrances": [],
@@ -16523,8 +15928,7 @@ export const exits = {
             "z": 70
           }
         ],
-        "target": "ehback1",
-        "id": "exit-619"
+        "target": "ehback1"
       },
       {
         "destinationPoint": {
@@ -16544,8 +15948,7 @@ export const exits = {
             "z": 189
           }
         ],
-        "target": "ehblan1",
-        "id": "exit-620"
+        "target": "ehblan1"
       },
       {
         "destinationPoint": {
@@ -16565,8 +15968,7 @@ export const exits = {
             "z": 84
           }
         ],
-        "target": "ehenter1",
-        "id": "exit-621"
+        "target": "ehenter1"
       }
     ],
     "entrances": [],
@@ -16592,8 +15994,7 @@ export const exits = {
             "z": 70
           }
         ],
-        "target": "ffhill1",
-        "id": "exit-622"
+        "target": "ffhill1"
       },
       {
         "destinationPoint": {
@@ -16613,8 +16014,7 @@ export const exits = {
             "z": 189
           }
         ],
-        "target": "ehblan1a",
-        "id": "exit-623"
+        "target": "ehblan1a"
       },
       {
         "destinationPoint": {
@@ -16634,8 +16034,7 @@ export const exits = {
             "z": 84
           }
         ],
-        "target": "ehenter3",
-        "id": "exit-624"
+        "target": "ehenter3"
       }
     ],
     "entrances": [],
@@ -16661,8 +16060,7 @@ export const exits = {
             "z": -384
           }
         ],
-        "target": "ehback1",
-        "id": "exit-625"
+        "target": "ehback1"
       }
     ],
     "entrances": [],
@@ -16693,8 +16091,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "elwall1",
-        "id": "exit-626"
+        "target": "elwall1"
       },
       {
         "destinationPoint": {
@@ -16714,8 +16111,7 @@ export const exits = {
             "z": 223
           }
         ],
-        "target": "elroad3",
-        "id": "exit-627"
+        "target": "elroad3"
       },
       {
         "destinationPoint": {
@@ -16735,8 +16131,7 @@ export const exits = {
             "z": -313
           }
         ],
-        "target": "elroad3",
-        "id": "exit-628"
+        "target": "elroad3"
       }
     ],
     "entrances": [],
@@ -16762,8 +16157,7 @@ export const exits = {
             "z": 759
           }
         ],
-        "target": "elroad3",
-        "id": "exit-629"
+        "target": "elroad3"
       },
       {
         "destinationPoint": {
@@ -16783,8 +16177,7 @@ export const exits = {
             "z": 1350
           }
         ],
-        "target": "elroad3",
-        "id": "exit-630"
+        "target": "elroad3"
       },
       {
         "destinationPoint": {
@@ -16804,8 +16197,7 @@ export const exits = {
             "z": 13
           }
         ],
-        "target": "elview2",
-        "id": "exit-631"
+        "target": "elview2"
       }
     ],
     "entrances": [],
@@ -16831,8 +16223,7 @@ export const exits = {
             "z": -80
           }
         ],
-        "target": "elroad1",
-        "id": "exit-632"
+        "target": "elroad1"
       },
       {
         "destinationPoint": {
@@ -16852,8 +16243,7 @@ export const exits = {
             "z": -80
           }
         ],
-        "target": "elroad1",
-        "id": "exit-633"
+        "target": "elroad1"
       },
       {
         "destinationPoint": {
@@ -16873,8 +16263,7 @@ export const exits = {
             "z": 641
           }
         ],
-        "target": "elroad1",
-        "id": "exit-634"
+        "target": "elroad1"
       },
       {
         "destinationPoint": {
@@ -16894,8 +16283,7 @@ export const exits = {
             "z": 641
           }
         ],
-        "target": "elroad2",
-        "id": "exit-635"
+        "target": "elroad2"
       },
       {
         "destinationPoint": {
@@ -16915,8 +16303,7 @@ export const exits = {
             "z": -82
           }
         ],
-        "target": "elroad2",
-        "id": "exit-636"
+        "target": "elroad2"
       }
     ],
     "entrances": [],
@@ -16942,8 +16329,7 @@ export const exits = {
             "z": 507
           }
         ],
-        "target": "elwall1",
-        "id": "exit-637"
+        "target": "elwall1"
       },
       {
         "destinationPoint": {
@@ -16963,8 +16349,7 @@ export const exits = {
             "z": 507
           }
         ],
-        "target": "elwall1",
-        "id": "exit-638"
+        "target": "elwall1"
       },
       {
         "destinationPoint": {
@@ -16984,8 +16369,7 @@ export const exits = {
             "z": 2
           }
         ],
-        "target": "elwall2",
-        "id": "exit-639"
+        "target": "elwall2"
       },
       {
         "destinationPoint": {
@@ -17005,8 +16389,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "elwall2",
-        "id": "exit-640"
+        "target": "elwall2"
       }
     ],
     "entrances": [],
@@ -17037,8 +16420,7 @@ export const exits = {
             "z": -844
           }
         ],
-        "target": "elroad2",
-        "id": "exit-641"
+        "target": "elroad2"
       }
     ],
     "entrances": [],
@@ -17064,8 +16446,7 @@ export const exits = {
             "z": 1757
           }
         ],
-        "target": "elwall4",
-        "id": "exit-642"
+        "target": "elwall4"
       },
       {
         "destinationPoint": {
@@ -17085,8 +16466,7 @@ export const exits = {
             "z": 1771
           }
         ],
-        "target": "elwall4",
-        "id": "exit-643"
+        "target": "elwall4"
       },
       {
         "destinationPoint": {
@@ -17106,8 +16486,7 @@ export const exits = {
             "z": 1765
           }
         ],
-        "target": "elstop1",
-        "id": "exit-644"
+        "target": "elstop1"
       },
       {
         "destinationPoint": {
@@ -17127,8 +16506,7 @@ export const exits = {
             "z": 1728
           }
         ],
-        "target": "elstop1",
-        "id": "exit-645"
+        "target": "elstop1"
       },
       {
         "destinationPoint": {
@@ -17148,8 +16526,7 @@ export const exits = {
             "z": 1718
           }
         ],
-        "target": "elroad1",
-        "id": "exit-646"
+        "target": "elroad1"
       },
       {
         "destinationPoint": {
@@ -17169,8 +16546,7 @@ export const exits = {
             "z": 1724
           }
         ],
-        "target": "elroad1",
-        "id": "exit-647"
+        "target": "elroad1"
       }
     ],
     "entrances": [],
@@ -17196,8 +16572,7 @@ export const exits = {
             "z": 2724
           }
         ],
-        "target": "ewpanel1",
-        "id": "exit-648"
+        "target": "ewpanel1"
       },
       {
         "destinationPoint": {
@@ -17217,8 +16592,7 @@ export const exits = {
             "z": 1765
           }
         ],
-        "target": "elwall3",
-        "id": "exit-649"
+        "target": "elwall3"
       },
       {
         "destinationPoint": {
@@ -17238,8 +16612,7 @@ export const exits = {
             "z": 1775
           }
         ],
-        "target": "elwall3",
-        "id": "exit-650"
+        "target": "elwall3"
       },
       {
         "destinationPoint": {
@@ -17259,8 +16632,7 @@ export const exits = {
             "z": 1775
           }
         ],
-        "target": "elstop1",
-        "id": "exit-651"
+        "target": "elstop1"
       },
       {
         "destinationPoint": {
@@ -17280,8 +16652,7 @@ export const exits = {
             "z": 1703
           }
         ],
-        "target": "elstop1",
-        "id": "exit-652"
+        "target": "elstop1"
       }
     ],
     "entrances": [],
@@ -17307,8 +16678,7 @@ export const exits = {
             "z": 459
           }
         ],
-        "target": "elwall2",
-        "id": "exit-653"
+        "target": "elwall2"
       },
       {
         "destinationPoint": {
@@ -17328,8 +16698,7 @@ export const exits = {
             "z": 466
           }
         ],
-        "target": "elwall2",
-        "id": "exit-654"
+        "target": "elwall2"
       }
     ],
     "entrances": [],
@@ -17355,8 +16724,7 @@ export const exits = {
             "z": 466
           }
         ],
-        "target": "elwall1",
-        "id": "exit-655"
+        "target": "elwall1"
       },
       {
         "destinationPoint": {
@@ -17376,8 +16744,7 @@ export const exits = {
             "z": 466
           }
         ],
-        "target": "elwall1",
-        "id": "exit-656"
+        "target": "elwall1"
       }
     ],
     "entrances": [],
@@ -17418,8 +16785,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "emlobby2",
-        "id": "exit-657"
+        "target": "emlobby2"
       }
     ],
     "entrances": [],
@@ -17445,22 +16811,20 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "emlobby4",
-        "id": "exit-658"
+        "target": "emlobby4"
       }
     ],
     "entrances": [],
     "orientation": 128
   },
   "emlabo1b": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1465",
-        "target": "emlobby4",
         "destinationPoint": {
-          "x": 4,
-          "y": 1057,
-          "z": 0
+          "x": -14,
+          "y": -800,
+          "z": 65
         },
         "sourceLine": [
           {
@@ -17473,10 +16837,11 @@ export const exits = {
             "y": 1057,
             "z": 0
           }
-        ]
+        ],
+        "target": "emlabo1b",
+        "source": "emlobby4"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "emlabo2": {
@@ -17485,14 +16850,13 @@ export const exits = {
     "orientation": 128
   },
   "emlobby1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1466",
-        "target": "ecmview1",
         "destinationPoint": {
-          "x": -10,
-          "y": 2290,
-          "z": 4235
+          "x": 0,
+          "y": -619,
+          "z": 143
         },
         "sourceLine": [
           {
@@ -17505,15 +16869,15 @@ export const exits = {
             "y": 2290,
             "z": 4235
           }
-        ]
+        ],
+        "target": "emlobby1",
+        "source": "ecmview1"
       },
       {
-        "id": "entrance-1467",
-        "target": "ecmview2",
         "destinationPoint": {
-          "x": -10,
-          "y": 2290,
-          "z": 4235
+          "x": 0,
+          "y": -619,
+          "z": 143
         },
         "sourceLine": [
           {
@@ -17526,10 +16890,11 @@ export const exits = {
             "y": 2290,
             "z": 4235
           }
-        ]
+        ],
+        "target": "emlobby1",
+        "source": "ecmview2"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "emlobby2": {
@@ -17552,8 +16917,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "emlabo1",
-        "id": "exit-659"
+        "target": "emlabo1"
       }
     ],
     "entrances": [],
@@ -17584,16 +16948,15 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "emlabo1b",
-        "id": "exit-660"
-      },
+        "target": "emlabo1b"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1468",
-        "target": "emlabo1a",
         "destinationPoint": {
-          "x": 2,
-          "y": -1093,
-          "z": 0
+          "x": 0,
+          "y": -166,
+          "z": 4
         },
         "sourceLine": [
           {
@@ -17606,10 +16969,11 @@ export const exits = {
             "y": -1093,
             "z": 0
           }
-        ]
+        ],
+        "target": "emlobby4",
+        "source": "emlabo1a"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "ending": {
@@ -17637,8 +17001,7 @@ export const exits = {
             "z": -83
           }
         ],
-        "target": "ephall2",
-        "id": "exit-661"
+        "target": "ephall2"
       }
     ],
     "entrances": [],
@@ -17664,8 +17027,7 @@ export const exits = {
             "z": 176
           }
         ],
-        "target": "epmeet1",
-        "id": "exit-662"
+        "target": "epmeet1"
       },
       {
         "destinationPoint": {
@@ -17685,53 +17047,53 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ephall1",
-        "id": "exit-663"
-      },
-      {
-        "id": "entrance-1469",
-        "target": "eproad1",
-        "destinationPoint": {
-          "x": 1937,
-          "y": 17.5,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": 2058,
-            "y": 442,
-            "z": 0
-          },
-          {
-            "x": 1816,
-            "y": -407,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1470",
-        "target": "eproad1a",
-        "destinationPoint": {
-          "x": 1937,
-          "y": 17.5,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": 2058,
-            "y": 442,
-            "z": 0
-          },
-          {
-            "x": 1816,
-            "y": -407,
-            "z": 0
-          }
-        ]
+        "target": "ephall1"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": -1207,
+          "y": 0,
+          "z": 14
+        },
+        "sourceLine": [
+          {
+            "x": 2058,
+            "y": 442,
+            "z": 0
+          },
+          {
+            "x": 1816,
+            "y": -407,
+            "z": 0
+          }
+        ],
+        "target": "ephall2",
+        "source": "eproad1"
+      },
+      {
+        "destinationPoint": {
+          "x": -1207,
+          "y": 0,
+          "z": 14
+        },
+        "sourceLine": [
+          {
+            "x": 2058,
+            "y": 442,
+            "z": 0
+          },
+          {
+            "x": 1816,
+            "y": -407,
+            "z": 0
+          }
+        ],
+        "target": "ephall2",
+        "source": "eproad1a"
+      }
+    ],
     "orientation": 128
   },
   "epmeet1": {
@@ -17754,8 +17116,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ephall2",
-        "id": "exit-664"
+        "target": "ephall2"
       }
     ],
     "entrances": [],
@@ -17781,8 +17142,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ephall2",
-        "id": "exit-665"
+        "target": "ephall2"
       },
       {
         "destinationPoint": {
@@ -17802,8 +17162,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "eproad2",
-        "id": "exit-666"
+        "target": "eproad2"
       }
     ],
     "entrances": [],
@@ -17829,8 +17188,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ephall2",
-        "id": "exit-667"
+        "target": "ephall2"
       },
       {
         "destinationPoint": {
@@ -17850,8 +17208,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "eproad2",
-        "id": "exit-668"
+        "target": "eproad2"
       }
     ],
     "entrances": [],
@@ -17877,53 +17234,53 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "epwork1",
-        "id": "exit-669"
-      },
-      {
-        "id": "entrance-1471",
-        "target": "eproad1",
-        "destinationPoint": {
-          "x": -2517,
-          "y": 17.5,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": -3036.624983892556,
-            "y": -79.53157277227422,
-            "z": 0
-          },
-          {
-            "x": -1997.3750161074443,
-            "y": 114.53157277227422,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1472",
-        "target": "eproad1a",
-        "destinationPoint": {
-          "x": -2517,
-          "y": 17.5,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": -3036.624983892556,
-            "y": -79.53157277227422,
-            "z": 0
-          },
-          {
-            "x": -1997.3750161074443,
-            "y": 114.53157277227422,
-            "z": 0
-          }
-        ]
+        "target": "epwork1"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": -857,
+          "y": -34,
+          "z": 7
+        },
+        "sourceLine": [
+          {
+            "x": -2832,
+            "y": 442,
+            "z": 0
+          },
+          {
+            "x": -2202,
+            "y": -407,
+            "z": 0
+          }
+        ],
+        "target": "eproad2",
+        "source": "eproad1"
+      },
+      {
+        "destinationPoint": {
+          "x": -857,
+          "y": -34,
+          "z": 7
+        },
+        "sourceLine": [
+          {
+            "x": -2832,
+            "y": 442,
+            "z": 0
+          },
+          {
+            "x": -2202,
+            "y": -407,
+            "z": 0
+          }
+        ],
+        "target": "eproad2",
+        "source": "eproad1a"
+      }
+    ],
     "orientation": 192
   },
   "epwork1": {
@@ -17946,8 +17303,7 @@ export const exits = {
             "z": -79
           }
         ],
-        "target": "eproad2",
-        "id": "exit-670"
+        "target": "eproad2"
       }
     ],
     "entrances": [],
@@ -17983,8 +17339,7 @@ export const exits = {
             "z": 39
           }
         ],
-        "target": "esview1",
-        "id": "exit-671"
+        "target": "esview1"
       },
       {
         "destinationPoint": {
@@ -18004,8 +17359,7 @@ export const exits = {
             "z": 39
           }
         ],
-        "target": "esfreez1",
-        "id": "exit-672"
+        "target": "esfreez1"
       }
     ],
     "entrances": [],
@@ -18031,8 +17385,60 @@ export const exits = {
             "z": 39
           }
         ],
-        "target": "esview2",
-        "id": "exit-673"
+        "target": "esview2"
+      },
+      {
+        "destinationPoint": {
+          "x": 1419,
+          "y": -115,
+          "z": 42
+        },
+        "sourceLine": [
+          {
+            "x": 1933,
+            "y": -2981,
+            "z": 39
+          },
+          {
+            "x": 1933,
+            "y": -3361,
+            "z": 39
+          }
+        ],
+        "target": "esfreez1"
+      }
+    ],
+    "entrances": [],
+    "orientation": 128
+  },
+  "esform1": {
+    "exits": [],
+    "entrances": [],
+    "orientation": 128
+  },
+  "esfreez1": {
+    "exits": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 1419,
+          "y": -115,
+          "z": 42
+        },
+        "sourceLine": [
+          {
+            "x": 1933,
+            "y": -2981,
+            "z": 39
+          },
+          {
+            "x": 1933,
+            "y": -3361,
+            "z": 39
+          }
+        ],
+        "target": "esfreez1",
+        "source": "escouse1"
       },
       {
         "destinationPoint": {
@@ -18053,63 +17459,9 @@ export const exits = {
           }
         ],
         "target": "esfreez1",
-        "id": "exit-674"
+        "source": "escouse2"
       }
     ],
-    "entrances": [],
-    "orientation": 128
-  },
-  "esform1": {
-    "exits": [],
-    "entrances": [],
-    "orientation": 128
-  },
-  "esfreez1": {
-    "exits": [
-      {
-        "id": "entrance-1473",
-        "target": "escouse1",
-        "destinationPoint": {
-          "x": 1933,
-          "y": -3171,
-          "z": 39
-        },
-        "sourceLine": [
-          {
-            "x": 1933,
-            "y": -2981,
-            "z": 39
-          },
-          {
-            "x": 1933,
-            "y": -3361,
-            "z": 39
-          }
-        ]
-      },
-      {
-        "id": "entrance-1474",
-        "target": "escouse2",
-        "destinationPoint": {
-          "x": 1933,
-          "y": -3171,
-          "z": 39
-        },
-        "sourceLine": [
-          {
-            "x": 1933,
-            "y": -2981,
-            "z": 39
-          },
-          {
-            "x": 1933,
-            "y": -3361,
-            "z": 39
-          }
-        ]
-      }
-    ],
-    "entrances": [],
     "orientation": 128
   },
   "esview1": {
@@ -18132,8 +17484,7 @@ export const exits = {
             "z": 3
           }
         ],
-        "target": "escouse1",
-        "id": "exit-675"
+        "target": "escouse1"
       }
     ],
     "entrances": [],
@@ -18159,8 +17510,7 @@ export const exits = {
             "z": 3
           }
         ],
-        "target": "escouse2",
-        "id": "exit-676"
+        "target": "escouse2"
       }
     ],
     "entrances": [],
@@ -18186,8 +17536,7 @@ export const exits = {
             "z": 18
           }
         ],
-        "target": "fhrail2",
-        "id": "exit-677"
+        "target": "fhrail2"
       },
       {
         "destinationPoint": {
@@ -18207,8 +17556,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fhrail2",
-        "id": "exit-678"
+        "target": "fhrail2"
       }
     ],
     "entrances": [],
@@ -18234,8 +17582,7 @@ export const exits = {
             "z": 18
           }
         ],
-        "target": "fhrail2",
-        "id": "exit-679"
+        "target": "fhrail2"
       },
       {
         "destinationPoint": {
@@ -18255,8 +17602,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fhrail2",
-        "id": "exit-680"
+        "target": "fhrail2"
       }
     ],
     "entrances": [],
@@ -18292,8 +17638,7 @@ export const exits = {
             "z": -394
           }
         ],
-        "target": "ewpanel2",
-        "id": "exit-681"
+        "target": "ewpanel2"
       }
     ],
     "entrances": [],
@@ -18334,8 +17679,7 @@ export const exits = {
             "z": 5678
           }
         ],
-        "target": "elwall2",
-        "id": "exit-682"
+        "target": "elwall2"
       },
       {
         "destinationPoint": {
@@ -18355,8 +17699,7 @@ export const exits = {
             "z": 5678
           }
         ],
-        "target": "ewpanel2",
-        "id": "exit-683"
+        "target": "ewpanel2"
       }
     ],
     "entrances": [],
@@ -18382,8 +17725,7 @@ export const exits = {
             "z": -394
           }
         ],
-        "target": "ewdoor1",
-        "id": "exit-684"
+        "target": "ewdoor1"
       },
       {
         "destinationPoint": {
@@ -18403,8 +17745,7 @@ export const exits = {
             "z": -394
           }
         ],
-        "target": "ewpanel1",
-        "id": "exit-685"
+        "target": "ewpanel1"
       }
     ],
     "entrances": [],
@@ -18430,8 +17771,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ferrst1",
-        "id": "exit-686"
+        "target": "ferrst1"
       },
       {
         "destinationPoint": {
@@ -18451,8 +17791,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "felrele1",
-        "id": "exit-687"
+        "target": "felrele1"
       }
     ],
     "entrances": [],
@@ -18478,8 +17817,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ferfst1",
-        "id": "exit-688"
+        "target": "ferfst1"
       },
       {
         "destinationPoint": {
@@ -18499,8 +17837,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ferfst1",
-        "id": "exit-689"
+        "target": "ferfst1"
       },
       {
         "destinationPoint": {
@@ -18520,8 +17857,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ferrst1",
-        "id": "exit-690"
+        "target": "ferrst1"
       },
       {
         "destinationPoint": {
@@ -18541,8 +17877,7 @@ export const exits = {
             "z": 595
           }
         ],
-        "target": "feart1f2",
-        "id": "exit-691"
+        "target": "feart1f2"
       }
     ],
     "entrances": [],
@@ -18568,8 +17903,7 @@ export const exits = {
             "z": 960
           }
         ],
-        "target": "feart2f1",
-        "id": "exit-692"
+        "target": "feart2f1"
       },
       {
         "destinationPoint": {
@@ -18589,8 +17923,7 @@ export const exits = {
             "z": 960
           }
         ],
-        "target": "feart2f1",
-        "id": "exit-693"
+        "target": "feart2f1"
       },
       {
         "destinationPoint": {
@@ -18610,8 +17943,7 @@ export const exits = {
             "z": 316
           }
         ],
-        "target": "feart1f1",
-        "id": "exit-694"
+        "target": "feart1f1"
       },
       {
         "destinationPoint": {
@@ -18631,8 +17963,7 @@ export const exits = {
             "z": 316
           }
         ],
-        "target": "feart1f1",
-        "id": "exit-695"
+        "target": "feart1f1"
       }
     ],
     "entrances": [],
@@ -18658,8 +17989,7 @@ export const exits = {
             "z": 960
           }
         ],
-        "target": "feart1f2",
-        "id": "exit-696"
+        "target": "feart1f2"
       },
       {
         "destinationPoint": {
@@ -18679,8 +18009,7 @@ export const exits = {
             "z": 960
           }
         ],
-        "target": "feart1f2",
-        "id": "exit-697"
+        "target": "feart1f2"
       }
     ],
     "entrances": [],
@@ -18706,8 +18035,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fegate1",
-        "id": "exit-698"
+        "target": "fegate1"
       }
     ],
     "entrances": [],
@@ -18743,8 +18071,7 @@ export const exits = {
             "z": -1776
           }
         ],
-        "target": "feclock1",
-        "id": "exit-699"
+        "target": "feclock1"
       },
       {
         "destinationPoint": {
@@ -18764,8 +18091,7 @@ export const exits = {
             "z": -1998
           }
         ],
-        "target": "fewor1",
-        "id": "exit-700"
+        "target": "fewor1"
       }
     ],
     "entrances": [],
@@ -18791,8 +18117,7 @@ export const exits = {
             "z": -2763
           }
         ],
-        "target": "febrdg1",
-        "id": "exit-701"
+        "target": "febrdg1"
       },
       {
         "destinationPoint": {
@@ -18812,8 +18137,7 @@ export const exits = {
             "z": -611
           }
         ],
-        "target": "feclock6",
-        "id": "exit-702"
+        "target": "feclock6"
       }
     ],
     "entrances": [],
@@ -18839,8 +18163,7 @@ export const exits = {
             "z": 6952
           }
         ],
-        "target": "feclock6",
-        "id": "exit-703"
+        "target": "feclock6"
       },
       {
         "destinationPoint": {
@@ -18860,8 +18183,7 @@ export const exits = {
             "z": 9591
           }
         ],
-        "target": "feclock3",
-        "id": "exit-704"
+        "target": "feclock3"
       },
       {
         "destinationPoint": {
@@ -18881,8 +18203,7 @@ export const exits = {
             "z": 10561
           }
         ],
-        "target": "feclock4",
-        "id": "exit-705"
+        "target": "feclock4"
       }
     ],
     "entrances": [],
@@ -18908,8 +18229,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "feclock2",
-        "id": "exit-706"
+        "target": "feclock2"
       }
     ],
     "entrances": [],
@@ -18935,8 +18255,7 @@ export const exits = {
             "z": -458
           }
         ],
-        "target": "feclock2",
-        "id": "exit-707"
+        "target": "feclock2"
       },
       {
         "destinationPoint": {
@@ -18956,8 +18275,7 @@ export const exits = {
             "z": 162
           }
         ],
-        "target": "feclock5",
-        "id": "exit-708"
+        "target": "feclock5"
       }
     ],
     "entrances": [],
@@ -18983,8 +18301,7 @@ export const exits = {
             "z": 87
           }
         ],
-        "target": "feclock4",
-        "id": "exit-709"
+        "target": "feclock4"
       }
     ],
     "entrances": [],
@@ -19010,8 +18327,7 @@ export const exits = {
             "z": 8611
           }
         ],
-        "target": "feclock2",
-        "id": "exit-710"
+        "target": "feclock2"
       },
       {
         "destinationPoint": {
@@ -19031,8 +18347,7 @@ export const exits = {
             "z": 3653
           }
         ],
-        "target": "feclock1",
-        "id": "exit-711"
+        "target": "feclock1"
       }
     ],
     "entrances": [],
@@ -19058,8 +18373,7 @@ export const exits = {
             "z": 336
           }
         ],
-        "target": "ferrst1",
-        "id": "exit-712"
+        "target": "ferrst1"
       },
       {
         "destinationPoint": {
@@ -19079,8 +18393,7 @@ export const exits = {
             "z": 88
           }
         ],
-        "target": "febarac1",
-        "id": "exit-713"
+        "target": "febarac1"
       },
       {
         "destinationPoint": {
@@ -19100,8 +18413,7 @@ export const exits = {
             "z": -176
           }
         ],
-        "target": "fejail1",
-        "id": "exit-714"
+        "target": "fejail1"
       }
     ],
     "entrances": [],
@@ -19127,8 +18439,7 @@ export const exits = {
             "z": 791
           }
         ],
-        "target": "ferfst1",
-        "id": "exit-715"
+        "target": "ferfst1"
       },
       {
         "destinationPoint": {
@@ -19148,8 +18459,7 @@ export const exits = {
             "z": 1328
           }
         ],
-        "target": "fehall2",
-        "id": "exit-716"
+        "target": "fehall2"
       },
       {
         "destinationPoint": {
@@ -19169,8 +18479,7 @@ export const exits = {
             "z": 1104
           }
         ],
-        "target": "fehall2",
-        "id": "exit-717"
+        "target": "fehall2"
       },
       {
         "destinationPoint": {
@@ -19190,8 +18499,7 @@ export const exits = {
             "z": 835
           }
         ],
-        "target": "fehall2",
-        "id": "exit-718"
+        "target": "fehall2"
       },
       {
         "destinationPoint": {
@@ -19211,8 +18519,7 @@ export const exits = {
             "z": 1036
           }
         ],
-        "target": "felfst1",
-        "id": "exit-719"
+        "target": "felfst1"
       },
       {
         "destinationPoint": {
@@ -19232,8 +18539,7 @@ export const exits = {
             "z": -3
           }
         ],
-        "target": "fein1",
-        "id": "exit-720"
+        "target": "fein1"
       }
     ],
     "entrances": [],
@@ -19259,8 +18565,7 @@ export const exits = {
             "z": 733
           }
         ],
-        "target": "fehall1",
-        "id": "exit-721"
+        "target": "fehall1"
       },
       {
         "destinationPoint": {
@@ -19280,8 +18585,7 @@ export const exits = {
             "z": 803
           }
         ],
-        "target": "fehall1",
-        "id": "exit-722"
+        "target": "fehall1"
       },
       {
         "destinationPoint": {
@@ -19301,8 +18605,7 @@ export const exits = {
             "z": 780
           }
         ],
-        "target": "fehall1",
-        "id": "exit-723"
+        "target": "fehall1"
       },
       {
         "destinationPoint": {
@@ -19322,8 +18625,7 @@ export const exits = {
             "z": 791
           }
         ],
-        "target": "fehall1",
-        "id": "exit-724"
+        "target": "fehall1"
       },
       {
         "destinationPoint": {
@@ -19343,8 +18645,7 @@ export const exits = {
             "z": 796
           }
         ],
-        "target": "fehall1",
-        "id": "exit-725"
+        "target": "fehall1"
       },
       {
         "destinationPoint": {
@@ -19364,8 +18665,7 @@ export const exits = {
             "z": 1104
           }
         ],
-        "target": "fehall1",
-        "id": "exit-726"
+        "target": "fehall1"
       },
       {
         "destinationPoint": {
@@ -19385,8 +18685,7 @@ export const exits = {
             "z": 1301
           }
         ],
-        "target": "fehall1",
-        "id": "exit-727"
+        "target": "fehall1"
       },
       {
         "destinationPoint": {
@@ -19406,8 +18705,7 @@ export const exits = {
             "z": 1422
           }
         ],
-        "target": "feopen2",
-        "id": "exit-728"
+        "target": "feopen2"
       }
     ],
     "entrances": [],
@@ -19433,8 +18731,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fehall1",
-        "id": "exit-729"
+        "target": "fehall1"
       },
       {
         "destinationPoint": {
@@ -19454,8 +18751,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "feopen1",
-        "id": "exit-730"
+        "target": "feopen1"
       }
     ],
     "entrances": [],
@@ -19481,8 +18777,7 @@ export const exits = {
             "z": 86
           }
         ],
-        "target": "fewater3",
-        "id": "exit-731"
+        "target": "fewater3"
       },
       {
         "destinationPoint": {
@@ -19502,8 +18797,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fegate1",
-        "id": "exit-732"
+        "target": "fegate1"
       }
     ],
     "entrances": [],
@@ -19529,32 +18823,32 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "feroad2",
-        "id": "exit-733"
-      },
+        "target": "feroad2"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1475",
-        "target": "feroad1",
         "destinationPoint": {
-          "x": -17,
-          "y": 1275,
-          "z": 620
+          "x": -9,
+          "y": -1961,
+          "z": 25
         },
         "sourceLine": [
           {
-            "x": 76.58054424950006,
-            "y": 1155.2223654517782,
+            "x": -169,
+            "y": 1275,
             "z": 620
           },
           {
-            "x": -110.58054424950006,
-            "y": 1394.7776345482218,
+            "x": 135,
+            "y": 1275,
             "z": 620
           }
-        ]
+        ],
+        "target": "felast1",
+        "source": "feroad1"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "felast2": {
@@ -19581,8 +18875,7 @@ export const exits = {
             "z": -48
           }
         ],
-        "target": "feout1",
-        "id": "exit-734"
+        "target": "feout1"
       },
       {
         "destinationPoint": {
@@ -19602,8 +18895,7 @@ export const exits = {
             "z": 900
           }
         ],
-        "target": "fehall1",
-        "id": "exit-735"
+        "target": "fehall1"
       }
     ],
     "entrances": [],
@@ -19629,8 +18921,7 @@ export const exits = {
             "z": 763
           }
         ],
-        "target": "fe2f1",
-        "id": "exit-736"
+        "target": "fe2f1"
       },
       {
         "destinationPoint": {
@@ -19650,8 +18941,7 @@ export const exits = {
             "z": 763
           }
         ],
-        "target": "feware1",
-        "id": "exit-737"
+        "target": "feware1"
       },
       {
         "destinationPoint": {
@@ -19671,8 +18961,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "feout1",
-        "id": "exit-738"
+        "target": "feout1"
       }
     ],
     "entrances": [],
@@ -19698,8 +18987,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fein1",
-        "id": "exit-739"
+        "target": "fein1"
       },
       {
         "destinationPoint": {
@@ -19719,32 +19007,32 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "feyard1",
-        "id": "exit-740"
-      },
+        "target": "feyard1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1476",
-        "target": "fewine1",
         "destinationPoint": {
-          "x": -803.5,
-          "y": 1424,
-          "z": 1848.5
+          "x": 77,
+          "y": 1691,
+          "z": 96
         },
         "sourceLine": [
           {
-            "x": -740.9766056469359,
-            "y": 1399.462780137692,
+            "x": -862,
+            "y": 1457,
             "z": 1865
           },
           {
-            "x": -866.0233943530641,
-            "y": 1448.537219862308,
+            "x": -745,
+            "y": 1391,
             "z": 1832
           }
-        ]
+        ],
+        "target": "feopen1",
+        "source": "fewine1"
       }
     ],
-    "entrances": [],
     "orientation": 0
   },
   "feopen2": {
@@ -19767,8 +19055,7 @@ export const exits = {
             "z": 1204
           }
         ],
-        "target": "feteras1",
-        "id": "exit-741"
+        "target": "feteras1"
       },
       {
         "destinationPoint": {
@@ -19788,8 +19075,7 @@ export const exits = {
             "z": 1202
           }
         ],
-        "target": "fehall2",
-        "id": "exit-742"
+        "target": "fehall2"
       },
       {
         "destinationPoint": {
@@ -19809,8 +19095,7 @@ export const exits = {
             "z": 1202
           }
         ],
-        "target": "fehall2",
-        "id": "exit-743"
+        "target": "fehall2"
       }
     ],
     "entrances": [],
@@ -19836,8 +19121,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "felrele1",
-        "id": "exit-744"
+        "target": "felrele1"
       },
       {
         "destinationPoint": {
@@ -19857,8 +19141,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fetre1",
-        "id": "exit-745"
+        "target": "fetre1"
       },
       {
         "destinationPoint": {
@@ -19878,8 +19161,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "felfst1",
-        "id": "exit-746"
+        "target": "felfst1"
       }
     ],
     "entrances": [],
@@ -19920,8 +19202,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "feart1f1",
-        "id": "exit-747"
+        "target": "feart1f1"
       },
       {
         "destinationPoint": {
@@ -19941,8 +19222,7 @@ export const exits = {
             "z": 898
           }
         ],
-        "target": "fehall1",
-        "id": "exit-748"
+        "target": "fehall1"
       }
     ],
     "entrances": [],
@@ -19968,38 +19248,37 @@ export const exits = {
             "z": 620
           }
         ],
-        "target": "felast1",
-        "id": "exit-749"
+        "target": "felast1"
       }
     ],
     "entrances": [],
     "orientation": 0
   },
   "feroad2": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1477",
-        "target": "felast1",
         "destinationPoint": {
-          "x": -22,
-          "y": -2155,
-          "z": 0
+          "x": 35,
+          "y": 3379,
+          "z": 28
         },
         "sourceLine": [
           {
-            "x": 107.9045712937139,
-            "y": -1988.7297309889816,
+            "x": -233,
+            "y": -2155,
             "z": 0
           },
           {
-            "x": -151.9045712937139,
-            "y": -2321.270269011018,
+            "x": 189,
+            "y": -2155,
             "z": 0
           }
-        ]
+        ],
+        "target": "feroad2",
+        "source": "felast1"
       }
     ],
-    "entrances": [],
     "orientation": 0
   },
   "ferrst1": {
@@ -20022,8 +19301,7 @@ export const exits = {
             "z": -776
           }
         ],
-        "target": "fegate1",
-        "id": "exit-750"
+        "target": "fegate1"
       },
       {
         "destinationPoint": {
@@ -20043,8 +19321,7 @@ export const exits = {
             "z": 93
           }
         ],
-        "target": "feart1f1",
-        "id": "exit-751"
+        "target": "feart1f1"
       },
       {
         "destinationPoint": {
@@ -20064,8 +19341,7 @@ export const exits = {
             "z": 520
           }
         ],
-        "target": "fe2f1",
-        "id": "exit-752"
+        "target": "fe2f1"
       }
     ],
     "entrances": [],
@@ -20091,8 +19367,7 @@ export const exits = {
             "z": 1671
           }
         ],
-        "target": "feopen2",
-        "id": "exit-753"
+        "target": "feopen2"
       }
     ],
     "entrances": [],
@@ -20118,8 +19393,7 @@ export const exits = {
             "z": 309
           }
         ],
-        "target": "feout1",
-        "id": "exit-754"
+        "target": "feout1"
       }
     ],
     "entrances": [],
@@ -20145,8 +19419,7 @@ export const exits = {
             "z": 98
           }
         ],
-        "target": "felrele1",
-        "id": "exit-755"
+        "target": "felrele1"
       }
     ],
     "entrances": [],
@@ -20172,8 +19445,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "feyard1",
-        "id": "exit-756"
+        "target": "feyard1"
       },
       {
         "destinationPoint": {
@@ -20193,8 +19465,7 @@ export const exits = {
             "z": -137
           }
         ],
-        "target": "fewater2",
-        "id": "exit-757"
+        "target": "fewater2"
       }
     ],
     "entrances": [],
@@ -20220,8 +19491,7 @@ export const exits = {
             "z": 307
           }
         ],
-        "target": "fewater1",
-        "id": "exit-758"
+        "target": "fewater1"
       },
       {
         "destinationPoint": {
@@ -20241,8 +19511,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fewater3",
-        "id": "exit-759"
+        "target": "fewater3"
       },
       {
         "destinationPoint": {
@@ -20262,8 +19531,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fewater3",
-        "id": "exit-760"
+        "target": "fewater3"
       }
     ],
     "entrances": [],
@@ -20289,8 +19557,7 @@ export const exits = {
             "z": -5
           }
         ],
-        "target": "fewater2",
-        "id": "exit-761"
+        "target": "fewater2"
       },
       {
         "destinationPoint": {
@@ -20310,8 +19577,7 @@ export const exits = {
             "z": -5
           }
         ],
-        "target": "fewater2",
-        "id": "exit-762"
+        "target": "fewater2"
       },
       {
         "destinationPoint": {
@@ -20331,8 +19597,7 @@ export const exits = {
             "z": 306
           }
         ],
-        "target": "fejail1",
-        "id": "exit-763"
+        "target": "fejail1"
       }
     ],
     "entrances": [],
@@ -20368,8 +19633,7 @@ export const exits = {
             "z": 1832
           }
         ],
-        "target": "feopen1",
-        "id": "exit-764"
+        "target": "feopen1"
       }
     ],
     "entrances": [],
@@ -20395,8 +19659,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "feyard1",
-        "id": "exit-765"
+        "target": "feyard1"
       },
       {
         "destinationPoint": {
@@ -20416,8 +19679,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "feyard1",
-        "id": "exit-766"
+        "target": "feyard1"
       },
       {
         "destinationPoint": {
@@ -20437,8 +19699,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fewor2",
-        "id": "exit-767"
+        "target": "fewor2"
       },
       {
         "destinationPoint": {
@@ -20458,8 +19719,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fewor2",
-        "id": "exit-768"
+        "target": "fewor2"
       },
       {
         "destinationPoint": {
@@ -20479,8 +19739,7 @@ export const exits = {
             "z": 971
           }
         ],
-        "target": "febrdg1",
-        "id": "exit-769"
+        "target": "febrdg1"
       }
     ],
     "entrances": [],
@@ -20506,8 +19765,7 @@ export const exits = {
             "z": 130
           }
         ],
-        "target": "fewor1",
-        "id": "exit-770"
+        "target": "fewor1"
       },
       {
         "destinationPoint": {
@@ -20527,8 +19785,7 @@ export const exits = {
             "z": 130
           }
         ],
-        "target": "fewor1",
-        "id": "exit-771"
+        "target": "fewor1"
       },
       {
         "destinationPoint": {
@@ -20548,8 +19805,7 @@ export const exits = {
             "z": 130
           }
         ],
-        "target": "fewor1",
-        "id": "exit-772"
+        "target": "fewor1"
       }
     ],
     "entrances": [],
@@ -20575,8 +19831,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "feopen1",
-        "id": "exit-773"
+        "target": "feopen1"
       },
       {
         "destinationPoint": {
@@ -20596,8 +19851,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fewater1",
-        "id": "exit-774"
+        "target": "fewater1"
       },
       {
         "destinationPoint": {
@@ -20617,8 +19871,7 @@ export const exits = {
             "z": 79
           }
         ],
-        "target": "fewor1",
-        "id": "exit-775"
+        "target": "fewor1"
       }
     ],
     "entrances": [],
@@ -20644,16 +19897,15 @@ export const exits = {
             "z": -2468
           }
         ],
-        "target": "ffhole1",
-        "id": "exit-776"
-      },
+        "target": "ffhole1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1478",
-        "target": "ffhole1a",
         "destinationPoint": {
-          "x": 99.5,
-          "y": 6948.5,
-          "z": -2914.5
+          "x": 2,
+          "y": -4300,
+          "z": 313
         },
         "sourceLine": [
           {
@@ -20666,15 +19918,15 @@ export const exits = {
             "y": 6927,
             "z": -2879
           }
-        ]
+        ],
+        "target": "ffbrdg1",
+        "source": "ffhole1a"
       },
       {
-        "id": "entrance-1479",
-        "target": "ffhole1a",
         "destinationPoint": {
-          "x": -172,
-          "y": 6903,
-          "z": -2907.5
+          "x": 2,
+          "y": -4300,
+          "z": 313
         },
         "sourceLine": [
           {
@@ -20687,10 +19939,11 @@ export const exits = {
             "y": 6970,
             "z": -2950
           }
-        ]
+        ],
+        "target": "ffbrdg1",
+        "source": "ffhole1a"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "ffhill1": {
@@ -20713,8 +19966,7 @@ export const exits = {
             "z": -243
           }
         ],
-        "target": "ffseed1",
-        "id": "exit-777"
+        "target": "ffseed1"
       },
       {
         "destinationPoint": {
@@ -20734,32 +19986,32 @@ export const exits = {
             "z": -243
           }
         ],
-        "target": "ffseed1",
-        "id": "exit-778"
-      },
+        "target": "ffseed1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1480",
-        "target": "ehroom1a",
         "destinationPoint": {
-          "x": 1013,
-          "y": -113,
-          "z": 70
+          "x": -163,
+          "y": -623,
+          "z": 85
         },
         "sourceLine": [
           {
-            "x": 947.3880346201609,
-            "y": -80.99890628439735,
+            "x": 1013,
+            "y": -40,
             "z": 70
           },
           {
-            "x": 1078.6119653798391,
-            "y": -145.00109371560265,
+            "x": 1013,
+            "y": -186,
             "z": 70
           }
-        ]
+        ],
+        "target": "ffhill1",
+        "source": "ehroom1a"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "ffhole1": {
@@ -20782,8 +20034,7 @@ export const exits = {
             "z": -2879
           }
         ],
-        "target": "ffbrdg1",
-        "id": "exit-779"
+        "target": "ffbrdg1"
       },
       {
         "destinationPoint": {
@@ -20803,8 +20054,7 @@ export const exits = {
             "z": -2950
           }
         ],
-        "target": "ffbrdg1",
-        "id": "exit-780"
+        "target": "ffbrdg1"
       },
       {
         "destinationPoint": {
@@ -20824,8 +20074,7 @@ export const exits = {
             "z": -1096
           }
         ],
-        "target": "ffseed1",
-        "id": "exit-781"
+        "target": "ffseed1"
       }
     ],
     "entrances": [],
@@ -20851,8 +20100,7 @@ export const exits = {
             "z": -2879
           }
         ],
-        "target": "ffbrdg1",
-        "id": "exit-782"
+        "target": "ffbrdg1"
       },
       {
         "destinationPoint": {
@@ -20872,8 +20120,7 @@ export const exits = {
             "z": -2950
           }
         ],
-        "target": "ffbrdg1",
-        "id": "exit-783"
+        "target": "ffbrdg1"
       },
       {
         "destinationPoint": {
@@ -20893,8 +20140,7 @@ export const exits = {
             "z": -1096
           }
         ],
-        "target": "ffseed1",
-        "id": "exit-784"
+        "target": "ffseed1"
       }
     ],
     "entrances": [],
@@ -20920,8 +20166,7 @@ export const exits = {
             "z": 296
           }
         ],
-        "target": "ffhill1",
-        "id": "exit-785"
+        "target": "ffhill1"
       },
       {
         "destinationPoint": {
@@ -20941,8 +20186,7 @@ export const exits = {
             "z": 301
           }
         ],
-        "target": "ffhill1",
-        "id": "exit-786"
+        "target": "ffhill1"
       },
       {
         "destinationPoint": {
@@ -20962,8 +20206,7 @@ export const exits = {
             "z": 314
           }
         ],
-        "target": "ffhill1",
-        "id": "exit-787"
+        "target": "ffhill1"
       },
       {
         "destinationPoint": {
@@ -20983,32 +20226,32 @@ export const exits = {
             "z": -1089
           }
         ],
-        "target": "ffhole1",
-        "id": "exit-788"
-      },
+        "target": "ffhole1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1481",
-        "target": "ffhole1a",
         "destinationPoint": {
-          "x": -172,
-          "y": -722,
-          "z": -1064
+          "x": 354,
+          "y": 646,
+          "z": 28
         },
         "sourceLine": [
           {
-            "x": -288.8516321115053,
-            "y": -738.4224259132877,
+            "x": -290,
+            "y": -722,
             "z": -1032
           },
           {
-            "x": -55.148367888494704,
-            "y": -705.5775740867123,
+            "x": -54,
+            "y": -722,
             "z": -1096
           }
-        ]
+        ],
+        "target": "ffseed1",
+        "source": "ffhole1a"
       }
     ],
-    "entrances": [],
     "orientation": 136
   },
   "fhbrdg1": {
@@ -21031,8 +20274,7 @@ export const exits = {
             "z": 266
           }
         ],
-        "target": "fhedge1",
-        "id": "exit-789"
+        "target": "fhedge1"
       }
     ],
     "entrances": [],
@@ -21058,8 +20300,7 @@ export const exits = {
             "z": 1413
           }
         ],
-        "target": "fhview1",
-        "id": "exit-790"
+        "target": "fhview1"
       },
       {
         "destinationPoint": {
@@ -21079,8 +20320,7 @@ export const exits = {
             "z": 179
           }
         ],
-        "target": "bg2f_3",
-        "id": "exit-791"
+        "target": "bg2f_3"
       }
     ],
     "entrances": [],
@@ -21106,8 +20346,7 @@ export const exits = {
             "z": 1413
           }
         ],
-        "target": "fhview1",
-        "id": "exit-792"
+        "target": "fhview1"
       },
       {
         "destinationPoint": {
@@ -21127,8 +20366,7 @@ export const exits = {
             "z": 179
           }
         ],
-        "target": "bg2f_3",
-        "id": "exit-793"
+        "target": "bg2f_3"
       }
     ],
     "entrances": [],
@@ -21174,8 +20412,7 @@ export const exits = {
             "z": 1413
           }
         ],
-        "target": "fhview1",
-        "id": "exit-794"
+        "target": "fhview1"
       },
       {
         "destinationPoint": {
@@ -21195,8 +20432,7 @@ export const exits = {
             "z": 179
           }
         ],
-        "target": "bg2f_3",
-        "id": "exit-795"
+        "target": "bg2f_3"
       }
     ],
     "entrances": [],
@@ -21232,8 +20468,7 @@ export const exits = {
             "z": 91
           }
         ],
-        "target": "fhbrdg1",
-        "id": "exit-796"
+        "target": "fhbrdg1"
       },
       {
         "destinationPoint": {
@@ -21253,8 +20488,7 @@ export const exits = {
             "z": 32
           }
         ],
-        "target": "fhpara11",
-        "id": "exit-797"
+        "target": "fhpara11"
       },
       {
         "destinationPoint": {
@@ -21274,8 +20508,7 @@ export const exits = {
             "z": 39
           }
         ],
-        "target": "fhedge2",
-        "id": "exit-798"
+        "target": "fhedge2"
       },
       {
         "destinationPoint": {
@@ -21295,8 +20528,7 @@ export const exits = {
             "z": 39
           }
         ],
-        "target": "fhedge2",
-        "id": "exit-799"
+        "target": "fhedge2"
       }
     ],
     "entrances": [],
@@ -21322,8 +20554,7 @@ export const exits = {
             "z": 32
           }
         ],
-        "target": "fhpara12",
-        "id": "exit-800"
+        "target": "fhpara12"
       }
     ],
     "entrances": [],
@@ -21349,8 +20580,7 @@ export const exits = {
             "z": -274
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-801"
+        "target": "fhtown1"
       },
       {
         "destinationPoint": {
@@ -21370,8 +20600,7 @@ export const exits = {
             "z": -291
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-802"
+        "target": "fhtown1"
       },
       {
         "destinationPoint": {
@@ -21391,8 +20620,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fhedge1",
-        "id": "exit-803"
+        "target": "fhedge1"
       }
     ],
     "entrances": [],
@@ -21418,8 +20646,7 @@ export const exits = {
             "z": 132
           }
         ],
-        "target": "fhroof1",
-        "id": "exit-804"
+        "target": "fhroof1"
       }
     ],
     "entrances": [],
@@ -21445,95 +20672,95 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fhrail2",
-        "id": "exit-805"
-      },
-      {
-        "id": "entrance-1482",
-        "target": "fhtown21",
-        "destinationPoint": {
-          "x": 1890.5,
-          "y": 85.5,
-          "z": 2105
-        },
-        "sourceLine": [
-          {
-            "x": 2097.5446660298408,
-            "y": 31.21366407104115,
-            "z": 2105
-          },
-          {
-            "x": 1683.4553339701595,
-            "y": 139.78633592895886,
-            "z": 2105
-          }
-        ]
-      },
-      {
-        "id": "entrance-1483",
-        "target": "fhtown21",
-        "destinationPoint": {
-          "x": 2152,
-          "y": 1067,
-          "z": 1587
-        },
-        "sourceLine": [
-          {
-            "x": 1878.446773077967,
-            "y": 859.2269698913194,
-            "z": 1767
-          },
-          {
-            "x": 2425.553226922033,
-            "y": 1274.7730301086806,
-            "z": 1407
-          }
-        ]
-      },
-      {
-        "id": "entrance-1484",
-        "target": "fhtown22",
-        "destinationPoint": {
-          "x": 1890.5,
-          "y": 85.5,
-          "z": 2105
-        },
-        "sourceLine": [
-          {
-            "x": 2097.5446660298408,
-            "y": 31.21366407104115,
-            "z": 2105
-          },
-          {
-            "x": 1683.4553339701595,
-            "y": 139.78633592895886,
-            "z": 2105
-          }
-        ]
-      },
-      {
-        "id": "entrance-1485",
-        "target": "fhtown22",
-        "destinationPoint": {
-          "x": 2152,
-          "y": 1067,
-          "z": 1587
-        },
-        "sourceLine": [
-          {
-            "x": 1878.446773077967,
-            "y": 859.2269698913194,
-            "z": 1767
-          },
-          {
-            "x": 2425.553226922033,
-            "y": 1274.7730301086806,
-            "z": 1407
-          }
-        ]
+        "target": "fhrail2"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 9668,
+          "y": -4790,
+          "z": 344
+        },
+        "sourceLine": [
+          {
+            "x": 2084,
+            "y": 177,
+            "z": 2105
+          },
+          {
+            "x": 1697,
+            "y": -6,
+            "z": 2105
+          }
+        ],
+        "target": "fhform1",
+        "source": "fhtown21"
+      },
+      {
+        "destinationPoint": {
+          "x": 9668,
+          "y": -4790,
+          "z": 344
+        },
+        "sourceLine": [
+          {
+            "x": 2076,
+            "y": 732,
+            "z": 1767
+          },
+          {
+            "x": 2228,
+            "y": 1402,
+            "z": 1407
+          }
+        ],
+        "target": "fhform1",
+        "source": "fhtown21"
+      },
+      {
+        "destinationPoint": {
+          "x": 9668,
+          "y": -4790,
+          "z": 344
+        },
+        "sourceLine": [
+          {
+            "x": 2084,
+            "y": 177,
+            "z": 2105
+          },
+          {
+            "x": 1697,
+            "y": -6,
+            "z": 2105
+          }
+        ],
+        "target": "fhform1",
+        "source": "fhtown22"
+      },
+      {
+        "destinationPoint": {
+          "x": 9668,
+          "y": -4790,
+          "z": 344
+        },
+        "sourceLine": [
+          {
+            "x": 2076,
+            "y": 732,
+            "z": 1767
+          },
+          {
+            "x": 2228,
+            "y": 1402,
+            "z": 1407
+          }
+        ],
+        "target": "fhform1",
+        "source": "fhtown22"
+      }
+    ],
     "orientation": 192
   },
   "fhhtl1": {
@@ -21556,8 +20783,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-806"
+        "target": "fhtown1"
       },
       {
         "destinationPoint": {
@@ -21577,22 +20803,20 @@ export const exits = {
             "z": 411
           }
         ],
-        "target": "fhhtr1",
-        "id": "exit-807"
+        "target": "fhhtr1"
       }
     ],
     "entrances": [],
     "orientation": 128
   },
   "fhhtr1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1486",
-        "target": "fhhtl1",
         "destinationPoint": {
-          "x": -26.5,
-          "y": 1298,
-          "z": 411
+          "x": 185,
+          "y": -371,
+          "z": 67
         },
         "sourceLine": [
           {
@@ -21605,58 +20829,59 @@ export const exits = {
             "y": 1298,
             "z": 411
           }
-        ]
+        ],
+        "target": "fhhtr1",
+        "source": "fhhtl1"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "fhmin1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1487",
-        "target": "fhtown21",
         "destinationPoint": {
-          "x": -1687.5,
-          "y": 5829,
-          "z": 1600
+          "x": 4,
+          "y": 245,
+          "z": 106
         },
         "sourceLine": [
           {
-            "x": -1704.7122995358527,
-            "y": 5768.090339479783,
+            "x": -1658,
+            "y": 5885,
             "z": 1600
           },
           {
-            "x": -1670.2877004641473,
-            "y": 5889.909660520217,
+            "x": -1717,
+            "y": 5773,
             "z": 1600
           }
-        ]
+        ],
+        "target": "fhmin1",
+        "source": "fhtown21"
       },
       {
-        "id": "entrance-1488",
-        "target": "fhtown22",
         "destinationPoint": {
-          "x": -1687.5,
-          "y": 5829,
-          "z": 1600
+          "x": 4,
+          "y": 245,
+          "z": 106
         },
         "sourceLine": [
           {
-            "x": -1704.7122995358527,
-            "y": 5768.090339479783,
+            "x": -1658,
+            "y": 5885,
             "z": 1600
           },
           {
-            "x": -1670.2877004641473,
-            "y": 5889.909660520217,
+            "x": -1717,
+            "y": 5773,
             "z": 1600
           }
-        ]
+        ],
+        "target": "fhmin1",
+        "source": "fhtown22"
       }
     ],
-    "entrances": [],
     "orientation": 64
   },
   "fhpanel1": {
@@ -21684,8 +20909,7 @@ export const exits = {
             "z": -7556
           }
         ],
-        "target": "fhwise11",
-        "id": "exit-808"
+        "target": "fhwise11"
       },
       {
         "destinationPoint": {
@@ -21705,53 +20929,53 @@ export const exits = {
             "z": -5966
           }
         ],
-        "target": "fhedge1",
-        "id": "exit-809"
-      },
-      {
-        "id": "entrance-1489",
-        "target": "fhwise12",
-        "destinationPoint": {
-          "x": 18.5,
-          "y": -4734,
-          "z": -8021
-        },
-        "sourceLine": [
-          {
-            "x": 196.9343721427571,
-            "y": -4664.707685577547,
-            "z": -8037
-          },
-          {
-            "x": -159.9343721427571,
-            "y": -4803.292314422453,
-            "z": -8005
-          }
-        ]
-      },
-      {
-        "id": "entrance-1490",
-        "target": "fhwise15",
-        "destinationPoint": {
-          "x": 18.5,
-          "y": -4734,
-          "z": -8021
-        },
-        "sourceLine": [
-          {
-            "x": 196.9343721427571,
-            "y": -4664.707685577547,
-            "z": -8037
-          },
-          {
-            "x": -159.9343721427571,
-            "y": -4803.292314422453,
-            "z": -8005
-          }
-        ]
+        "target": "fhedge1"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 44,
+          "y": -15625,
+          "z": 33
+        },
+        "sourceLine": [
+          {
+            "x": 159,
+            "y": -4864,
+            "z": -8037
+          },
+          {
+            "x": -122,
+            "y": -4604,
+            "z": -8005
+          }
+        ],
+        "target": "fhpara11",
+        "source": "fhwise12"
+      },
+      {
+        "destinationPoint": {
+          "x": 44,
+          "y": -15625,
+          "z": 33
+        },
+        "sourceLine": [
+          {
+            "x": 159,
+            "y": -4864,
+            "z": -8037
+          },
+          {
+            "x": -122,
+            "y": -4604,
+            "z": -8005
+          }
+        ],
+        "target": "fhpara11",
+        "source": "fhwise15"
+      }
+    ],
     "orientation": 192
   },
   "fhpara12": {
@@ -21774,8 +20998,7 @@ export const exits = {
             "z": -7556
           }
         ],
-        "target": "fhwise13",
-        "id": "exit-810"
+        "target": "fhwise13"
       },
       {
         "destinationPoint": {
@@ -21795,8 +21018,7 @@ export const exits = {
             "z": -5966
           }
         ],
-        "target": "fhedge11",
-        "id": "exit-811"
+        "target": "fhedge11"
       }
     ],
     "entrances": [],
@@ -21822,95 +21044,95 @@ export const exits = {
             "z": -8032
           }
         ],
-        "target": "fhwise11",
-        "id": "exit-812"
-      },
-      {
-        "id": "entrance-1491",
-        "target": "fhwise12",
-        "destinationPoint": {
-          "x": 2242,
-          "y": -3170,
-          "z": -8037
-        },
-        "sourceLine": [
-          {
-            "x": 2351.7964772203813,
-            "y": -2586.0361881160834,
-            "z": -8037
-          },
-          {
-            "x": 2132.2035227796187,
-            "y": -3753.9638118839166,
-            "z": -8037
-          }
-        ]
-      },
-      {
-        "id": "entrance-1492",
-        "target": "fhwise12",
-        "destinationPoint": {
-          "x": 2587,
-          "y": -2169.5,
-          "z": -8037
-        },
-        "sourceLine": [
-          {
-            "x": 2679.603318984915,
-            "y": -1714.6858892767527,
-            "z": -8037
-          },
-          {
-            "x": 2494.396681015085,
-            "y": -2624.3141107232473,
-            "z": -8037
-          }
-        ]
-      },
-      {
-        "id": "entrance-1493",
-        "target": "fhwise15",
-        "destinationPoint": {
-          "x": 2242,
-          "y": -3170,
-          "z": -8037
-        },
-        "sourceLine": [
-          {
-            "x": 2351.7964772203813,
-            "y": -2586.0361881160834,
-            "z": -8037
-          },
-          {
-            "x": 2132.2035227796187,
-            "y": -3753.9638118839166,
-            "z": -8037
-          }
-        ]
-      },
-      {
-        "id": "entrance-1494",
-        "target": "fhwise15",
-        "destinationPoint": {
-          "x": 2587,
-          "y": -2169.5,
-          "z": -8037
-        },
-        "sourceLine": [
-          {
-            "x": 2679.603318984915,
-            "y": -1714.6858892767527,
-            "z": -8037
-          },
-          {
-            "x": 2494.396681015085,
-            "y": -2624.3141107232473,
-            "z": -8037
-          }
-        ]
+        "target": "fhwise11"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 3170,
+          "y": -2334,
+          "z": 6
+        },
+        "sourceLine": [
+          {
+            "x": 2432,
+            "y": -2607,
+            "z": -8037
+          },
+          {
+            "x": 2052,
+            "y": -3733,
+            "z": -8037
+          }
+        ],
+        "target": "fhparar1",
+        "source": "fhwise12"
+      },
+      {
+        "destinationPoint": {
+          "x": 3170,
+          "y": -2334,
+          "z": 6
+        },
+        "sourceLine": [
+          {
+            "x": 2742,
+            "y": -1732,
+            "z": -8037
+          },
+          {
+            "x": 2432,
+            "y": -2607,
+            "z": -8037
+          }
+        ],
+        "target": "fhparar1",
+        "source": "fhwise12"
+      },
+      {
+        "destinationPoint": {
+          "x": 3170,
+          "y": -2334,
+          "z": 6
+        },
+        "sourceLine": [
+          {
+            "x": 2432,
+            "y": -2607,
+            "z": -8037
+          },
+          {
+            "x": 2052,
+            "y": -3733,
+            "z": -8037
+          }
+        ],
+        "target": "fhparar1",
+        "source": "fhwise15"
+      },
+      {
+        "destinationPoint": {
+          "x": 3170,
+          "y": -2334,
+          "z": 6
+        },
+        "sourceLine": [
+          {
+            "x": 2742,
+            "y": -1732,
+            "z": -8037
+          },
+          {
+            "x": 2432,
+            "y": -2607,
+            "z": -8037
+          }
+        ],
+        "target": "fhparar1",
+        "source": "fhwise15"
+      }
+    ],
     "orientation": 136
   },
   "fhparar2": {
@@ -21933,8 +21155,7 @@ export const exits = {
             "z": -8031
           }
         ],
-        "target": "fhwise13",
-        "id": "exit-813"
+        "target": "fhwise13"
       },
       {
         "destinationPoint": {
@@ -21954,8 +21175,7 @@ export const exits = {
             "z": -8031
           }
         ],
-        "target": "fhwise13",
-        "id": "exit-814"
+        "target": "fhwise13"
       },
       {
         "destinationPoint": {
@@ -21975,22 +21195,20 @@ export const exits = {
             "z": -8009
           }
         ],
-        "target": "fhwise13",
-        "id": "exit-815"
+        "target": "fhwise13"
       }
     ],
     "entrances": [],
     "orientation": 192
   },
   "fhrail2": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1495",
-        "target": "etsta1",
         "destinationPoint": {
-          "x": 447,
-          "y": -4452,
-          "z": 9
+          "x": 404,
+          "y": -46,
+          "z": 101
         },
         "sourceLine": [
           {
@@ -22003,15 +21221,15 @@ export const exits = {
             "y": -4452,
             "z": 18
           }
-        ]
+        ],
+        "target": "fhrail2",
+        "source": "etsta1"
       },
       {
-        "id": "entrance-1496",
-        "target": "etsta1",
         "destinationPoint": {
-          "x": 1034,
-          "y": -4452,
-          "z": 9
+          "x": 404,
+          "y": -46,
+          "z": 101
         },
         "sourceLine": [
           {
@@ -22024,15 +21242,15 @@ export const exits = {
             "y": -4452,
             "z": 0
           }
-        ]
+        ],
+        "target": "fhrail2",
+        "source": "etsta1"
       },
       {
-        "id": "entrance-1497",
-        "target": "etsta2",
         "destinationPoint": {
-          "x": 447,
-          "y": -4452,
-          "z": 9
+          "x": 404,
+          "y": -46,
+          "z": 101
         },
         "sourceLine": [
           {
@@ -22045,15 +21263,15 @@ export const exits = {
             "y": -4452,
             "z": 18
           }
-        ]
+        ],
+        "target": "fhrail2",
+        "source": "etsta2"
       },
       {
-        "id": "entrance-1498",
-        "target": "etsta2",
         "destinationPoint": {
-          "x": 1034,
-          "y": -4452,
-          "z": 9
+          "x": 404,
+          "y": -46,
+          "z": 101
         },
         "sourceLine": [
           {
@@ -22066,31 +21284,32 @@ export const exits = {
             "y": -4452,
             "z": 0
           }
-        ]
+        ],
+        "target": "fhrail2",
+        "source": "etsta2"
       },
       {
-        "id": "entrance-1499",
-        "target": "fhform1",
         "destinationPoint": {
-          "x": 1204,
-          "y": -3822,
-          "z": 0
+          "x": -455,
+          "y": -23,
+          "z": 48
         },
         "sourceLine": [
           {
-            "x": 1324.4384022040883,
-            "y": -3763.2582663302637,
+            "x": 1204,
+            "y": -3688,
             "z": 0
           },
           {
-            "x": 1083.5615977959117,
-            "y": -3880.7417336697363,
+            "x": 1204,
+            "y": -3956,
             "z": 0
           }
-        ]
+        ],
+        "target": "fhrail2",
+        "source": "fhform1"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "fhrail3": {
@@ -22118,8 +21337,7 @@ export const exits = {
             "z": 3229
           }
         ],
-        "target": "fhfish1",
-        "id": "exit-816"
+        "target": "fhfish1"
       },
       {
         "destinationPoint": {
@@ -22139,8 +21357,7 @@ export const exits = {
             "z": 5053
           }
         ],
-        "target": "fhview1",
-        "id": "exit-817"
+        "target": "fhview1"
       }
     ],
     "entrances": [],
@@ -22166,8 +21383,7 @@ export const exits = {
             "z": 319
           }
         ],
-        "target": "fhedge2",
-        "id": "exit-818"
+        "target": "fhedge2"
       },
       {
         "destinationPoint": {
@@ -22187,8 +21403,7 @@ export const exits = {
             "z": 322
           }
         ],
-        "target": "fhedge2",
-        "id": "exit-819"
+        "target": "fhedge2"
       },
       {
         "destinationPoint": {
@@ -22208,8 +21423,7 @@ export const exits = {
             "z": 316
           }
         ],
-        "target": "fhwater1",
-        "id": "exit-820"
+        "target": "fhwater1"
       },
       {
         "destinationPoint": {
@@ -22229,179 +21443,179 @@ export const exits = {
             "z": 186
           }
         ],
-        "target": "fhhtl1",
-        "id": "exit-821"
-      },
-      {
-        "id": "entrance-1500",
-        "target": "fhtown21",
-        "destinationPoint": {
-          "x": 311.5,
-          "y": 7473.5,
-          "z": 1189
-        },
-        "sourceLine": [
-          {
-            "x": 351.8465032862165,
-            "y": 7529.91506600701,
-            "z": 1195
-          },
-          {
-            "x": 271.1534967137835,
-            "y": 7417.08493399299,
-            "z": 1183
-          }
-        ]
-      },
-      {
-        "id": "entrance-1501",
-        "target": "fhtown21",
-        "destinationPoint": {
-          "x": 205,
-          "y": 7473,
-          "z": 1201.5
-        },
-        "sourceLine": [
-          {
-            "x": 189.93303073201014,
-            "y": 7520.042389789183,
-            "z": 1208
-          },
-          {
-            "x": 220.06696926798986,
-            "y": 7425.957610210817,
-            "z": 1195
-          }
-        ]
-      },
-      {
-        "id": "entrance-1502",
-        "target": "fhtown21",
-        "destinationPoint": {
-          "x": -1.5,
-          "y": 7340.5,
-          "z": 1184.5
-        },
-        "sourceLine": [
-          {
-            "x": -65.04034302224828,
-            "y": 7525.878328853766,
-            "z": 1161
-          },
-          {
-            "x": 62.04034302224828,
-            "y": 7155.121671146234,
-            "z": 1208
-          }
-        ]
-      },
-      {
-        "id": "entrance-1503",
-        "target": "fhtown21",
-        "destinationPoint": {
-          "x": -435,
-          "y": 7066,
-          "z": 1188.5
-        },
-        "sourceLine": [
-          {
-            "x": -532.9326920980568,
-            "y": 7367.6524288289875,
-            "z": 1216
-          },
-          {
-            "x": -337.06730790194325,
-            "y": 6764.3475711710125,
-            "z": 1161
-          }
-        ]
-      },
-      {
-        "id": "entrance-1504",
-        "target": "fhtown22",
-        "destinationPoint": {
-          "x": 311.5,
-          "y": 7473.5,
-          "z": 1189
-        },
-        "sourceLine": [
-          {
-            "x": 351.8465032862165,
-            "y": 7529.91506600701,
-            "z": 1195
-          },
-          {
-            "x": 271.1534967137835,
-            "y": 7417.08493399299,
-            "z": 1183
-          }
-        ]
-      },
-      {
-        "id": "entrance-1505",
-        "target": "fhtown22",
-        "destinationPoint": {
-          "x": 205,
-          "y": 7473,
-          "z": 1201.5
-        },
-        "sourceLine": [
-          {
-            "x": 189.93303073201014,
-            "y": 7520.042389789183,
-            "z": 1208
-          },
-          {
-            "x": 220.06696926798986,
-            "y": 7425.957610210817,
-            "z": 1195
-          }
-        ]
-      },
-      {
-        "id": "entrance-1506",
-        "target": "fhtown22",
-        "destinationPoint": {
-          "x": -1.5,
-          "y": 7340.5,
-          "z": 1184.5
-        },
-        "sourceLine": [
-          {
-            "x": -65.04034302224828,
-            "y": 7525.878328853766,
-            "z": 1161
-          },
-          {
-            "x": 62.04034302224828,
-            "y": 7155.121671146234,
-            "z": 1208
-          }
-        ]
-      },
-      {
-        "id": "entrance-1507",
-        "target": "fhtown22",
-        "destinationPoint": {
-          "x": -435,
-          "y": 7066,
-          "z": 1188.5
-        },
-        "sourceLine": [
-          {
-            "x": -532.9326920980568,
-            "y": 7367.6524288289875,
-            "z": 1216
-          },
-          {
-            "x": -337.06730790194325,
-            "y": 6764.3475711710125,
-            "z": 1161
-          }
-        ]
+        "target": "fhhtl1"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 365,
+          "y": -703,
+          "z": 80
+        },
+        "sourceLine": [
+          {
+            "x": 247,
+            "y": 7499,
+            "z": 1195
+          },
+          {
+            "x": 376,
+            "y": 7448,
+            "z": 1183
+          }
+        ],
+        "target": "fhtown1",
+        "source": "fhtown21"
+      },
+      {
+        "destinationPoint": {
+          "x": 365,
+          "y": -703,
+          "z": 80
+        },
+        "sourceLine": [
+          {
+            "x": 163,
+            "y": 7447,
+            "z": 1208
+          },
+          {
+            "x": 247,
+            "y": 7499,
+            "z": 1195
+          }
+        ],
+        "target": "fhtown1",
+        "source": "fhtown21"
+      },
+      {
+        "destinationPoint": {
+          "x": 365,
+          "y": -703,
+          "z": 80
+        },
+        "sourceLine": [
+          {
+            "x": -166,
+            "y": 7234,
+            "z": 1161
+          },
+          {
+            "x": 163,
+            "y": 7447,
+            "z": 1208
+          }
+        ],
+        "target": "fhtown1",
+        "source": "fhtown21"
+      },
+      {
+        "destinationPoint": {
+          "x": 365,
+          "y": -703,
+          "z": 80
+        },
+        "sourceLine": [
+          {
+            "x": -704,
+            "y": 6898,
+            "z": 1216
+          },
+          {
+            "x": -166,
+            "y": 7234,
+            "z": 1161
+          }
+        ],
+        "target": "fhtown1",
+        "source": "fhtown21"
+      },
+      {
+        "destinationPoint": {
+          "x": 365,
+          "y": -703,
+          "z": 80
+        },
+        "sourceLine": [
+          {
+            "x": 247,
+            "y": 7499,
+            "z": 1195
+          },
+          {
+            "x": 376,
+            "y": 7448,
+            "z": 1183
+          }
+        ],
+        "target": "fhtown1",
+        "source": "fhtown22"
+      },
+      {
+        "destinationPoint": {
+          "x": 365,
+          "y": -703,
+          "z": 80
+        },
+        "sourceLine": [
+          {
+            "x": 163,
+            "y": 7447,
+            "z": 1208
+          },
+          {
+            "x": 247,
+            "y": 7499,
+            "z": 1195
+          }
+        ],
+        "target": "fhtown1",
+        "source": "fhtown22"
+      },
+      {
+        "destinationPoint": {
+          "x": 365,
+          "y": -703,
+          "z": 80
+        },
+        "sourceLine": [
+          {
+            "x": -166,
+            "y": 7234,
+            "z": 1161
+          },
+          {
+            "x": 163,
+            "y": 7447,
+            "z": 1208
+          }
+        ],
+        "target": "fhtown1",
+        "source": "fhtown22"
+      },
+      {
+        "destinationPoint": {
+          "x": 365,
+          "y": -703,
+          "z": 80
+        },
+        "sourceLine": [
+          {
+            "x": -704,
+            "y": 6898,
+            "z": 1216
+          },
+          {
+            "x": -166,
+            "y": 7234,
+            "z": 1161
+          }
+        ],
+        "target": "fhtown1",
+        "source": "fhtown22"
+      }
+    ],
     "orientation": 128
   },
   "fhtown21": {
@@ -22424,8 +21638,7 @@ export const exits = {
             "z": 2105
           }
         ],
-        "target": "fhform1",
-        "id": "exit-822"
+        "target": "fhform1"
       },
       {
         "destinationPoint": {
@@ -22445,8 +21658,7 @@ export const exits = {
             "z": 1407
           }
         ],
-        "target": "fhform1",
-        "id": "exit-823"
+        "target": "fhform1"
       },
       {
         "destinationPoint": {
@@ -22466,8 +21678,7 @@ export const exits = {
             "z": 1600
           }
         ],
-        "target": "fhmin1",
-        "id": "exit-824"
+        "target": "fhmin1"
       },
       {
         "destinationPoint": {
@@ -22487,8 +21698,7 @@ export const exits = {
             "z": 1183
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-825"
+        "target": "fhtown1"
       },
       {
         "destinationPoint": {
@@ -22508,8 +21718,7 @@ export const exits = {
             "z": 1195
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-826"
+        "target": "fhtown1"
       },
       {
         "destinationPoint": {
@@ -22529,8 +21738,7 @@ export const exits = {
             "z": 1208
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-827"
+        "target": "fhtown1"
       },
       {
         "destinationPoint": {
@@ -22550,8 +21758,7 @@ export const exits = {
             "z": 1161
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-828"
+        "target": "fhtown1"
       }
     ],
     "entrances": [],
@@ -22577,8 +21784,7 @@ export const exits = {
             "z": 2105
           }
         ],
-        "target": "fhform1",
-        "id": "exit-829"
+        "target": "fhform1"
       },
       {
         "destinationPoint": {
@@ -22598,8 +21804,7 @@ export const exits = {
             "z": 1407
           }
         ],
-        "target": "fhform1",
-        "id": "exit-830"
+        "target": "fhform1"
       },
       {
         "destinationPoint": {
@@ -22619,8 +21824,7 @@ export const exits = {
             "z": 1600
           }
         ],
-        "target": "fhmin1",
-        "id": "exit-831"
+        "target": "fhmin1"
       },
       {
         "destinationPoint": {
@@ -22640,8 +21844,7 @@ export const exits = {
             "z": 1183
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-832"
+        "target": "fhtown1"
       },
       {
         "destinationPoint": {
@@ -22661,8 +21864,7 @@ export const exits = {
             "z": 1195
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-833"
+        "target": "fhtown1"
       },
       {
         "destinationPoint": {
@@ -22682,8 +21884,7 @@ export const exits = {
             "z": 1208
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-834"
+        "target": "fhtown1"
       },
       {
         "destinationPoint": {
@@ -22703,8 +21904,7 @@ export const exits = {
             "z": 1161
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-835"
+        "target": "fhtown1"
       }
     ],
     "entrances": [],
@@ -22721,93 +21921,93 @@ export const exits = {
     "orientation": 232
   },
   "fhview1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1508",
-        "target": "fhdeck1",
         "destinationPoint": {
-          "x": -80,
-          "y": 39.5,
-          "z": 1413
+          "x": 3833,
+          "y": 5965,
+          "z": 13
         },
         "sourceLine": [
           {
-            "x": -28.385295638759708,
-            "y": -0.8258266338306157,
+            "x": -80,
+            "y": 105,
             "z": 1413
           },
           {
-            "x": -131.61470436124029,
-            "y": 79.82582663383062,
+            "x": -80,
+            "y": -26,
             "z": 1413
           }
-        ]
+        ],
+        "target": "fhview1",
+        "source": "fhdeck1"
       },
       {
-        "id": "entrance-1509",
-        "target": "fhdeck2",
         "destinationPoint": {
-          "x": -80,
-          "y": 39.5,
-          "z": 1413
+          "x": 3833,
+          "y": 5965,
+          "z": 13
         },
         "sourceLine": [
           {
-            "x": -28.385295638759708,
-            "y": -0.8258266338306157,
+            "x": -80,
+            "y": 105,
             "z": 1413
           },
           {
-            "x": -131.61470436124029,
-            "y": 79.82582663383062,
+            "x": -80,
+            "y": -26,
             "z": 1413
           }
-        ]
+        ],
+        "target": "fhview1",
+        "source": "fhdeck2"
       },
       {
-        "id": "entrance-1510",
-        "target": "fhdeck6",
         "destinationPoint": {
-          "x": -80,
-          "y": 39.5,
-          "z": 1413
+          "x": 3833,
+          "y": 5965,
+          "z": 13
         },
         "sourceLine": [
           {
-            "x": -28.385295638759708,
-            "y": -0.8258266338306157,
+            "x": -80,
+            "y": 105,
             "z": 1413
           },
           {
-            "x": -131.61470436124029,
-            "y": 79.82582663383062,
+            "x": -80,
+            "y": -26,
             "z": 1413
           }
-        ]
+        ],
+        "target": "fhview1",
+        "source": "fhdeck6"
       },
       {
-        "id": "entrance-1511",
-        "target": "fhroof1",
         "destinationPoint": {
-          "x": 173,
-          "y": 5439,
-          "z": 5053.5
+          "x": 3342,
+          "y": 6119,
+          "z": 15
         },
         "sourceLine": [
           {
-            "x": 101.23226792479403,
-            "y": 5501.533132280268,
+            "x": 79,
+            "y": 5454,
             "z": 5054
           },
           {
-            "x": 244.76773207520597,
-            "y": 5376.466867719732,
+            "x": 267,
+            "y": 5424,
             "z": 5053
           }
-        ]
+        ],
+        "target": "fhview1",
+        "source": "fhroof1"
       }
     ],
-    "entrances": [],
     "orientation": 0
   },
   "fhwater1": {
@@ -22830,8 +22030,7 @@ export const exits = {
             "z": 218
           }
         ],
-        "target": "fhtown1",
-        "id": "exit-836"
+        "target": "fhtown1"
       }
     ],
     "entrances": [],
@@ -22857,8 +22056,7 @@ export const exits = {
             "z": -7676
           }
         ],
-        "target": "fhwisef1",
-        "id": "exit-837"
+        "target": "fhwisef1"
       },
       {
         "destinationPoint": {
@@ -22878,8 +22076,7 @@ export const exits = {
             "z": -8037
           }
         ],
-        "target": "fhparar1",
-        "id": "exit-838"
+        "target": "fhparar1"
       },
       {
         "destinationPoint": {
@@ -22899,8 +22096,7 @@ export const exits = {
             "z": -8037
           }
         ],
-        "target": "fhparar1",
-        "id": "exit-839"
+        "target": "fhparar1"
       },
       {
         "destinationPoint": {
@@ -22920,8 +22116,7 @@ export const exits = {
             "z": -8005
           }
         ],
-        "target": "fhpara11",
-        "id": "exit-840"
+        "target": "fhpara11"
       }
     ],
     "entrances": [],
@@ -22947,8 +22142,7 @@ export const exits = {
             "z": -7676
           }
         ],
-        "target": "fhwisef1",
-        "id": "exit-841"
+        "target": "fhwisef1"
       },
       {
         "destinationPoint": {
@@ -22968,8 +22162,7 @@ export const exits = {
             "z": -8037
           }
         ],
-        "target": "fhparar1",
-        "id": "exit-842"
+        "target": "fhparar1"
       },
       {
         "destinationPoint": {
@@ -22989,8 +22182,7 @@ export const exits = {
             "z": -8037
           }
         ],
-        "target": "fhparar1",
-        "id": "exit-843"
+        "target": "fhparar1"
       },
       {
         "destinationPoint": {
@@ -23010,8 +22202,7 @@ export const exits = {
             "z": -8005
           }
         ],
-        "target": "fhpara11",
-        "id": "exit-844"
+        "target": "fhpara11"
       }
     ],
     "entrances": [],
@@ -23037,8 +22228,7 @@ export const exits = {
             "z": -8037
           }
         ],
-        "target": "fhparar2",
-        "id": "exit-845"
+        "target": "fhparar2"
       },
       {
         "destinationPoint": {
@@ -23058,8 +22248,7 @@ export const exits = {
             "z": -8037
           }
         ],
-        "target": "fhparar2",
-        "id": "exit-846"
+        "target": "fhparar2"
       },
       {
         "destinationPoint": {
@@ -23079,8 +22268,7 @@ export const exits = {
             "z": -8037
           }
         ],
-        "target": "fhpara12",
-        "id": "exit-847"
+        "target": "fhpara12"
       }
     ],
     "entrances": [],
@@ -23111,8 +22299,7 @@ export const exits = {
             "z": -7676
           }
         ],
-        "target": "fhwisef1",
-        "id": "exit-848"
+        "target": "fhwisef1"
       },
       {
         "destinationPoint": {
@@ -23132,8 +22319,7 @@ export const exits = {
             "z": -8037
           }
         ],
-        "target": "fhparar1",
-        "id": "exit-849"
+        "target": "fhparar1"
       },
       {
         "destinationPoint": {
@@ -23153,8 +22339,7 @@ export const exits = {
             "z": -8037
           }
         ],
-        "target": "fhparar1",
-        "id": "exit-850"
+        "target": "fhparar1"
       },
       {
         "destinationPoint": {
@@ -23174,8 +22359,7 @@ export const exits = {
             "z": -8005
           }
         ],
-        "target": "fhpara11",
-        "id": "exit-851"
+        "target": "fhpara11"
       }
     ],
     "entrances": [],
@@ -23201,74 +22385,74 @@ export const exits = {
             "z": 563
           }
         ],
-        "target": "fhwisef2",
-        "id": "exit-852"
-      },
-      {
-        "id": "entrance-1512",
-        "target": "fhwise11",
-        "destinationPoint": {
-          "x": 287.5,
-          "y": -674,
-          "z": -7676
-        },
-        "sourceLine": [
-          {
-            "x": 243.75563277742825,
-            "y": -749.0445223603748,
-            "z": -7676
-          },
-          {
-            "x": 331.2443672225718,
-            "y": -598.9554776396252,
-            "z": -7676
-          }
-        ]
-      },
-      {
-        "id": "entrance-1513",
-        "target": "fhwise12",
-        "destinationPoint": {
-          "x": 303,
-          "y": -708.5,
-          "z": -7676
-        },
-        "sourceLine": [
-          {
-            "x": 266.2743499078516,
-            "y": -788.9517036818306,
-            "z": -7676
-          },
-          {
-            "x": 339.7256500921484,
-            "y": -628.0482963181694,
-            "z": -7676
-          }
-        ]
-      },
-      {
-        "id": "entrance-1514",
-        "target": "fhwise15",
-        "destinationPoint": {
-          "x": 303,
-          "y": -708.5,
-          "z": -7676
-        },
-        "sourceLine": [
-          {
-            "x": 266.2743499078516,
-            "y": -788.9517036818306,
-            "z": -7676
-          },
-          {
-            "x": 339.7256500921484,
-            "y": -628.0482963181694,
-            "z": -7676
-          }
-        ]
+        "target": "fhwisef2"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 584,
+          "y": -488,
+          "z": 6
+        },
+        "sourceLine": [
+          {
+            "x": 208,
+            "y": -709,
+            "z": -7676
+          },
+          {
+            "x": 367,
+            "y": -639,
+            "z": -7676
+          }
+        ],
+        "target": "fhwisef1",
+        "source": "fhwise11"
+      },
+      {
+        "destinationPoint": {
+          "x": 584,
+          "y": -488,
+          "z": 6
+        },
+        "sourceLine": [
+          {
+            "x": 226,
+            "y": -752,
+            "z": -7676
+          },
+          {
+            "x": 380,
+            "y": -665,
+            "z": -7676
+          }
+        ],
+        "target": "fhwisef1",
+        "source": "fhwise12"
+      },
+      {
+        "destinationPoint": {
+          "x": 584,
+          "y": -488,
+          "z": 6
+        },
+        "sourceLine": [
+          {
+            "x": 226,
+            "y": -752,
+            "z": -7676
+          },
+          {
+            "x": 380,
+            "y": -665,
+            "z": -7676
+          }
+        ],
+        "target": "fhwisef1",
+        "source": "fhwise15"
+      }
+    ],
     "orientation": 164
   },
   "fhwisef2": {
@@ -23291,8 +22475,7 @@ export const exits = {
             "z": 715
           }
         ],
-        "target": "fhwisef1",
-        "id": "exit-853"
+        "target": "fhwisef1"
       }
     ],
     "entrances": [],
@@ -23347,8 +22530,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfvill31",
-        "id": "exit-854"
+        "target": "gfvill31"
       },
       {
         "destinationPoint": {
@@ -23368,8 +22550,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfvill1",
-        "id": "exit-855"
+        "target": "gfvill1"
       },
       {
         "destinationPoint": {
@@ -23389,8 +22570,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfmin2",
-        "id": "exit-856"
+        "target": "gfmin2"
       },
       {
         "destinationPoint": {
@@ -23410,8 +22590,7 @@ export const exits = {
             "z": 366
           }
         ],
-        "target": "gfvill21",
-        "id": "exit-857"
+        "target": "gfvill21"
       }
     ],
     "entrances": [],
@@ -23437,8 +22616,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfvill32",
-        "id": "exit-858"
+        "target": "gfvill32"
       },
       {
         "destinationPoint": {
@@ -23458,8 +22636,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfvill1a",
-        "id": "exit-859"
+        "target": "gfvill1a"
       },
       {
         "destinationPoint": {
@@ -23479,8 +22656,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfmin2a",
-        "id": "exit-860"
+        "target": "gfmin2a"
       },
       {
         "destinationPoint": {
@@ -23500,8 +22676,7 @@ export const exits = {
             "z": 84
           }
         ],
-        "target": "gfvill24",
-        "id": "exit-861"
+        "target": "gfvill24"
       }
     ],
     "entrances": [],
@@ -23527,8 +22702,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfvill21",
-        "id": "exit-862"
+        "target": "gfvill21"
       },
       {
         "destinationPoint": {
@@ -23548,8 +22722,7 @@ export const exits = {
             "z": 467
           }
         ],
-        "target": "gfelone2",
-        "id": "exit-863"
+        "target": "gfelone2"
       }
     ],
     "entrances": [],
@@ -23575,8 +22748,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfelone1",
-        "id": "exit-864"
+        "target": "gfelone1"
       }
     ],
     "entrances": [],
@@ -23602,8 +22774,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfvill24",
-        "id": "exit-865"
+        "target": "gfvill24"
       },
       {
         "destinationPoint": {
@@ -23623,8 +22794,7 @@ export const exits = {
             "z": 467
           }
         ],
-        "target": "gfelone4",
-        "id": "exit-866"
+        "target": "gfelone4"
       }
     ],
     "entrances": [],
@@ -23650,8 +22820,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfelone3",
-        "id": "exit-867"
+        "target": "gfelone3"
       }
     ],
     "entrances": [],
@@ -23677,8 +22846,7 @@ export const exits = {
             "z": 744
           }
         ],
-        "target": "gfhtr1",
-        "id": "exit-868"
+        "target": "gfhtr1"
       },
       {
         "destinationPoint": {
@@ -23698,8 +22866,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfview1",
-        "id": "exit-869"
+        "target": "gfview1"
       }
     ],
     "entrances": [],
@@ -23725,8 +22892,7 @@ export const exits = {
             "z": 744
           }
         ],
-        "target": "gfhtr1a",
-        "id": "exit-870"
+        "target": "gfhtr1a"
       },
       {
         "destinationPoint": {
@@ -23746,8 +22912,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfview1a",
-        "id": "exit-871"
+        "target": "gfview1a"
       }
     ],
     "entrances": [],
@@ -23773,8 +22938,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfhtl1",
-        "id": "exit-872"
+        "target": "gfhtl1"
       }
     ],
     "entrances": [],
@@ -23800,8 +22964,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfhtl1a",
-        "id": "exit-873"
+        "target": "gfhtl1a"
       }
     ],
     "entrances": [],
@@ -23827,8 +22990,7 @@ export const exits = {
             "z": 11
           }
         ],
-        "target": "gfvill21",
-        "id": "exit-874"
+        "target": "gfvill21"
       },
       {
         "destinationPoint": {
@@ -23848,8 +23010,7 @@ export const exits = {
             "z": 938
           }
         ],
-        "target": "gflain2",
-        "id": "exit-875"
+        "target": "gflain2"
       }
     ],
     "entrances": [],
@@ -23880,8 +23041,7 @@ export const exits = {
             "z": 11
           }
         ],
-        "target": "gfvill24",
-        "id": "exit-876"
+        "target": "gfvill24"
       },
       {
         "destinationPoint": {
@@ -23901,8 +23061,7 @@ export const exits = {
             "z": 938
           }
         ],
-        "target": "gflain2a",
-        "id": "exit-877"
+        "target": "gflain2a"
       }
     ],
     "entrances": [],
@@ -23928,8 +23087,7 @@ export const exits = {
             "z": -242
           }
         ],
-        "target": "gflain1",
-        "id": "exit-878"
+        "target": "gflain1"
       }
     ],
     "entrances": [],
@@ -23955,8 +23113,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gflain1a",
-        "id": "exit-879"
+        "target": "gflain1a"
       }
     ],
     "entrances": [],
@@ -23982,8 +23139,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfview1",
-        "id": "exit-880"
+        "target": "gfview1"
       }
     ],
     "entrances": [],
@@ -24009,8 +23165,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfview1a",
-        "id": "exit-881"
+        "target": "gfview1a"
       }
     ],
     "entrances": [],
@@ -24036,8 +23191,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfcross1",
-        "id": "exit-882"
+        "target": "gfcross1"
       }
     ],
     "entrances": [],
@@ -24063,8 +23217,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfcross2",
-        "id": "exit-883"
+        "target": "gfcross2"
       }
     ],
     "entrances": [],
@@ -24090,8 +23243,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfvill21",
-        "id": "exit-884"
+        "target": "gfvill21"
       }
     ],
     "entrances": [],
@@ -24117,8 +23269,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfvill24",
-        "id": "exit-885"
+        "target": "gfvill24"
       }
     ],
     "entrances": [],
@@ -24144,8 +23295,7 @@ export const exits = {
             "z": 1422
           }
         ],
-        "target": "gfvill31",
-        "id": "exit-886"
+        "target": "gfvill31"
       },
       {
         "destinationPoint": {
@@ -24165,8 +23315,7 @@ export const exits = {
             "z": 1633
           }
         ],
-        "target": "gfvill1",
-        "id": "exit-887"
+        "target": "gfvill1"
       },
       {
         "destinationPoint": {
@@ -24186,8 +23335,7 @@ export const exits = {
             "z": 576
           }
         ],
-        "target": "gfmin1",
-        "id": "exit-888"
+        "target": "gfmin1"
       },
       {
         "destinationPoint": {
@@ -24207,8 +23355,7 @@ export const exits = {
             "z": 445
           }
         ],
-        "target": "gfhtl1",
-        "id": "exit-889"
+        "target": "gfhtl1"
       }
     ],
     "entrances": [],
@@ -24234,8 +23381,7 @@ export const exits = {
             "z": 1422
           }
         ],
-        "target": "gfvill32",
-        "id": "exit-890"
+        "target": "gfvill32"
       },
       {
         "destinationPoint": {
@@ -24255,8 +23401,7 @@ export const exits = {
             "z": 1633
           }
         ],
-        "target": "gfvill1a",
-        "id": "exit-891"
+        "target": "gfvill1a"
       },
       {
         "destinationPoint": {
@@ -24276,8 +23421,7 @@ export const exits = {
             "z": 576
           }
         ],
-        "target": "gfmin1a",
-        "id": "exit-892"
+        "target": "gfmin1a"
       },
       {
         "destinationPoint": {
@@ -24297,8 +23441,7 @@ export const exits = {
             "z": 445
           }
         ],
-        "target": "gfhtl1a",
-        "id": "exit-893"
+        "target": "gfhtl1a"
       }
     ],
     "entrances": [],
@@ -24324,8 +23467,7 @@ export const exits = {
             "z": -1053
           }
         ],
-        "target": "gfcross1",
-        "id": "exit-894"
+        "target": "gfcross1"
       },
       {
         "destinationPoint": {
@@ -24345,8 +23487,7 @@ export const exits = {
             "z": -482
           }
         ],
-        "target": "gfview1",
-        "id": "exit-895"
+        "target": "gfview1"
       }
     ],
     "entrances": [],
@@ -24372,8 +23513,7 @@ export const exits = {
             "z": -1053
           }
         ],
-        "target": "gfcross2",
-        "id": "exit-896"
+        "target": "gfcross2"
       },
       {
         "destinationPoint": {
@@ -24393,8 +23533,7 @@ export const exits = {
             "z": -482
           }
         ],
-        "target": "gfview1a",
-        "id": "exit-897"
+        "target": "gfview1a"
       }
     ],
     "entrances": [],
@@ -24420,8 +23559,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfcross1",
-        "id": "exit-898"
+        "target": "gfcross1"
       },
       {
         "destinationPoint": {
@@ -24441,8 +23579,7 @@ export const exits = {
             "z": 276
           }
         ],
-        "target": "gfrich1",
-        "id": "exit-899"
+        "target": "gfrich1"
       },
       {
         "destinationPoint": {
@@ -24462,8 +23599,7 @@ export const exits = {
             "z": 91
           }
         ],
-        "target": "gfelone1",
-        "id": "exit-900"
+        "target": "gfelone1"
       },
       {
         "destinationPoint": {
@@ -24483,8 +23619,7 @@ export const exits = {
             "z": 89
           }
         ],
-        "target": "gflain1",
-        "id": "exit-901"
+        "target": "gflain1"
       }
     ],
     "entrances": [],
@@ -24520,8 +23655,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gfcross2",
-        "id": "exit-902"
+        "target": "gfcross2"
       },
       {
         "destinationPoint": {
@@ -24541,8 +23675,7 @@ export const exits = {
             "z": 276
           }
         ],
-        "target": "gfrich1a",
-        "id": "exit-903"
+        "target": "gfrich1a"
       },
       {
         "destinationPoint": {
@@ -24562,8 +23695,7 @@ export const exits = {
             "z": 91
           }
         ],
-        "target": "gfelone3",
-        "id": "exit-904"
+        "target": "gfelone3"
       },
       {
         "destinationPoint": {
@@ -24583,8 +23715,7 @@ export const exits = {
             "z": 89
           }
         ],
-        "target": "gflain1a",
-        "id": "exit-905"
+        "target": "gflain1a"
       }
     ],
     "entrances": [],
@@ -24610,8 +23741,7 @@ export const exits = {
             "z": 3
           }
         ],
-        "target": "gfview1",
-        "id": "exit-906"
+        "target": "gfview1"
       },
       {
         "destinationPoint": {
@@ -24631,8 +23761,7 @@ export const exits = {
             "z": 1722
           }
         ],
-        "target": "gfcross1",
-        "id": "exit-907"
+        "target": "gfcross1"
       },
       {
         "destinationPoint": {
@@ -24652,8 +23781,7 @@ export const exits = {
             "z": 1712
           }
         ],
-        "target": "gfcross1",
-        "id": "exit-908"
+        "target": "gfcross1"
       }
     ],
     "entrances": [],
@@ -24679,8 +23807,7 @@ export const exits = {
             "z": -10
           }
         ],
-        "target": "gfview1a",
-        "id": "exit-909"
+        "target": "gfview1a"
       },
       {
         "destinationPoint": {
@@ -24700,8 +23827,7 @@ export const exits = {
             "z": -10
           }
         ],
-        "target": "gfview1a",
-        "id": "exit-910"
+        "target": "gfview1a"
       },
       {
         "destinationPoint": {
@@ -24721,8 +23847,7 @@ export const exits = {
             "z": 1492
           }
         ],
-        "target": "gfcross2",
-        "id": "exit-911"
+        "target": "gfcross2"
       },
       {
         "destinationPoint": {
@@ -24742,8 +23867,7 @@ export const exits = {
             "z": 1476
           }
         ],
-        "target": "gfcross2",
-        "id": "exit-912"
+        "target": "gfcross2"
       }
     ],
     "entrances": [],
@@ -24769,8 +23893,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggroen2",
-        "id": "exit-913"
+        "target": "gggroen2"
       }
     ],
     "entrances": [],
@@ -24796,8 +23919,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad2",
-        "id": "exit-914"
+        "target": "ggroad2"
       },
       {
         "destinationPoint": {
@@ -24817,8 +23939,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad2",
-        "id": "exit-915"
+        "target": "ggroad2"
       },
       {
         "destinationPoint": {
@@ -24838,8 +23959,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad2",
-        "id": "exit-916"
+        "target": "ggroad2"
       }
     ],
     "entrances": [],
@@ -24865,8 +23985,7 @@ export const exits = {
             "z": 1046
           }
         ],
-        "target": "gggate3",
-        "id": "exit-917"
+        "target": "gggate3"
       },
       {
         "destinationPoint": {
@@ -24886,8 +24005,7 @@ export const exits = {
             "z": 1046
           }
         ],
-        "target": "gggate3",
-        "id": "exit-918"
+        "target": "gggate3"
       },
       {
         "destinationPoint": {
@@ -24907,8 +24025,7 @@ export const exits = {
             "z": 1163
           }
         ],
-        "target": "ggview1",
-        "id": "exit-919"
+        "target": "ggview1"
       }
     ],
     "entrances": [],
@@ -24939,8 +24056,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gghall1",
-        "id": "exit-920"
+        "target": "gghall1"
       },
       {
         "destinationPoint": {
@@ -24960,8 +24076,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggate1",
-        "id": "exit-921"
+        "target": "gggate1"
       },
       {
         "destinationPoint": {
@@ -24981,8 +24096,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggate1",
-        "id": "exit-922"
+        "target": "gggate1"
       }
     ],
     "entrances": [],
@@ -25013,8 +24127,7 @@ export const exits = {
             "z": 4738
           }
         ],
-        "target": "gggroen2",
-        "id": "exit-923"
+        "target": "gggroen2"
       },
       {
         "destinationPoint": {
@@ -25034,16 +24147,15 @@ export const exits = {
             "z": 5002
           }
         ],
-        "target": "gggroen1",
-        "id": "exit-924"
-      },
+        "target": "gggroen1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1515",
-        "target": "ggstand1",
         "destinationPoint": {
-          "x": -685.5,
-          "y": 7371,
-          "z": 4820
+          "x": 5,
+          "y": 7668,
+          "z": 101
         },
         "sourceLine": [
           {
@@ -25056,10 +24168,11 @@ export const exits = {
             "y": 7401,
             "z": 4820
           }
-        ]
+        ],
+        "target": "gggro1",
+        "source": "ggstand1"
       }
     ],
-    "entrances": [],
     "orientation": 192
   },
   "gggroen1": {
@@ -25082,8 +24195,7 @@ export const exits = {
             "z": 75
           }
         ],
-        "target": "gggro1",
-        "id": "exit-925"
+        "target": "gggro1"
       },
       {
         "destinationPoint": {
@@ -25103,8 +24215,7 @@ export const exits = {
             "z": 75
           }
         ],
-        "target": "ggroad1",
-        "id": "exit-926"
+        "target": "ggroad1"
       }
     ],
     "entrances": [],
@@ -25130,8 +24241,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad9",
-        "id": "exit-927"
+        "target": "ggroad9"
       },
       {
         "destinationPoint": {
@@ -25151,8 +24261,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad8",
-        "id": "exit-928"
+        "target": "ggroad8"
       },
       {
         "destinationPoint": {
@@ -25172,8 +24281,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggback1",
-        "id": "exit-929"
+        "target": "ggback1"
       },
       {
         "destinationPoint": {
@@ -25193,32 +24301,32 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggro1",
-        "id": "exit-930"
-      },
+        "target": "gggro1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1516",
-        "target": "ggstand1",
         "destinationPoint": {
-          "x": 2.5,
-          "y": 9337,
-          "z": 4733
+          "x": 40,
+          "y": 4013,
+          "z": 131
         },
         "sourceLine": [
           {
-            "x": -68.296940206436,
-            "y": 9482.155238477315,
+            "x": -159,
+            "y": 9337,
             "z": 4733
           },
           {
-            "x": 73.296940206436,
-            "y": 9191.844761522685,
+            "x": 164,
+            "y": 9337,
             "z": 4733
           }
-        ]
+        ],
+        "target": "gggroen2",
+        "source": "ggstand1"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "gggym1": {
@@ -25241,8 +24349,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggym2",
-        "id": "exit-931"
+        "target": "gggym2"
       },
       {
         "destinationPoint": {
@@ -25262,8 +24369,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggym2",
-        "id": "exit-932"
+        "target": "gggym2"
       },
       {
         "destinationPoint": {
@@ -25283,8 +24389,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggym2",
-        "id": "exit-933"
+        "target": "gggym2"
       },
       {
         "destinationPoint": {
@@ -25304,8 +24409,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad9",
-        "id": "exit-934"
+        "target": "ggroad9"
       }
     ],
     "entrances": [],
@@ -25331,8 +24435,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggym1",
-        "id": "exit-935"
+        "target": "gggym1"
       },
       {
         "destinationPoint": {
@@ -25352,8 +24455,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggym1",
-        "id": "exit-936"
+        "target": "gggym1"
       },
       {
         "destinationPoint": {
@@ -25373,8 +24475,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggym1",
-        "id": "exit-937"
+        "target": "gggym1"
       },
       {
         "destinationPoint": {
@@ -25394,8 +24495,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom3",
-        "id": "exit-938"
+        "target": "ggroom3"
       },
       {
         "destinationPoint": {
@@ -25415,8 +24515,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad9a",
-        "id": "exit-939"
+        "target": "ggroad9a"
       }
     ],
     "entrances": [],
@@ -25442,8 +24541,7 @@ export const exits = {
             "z": 226
           }
         ],
-        "target": "gghall2",
-        "id": "exit-940"
+        "target": "gghall2"
       },
       {
         "destinationPoint": {
@@ -25463,8 +24561,7 @@ export const exits = {
             "z": 221
           }
         ],
-        "target": "ggroad8a",
-        "id": "exit-941"
+        "target": "ggroad8a"
       },
       {
         "destinationPoint": {
@@ -25484,8 +24581,7 @@ export const exits = {
             "z": 216
           }
         ],
-        "target": "ggroad9a",
-        "id": "exit-942"
+        "target": "ggroad9a"
       },
       {
         "destinationPoint": {
@@ -25505,8 +24601,7 @@ export const exits = {
             "z": 216
           }
         ],
-        "target": "gggate3",
-        "id": "exit-943"
+        "target": "gggate3"
       }
     ],
     "entrances": [],
@@ -25532,8 +24627,7 @@ export const exits = {
             "z": 386
           }
         ],
-        "target": "ggroad1",
-        "id": "exit-944"
+        "target": "ggroad1"
       },
       {
         "destinationPoint": {
@@ -25553,8 +24647,7 @@ export const exits = {
             "z": 226
           }
         ],
-        "target": "gghall1",
-        "id": "exit-945"
+        "target": "gghall1"
       }
     ],
     "entrances": [],
@@ -25580,8 +24673,7 @@ export const exits = {
             "z": -1264
           }
         ],
-        "target": "ggroad3",
-        "id": "exit-946"
+        "target": "ggroad3"
       }
     ],
     "entrances": [],
@@ -25622,8 +24714,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggroen1",
-        "id": "exit-947"
+        "target": "gggroen1"
       },
       {
         "destinationPoint": {
@@ -25643,8 +24734,7 @@ export const exits = {
             "z": 459
           }
         ],
-        "target": "ggroad2",
-        "id": "exit-948"
+        "target": "ggroad2"
       },
       {
         "destinationPoint": {
@@ -25664,8 +24754,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gghall2",
-        "id": "exit-949"
+        "target": "gghall2"
       }
     ],
     "entrances": [],
@@ -25691,8 +24780,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggele1",
-        "id": "exit-950"
+        "target": "ggele1"
       },
       {
         "destinationPoint": {
@@ -25712,8 +24800,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad3",
-        "id": "exit-951"
+        "target": "ggroad3"
       },
       {
         "destinationPoint": {
@@ -25733,8 +24820,7 @@ export const exits = {
             "z": -391
           }
         ],
-        "target": "ggroad1",
-        "id": "exit-952"
+        "target": "ggroad1"
       },
       {
         "destinationPoint": {
@@ -25754,8 +24840,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom1",
-        "id": "exit-953"
+        "target": "ggroom1"
       }
     ],
     "entrances": [],
@@ -25781,8 +24866,7 @@ export const exits = {
             "z": 1959
           }
         ],
-        "target": "ggroad2",
-        "id": "exit-954"
+        "target": "ggroad2"
       },
       {
         "destinationPoint": {
@@ -25802,8 +24886,7 @@ export const exits = {
             "z": 1548
           }
         ],
-        "target": "ggkodo1",
-        "id": "exit-955"
+        "target": "ggkodo1"
       },
       {
         "destinationPoint": {
@@ -25823,8 +24906,7 @@ export const exits = {
             "z": 1548
           }
         ],
-        "target": "ggkodo1",
-        "id": "exit-956"
+        "target": "ggkodo1"
       }
     ],
     "entrances": [],
@@ -25850,8 +24932,7 @@ export const exits = {
             "z": -186
           }
         ],
-        "target": "ggstaen1",
-        "id": "exit-957"
+        "target": "ggstaen1"
       },
       {
         "destinationPoint": {
@@ -25871,8 +24952,7 @@ export const exits = {
             "z": -1154
           }
         ],
-        "target": "ggroad6",
-        "id": "exit-958"
+        "target": "ggroad6"
       }
     ],
     "entrances": [],
@@ -25898,8 +24978,7 @@ export const exits = {
             "z": -439
           }
         ],
-        "target": "ggroad7",
-        "id": "exit-959"
+        "target": "ggroad7"
       },
       {
         "destinationPoint": {
@@ -25919,8 +24998,7 @@ export const exits = {
             "z": 439
           }
         ],
-        "target": "ggroad5",
-        "id": "exit-960"
+        "target": "ggroad5"
       },
       {
         "destinationPoint": {
@@ -25940,8 +25018,7 @@ export const exits = {
             "z": -1
           }
         ],
-        "target": "ggroad9b",
-        "id": "exit-961"
+        "target": "ggroad9b"
       },
       {
         "destinationPoint": {
@@ -25961,8 +25038,7 @@ export const exits = {
             "z": -1
           }
         ],
-        "target": "ggroad8b",
-        "id": "exit-962"
+        "target": "ggroad8b"
       }
     ],
     "entrances": [],
@@ -25988,8 +25064,7 @@ export const exits = {
             "z": -1
           }
         ],
-        "target": "ggroad8",
-        "id": "exit-963"
+        "target": "ggroad8"
       },
       {
         "destinationPoint": {
@@ -26009,8 +25084,7 @@ export const exits = {
             "z": -1
           }
         ],
-        "target": "ggroad8",
-        "id": "exit-964"
+        "target": "ggroad8"
       },
       {
         "destinationPoint": {
@@ -26030,8 +25104,7 @@ export const exits = {
             "z": -1
           }
         ],
-        "target": "ggroad8",
-        "id": "exit-965"
+        "target": "ggroad8"
       },
       {
         "destinationPoint": {
@@ -26051,8 +25124,7 @@ export const exits = {
             "z": 571
           }
         ],
-        "target": "ggroad6",
-        "id": "exit-966"
+        "target": "ggroad6"
       }
     ],
     "entrances": [],
@@ -26078,8 +25150,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad8a",
-        "id": "exit-967"
+        "target": "ggroad8a"
       },
       {
         "destinationPoint": {
@@ -26099,8 +25170,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad7",
-        "id": "exit-968"
+        "target": "ggroad7"
       },
       {
         "destinationPoint": {
@@ -26120,8 +25190,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom6",
-        "id": "exit-969"
+        "target": "ggroom6"
       },
       {
         "destinationPoint": {
@@ -26141,8 +25210,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggroen2",
-        "id": "exit-970"
+        "target": "gggroen2"
       }
     ],
     "entrances": [],
@@ -26168,8 +25236,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gghall1",
-        "id": "exit-971"
+        "target": "gghall1"
       },
       {
         "destinationPoint": {
@@ -26189,8 +25256,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom2",
-        "id": "exit-972"
+        "target": "ggroom2"
       },
       {
         "destinationPoint": {
@@ -26210,8 +25276,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom6",
-        "id": "exit-973"
+        "target": "ggroom6"
       },
       {
         "destinationPoint": {
@@ -26231,8 +25296,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad8",
-        "id": "exit-974"
+        "target": "ggroad8"
       }
     ],
     "entrances": [],
@@ -26258,8 +25322,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom7",
-        "id": "exit-975"
+        "target": "ggroom7"
       },
       {
         "destinationPoint": {
@@ -26279,8 +25342,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom4",
-        "id": "exit-976"
+        "target": "ggroom4"
       },
       {
         "destinationPoint": {
@@ -26300,8 +25362,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad6",
-        "id": "exit-977"
+        "target": "ggroad6"
       }
     ],
     "entrances": [],
@@ -26327,8 +25388,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad9a",
-        "id": "exit-978"
+        "target": "ggroad9a"
       },
       {
         "destinationPoint": {
@@ -26348,8 +25408,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggroen2",
-        "id": "exit-979"
+        "target": "gggroen2"
       },
       {
         "destinationPoint": {
@@ -26369,8 +25428,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom2",
-        "id": "exit-980"
+        "target": "ggroom2"
       },
       {
         "destinationPoint": {
@@ -26390,8 +25448,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggym1",
-        "id": "exit-981"
+        "target": "gggym1"
       }
     ],
     "entrances": [],
@@ -26417,8 +25474,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gghall1",
-        "id": "exit-982"
+        "target": "gghall1"
       },
       {
         "destinationPoint": {
@@ -26438,8 +25494,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad9",
-        "id": "exit-983"
+        "target": "ggroad9"
       },
       {
         "destinationPoint": {
@@ -26459,8 +25514,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom2",
-        "id": "exit-984"
+        "target": "ggroom2"
       },
       {
         "destinationPoint": {
@@ -26480,8 +25534,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggym2",
-        "id": "exit-985"
+        "target": "gggym2"
       }
     ],
     "entrances": [],
@@ -26507,8 +25560,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad6",
-        "id": "exit-986"
+        "target": "ggroad6"
       },
       {
         "destinationPoint": {
@@ -26528,8 +25580,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom7",
-        "id": "exit-987"
+        "target": "ggroom7"
       },
       {
         "destinationPoint": {
@@ -26549,8 +25600,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroom4",
-        "id": "exit-988"
+        "target": "ggroom4"
       }
     ],
     "entrances": [],
@@ -26576,22 +25626,20 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ggroad2",
-        "id": "exit-989"
+        "target": "ggroad2"
       }
     ],
     "entrances": [],
     "orientation": 128
   },
   "ggroom2": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1517",
-        "target": "ggroad8a",
         "destinationPoint": {
-          "x": 736.5,
-          "y": 1847.5,
-          "z": 0
+          "x": 112,
+          "y": -596,
+          "z": 204
         },
         "sourceLine": [
           {
@@ -26604,15 +25652,15 @@ export const exits = {
             "y": 1665,
             "z": 0
           }
-        ]
+        ],
+        "target": "ggroom2",
+        "source": "ggroad8a"
       },
       {
-        "id": "entrance-1518",
-        "target": "ggroad9",
         "destinationPoint": {
-          "x": 568,
-          "y": 723.5,
-          "z": 0
+          "x": 112,
+          "y": -596,
+          "z": 204
         },
         "sourceLine": [
           {
@@ -26625,15 +25673,15 @@ export const exits = {
             "y": 599,
             "z": 0
           }
-        ]
+        ],
+        "target": "ggroom2",
+        "source": "ggroad9"
       },
       {
-        "id": "entrance-1519",
-        "target": "ggroad9a",
         "destinationPoint": {
-          "x": 568,
-          "y": 723.5,
-          "z": 0
+          "x": 112,
+          "y": -596,
+          "z": 204
         },
         "sourceLine": [
           {
@@ -26646,10 +25694,11 @@ export const exits = {
             "y": 599,
             "z": 0
           }
-        ]
+        ],
+        "target": "ggroom2",
+        "source": "ggroad9a"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "ggroom3": {
@@ -26672,22 +25721,20 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gggym2",
-        "id": "exit-990"
+        "target": "gggym2"
       }
     ],
     "entrances": [],
     "orientation": 128
   },
   "ggroom4": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1520",
-        "target": "ggroad8b",
         "destinationPoint": {
-          "x": -660.5,
-          "y": 873.5,
-          "z": 0
+          "x": -148,
+          "y": -409,
+          "z": 60
         },
         "sourceLine": [
           {
@@ -26700,15 +25747,15 @@ export const exits = {
             "y": 752,
             "z": 0
           }
-        ]
+        ],
+        "target": "ggroom4",
+        "source": "ggroad8b"
       },
       {
-        "id": "entrance-1521",
-        "target": "ggroad9b",
         "destinationPoint": {
-          "x": -1060,
-          "y": 1501,
-          "z": 0
+          "x": -148,
+          "y": -409,
+          "z": 60
         },
         "sourceLine": [
           {
@@ -26721,10 +25768,11 @@ export const exits = {
             "y": 1323,
             "z": 0
           }
-        ]
+        ],
+        "target": "ggroom4",
+        "source": "ggroad9b"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "ggroom5": {
@@ -26733,14 +25781,13 @@ export const exits = {
     "orientation": 128
   },
   "ggroom6": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1522",
-        "target": "ggroad8",
         "destinationPoint": {
-          "x": -660.5,
-          "y": 873.5,
-          "z": 0
+          "x": -109,
+          "y": -596,
+          "z": 204
         },
         "sourceLine": [
           {
@@ -26753,15 +25800,15 @@ export const exits = {
             "y": 752,
             "z": 0
           }
-        ]
+        ],
+        "target": "ggroom6",
+        "source": "ggroad8"
       },
       {
-        "id": "entrance-1523",
-        "target": "ggroad8a",
         "destinationPoint": {
-          "x": -660.5,
-          "y": 873.5,
-          "z": 0
+          "x": -109,
+          "y": -596,
+          "z": 204
         },
         "sourceLine": [
           {
@@ -26774,21 +25821,21 @@ export const exits = {
             "y": 752,
             "z": 0
           }
-        ]
+        ],
+        "target": "ggroom6",
+        "source": "ggroad8a"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "ggroom7": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1524",
-        "target": "ggroad8b",
         "destinationPoint": {
-          "x": 736.5,
-          "y": 1847.5,
-          "z": 0
+          "x": 185,
+          "y": -316,
+          "z": 34
         },
         "sourceLine": [
           {
@@ -26801,15 +25848,15 @@ export const exits = {
             "y": 1665,
             "z": 0
           }
-        ]
+        ],
+        "target": "ggroom7",
+        "source": "ggroad8b"
       },
       {
-        "id": "entrance-1525",
-        "target": "ggroad9b",
         "destinationPoint": {
-          "x": 568,
-          "y": 723.5,
-          "z": 0
+          "x": 185,
+          "y": -316,
+          "z": 34
         },
         "sourceLine": [
           {
@@ -26822,10 +25869,11 @@ export const exits = {
             "y": 599,
             "z": 0
           }
-        ]
+        ],
+        "target": "ggroom7",
+        "source": "ggroad9b"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "ggsta1": {
@@ -26853,8 +25901,7 @@ export const exits = {
             "z": 1002
           }
         ],
-        "target": "ggroad5",
-        "id": "exit-991"
+        "target": "ggroad5"
       },
       {
         "destinationPoint": {
@@ -26874,8 +25921,7 @@ export const exits = {
             "z": 306
           }
         ],
-        "target": "ggstand1",
-        "id": "exit-992"
+        "target": "ggstand1"
       }
     ],
     "entrances": [],
@@ -26906,8 +25952,7 @@ export const exits = {
             "z": 4820
           }
         ],
-        "target": "gggro1",
-        "id": "exit-993"
+        "target": "gggro1"
       },
       {
         "destinationPoint": {
@@ -26927,8 +25972,7 @@ export const exits = {
             "z": 4733
           }
         ],
-        "target": "gggroen2",
-        "id": "exit-994"
+        "target": "gggroen2"
       },
       {
         "destinationPoint": {
@@ -26948,8 +25992,7 @@ export const exits = {
             "z": 6322
           }
         ],
-        "target": "ggstaen1",
-        "id": "exit-995"
+        "target": "ggstaen1"
       }
     ],
     "entrances": [],
@@ -26975,8 +26018,7 @@ export const exits = {
             "z": 1087
           }
         ],
-        "target": "gggate1",
-        "id": "exit-996"
+        "target": "gggate1"
       },
       {
         "destinationPoint": {
@@ -26996,8 +26038,7 @@ export const exits = {
             "z": 1087
           }
         ],
-        "target": "gggate1",
-        "id": "exit-997"
+        "target": "gggate1"
       }
     ],
     "entrances": [],
@@ -27048,8 +26089,7 @@ export const exits = {
             "z": 915
           }
         ],
-        "target": "glhtl1",
-        "id": "exit-998"
+        "target": "glhtl1"
       }
     ],
     "entrances": [],
@@ -27090,8 +26130,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glsta1",
-        "id": "exit-999"
+        "target": "glsta1"
       }
     ],
     "entrances": [],
@@ -27117,16 +26156,15 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glfury1",
-        "id": "exit-1000"
-      },
+        "target": "glfury1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1526",
-        "target": "glfurin2",
         "destinationPoint": {
-          "x": 65.5,
-          "y": 365.5,
-          "z": 0
+          "x": -86,
+          "y": 405,
+          "z": 87
         },
         "sourceLine": [
           {
@@ -27139,15 +26177,15 @@ export const exits = {
             "y": 477,
             "z": 0
           }
-        ]
+        ],
+        "target": "glfurin1",
+        "source": "glfurin2"
       },
       {
-        "id": "entrance-1527",
-        "target": "glfurin2",
         "destinationPoint": {
-          "x": 547,
-          "y": 236,
-          "z": 0
+          "x": 343,
+          "y": 216,
+          "z": 106
         },
         "sourceLine": [
           {
@@ -27160,73 +26198,74 @@ export const exits = {
             "y": 188,
             "z": 0
           }
-        ]
+        ],
+        "target": "glfurin1",
+        "source": "glfurin2"
       },
       {
-        "id": "entrance-1528",
-        "target": "glfurin3",
         "destinationPoint": {
-          "x": -394,
-          "y": 276,
-          "z": 0
+          "x": -448,
+          "y": 414,
+          "z": 17
         },
         "sourceLine": [
           {
-            "x": -192.9294268463764,
-            "y": 438.59958367619925,
+            "x": -452,
+            "y": 528,
             "z": 0
           },
           {
-            "x": -595.0705731536236,
-            "y": 113.40041632380078,
+            "x": -336,
+            "y": 24,
             "z": 0
           }
-        ]
+        ],
+        "target": "glfurin1",
+        "source": "glfurin3"
       },
       {
-        "id": "entrance-1529",
-        "target": "glfurin3",
         "destinationPoint": {
-          "x": -515.5,
-          "y": -72.5,
-          "z": 0
+          "x": -572,
+          "y": -111,
+          "z": 37
         },
         "sourceLine": [
           {
-            "x": -350.07875368349096,
-            "y": -191.53071564555452,
+            "x": -336,
+            "y": 24,
             "z": 0
           },
           {
-            "x": -680.921246316509,
-            "y": 46.53071564555452,
+            "x": -695,
+            "y": -169,
             "z": 0
           }
-        ]
+        ],
+        "target": "glfurin1",
+        "source": "glfurin3"
       },
       {
-        "id": "entrance-1530",
-        "target": "glfurin3",
         "destinationPoint": {
-          "x": -409,
-          "y": 194,
-          "z": 0
+          "x": -377,
+          "y": 0,
+          "z": 55
         },
         "sourceLine": [
           {
-            "x": -162.0962583003812,
-            "y": 287.72055449434737,
+            "x": -385,
+            "y": 457,
             "z": 0
           },
           {
-            "x": -655.9037416996188,
-            "y": 100.27944550565265,
+            "x": -433,
+            "y": -69,
             "z": 0
           }
-        ]
+        ],
+        "target": "glfurin1",
+        "source": "glfurin3"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "glfurin2": {
@@ -27249,8 +26288,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glfurin1",
-        "id": "exit-1001"
+        "target": "glfurin1"
       },
       {
         "destinationPoint": {
@@ -27270,8 +26308,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glfurin1",
-        "id": "exit-1002"
+        "target": "glfurin1"
       }
     ],
     "entrances": [],
@@ -27297,8 +26334,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glfuryb1",
-        "id": "exit-1003"
+        "target": "glfuryb1"
       },
       {
         "destinationPoint": {
@@ -27318,8 +26354,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glfurin1",
-        "id": "exit-1004"
+        "target": "glfurin1"
       },
       {
         "destinationPoint": {
@@ -27339,8 +26374,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glfurin1",
-        "id": "exit-1005"
+        "target": "glfurin1"
       },
       {
         "destinationPoint": {
@@ -27360,8 +26394,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glfurin1",
-        "id": "exit-1006"
+        "target": "glfurin1"
       }
     ],
     "entrances": [],
@@ -27397,8 +26430,7 @@ export const exits = {
             "z": -148
           }
         ],
-        "target": "gltown1",
-        "id": "exit-1007"
+        "target": "gltown1"
       },
       {
         "destinationPoint": {
@@ -27418,8 +26450,7 @@ export const exits = {
             "z": -148
           }
         ],
-        "target": "glfurin1",
-        "id": "exit-1008"
+        "target": "glfurin1"
       }
     ],
     "entrances": [],
@@ -27450,8 +26481,7 @@ export const exits = {
             "z": 46
           }
         ],
-        "target": "glfurin3",
-        "id": "exit-1009"
+        "target": "glfurin3"
       }
     ],
     "entrances": [],
@@ -27477,8 +26507,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate2",
-        "id": "exit-1010"
+        "target": "glgate2"
       },
       {
         "destinationPoint": {
@@ -27498,8 +26527,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glroad1",
-        "id": "exit-1011"
+        "target": "glroad1"
       },
       {
         "destinationPoint": {
@@ -27519,8 +26547,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1012"
+        "target": "glprefr1"
       },
       {
         "destinationPoint": {
@@ -27540,8 +26567,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1013"
+        "target": "glprefr1"
       },
       {
         "destinationPoint": {
@@ -27561,32 +26587,32 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1014"
-      },
+        "target": "glprefr1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1531",
-        "target": "glprefr2",
         "destinationPoint": {
-          "x": -995,
-          "y": -20571,
-          "z": 0
+          "x": -1431,
+          "y": -6319,
+          "z": 131
         },
         "sourceLine": [
           {
-            "x": -970.7435565298215,
-            "y": -20893.01339250127,
+            "x": -1286,
+            "y": -20431,
             "z": 0
           },
           {
-            "x": -1019.2564434701785,
-            "y": -20248.98660749873,
+            "x": -704,
+            "y": -20711,
             "z": 0
           }
-        ]
+        ],
+        "target": "glgate1",
+        "source": "glprefr2"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "glgate2": {
@@ -27609,8 +26635,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate3",
-        "id": "exit-1015"
+        "target": "glgate3"
       },
       {
         "destinationPoint": {
@@ -27630,8 +26655,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgatei1",
-        "id": "exit-1016"
+        "target": "glgatei1"
       },
       {
         "destinationPoint": {
@@ -27651,8 +26675,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate1",
-        "id": "exit-1017"
+        "target": "glgate1"
       }
     ],
     "entrances": [],
@@ -27678,8 +26701,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate3a",
-        "id": "exit-1018"
+        "target": "glgate3a"
       },
       {
         "destinationPoint": {
@@ -27699,8 +26721,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgatei1",
-        "id": "exit-1019"
+        "target": "glgatei1"
       }
     ],
     "entrances": [],
@@ -27726,8 +26747,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate2",
-        "id": "exit-1020"
+        "target": "glgate2"
       },
       {
         "destinationPoint": {
@@ -27747,8 +26767,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1021"
+        "target": "glstaup1"
       },
       {
         "destinationPoint": {
@@ -27768,8 +26787,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1022"
+        "target": "glstaup1"
       }
     ],
     "entrances": [],
@@ -27795,8 +26813,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate2a",
-        "id": "exit-1023"
+        "target": "glgate2a"
       },
       {
         "destinationPoint": {
@@ -27816,8 +26833,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup4",
-        "id": "exit-1024"
+        "target": "glstaup4"
       },
       {
         "destinationPoint": {
@@ -27837,8 +26853,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup4",
-        "id": "exit-1025"
+        "target": "glstaup4"
       }
     ],
     "entrances": [],
@@ -27850,51 +26865,51 @@ export const exits = {
     "orientation": 192
   },
   "glgatei1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1532",
-        "target": "glgate2",
         "destinationPoint": {
-          "x": -1005,
-          "y": -1165,
-          "z": 0
+          "x": -280,
+          "y": 234,
+          "z": 13
         },
         "sourceLine": [
           {
-            "x": -1037.3084408978757,
-            "y": -1190.242120488352,
+            "x": -1005,
+            "y": -1124,
             "z": 0
           },
           {
-            "x": -972.6915591021244,
-            "y": -1139.757879511648,
+            "x": -1005,
+            "y": -1206,
             "z": 0
           }
-        ]
+        ],
+        "target": "glgatei1",
+        "source": "glgate2"
       },
       {
-        "id": "entrance-1533",
-        "target": "glgate2a",
         "destinationPoint": {
-          "x": -1005,
-          "y": -1165,
-          "z": 0
+          "x": -280,
+          "y": 234,
+          "z": 13
         },
         "sourceLine": [
           {
-            "x": -1037.3084408978757,
-            "y": -1190.242120488352,
+            "x": -1005,
+            "y": -1124,
             "z": 0
           },
           {
-            "x": -972.6915591021244,
-            "y": -1139.757879511648,
+            "x": -1005,
+            "y": -1206,
             "z": 0
           }
-        ]
+        ],
+        "target": "glgatei1",
+        "source": "glgate2a"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "glgatei2": {
@@ -27922,8 +26937,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1026"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -27943,8 +26957,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glclub1",
-        "id": "exit-1027"
+        "target": "glclub1"
       },
       {
         "destinationPoint": {
@@ -27964,8 +26977,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glhtr1",
-        "id": "exit-1028"
+        "target": "glhtr1"
       }
     ],
     "entrances": [],
@@ -27991,8 +27003,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glhtl1",
-        "id": "exit-1029"
+        "target": "glhtl1"
       }
     ],
     "entrances": [],
@@ -28028,8 +27039,7 @@ export const exits = {
             "z": 1977
           }
         ],
-        "target": "glstage3",
-        "id": "exit-1030"
+        "target": "glstage3"
       }
     ],
     "entrances": [],
@@ -28055,8 +27065,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glhtl1",
-        "id": "exit-1031"
+        "target": "glhtl1"
       },
       {
         "destinationPoint": {
@@ -28076,8 +27085,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glmall2",
-        "id": "exit-1032"
+        "target": "glmall2"
       },
       {
         "destinationPoint": {
@@ -28097,8 +27105,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glmall2",
-        "id": "exit-1033"
+        "target": "glmall2"
       },
       {
         "destinationPoint": {
@@ -28118,179 +27125,179 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glmall2",
-        "id": "exit-1034"
-      },
-      {
-        "id": "entrance-1534",
-        "target": "glstaup2",
-        "destinationPoint": {
-          "x": -7694.5,
-          "y": 17771.5,
-          "z": 42
-        },
-        "sourceLine": [
-          {
-            "x": -7356.890696585895,
-            "y": 17687.34265778767,
-            "z": 42
-          },
-          {
-            "x": -8032.109303414105,
-            "y": 17855.65734221233,
-            "z": 42
-          }
-        ]
-      },
-      {
-        "id": "entrance-1535",
-        "target": "glstaup2",
-        "destinationPoint": {
-          "x": -7387,
-          "y": 18538,
-          "z": 21
-        },
-        "sourceLine": [
-          {
-            "x": -6898.731351413269,
-            "y": 18624.184260786336,
-            "z": 0
-          },
-          {
-            "x": -7875.268648586731,
-            "y": 18451.815739213664,
-            "z": 42
-          }
-        ]
-      },
-      {
-        "id": "entrance-1536",
-        "target": "glstaup2",
-        "destinationPoint": {
-          "x": -7047,
-          "y": 19482,
-          "z": 21
-        },
-        "sourceLine": [
-          {
-            "x": -6532.6408481142735,
-            "y": 19434.201852845574,
-            "z": 42
-          },
-          {
-            "x": -7561.3591518857265,
-            "y": 19529.798147154426,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1537",
-        "target": "glstaup2",
-        "destinationPoint": {
-          "x": -6579,
-          "y": 20171.5,
-          "z": 42
-        },
-        "sourceLine": [
-          {
-            "x": -6278.74999844328,
-            "y": 20043.66734937744,
-            "z": 42
-          },
-          {
-            "x": -6879.25000155672,
-            "y": 20299.33265062256,
-            "z": 42
-          }
-        ]
-      },
-      {
-        "id": "entrance-1538",
-        "target": "glstaup5",
-        "destinationPoint": {
-          "x": -7694.5,
-          "y": 17771.5,
-          "z": 42
-        },
-        "sourceLine": [
-          {
-            "x": -7356.890696585895,
-            "y": 17687.34265778767,
-            "z": 42
-          },
-          {
-            "x": -8032.109303414105,
-            "y": 17855.65734221233,
-            "z": 42
-          }
-        ]
-      },
-      {
-        "id": "entrance-1539",
-        "target": "glstaup5",
-        "destinationPoint": {
-          "x": -7387,
-          "y": 18538,
-          "z": 21
-        },
-        "sourceLine": [
-          {
-            "x": -6898.731351413269,
-            "y": 18624.184260786336,
-            "z": 0
-          },
-          {
-            "x": -7875.268648586731,
-            "y": 18451.815739213664,
-            "z": 42
-          }
-        ]
-      },
-      {
-        "id": "entrance-1540",
-        "target": "glstaup5",
-        "destinationPoint": {
-          "x": -7047,
-          "y": 19482,
-          "z": 21
-        },
-        "sourceLine": [
-          {
-            "x": -6532.6408481142735,
-            "y": 19434.201852845574,
-            "z": 42
-          },
-          {
-            "x": -7561.3591518857265,
-            "y": 19529.798147154426,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1541",
-        "target": "glstaup5",
-        "destinationPoint": {
-          "x": -6579,
-          "y": 20171.5,
-          "z": 42
-        },
-        "sourceLine": [
-          {
-            "x": -6278.74999844328,
-            "y": 20043.66734937744,
-            "z": 42
-          },
-          {
-            "x": -6879.25000155672,
-            "y": 20299.33265062256,
-            "z": 42
-          }
-        ]
+        "target": "glmall2"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 369,
+          "y": 3022,
+          "z": 129
+        },
+        "sourceLine": [
+          {
+            "x": -7490,
+            "y": 18053,
+            "z": 42
+          },
+          {
+            "x": -7899,
+            "y": 17490,
+            "z": 42
+          }
+        ],
+        "target": "glmall1",
+        "source": "glstaup2"
+      },
+      {
+        "destinationPoint": {
+          "x": -361,
+          "y": 6201,
+          "z": 174
+        },
+        "sourceLine": [
+          {
+            "x": -7284,
+            "y": 19023,
+            "z": 0
+          },
+          {
+            "x": -7490,
+            "y": 18053,
+            "z": 42
+          }
+        ],
+        "target": "glmall1",
+        "source": "glstaup2"
+      },
+      {
+        "destinationPoint": {
+          "x": -361,
+          "y": 6201,
+          "z": 174
+        },
+        "sourceLine": [
+          {
+            "x": -6810,
+            "y": 19941,
+            "z": 42
+          },
+          {
+            "x": -7284,
+            "y": 19023,
+            "z": 0
+          }
+        ],
+        "target": "glmall1",
+        "source": "glstaup2"
+      },
+      {
+        "destinationPoint": {
+          "x": -1285,
+          "y": 7333,
+          "z": 181
+        },
+        "sourceLine": [
+          {
+            "x": -6348,
+            "y": 20402,
+            "z": 42
+          },
+          {
+            "x": -6810,
+            "y": 19941,
+            "z": 42
+          }
+        ],
+        "target": "glmall1",
+        "source": "glstaup2"
+      },
+      {
+        "destinationPoint": {
+          "x": 369,
+          "y": 3022,
+          "z": 129
+        },
+        "sourceLine": [
+          {
+            "x": -7490,
+            "y": 18053,
+            "z": 42
+          },
+          {
+            "x": -7899,
+            "y": 17490,
+            "z": 42
+          }
+        ],
+        "target": "glmall1",
+        "source": "glstaup5"
+      },
+      {
+        "destinationPoint": {
+          "x": -361,
+          "y": 6201,
+          "z": 174
+        },
+        "sourceLine": [
+          {
+            "x": -7284,
+            "y": 19023,
+            "z": 0
+          },
+          {
+            "x": -7490,
+            "y": 18053,
+            "z": 42
+          }
+        ],
+        "target": "glmall1",
+        "source": "glstaup5"
+      },
+      {
+        "destinationPoint": {
+          "x": -361,
+          "y": 6201,
+          "z": 174
+        },
+        "sourceLine": [
+          {
+            "x": -6810,
+            "y": 19941,
+            "z": 42
+          },
+          {
+            "x": -7284,
+            "y": 19023,
+            "z": 0
+          }
+        ],
+        "target": "glmall1",
+        "source": "glstaup5"
+      },
+      {
+        "destinationPoint": {
+          "x": -1285,
+          "y": 7333,
+          "z": 181
+        },
+        "sourceLine": [
+          {
+            "x": -6348,
+            "y": 20402,
+            "z": 42
+          },
+          {
+            "x": -6810,
+            "y": 19941,
+            "z": 42
+          }
+        ],
+        "target": "glmall1",
+        "source": "glstaup5"
+      }
+    ],
     "orientation": 128
   },
   "glmall2": {
@@ -28313,8 +27320,7 @@ export const exits = {
             "z": 43
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1035"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -28334,8 +27340,7 @@ export const exits = {
             "z": 43
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1036"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -28355,8 +27360,7 @@ export const exits = {
             "z": 38
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1037"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -28376,8 +27380,7 @@ export const exits = {
             "z": -10
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1038"
+        "target": "glprefr1"
       },
       {
         "destinationPoint": {
@@ -28397,8 +27400,7 @@ export const exits = {
             "z": -10
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1039"
+        "target": "glprefr1"
       },
       {
         "destinationPoint": {
@@ -28418,8 +27420,7 @@ export const exits = {
             "z": -10
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1040"
+        "target": "glprefr1"
       }
     ],
     "entrances": [],
@@ -28445,8 +27446,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate1",
-        "id": "exit-1041"
+        "target": "glgate1"
       },
       {
         "destinationPoint": {
@@ -28466,8 +27466,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate1",
-        "id": "exit-1042"
+        "target": "glgate1"
       },
       {
         "destinationPoint": {
@@ -28487,8 +27486,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate1",
-        "id": "exit-1043"
+        "target": "glgate1"
       },
       {
         "destinationPoint": {
@@ -28508,8 +27506,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gltown1",
-        "id": "exit-1044"
+        "target": "gltown1"
       },
       {
         "destinationPoint": {
@@ -28529,8 +27526,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gltown1",
-        "id": "exit-1045"
+        "target": "gltown1"
       },
       {
         "destinationPoint": {
@@ -28550,8 +27546,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gltown1",
-        "id": "exit-1046"
+        "target": "gltown1"
       },
       {
         "destinationPoint": {
@@ -28571,8 +27566,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gltown1",
-        "id": "exit-1047"
+        "target": "gltown1"
       },
       {
         "destinationPoint": {
@@ -28592,8 +27586,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glmall2",
-        "id": "exit-1048"
+        "target": "glmall2"
       },
       {
         "destinationPoint": {
@@ -28613,8 +27606,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glmall2",
-        "id": "exit-1049"
+        "target": "glmall2"
       },
       {
         "destinationPoint": {
@@ -28634,8 +27626,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glmall2",
-        "id": "exit-1050"
+        "target": "glmall2"
       }
     ],
     "entrances": [],
@@ -28661,8 +27652,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate1",
-        "id": "exit-1051"
+        "target": "glgate1"
       }
     ],
     "entrances": [],
@@ -28693,8 +27683,7 @@ export const exits = {
             "z": 2125
           }
         ],
-        "target": "glwitch1",
-        "id": "exit-1052"
+        "target": "glwitch1"
       },
       {
         "destinationPoint": {
@@ -28714,8 +27703,7 @@ export const exits = {
             "z": 2224
           }
         ],
-        "target": "glpreo3",
-        "id": "exit-1053"
+        "target": "glpreo3"
       }
     ],
     "entrances": [],
@@ -28741,8 +27729,7 @@ export const exits = {
             "z": 939
           }
         ],
-        "target": "glpreo2",
-        "id": "exit-1054"
+        "target": "glpreo2"
       }
     ],
     "entrances": [],
@@ -28768,8 +27755,7 @@ export const exits = {
             "z": 2223
           }
         ],
-        "target": "glpreo3",
-        "id": "exit-1055"
+        "target": "glpreo3"
       },
       {
         "destinationPoint": {
@@ -28789,8 +27775,7 @@ export const exits = {
             "z": 2223
           }
         ],
-        "target": "glpreo3",
-        "id": "exit-1056"
+        "target": "glpreo3"
       },
       {
         "destinationPoint": {
@@ -28810,8 +27795,7 @@ export const exits = {
             "z": 939
           }
         ],
-        "target": "glpreo1",
-        "id": "exit-1057"
+        "target": "glpreo1"
       }
     ],
     "entrances": [],
@@ -28837,8 +27821,7 @@ export const exits = {
             "z": 2223
           }
         ],
-        "target": "glprein1",
-        "id": "exit-1058"
+        "target": "glprein1"
       },
       {
         "destinationPoint": {
@@ -28858,8 +27841,7 @@ export const exits = {
             "z": 2037
           }
         ],
-        "target": "glstage1",
-        "id": "exit-1059"
+        "target": "glstage1"
       },
       {
         "destinationPoint": {
@@ -28879,8 +27861,7 @@ export const exits = {
             "z": 2036
           }
         ],
-        "target": "glstage1",
-        "id": "exit-1060"
+        "target": "glstage1"
       },
       {
         "destinationPoint": {
@@ -28900,8 +27881,7 @@ export const exits = {
             "z": 2043
           }
         ],
-        "target": "glstage1",
-        "id": "exit-1061"
+        "target": "glstage1"
       },
       {
         "destinationPoint": {
@@ -28921,8 +27901,7 @@ export const exits = {
             "z": 2042
           }
         ],
-        "target": "glstage1",
-        "id": "exit-1062"
+        "target": "glstage1"
       },
       {
         "destinationPoint": {
@@ -28942,8 +27921,7 @@ export const exits = {
             "z": 2088
           }
         ],
-        "target": "glstage1",
-        "id": "exit-1063"
+        "target": "glstage1"
       },
       {
         "destinationPoint": {
@@ -28963,8 +27941,7 @@ export const exits = {
             "z": 2048
           }
         ],
-        "target": "glstage1",
-        "id": "exit-1064"
+        "target": "glstage1"
       },
       {
         "destinationPoint": {
@@ -28984,8 +27961,7 @@ export const exits = {
             "z": 1977
           }
         ],
-        "target": "glpreo2",
-        "id": "exit-1065"
+        "target": "glpreo2"
       }
     ],
     "entrances": [],
@@ -29011,8 +27987,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup3",
-        "id": "exit-1066"
+        "target": "glstaup3"
       }
     ],
     "entrances": [],
@@ -29038,8 +28013,7 @@ export const exits = {
             "z": 142
           }
         ],
-        "target": "gltown1",
-        "id": "exit-1067"
+        "target": "gltown1"
       },
       {
         "destinationPoint": {
@@ -29059,8 +28033,7 @@ export const exits = {
             "z": 130
           }
         ],
-        "target": "glgate1",
-        "id": "exit-1068"
+        "target": "glgate1"
       }
     ],
     "entrances": [],
@@ -29086,8 +28059,7 @@ export const exits = {
             "z": -1008
           }
         ],
-        "target": "glform1",
-        "id": "exit-1069"
+        "target": "glform1"
       },
       {
         "destinationPoint": {
@@ -29107,8 +28079,7 @@ export const exits = {
             "z": 405
           }
         ],
-        "target": "glsta2",
-        "id": "exit-1070"
+        "target": "glsta2"
       }
     ],
     "entrances": [],
@@ -29134,8 +28105,7 @@ export const exits = {
             "z": 405
           }
         ],
-        "target": "glsta1",
-        "id": "exit-1071"
+        "target": "glsta1"
       },
       {
         "destinationPoint": {
@@ -29155,8 +28125,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1072"
+        "target": "glstaup1"
       }
     ],
     "entrances": [],
@@ -29192,8 +28161,7 @@ export const exits = {
             "z": 1977
           }
         ],
-        "target": "glpreo3",
-        "id": "exit-1073"
+        "target": "glpreo3"
       },
       {
         "destinationPoint": {
@@ -29213,8 +28181,7 @@ export const exits = {
             "z": 1977
           }
         ],
-        "target": "glpreo3",
-        "id": "exit-1074"
+        "target": "glpreo3"
       },
       {
         "destinationPoint": {
@@ -29234,8 +28201,7 @@ export const exits = {
             "z": 1977
           }
         ],
-        "target": "glpreo3",
-        "id": "exit-1075"
+        "target": "glpreo3"
       }
     ],
     "entrances": [],
@@ -29266,8 +28232,7 @@ export const exits = {
             "z": 2088
           }
         ],
-        "target": "glkara2",
-        "id": "exit-1076"
+        "target": "glkara2"
       },
       {
         "destinationPoint": {
@@ -29287,8 +28252,7 @@ export const exits = {
             "z": 2088
           }
         ],
-        "target": "glkara2",
-        "id": "exit-1077"
+        "target": "glkara2"
       }
     ],
     "entrances": [],
@@ -29314,8 +28278,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glsta2",
-        "id": "exit-1078"
+        "target": "glsta2"
       },
       {
         "destinationPoint": {
@@ -29335,8 +28298,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup2",
-        "id": "exit-1079"
+        "target": "glstaup2"
       },
       {
         "destinationPoint": {
@@ -29356,8 +28318,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup2",
-        "id": "exit-1080"
+        "target": "glstaup2"
       },
       {
         "destinationPoint": {
@@ -29377,8 +28338,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup2",
-        "id": "exit-1081"
+        "target": "glstaup2"
       },
       {
         "destinationPoint": {
@@ -29398,8 +28358,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup3",
-        "id": "exit-1082"
+        "target": "glstaup3"
       },
       {
         "destinationPoint": {
@@ -29419,8 +28378,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup3",
-        "id": "exit-1083"
+        "target": "glstaup3"
       },
       {
         "destinationPoint": {
@@ -29440,8 +28398,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup3",
-        "id": "exit-1084"
+        "target": "glstaup3"
       },
       {
         "destinationPoint": {
@@ -29461,8 +28418,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate3",
-        "id": "exit-1085"
+        "target": "glgate3"
       }
     ],
     "entrances": [],
@@ -29488,8 +28444,7 @@ export const exits = {
             "z": 42
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1086"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -29509,8 +28464,7 @@ export const exits = {
             "z": 42
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1087"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -29530,8 +28484,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1088"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -29551,8 +28504,7 @@ export const exits = {
             "z": 42
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1089"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -29572,8 +28524,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1090"
+        "target": "glstaup1"
       },
       {
         "destinationPoint": {
@@ -29593,8 +28544,7 @@ export const exits = {
             "z": 42
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1091"
+        "target": "glstaup1"
       },
       {
         "destinationPoint": {
@@ -29614,8 +28564,7 @@ export const exits = {
             "z": 26
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1092"
+        "target": "glstaup1"
       },
       {
         "destinationPoint": {
@@ -29635,8 +28584,7 @@ export const exits = {
             "z": 24
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1093"
+        "target": "glstaup1"
       },
       {
         "destinationPoint": {
@@ -29656,8 +28604,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1094"
+        "target": "glstaup1"
       },
       {
         "destinationPoint": {
@@ -29677,8 +28624,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1095"
+        "target": "glstaup1"
       }
     ],
     "entrances": [],
@@ -29704,8 +28650,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1096"
+        "target": "glstaup1"
       },
       {
         "destinationPoint": {
@@ -29725,8 +28670,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1097"
+        "target": "glstaup1"
       },
       {
         "destinationPoint": {
@@ -29746,8 +28690,7 @@ export const exits = {
             "z": -24
           }
         ],
-        "target": "glstaup1",
-        "id": "exit-1098"
+        "target": "glstaup1"
       },
       {
         "destinationPoint": {
@@ -29767,8 +28710,7 @@ export const exits = {
             "z": -42
           }
         ],
-        "target": "gltown1",
-        "id": "exit-1099"
+        "target": "gltown1"
       },
       {
         "destinationPoint": {
@@ -29788,8 +28730,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gltown1",
-        "id": "exit-1100"
+        "target": "gltown1"
       },
       {
         "destinationPoint": {
@@ -29809,8 +28750,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gltown1",
-        "id": "exit-1101"
+        "target": "gltown1"
       },
       {
         "destinationPoint": {
@@ -29830,8 +28770,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glrent1",
-        "id": "exit-1102"
+        "target": "glrent1"
       },
       {
         "destinationPoint": {
@@ -29851,8 +28790,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glrent1",
-        "id": "exit-1103"
+        "target": "glrent1"
       },
       {
         "destinationPoint": {
@@ -29872,8 +28810,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glrent1",
-        "id": "exit-1104"
+        "target": "glrent1"
       }
     ],
     "entrances": [],
@@ -29899,8 +28836,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup5",
-        "id": "exit-1105"
+        "target": "glstaup5"
       },
       {
         "destinationPoint": {
@@ -29920,8 +28856,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup5",
-        "id": "exit-1106"
+        "target": "glstaup5"
       },
       {
         "destinationPoint": {
@@ -29941,8 +28876,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup5",
-        "id": "exit-1107"
+        "target": "glstaup5"
       },
       {
         "destinationPoint": {
@@ -29962,8 +28896,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glgate3a",
-        "id": "exit-1108"
+        "target": "glgate3a"
       }
     ],
     "entrances": [],
@@ -29989,8 +28922,7 @@ export const exits = {
             "z": 42
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1109"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -30010,8 +28942,7 @@ export const exits = {
             "z": 42
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1110"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -30031,8 +28962,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1111"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -30052,8 +28982,7 @@ export const exits = {
             "z": 42
           }
         ],
-        "target": "glmall1",
-        "id": "exit-1112"
+        "target": "glmall1"
       },
       {
         "destinationPoint": {
@@ -30073,8 +29002,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup4",
-        "id": "exit-1113"
+        "target": "glstaup4"
       },
       {
         "destinationPoint": {
@@ -30094,8 +29022,7 @@ export const exits = {
             "z": 42
           }
         ],
-        "target": "glstaup4",
-        "id": "exit-1114"
+        "target": "glstaup4"
       },
       {
         "destinationPoint": {
@@ -30115,8 +29042,7 @@ export const exits = {
             "z": 26
           }
         ],
-        "target": "glstaup4",
-        "id": "exit-1115"
+        "target": "glstaup4"
       },
       {
         "destinationPoint": {
@@ -30136,8 +29062,7 @@ export const exits = {
             "z": 24
           }
         ],
-        "target": "glstaup4",
-        "id": "exit-1116"
+        "target": "glstaup4"
       },
       {
         "destinationPoint": {
@@ -30157,8 +29082,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup4",
-        "id": "exit-1117"
+        "target": "glstaup4"
       },
       {
         "destinationPoint": {
@@ -30178,8 +29102,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glstaup4",
-        "id": "exit-1118"
+        "target": "glstaup4"
       }
     ],
     "entrances": [],
@@ -30205,8 +29128,7 @@ export const exits = {
             "z": 302
           }
         ],
-        "target": "glroad1",
-        "id": "exit-1119"
+        "target": "glroad1"
       },
       {
         "destinationPoint": {
@@ -30226,8 +29148,7 @@ export const exits = {
             "z": 123
           }
         ],
-        "target": "glfury1",
-        "id": "exit-1120"
+        "target": "glfury1"
       },
       {
         "destinationPoint": {
@@ -30247,8 +29168,7 @@ export const exits = {
             "z": 52
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1121"
+        "target": "glprefr1"
       },
       {
         "destinationPoint": {
@@ -30268,8 +29188,7 @@ export const exits = {
             "z": 31
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1122"
+        "target": "glprefr1"
       },
       {
         "destinationPoint": {
@@ -30289,8 +29208,7 @@ export const exits = {
             "z": 30
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1123"
+        "target": "glprefr1"
       },
       {
         "destinationPoint": {
@@ -30310,8 +29228,7 @@ export const exits = {
             "z": 69
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1124"
+        "target": "glprefr1"
       },
       {
         "destinationPoint": {
@@ -30331,8 +29248,7 @@ export const exits = {
             "z": 69
           }
         ],
-        "target": "glprefr1",
-        "id": "exit-1125"
+        "target": "glprefr1"
       },
       {
         "destinationPoint": {
@@ -30352,8 +29268,7 @@ export const exits = {
             "z": -111
           }
         ],
-        "target": "glstaup3",
-        "id": "exit-1126"
+        "target": "glstaup3"
       },
       {
         "destinationPoint": {
@@ -30373,8 +29288,7 @@ export const exits = {
             "z": -117
           }
         ],
-        "target": "glstaup3",
-        "id": "exit-1127"
+        "target": "glstaup3"
       },
       {
         "destinationPoint": {
@@ -30394,8 +29308,7 @@ export const exits = {
             "z": -149
           }
         ],
-        "target": "glstaup3",
-        "id": "exit-1128"
+        "target": "glstaup3"
       },
       {
         "destinationPoint": {
@@ -30415,8 +29328,7 @@ export const exits = {
             "z": -147
           }
         ],
-        "target": "glstaup3",
-        "id": "exit-1129"
+        "target": "glstaup3"
       },
       {
         "destinationPoint": {
@@ -30436,8 +29348,7 @@ export const exits = {
             "z": -119
           }
         ],
-        "target": "glstaup3",
-        "id": "exit-1130"
+        "target": "glstaup3"
       }
     ],
     "entrances": [],
@@ -30488,8 +29399,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "glprein1",
-        "id": "exit-1131"
+        "target": "glprein1"
       }
     ],
     "entrances": [],
@@ -30535,8 +29445,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmcont2",
-        "id": "exit-1132"
+        "target": "gmcont2"
       },
       {
         "destinationPoint": {
@@ -30556,8 +29465,7 @@ export const exits = {
             "z": -159
           }
         ],
-        "target": "gmtika4",
-        "id": "exit-1133"
+        "target": "gmtika4"
       }
     ],
     "entrances": [],
@@ -30583,8 +29491,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmcont1",
-        "id": "exit-1134"
+        "target": "gmcont1"
       },
       {
         "destinationPoint": {
@@ -30604,8 +29511,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmtika1",
-        "id": "exit-1135"
+        "target": "gmtika1"
       }
     ],
     "entrances": [],
@@ -30631,8 +29537,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmtika2",
-        "id": "exit-1136"
+        "target": "gmtika2"
       }
     ],
     "entrances": [],
@@ -30658,8 +29563,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmtika4",
-        "id": "exit-1137"
+        "target": "gmtika4"
       }
     ],
     "entrances": [],
@@ -30690,8 +29594,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmpark1",
-        "id": "exit-1138"
+        "target": "gmpark1"
       }
     ],
     "entrances": [],
@@ -30717,8 +29620,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmout1",
-        "id": "exit-1139"
+        "target": "gmout1"
       },
       {
         "destinationPoint": {
@@ -30738,8 +29640,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmtika1",
-        "id": "exit-1140"
+        "target": "gmtika1"
       }
     ],
     "entrances": [],
@@ -30770,8 +29671,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmtika4",
-        "id": "exit-1141"
+        "target": "gmtika4"
       }
     ],
     "entrances": [],
@@ -30797,8 +29697,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmcont2",
-        "id": "exit-1142"
+        "target": "gmcont2"
       },
       {
         "destinationPoint": {
@@ -30818,8 +29717,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmtika2",
-        "id": "exit-1143"
+        "target": "gmtika2"
       },
       {
         "destinationPoint": {
@@ -30839,8 +29737,7 @@ export const exits = {
             "z": 180
           }
         ],
-        "target": "gmpark1",
-        "id": "exit-1144"
+        "target": "gmpark1"
       }
     ],
     "entrances": [],
@@ -30866,8 +29763,7 @@ export const exits = {
             "z": 131
           }
         ],
-        "target": "gmtika3",
-        "id": "exit-1145"
+        "target": "gmtika3"
       },
       {
         "destinationPoint": {
@@ -30887,8 +29783,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmden1",
-        "id": "exit-1146"
+        "target": "gmden1"
       },
       {
         "destinationPoint": {
@@ -30908,8 +29803,7 @@ export const exits = {
             "z": 350
           }
         ],
-        "target": "gmtika1",
-        "id": "exit-1147"
+        "target": "gmtika1"
       }
     ],
     "entrances": [],
@@ -30935,8 +29829,7 @@ export const exits = {
             "z": 557
           }
         ],
-        "target": "gmtika2",
-        "id": "exit-1148"
+        "target": "gmtika2"
       },
       {
         "destinationPoint": {
@@ -30956,8 +29849,7 @@ export const exits = {
             "z": 327
           }
         ],
-        "target": "gmtika4",
-        "id": "exit-1149"
+        "target": "gmtika4"
       }
     ],
     "entrances": [],
@@ -30983,8 +29875,7 @@ export const exits = {
             "z": 128
           }
         ],
-        "target": "gmcont1",
-        "id": "exit-1150"
+        "target": "gmcont1"
       },
       {
         "destinationPoint": {
@@ -31004,8 +29895,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmshoot1",
-        "id": "exit-1151"
+        "target": "gmshoot1"
       },
       {
         "destinationPoint": {
@@ -31025,8 +29915,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gmhouse1",
-        "id": "exit-1152"
+        "target": "gmhouse1"
       },
       {
         "destinationPoint": {
@@ -31046,8 +29935,7 @@ export const exits = {
             "z": 726
           }
         ],
-        "target": "gmtika3",
-        "id": "exit-1153"
+        "target": "gmtika3"
       }
     ],
     "entrances": [],
@@ -31059,14 +29947,13 @@ export const exits = {
     "orientation": 128
   },
   "gnroad1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1542",
-        "target": "gnroom1",
         "destinationPoint": {
-          "x": 0,
-          "y": -227,
-          "z": 0
+          "x": 2,
+          "y": -715,
+          "z": 47
         },
         "sourceLine": [
           {
@@ -31079,15 +29966,15 @@ export const exits = {
             "y": -230,
             "z": 0
           }
-        ]
+        ],
+        "target": "gnroad1",
+        "source": "gnroom1"
       },
       {
-        "id": "entrance-1543",
-        "target": "gnroom2",
         "destinationPoint": {
-          "x": 0,
-          "y": -930.5,
-          "z": 0
+          "x": 2,
+          "y": -715,
+          "z": 47
         },
         "sourceLine": [
           {
@@ -31100,15 +29987,15 @@ export const exits = {
             "y": -930,
             "z": 0
           }
-        ]
+        ],
+        "target": "gnroad1",
+        "source": "gnroom2"
       },
       {
-        "id": "entrance-1544",
-        "target": "gnroom3",
         "destinationPoint": {
-          "x": 19.5,
-          "y": -776.5,
-          "z": 0
+          "x": 2,
+          "y": -715,
+          "z": 47
         },
         "sourceLine": [
           {
@@ -31121,15 +30008,15 @@ export const exits = {
             "y": -776,
             "z": 0
           }
-        ]
+        ],
+        "target": "gnroad1",
+        "source": "gnroom3"
       },
       {
-        "id": "entrance-1545",
-        "target": "gnview1",
         "destinationPoint": {
-          "x": -15.5,
-          "y": 2222,
-          "z": 406
+          "x": 2,
+          "y": -715,
+          "z": 47
         },
         "sourceLine": [
           {
@@ -31142,10 +30029,11 @@ export const exits = {
             "y": 2215,
             "z": 406
           }
-        ]
+        ],
+        "target": "gnroad1",
+        "source": "gnview1"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "gnroad2": {
@@ -31164,14 +30052,13 @@ export const exits = {
     "orientation": 128
   },
   "gnroad5": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1546",
-        "target": "gnroom4",
         "destinationPoint": {
-          "x": 5.5,
-          "y": -2643.5,
-          "z": 40
+          "x": 1,
+          "y": 1766,
+          "z": 56
         },
         "sourceLine": [
           {
@@ -31184,10 +30071,11 @@ export const exits = {
             "y": -2646,
             "z": 40
           }
-        ]
+        ],
+        "target": "gnroad5",
+        "source": "gnroom4"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "gnroom1": {
@@ -31210,8 +30098,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gnroad1",
-        "id": "exit-1154"
+        "target": "gnroad1"
       }
     ],
     "entrances": [],
@@ -31237,8 +30124,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gnroad1",
-        "id": "exit-1155"
+        "target": "gnroad1"
       }
     ],
     "entrances": [],
@@ -31264,8 +30150,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gnroad1",
-        "id": "exit-1156"
+        "target": "gnroad1"
       }
     ],
     "entrances": [],
@@ -31291,8 +30176,7 @@ export const exits = {
             "z": 40
           }
         ],
-        "target": "gnroad5",
-        "id": "exit-1157"
+        "target": "gnroad5"
       }
     ],
     "entrances": [],
@@ -31318,8 +30202,7 @@ export const exits = {
             "z": 406
           }
         ],
-        "target": "gnroad1",
-        "id": "exit-1158"
+        "target": "gnroad1"
       }
     ],
     "entrances": [],
@@ -31350,32 +30233,32 @@ export const exits = {
             "z": -876
           }
         ],
-        "target": "gpescap1",
-        "id": "exit-1159"
-      },
+        "target": "gpescap1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1547",
-        "target": "gpcont1",
         "destinationPoint": {
-          "x": 326,
-          "y": 12.5,
-          "z": 0
+          "x": -298,
+          "y": -118,
+          "z": 13
         },
         "sourceLine": [
           {
-            "x": 376.7818636159029,
-            "y": 37.26796979358288,
+            "x": 326,
+            "y": 69,
             "z": 0
           },
           {
-            "x": 275.2181363840971,
-            "y": -12.267969793582875,
+            "x": 326,
+            "y": -44,
             "z": 0
           }
-        ]
+        ],
+        "target": "gparm1",
+        "source": "gpcont1"
       }
     ],
-    "entrances": [],
     "orientation": 64
   },
   "gpbig1": {
@@ -31398,8 +30281,7 @@ export const exits = {
             "z": 427
           }
         ],
-        "target": "gpgmn3",
-        "id": "exit-1160"
+        "target": "gpgmn3"
       },
       {
         "destinationPoint": {
@@ -31419,8 +30301,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpbig2",
-        "id": "exit-1161"
+        "target": "gpbig2"
       },
       {
         "destinationPoint": {
@@ -31440,8 +30321,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpbig2",
-        "id": "exit-1162"
+        "target": "gpbig2"
       }
     ],
     "entrances": [],
@@ -31467,8 +30347,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpbig2a",
-        "id": "exit-1163"
+        "target": "gpbig2a"
       },
       {
         "destinationPoint": {
@@ -31488,8 +30367,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpbig2a",
-        "id": "exit-1164"
+        "target": "gpbig2a"
       }
     ],
     "entrances": [],
@@ -31515,8 +30393,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpbig1",
-        "id": "exit-1165"
+        "target": "gpbig1"
       },
       {
         "destinationPoint": {
@@ -31536,8 +30413,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpbig1",
-        "id": "exit-1166"
+        "target": "gpbig1"
       }
     ],
     "entrances": [],
@@ -31563,8 +30439,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpbig1a",
-        "id": "exit-1167"
+        "target": "gpbig1a"
       },
       {
         "destinationPoint": {
@@ -31584,8 +30459,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpbig1a",
-        "id": "exit-1168"
+        "target": "gpbig1a"
       }
     ],
     "entrances": [],
@@ -31651,8 +30525,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpgmn1",
-        "id": "exit-1169"
+        "target": "gpgmn1"
       }
     ],
     "entrances": [],
@@ -31678,16 +30551,15 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gparm1",
-        "id": "exit-1170"
-      },
+        "target": "gparm1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1548",
-        "target": "gpgmn2",
         "destinationPoint": {
-          "x": -156.5,
-          "y": -955,
-          "z": 0
+          "x": 0,
+          "y": 0,
+          "z": 6
         },
         "sourceLine": [
           {
@@ -31700,10 +30572,11 @@ export const exits = {
             "y": -955,
             "z": 0
           }
-        ]
+        ],
+        "target": "gpcont1",
+        "source": "gpgmn2"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "gpcont2": {
@@ -31731,8 +30604,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gparm1",
-        "id": "exit-1171"
+        "target": "gparm1"
       }
     ],
     "entrances": [],
@@ -31758,8 +30630,7 @@ export const exits = {
             "z": 7467
           }
         ],
-        "target": "gproof1",
-        "id": "exit-1172"
+        "target": "gproof1"
       },
       {
         "destinationPoint": {
@@ -31779,8 +30650,7 @@ export const exits = {
             "z": 7467
           }
         ],
-        "target": "gpexit2",
-        "id": "exit-1173"
+        "target": "gpexit2"
       }
     ],
     "entrances": [],
@@ -31806,8 +30676,7 @@ export const exits = {
             "z": 7467
           }
         ],
-        "target": "gpexit1",
-        "id": "exit-1174"
+        "target": "gpexit1"
       },
       {
         "destinationPoint": {
@@ -31827,8 +30696,7 @@ export const exits = {
             "z": 7467
           }
         ],
-        "target": "gppark1",
-        "id": "exit-1175"
+        "target": "gppark1"
       },
       {
         "destinationPoint": {
@@ -31848,8 +30716,7 @@ export const exits = {
             "z": 7467
           }
         ],
-        "target": "gppark1",
-        "id": "exit-1176"
+        "target": "gppark1"
       }
     ],
     "entrances": [],
@@ -31875,32 +30742,32 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpgmn2",
-        "id": "exit-1177"
-      },
+        "target": "gpgmn2"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1549",
-        "target": "gpcell1",
         "destinationPoint": {
-          "x": 399,
-          "y": 40,
-          "z": 0
+          "x": 354,
+          "y": 121,
+          "z": 29
         },
         "sourceLine": [
           {
-            "x": 349.85925570796024,
-            "y": 59.854149451043334,
+            "x": 399,
+            "y": 93,
             "z": 0
           },
           {
-            "x": 448.14074429203976,
-            "y": 20.145850548956666,
+            "x": 399,
+            "y": -13,
             "z": 0
           }
-        ]
+        ],
+        "target": "gpgmn1",
+        "source": "gpcell1"
       }
     ],
-    "entrances": [],
     "orientation": 196
   },
   "gpgmn1a": {
@@ -31923,8 +30790,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpgmn2",
-        "id": "exit-1178"
+        "target": "gpgmn2"
       }
     ],
     "entrances": [],
@@ -31950,8 +30816,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpcont1",
-        "id": "exit-1179"
+        "target": "gpcont1"
       },
       {
         "destinationPoint": {
@@ -31971,8 +30836,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpgmn3",
-        "id": "exit-1180"
+        "target": "gpgmn3"
       },
       {
         "destinationPoint": {
@@ -31992,53 +30856,53 @@ export const exits = {
             "z": 755
           }
         ],
-        "target": "gproof2",
-        "id": "exit-1181"
-      },
-      {
-        "id": "entrance-1550",
-        "target": "gpgmn1",
-        "destinationPoint": {
-          "x": 1719,
-          "y": 446,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": 1453.5267734667632,
-            "y": 425.02463363770136,
-            "z": 0
-          },
-          {
-            "x": 1984.4732265332368,
-            "y": 466.97536636229864,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1551",
-        "target": "gpgmn1a",
-        "destinationPoint": {
-          "x": 1719,
-          "y": 446,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": 1453.5267734667632,
-            "y": 425.02463363770136,
-            "z": 0
-          },
-          {
-            "x": 1984.4732265332368,
-            "y": 466.97536636229864,
-            "z": 0
-          }
-        ]
+        "target": "gproof2"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 1795,
+          "y": -1359,
+          "z": 47
+        },
+        "sourceLine": [
+          {
+            "x": 1639,
+            "y": 192,
+            "z": 0
+          },
+          {
+            "x": 1799,
+            "y": 700,
+            "z": 0
+          }
+        ],
+        "target": "gpgmn2",
+        "source": "gpgmn1"
+      },
+      {
+        "destinationPoint": {
+          "x": 1795,
+          "y": -1359,
+          "z": 47
+        },
+        "sourceLine": [
+          {
+            "x": 1639,
+            "y": 192,
+            "z": 0
+          },
+          {
+            "x": 1799,
+            "y": 700,
+            "z": 0
+          }
+        ],
+        "target": "gpgmn2",
+        "source": "gpgmn1a"
+      }
+    ],
     "orientation": 128
   },
   "gpgmn3": {
@@ -32061,8 +30925,7 @@ export const exits = {
             "z": -109
           }
         ],
-        "target": "gpbig1",
-        "id": "exit-1182"
+        "target": "gpbig1"
       },
       {
         "destinationPoint": {
@@ -32082,8 +30945,7 @@ export const exits = {
             "z": 2
           }
         ],
-        "target": "gpgmn2",
-        "id": "exit-1183"
+        "target": "gpgmn2"
       }
     ],
     "entrances": [],
@@ -32109,8 +30971,7 @@ export const exits = {
             "z": 7460
           }
         ],
-        "target": "gpexit2",
-        "id": "exit-1184"
+        "target": "gpexit2"
       },
       {
         "destinationPoint": {
@@ -32130,8 +30991,7 @@ export const exits = {
             "z": 7460
           }
         ],
-        "target": "gpexit2",
-        "id": "exit-1185"
+        "target": "gpexit2"
       }
     ],
     "entrances": [],
@@ -32157,8 +31017,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpexit1",
-        "id": "exit-1186"
+        "target": "gpexit1"
       },
       {
         "destinationPoint": {
@@ -32178,8 +31037,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpexit1",
-        "id": "exit-1187"
+        "target": "gpexit1"
       },
       {
         "destinationPoint": {
@@ -32199,8 +31057,7 @@ export const exits = {
             "z": -276
           }
         ],
-        "target": "gproof2",
-        "id": "exit-1188"
+        "target": "gproof2"
       }
     ],
     "entrances": [],
@@ -32226,8 +31083,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gpgmn2",
-        "id": "exit-1189"
+        "target": "gpgmn2"
       },
       {
         "destinationPoint": {
@@ -32247,8 +31103,7 @@ export const exits = {
             "z": 814
           }
         ],
-        "target": "gproof1",
-        "id": "exit-1190"
+        "target": "gproof1"
       }
     ],
     "entrances": [],
@@ -32274,8 +31129,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gwpool1",
-        "id": "exit-1191"
+        "target": "gwpool1"
       },
       {
         "destinationPoint": {
@@ -32295,8 +31149,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gwgrass1",
-        "id": "exit-1192"
+        "target": "gwgrass1"
       }
     ],
     "entrances": [],
@@ -32322,8 +31175,7 @@ export const exits = {
             "z": -10
           }
         ],
-        "target": "gwgrass1",
-        "id": "exit-1193"
+        "target": "gwgrass1"
       }
     ],
     "entrances": [],
@@ -32349,8 +31201,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gwbrook1",
-        "id": "exit-1194"
+        "target": "gwbrook1"
       },
       {
         "destinationPoint": {
@@ -32370,8 +31221,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gwenter1",
-        "id": "exit-1195"
+        "target": "gwenter1"
       }
     ],
     "entrances": [],
@@ -32397,8 +31247,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gwpool2",
-        "id": "exit-1196"
+        "target": "gwpool2"
       },
       {
         "destinationPoint": {
@@ -32418,8 +31267,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "gwbrook1",
-        "id": "exit-1197"
+        "target": "gwbrook1"
       }
     ],
     "entrances": [],
@@ -32445,8 +31293,7 @@ export const exits = {
             "z": -30
           }
         ],
-        "target": "gwpool1",
-        "id": "exit-1198"
+        "target": "gwpool1"
       }
     ],
     "entrances": [],
@@ -32482,8 +31329,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgair3",
-        "id": "exit-1199"
+        "target": "rgair3"
       },
       {
         "destinationPoint": {
@@ -32503,8 +31349,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad3",
-        "id": "exit-1200"
+        "target": "rgroad3"
       }
     ],
     "entrances": [],
@@ -32530,8 +31375,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad31",
-        "id": "exit-1201"
+        "target": "rgroad31"
       }
     ],
     "entrances": [],
@@ -32557,8 +31401,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgair1",
-        "id": "exit-1202"
+        "target": "rgair1"
       }
     ],
     "entrances": [],
@@ -32609,8 +31452,7 @@ export const exits = {
             "z": -848
           }
         ],
-        "target": "rgroad1",
-        "id": "exit-1203"
+        "target": "rgroad1"
       },
       {
         "destinationPoint": {
@@ -32630,8 +31472,7 @@ export const exits = {
             "z": -848
           }
         ],
-        "target": "rgroad2",
-        "id": "exit-1204"
+        "target": "rgroad2"
       }
     ],
     "entrances": [],
@@ -32657,8 +31498,7 @@ export const exits = {
             "z": -835
           }
         ],
-        "target": "rgroad11",
-        "id": "exit-1205"
+        "target": "rgroad11"
       },
       {
         "destinationPoint": {
@@ -32678,8 +31518,7 @@ export const exits = {
             "z": -848
           }
         ],
-        "target": "rgroad11",
-        "id": "exit-1206"
+        "target": "rgroad11"
       },
       {
         "destinationPoint": {
@@ -32699,8 +31538,7 @@ export const exits = {
             "z": -835
           }
         ],
-        "target": "rgroad21",
-        "id": "exit-1207"
+        "target": "rgroad21"
       },
       {
         "destinationPoint": {
@@ -32720,53 +31558,53 @@ export const exits = {
             "z": -848
           }
         ],
-        "target": "rgroad21",
-        "id": "exit-1208"
-      },
-      {
-        "id": "entrance-1552",
-        "target": "ebinto1",
-        "destinationPoint": {
-          "x": 2712,
-          "y": 523.5,
-          "z": 227
-        },
-        "sourceLine": [
-          {
-            "x": 2685.3483511661475,
-            "y": 713.1363351640107,
-            "z": 227
-          },
-          {
-            "x": 2738.6516488338525,
-            "y": 333.8636648359893,
-            "z": 227
-          }
-        ]
-      },
-      {
-        "id": "entrance-1553",
-        "target": "ebinto1",
-        "destinationPoint": {
-          "x": 2712,
-          "y": 956,
-          "z": 227
-        },
-        "sourceLine": [
-          {
-            "x": 2678.4592826686244,
-            "y": 1194.6546045667185,
-            "z": 227
-          },
-          {
-            "x": 2745.5407173313756,
-            "y": 717.3453954332815,
-            "z": 227
-          }
-        ]
+        "target": "rgroad21"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 0,
+          "y": 2702,
+          "z": 86
+        },
+        "sourceLine": [
+          {
+            "x": 2712,
+            "y": 715,
+            "z": 227
+          },
+          {
+            "x": 2712,
+            "y": 332,
+            "z": 227
+          }
+        ],
+        "target": "rgexit2",
+        "source": "ebinto1"
+      },
+      {
+        "destinationPoint": {
+          "x": 0,
+          "y": 2702,
+          "z": 86
+        },
+        "sourceLine": [
+          {
+            "x": 2712,
+            "y": 1197,
+            "z": 227
+          },
+          {
+            "x": 2712,
+            "y": 715,
+            "z": 227
+          }
+        ],
+        "target": "rgexit2",
+        "source": "ebinto1"
+      }
+    ],
     "orientation": 128
   },
   "rgguest1": {
@@ -32789,8 +31627,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad11",
-        "id": "exit-1209"
+        "target": "rgroad11"
       }
     ],
     "entrances": [],
@@ -32816,8 +31653,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad1",
-        "id": "exit-1210"
+        "target": "rgroad1"
       },
       {
         "destinationPoint": {
@@ -32837,8 +31673,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad1",
-        "id": "exit-1211"
+        "target": "rgroad1"
       },
       {
         "destinationPoint": {
@@ -32858,8 +31693,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad1",
-        "id": "exit-1212"
+        "target": "rgroad1"
       }
     ],
     "entrances": [],
@@ -32885,8 +31719,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad11",
-        "id": "exit-1213"
+        "target": "rgroad11"
       },
       {
         "destinationPoint": {
@@ -32906,8 +31739,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad11",
-        "id": "exit-1214"
+        "target": "rgroad11"
       },
       {
         "destinationPoint": {
@@ -32927,8 +31759,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad11",
-        "id": "exit-1215"
+        "target": "rgroad11"
       }
     ],
     "entrances": [],
@@ -32954,8 +31785,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad11",
-        "id": "exit-1216"
+        "target": "rgroad11"
       },
       {
         "destinationPoint": {
@@ -32975,8 +31805,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad11",
-        "id": "exit-1217"
+        "target": "rgroad11"
       },
       {
         "destinationPoint": {
@@ -32996,8 +31825,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad11",
-        "id": "exit-1218"
+        "target": "rgroad11"
       }
     ],
     "entrances": [],
@@ -33023,8 +31851,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad2",
-        "id": "exit-1219"
+        "target": "rgroad2"
       },
       {
         "destinationPoint": {
@@ -33044,8 +31871,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rghang2",
-        "id": "exit-1220"
+        "target": "rghang2"
       },
       {
         "destinationPoint": {
@@ -33065,8 +31891,7 @@ export const exits = {
             "z": 797
           }
         ],
-        "target": "rgroad3",
-        "id": "exit-1221"
+        "target": "rgroad3"
       }
     ],
     "entrances": [],
@@ -33092,8 +31917,75 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad21",
-        "id": "exit-1222"
+        "target": "rgroad21"
+      },
+      {
+        "destinationPoint": {
+          "x": -92,
+          "y": -402,
+          "z": 1
+        },
+        "sourceLine": [
+          {
+            "x": 939,
+            "y": 1655,
+            "z": 0
+          },
+          {
+            "x": 1126,
+            "y": 1655,
+            "z": 0
+          }
+        ],
+        "target": "rghang2"
+      },
+      {
+        "destinationPoint": {
+          "x": 1015,
+          "y": 966,
+          "z": 5
+        },
+        "sourceLine": [
+          {
+            "x": 1126,
+            "y": 936,
+            "z": 797
+          },
+          {
+            "x": 966,
+            "y": 936,
+            "z": 797
+          }
+        ],
+        "target": "rgroad31"
+      }
+    ],
+    "entrances": [],
+    "orientation": 128
+  },
+  "rghang2": {
+    "exits": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": -92,
+          "y": -402,
+          "z": 1
+        },
+        "sourceLine": [
+          {
+            "x": 939,
+            "y": 1655,
+            "z": 0
+          },
+          {
+            "x": 1126,
+            "y": 1655,
+            "z": 0
+          }
+        ],
+        "target": "rghang2",
+        "source": "rghang1"
       },
       {
         "destinationPoint": {
@@ -33114,79 +32006,9 @@ export const exits = {
           }
         ],
         "target": "rghang2",
-        "id": "exit-1223"
-      },
-      {
-        "destinationPoint": {
-          "x": 1015,
-          "y": 966,
-          "z": 5
-        },
-        "sourceLine": [
-          {
-            "x": 1126,
-            "y": 936,
-            "z": 797
-          },
-          {
-            "x": 966,
-            "y": 936,
-            "z": 797
-          }
-        ],
-        "target": "rgroad31",
-        "id": "exit-1224"
+        "source": "rghang11"
       }
     ],
-    "entrances": [],
-    "orientation": 128
-  },
-  "rghang2": {
-    "exits": [
-      {
-        "id": "entrance-1554",
-        "target": "rghang1",
-        "destinationPoint": {
-          "x": 1032.5,
-          "y": 1655,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": 939,
-            "y": 1655,
-            "z": 0
-          },
-          {
-            "x": 1126,
-            "y": 1655,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1555",
-        "target": "rghang11",
-        "destinationPoint": {
-          "x": 1032.5,
-          "y": 1655,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": 939,
-            "y": 1655,
-            "z": 0
-          },
-          {
-            "x": 1126,
-            "y": 1655,
-            "z": 0
-          }
-        ]
-      }
-    ],
-    "entrances": [],
     "orientation": 128
   },
   "rghatch1": {
@@ -33219,8 +32041,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad3",
-        "id": "exit-1225"
+        "target": "rgroad3"
       },
       {
         "destinationPoint": {
@@ -33240,8 +32061,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgguest2",
-        "id": "exit-1226"
+        "target": "rgguest2"
       },
       {
         "destinationPoint": {
@@ -33261,8 +32081,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgexit1",
-        "id": "exit-1227"
+        "target": "rgexit1"
       }
     ],
     "entrances": [],
@@ -33288,8 +32107,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgroad31",
-        "id": "exit-1228"
+        "target": "rgroad31"
       },
       {
         "destinationPoint": {
@@ -33309,158 +32127,158 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "rgexit2",
-        "id": "exit-1229"
-      },
-      {
-        "id": "entrance-1556",
-        "target": "rgguest1",
-        "destinationPoint": {
-          "x": 6,
-          "y": -2231,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": 66.95048605724017,
-            "y": -2309.0130646070656,
-            "z": 0
-          },
-          {
-            "x": -54.95048605724017,
-            "y": -2152.9869353929344,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1557",
-        "target": "rgguest3",
-        "destinationPoint": {
-          "x": 447.5,
-          "y": -1252,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": 325,
-            "y": -1394,
-            "z": 0
-          },
-          {
-            "x": 570,
-            "y": -1110,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1558",
-        "target": "rgguest3",
-        "destinationPoint": {
-          "x": -472,
-          "y": -1252,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": -358,
-            "y": -1394,
-            "z": 0
-          },
-          {
-            "x": -586,
-            "y": -1110,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1559",
-        "target": "rgguest3",
-        "destinationPoint": {
-          "x": -16.5,
-          "y": -1394,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": -358,
-            "y": -1394,
-            "z": 0
-          },
-          {
-            "x": 325,
-            "y": -1394,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1560",
-        "target": "rgguest4",
-        "destinationPoint": {
-          "x": 447.5,
-          "y": -1252,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": 325,
-            "y": -1394,
-            "z": 0
-          },
-          {
-            "x": 570,
-            "y": -1110,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1561",
-        "target": "rgguest4",
-        "destinationPoint": {
-          "x": -472,
-          "y": -1252,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": -358,
-            "y": -1394,
-            "z": 0
-          },
-          {
-            "x": -586,
-            "y": -1110,
-            "z": 0
-          }
-        ]
-      },
-      {
-        "id": "entrance-1562",
-        "target": "rgguest4",
-        "destinationPoint": {
-          "x": -16.5,
-          "y": -1394,
-          "z": 0
-        },
-        "sourceLine": [
-          {
-            "x": -358,
-            "y": -1394,
-            "z": 0
-          },
-          {
-            "x": 325,
-            "y": -1394,
-            "z": 0
-          }
-        ]
+        "target": "rgexit2"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": -445,
+          "y": -213,
+          "z": 4
+        },
+        "sourceLine": [
+          {
+            "x": -93,
+            "y": -2231,
+            "z": 0
+          },
+          {
+            "x": 105,
+            "y": -2231,
+            "z": 0
+          }
+        ],
+        "target": "rgroad11",
+        "source": "rgguest1"
+      },
+      {
+        "destinationPoint": {
+          "x": -418,
+          "y": 10,
+          "z": 1
+        },
+        "sourceLine": [
+          {
+            "x": 325,
+            "y": -1394,
+            "z": 0
+          },
+          {
+            "x": 570,
+            "y": -1110,
+            "z": 0
+          }
+        ],
+        "target": "rgroad11",
+        "source": "rgguest3"
+      },
+      {
+        "destinationPoint": {
+          "x": -418,
+          "y": 10,
+          "z": 1
+        },
+        "sourceLine": [
+          {
+            "x": -358,
+            "y": -1394,
+            "z": 0
+          },
+          {
+            "x": -586,
+            "y": -1110,
+            "z": 0
+          }
+        ],
+        "target": "rgroad11",
+        "source": "rgguest3"
+      },
+      {
+        "destinationPoint": {
+          "x": -418,
+          "y": 10,
+          "z": 1
+        },
+        "sourceLine": [
+          {
+            "x": -358,
+            "y": -1394,
+            "z": 0
+          },
+          {
+            "x": 325,
+            "y": -1394,
+            "z": 0
+          }
+        ],
+        "target": "rgroad11",
+        "source": "rgguest3"
+      },
+      {
+        "destinationPoint": {
+          "x": -418,
+          "y": 10,
+          "z": 1
+        },
+        "sourceLine": [
+          {
+            "x": 325,
+            "y": -1394,
+            "z": 0
+          },
+          {
+            "x": 570,
+            "y": -1110,
+            "z": 0
+          }
+        ],
+        "target": "rgroad11",
+        "source": "rgguest4"
+      },
+      {
+        "destinationPoint": {
+          "x": -418,
+          "y": 10,
+          "z": 1
+        },
+        "sourceLine": [
+          {
+            "x": -358,
+            "y": -1394,
+            "z": 0
+          },
+          {
+            "x": -586,
+            "y": -1110,
+            "z": 0
+          }
+        ],
+        "target": "rgroad11",
+        "source": "rgguest4"
+      },
+      {
+        "destinationPoint": {
+          "x": -418,
+          "y": 10,
+          "z": 1
+        },
+        "sourceLine": [
+          {
+            "x": -358,
+            "y": -1394,
+            "z": 0
+          },
+          {
+            "x": 325,
+            "y": -1394,
+            "z": 0
+          }
+        ],
+        "target": "rgroad11",
+        "source": "rgguest4"
+      }
+    ],
     "orientation": 128
   },
   "rgroad2": {
@@ -33483,8 +32301,7 @@ export const exits = {
             "z": -2
           }
         ],
-        "target": "rghang1",
-        "id": "exit-1230"
+        "target": "rghang1"
       },
       {
         "destinationPoint": {
@@ -33504,8 +32321,7 @@ export const exits = {
             "z": -2
           }
         ],
-        "target": "rgexit1",
-        "id": "exit-1231"
+        "target": "rgexit1"
       }
     ],
     "entrances": [],
@@ -33531,8 +32347,7 @@ export const exits = {
             "z": -2
           }
         ],
-        "target": "rghang11",
-        "id": "exit-1232"
+        "target": "rghang11"
       },
       {
         "destinationPoint": {
@@ -33552,8 +32367,7 @@ export const exits = {
             "z": -2
           }
         ],
-        "target": "rgexit2",
-        "id": "exit-1233"
+        "target": "rgexit2"
       }
     ],
     "entrances": [],
@@ -33579,8 +32393,7 @@ export const exits = {
             "z": 797
           }
         ],
-        "target": "rgair1",
-        "id": "exit-1234"
+        "target": "rgair1"
       },
       {
         "destinationPoint": {
@@ -33600,8 +32413,7 @@ export const exits = {
             "z": 410
           }
         ],
-        "target": "rghang1",
-        "id": "exit-1235"
+        "target": "rghang1"
       },
       {
         "destinationPoint": {
@@ -33621,8 +32433,7 @@ export const exits = {
             "z": 797
           }
         ],
-        "target": "rgroad1",
-        "id": "exit-1236"
+        "target": "rgroad1"
       }
     ],
     "entrances": [],
@@ -33648,8 +32459,7 @@ export const exits = {
             "z": 797
           }
         ],
-        "target": "rgair2",
-        "id": "exit-1237"
+        "target": "rgair2"
       },
       {
         "destinationPoint": {
@@ -33669,8 +32479,7 @@ export const exits = {
             "z": 410
           }
         ],
-        "target": "rghang11",
-        "id": "exit-1238"
+        "target": "rghang11"
       },
       {
         "destinationPoint": {
@@ -33690,8 +32499,7 @@ export const exits = {
             "z": 797
           }
         ],
-        "target": "rgroad11",
-        "id": "exit-1239"
+        "target": "rgroad11"
       }
     ],
     "entrances": [],
@@ -33732,8 +32540,7 @@ export const exits = {
             "z": 274
           }
         ],
-        "target": "secont1",
-        "id": "exit-1240"
+        "target": "secont1"
       },
       {
         "destinationPoint": {
@@ -33753,8 +32560,7 @@ export const exits = {
             "z": -212
           }
         ],
-        "target": "seroom1",
-        "id": "exit-1241"
+        "target": "seroom1"
       },
       {
         "destinationPoint": {
@@ -33774,8 +32580,7 @@ export const exits = {
             "z": -108
           }
         ],
-        "target": "sefront1",
-        "id": "exit-1242"
+        "target": "sefront1"
       },
       {
         "destinationPoint": {
@@ -33795,8 +32600,7 @@ export const exits = {
             "z": -108
           }
         ],
-        "target": "sefront1",
-        "id": "exit-1243"
+        "target": "sefront1"
       }
     ],
     "entrances": [],
@@ -33822,8 +32626,7 @@ export const exits = {
             "z": 274
           }
         ],
-        "target": "secont2",
-        "id": "exit-1244"
+        "target": "secont2"
       },
       {
         "destinationPoint": {
@@ -33843,8 +32646,7 @@ export const exits = {
             "z": -212
           }
         ],
-        "target": "seroom1",
-        "id": "exit-1245"
+        "target": "seroom1"
       },
       {
         "destinationPoint": {
@@ -33864,8 +32666,7 @@ export const exits = {
             "z": -108
           }
         ],
-        "target": "sefront3",
-        "id": "exit-1246"
+        "target": "sefront3"
       },
       {
         "destinationPoint": {
@@ -33885,16 +32686,15 @@ export const exits = {
             "z": -108
           }
         ],
-        "target": "sefront3",
-        "id": "exit-1247"
-      },
+        "target": "sefront3"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1563",
-        "target": "seroom2",
         "destinationPoint": {
-          "x": 347.5,
-          "y": -972,
-          "z": 89
+          "x": 355,
+          "y": 2224,
+          "z": 176
         },
         "sourceLine": [
           {
@@ -33907,10 +32707,11 @@ export const exits = {
             "y": -972,
             "z": 89
           }
-        ]
+        ],
+        "target": "seback2",
+        "source": "seroom2"
       }
     ],
-    "entrances": [],
     "orientation": 192
   },
   "secont1": {
@@ -33933,8 +32734,7 @@ export const exits = {
             "z": -275
           }
         ],
-        "target": "seback1",
-        "id": "exit-1248"
+        "target": "seback1"
       }
     ],
     "entrances": [],
@@ -33960,8 +32760,7 @@ export const exits = {
             "z": -354
           }
         ],
-        "target": "seback2",
-        "id": "exit-1249"
+        "target": "seback2"
       }
     ],
     "entrances": [],
@@ -33987,8 +32786,7 @@ export const exits = {
             "z": -108
           }
         ],
-        "target": "seback1",
-        "id": "exit-1250"
+        "target": "seback1"
       },
       {
         "destinationPoint": {
@@ -34008,8 +32806,7 @@ export const exits = {
             "z": -108
           }
         ],
-        "target": "seback1",
-        "id": "exit-1251"
+        "target": "seback1"
       },
       {
         "destinationPoint": {
@@ -34029,8 +32826,7 @@ export const exits = {
             "z": -41
           }
         ],
-        "target": "sefront2",
-        "id": "exit-1252"
+        "target": "sefront2"
       },
       {
         "destinationPoint": {
@@ -34050,8 +32846,7 @@ export const exits = {
             "z": -41
           }
         ],
-        "target": "sefront2",
-        "id": "exit-1253"
+        "target": "sefront2"
       }
     ],
     "entrances": [],
@@ -34077,8 +32872,7 @@ export const exits = {
             "z": -38
           }
         ],
-        "target": "sefront1",
-        "id": "exit-1254"
+        "target": "sefront1"
       },
       {
         "destinationPoint": {
@@ -34098,8 +32892,7 @@ export const exits = {
             "z": -38
           }
         ],
-        "target": "sefront1",
-        "id": "exit-1255"
+        "target": "sefront1"
       },
       {
         "destinationPoint": {
@@ -34119,8 +32912,7 @@ export const exits = {
             "z": -38
           }
         ],
-        "target": "sefront1",
-        "id": "exit-1256"
+        "target": "sefront1"
       }
     ],
     "entrances": [],
@@ -34146,8 +32938,7 @@ export const exits = {
             "z": -108
           }
         ],
-        "target": "seback2",
-        "id": "exit-1257"
+        "target": "seback2"
       },
       {
         "destinationPoint": {
@@ -34167,8 +32958,7 @@ export const exits = {
             "z": -108
           }
         ],
-        "target": "seback2",
-        "id": "exit-1258"
+        "target": "seback2"
       },
       {
         "destinationPoint": {
@@ -34188,8 +32978,7 @@ export const exits = {
             "z": -41
           }
         ],
-        "target": "sefront4",
-        "id": "exit-1259"
+        "target": "sefront4"
       },
       {
         "destinationPoint": {
@@ -34209,8 +32998,7 @@ export const exits = {
             "z": -41
           }
         ],
-        "target": "sefront4",
-        "id": "exit-1260"
+        "target": "sefront4"
       }
     ],
     "entrances": [],
@@ -34236,8 +33024,7 @@ export const exits = {
             "z": -38
           }
         ],
-        "target": "sefront3",
-        "id": "exit-1261"
+        "target": "sefront3"
       },
       {
         "destinationPoint": {
@@ -34257,8 +33044,7 @@ export const exits = {
             "z": -38
           }
         ],
-        "target": "sefront3",
-        "id": "exit-1262"
+        "target": "sefront3"
       },
       {
         "destinationPoint": {
@@ -34278,8 +33064,7 @@ export const exits = {
             "z": -38
           }
         ],
-        "target": "sefront3",
-        "id": "exit-1263"
+        "target": "sefront3"
       }
     ],
     "entrances": [],
@@ -34305,16 +33090,15 @@ export const exits = {
             "z": 89
           }
         ],
-        "target": "seback1",
-        "id": "exit-1264"
-      },
+        "target": "seback1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1564",
-        "target": "seback2",
         "destinationPoint": {
-          "x": 406.5,
-          "y": 2894.5,
-          "z": -212
+          "x": 343,
+          "y": -251,
+          "z": 60
         },
         "sourceLine": [
           {
@@ -34327,10 +33111,11 @@ export const exits = {
             "y": 2889,
             "z": -212
           }
-        ]
+        ],
+        "target": "seroom1",
+        "source": "seback2"
       }
     ],
-    "entrances": [],
     "orientation": 192
   },
   "seroom2": {
@@ -34353,8 +33138,7 @@ export const exits = {
             "z": 89
           }
         ],
-        "target": "seback2",
-        "id": "exit-1265"
+        "target": "seback2"
       }
     ],
     "entrances": [],
@@ -34390,32 +33174,32 @@ export const exits = {
             "z": -798
           }
         ],
-        "target": "ssroad1",
-        "id": "exit-1266"
-      },
+        "target": "ssroad1"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1565",
-        "target": "ssdock1",
         "destinationPoint": {
-          "x": 3186,
-          "y": -5998,
-          "z": -136
+          "x": -215,
+          "y": -2166,
+          "z": 5
         },
         "sourceLine": [
           {
-            "x": 3086.2338608607924,
-            "y": -5949.340802706412,
+            "x": 3186,
+            "y": -5887,
             "z": -136
           },
           {
-            "x": 3285.7661391392076,
-            "y": -6046.659197293588,
+            "x": 3186,
+            "y": -6109,
             "z": -136
           }
-        ]
+        ],
+        "target": "ssblock1",
+        "source": "ssdock1"
       }
     ],
-    "entrances": [],
     "orientation": 192
   },
   "sscont1": {
@@ -34438,8 +33222,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "sscont2",
-        "id": "exit-1267"
+        "target": "sscont2"
       },
       {
         "destinationPoint": {
@@ -34459,8 +33242,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ssroad2",
-        "id": "exit-1268"
+        "target": "ssroad2"
       }
     ],
     "entrances": [],
@@ -34486,8 +33268,7 @@ export const exits = {
             "z": -132
           }
         ],
-        "target": "sscont1",
-        "id": "exit-1269"
+        "target": "sscont1"
       }
     ],
     "entrances": [],
@@ -34513,8 +33294,7 @@ export const exits = {
             "z": -136
           }
         ],
-        "target": "ssblock1",
-        "id": "exit-1270"
+        "target": "ssblock1"
       },
       {
         "destinationPoint": {
@@ -34534,8 +33314,7 @@ export const exits = {
             "z": -136
           }
         ],
-        "target": "sslock1",
-        "id": "exit-1271"
+        "target": "sslock1"
       },
       {
         "destinationPoint": {
@@ -34555,8 +33334,7 @@ export const exits = {
             "z": -136
           }
         ],
-        "target": "sslock1",
-        "id": "exit-1272"
+        "target": "sslock1"
       },
       {
         "destinationPoint": {
@@ -34576,8 +33354,7 @@ export const exits = {
             "z": -136
           }
         ],
-        "target": "sslock1",
-        "id": "exit-1273"
+        "target": "sslock1"
       },
       {
         "destinationPoint": {
@@ -34597,8 +33374,7 @@ export const exits = {
             "z": -136
           }
         ],
-        "target": "sslock1",
-        "id": "exit-1274"
+        "target": "sslock1"
       },
       {
         "destinationPoint": {
@@ -34618,8 +33394,7 @@ export const exits = {
             "z": -136
           }
         ],
-        "target": "sslock1",
-        "id": "exit-1275"
+        "target": "sslock1"
       },
       {
         "destinationPoint": {
@@ -34639,8 +33414,7 @@ export const exits = {
             "z": -136
           }
         ],
-        "target": "sslock1",
-        "id": "exit-1276"
+        "target": "sslock1"
       }
     ],
     "entrances": [],
@@ -34666,8 +33440,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ssroad3",
-        "id": "exit-1277"
+        "target": "ssroad3"
       }
     ],
     "entrances": [],
@@ -34693,16 +33466,15 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ssroad3",
-        "id": "exit-1278"
-      },
+        "target": "ssroad3"
+      }
+    ],
+    "entrances": [
       {
-        "id": "entrance-1566",
-        "target": "ssdock1",
         "destinationPoint": {
-          "x": 419.5,
-          "y": -12404.5,
-          "z": -136
+          "x": -723,
+          "y": 92,
+          "z": 107
         },
         "sourceLine": [
           {
@@ -34715,15 +33487,15 @@ export const exits = {
             "y": -12597,
             "z": -136
           }
-        ]
+        ],
+        "target": "sslock1",
+        "source": "ssdock1"
       },
       {
-        "id": "entrance-1567",
-        "target": "ssdock1",
         "destinationPoint": {
-          "x": -660.5,
-          "y": -11442.5,
-          "z": -136
+          "x": -723,
+          "y": 92,
+          "z": 107
         },
         "sourceLine": [
           {
@@ -34736,15 +33508,15 @@ export const exits = {
             "y": -11083,
             "z": -136
           }
-        ]
+        ],
+        "target": "sslock1",
+        "source": "ssdock1"
       },
       {
-        "id": "entrance-1568",
-        "target": "ssdock1",
         "destinationPoint": {
-          "x": -261,
-          "y": -11981.5,
-          "z": -136
+          "x": -723,
+          "y": 92,
+          "z": 107
         },
         "sourceLine": [
           {
@@ -34757,15 +33529,15 @@ export const exits = {
             "y": -11802,
             "z": -136
           }
-        ]
+        ],
+        "target": "sslock1",
+        "source": "ssdock1"
       },
       {
-        "id": "entrance-1569",
-        "target": "ssdock1",
         "destinationPoint": {
-          "x": 1559,
-          "y": -11633.5,
-          "z": -136
+          "x": -723,
+          "y": 92,
+          "z": 107
         },
         "sourceLine": [
           {
@@ -34778,15 +33550,15 @@ export const exits = {
             "y": -11441,
             "z": -136
           }
-        ]
+        ],
+        "target": "sslock1",
+        "source": "ssdock1"
       },
       {
-        "id": "entrance-1570",
-        "target": "ssdock1",
         "destinationPoint": {
-          "x": 982,
-          "y": -12024,
-          "z": -136
+          "x": -723,
+          "y": 92,
+          "z": 107
         },
         "sourceLine": [
           {
@@ -34799,15 +33571,15 @@ export const exits = {
             "y": -11836,
             "z": -136
           }
-        ]
+        ],
+        "target": "sslock1",
+        "source": "ssdock1"
       },
       {
-        "id": "entrance-1571",
-        "target": "ssdock1",
         "destinationPoint": {
-          "x": 3.5,
-          "y": -12379,
-          "z": -136
+          "x": -723,
+          "y": 92,
+          "z": 107
         },
         "sourceLine": [
           {
@@ -34820,10 +33592,11 @@ export const exits = {
             "y": -12161,
             "z": -136
           }
-        ]
+        ],
+        "target": "sslock1",
+        "source": "ssdock1"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "ssmedi1": {
@@ -34846,8 +33619,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ssmedi2",
-        "id": "exit-1279"
+        "target": "ssmedi2"
       },
       {
         "destinationPoint": {
@@ -34867,8 +33639,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ssroad1",
-        "id": "exit-1280"
+        "target": "ssroad1"
       }
     ],
     "entrances": [],
@@ -34894,8 +33665,7 @@ export const exits = {
             "z": 125
           }
         ],
-        "target": "ssmedi1",
-        "id": "exit-1281"
+        "target": "ssmedi1"
       }
     ],
     "entrances": [],
@@ -34921,53 +33691,53 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "efpod1",
-        "id": "exit-1282"
-      },
-      {
-        "id": "entrance-1572",
-        "target": "efenter1",
-        "destinationPoint": {
-          "x": -0.5,
-          "y": 4038,
-          "z": 1143
-        },
-        "sourceLine": [
-          {
-            "x": -201,
-            "y": 4038,
-            "z": 1143
-          },
-          {
-            "x": 200,
-            "y": 4038,
-            "z": 1143
-          }
-        ]
-      },
-      {
-        "id": "entrance-1573",
-        "target": "efenter2",
-        "destinationPoint": {
-          "x": -0.5,
-          "y": 4038,
-          "z": 1143
-        },
-        "sourceLine": [
-          {
-            "x": -201,
-            "y": 4038,
-            "z": 1143
-          },
-          {
-            "x": 200,
-            "y": 4038,
-            "z": 1143
-          }
-        ]
+        "target": "efpod1"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": 62,
+          "y": -92,
+          "z": 40
+        },
+        "sourceLine": [
+          {
+            "x": -201,
+            "y": 4038,
+            "z": 1143
+          },
+          {
+            "x": 200,
+            "y": 4038,
+            "z": 1143
+          }
+        ],
+        "target": "sspack1",
+        "source": "efenter1"
+      },
+      {
+        "destinationPoint": {
+          "x": 62,
+          "y": -92,
+          "z": 40
+        },
+        "sourceLine": [
+          {
+            "x": -201,
+            "y": 4038,
+            "z": 1143
+          },
+          {
+            "x": 200,
+            "y": 4038,
+            "z": 1143
+          }
+        ],
+        "target": "sspack1",
+        "source": "efenter2"
+      }
+    ],
     "orientation": 128
   },
   "sspod1": {
@@ -34990,8 +33760,7 @@ export const exits = {
             "z": -5
           }
         ],
-        "target": "sspod2",
-        "id": "exit-1283"
+        "target": "sspod2"
       }
     ],
     "entrances": [],
@@ -35017,8 +33786,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "sspod1",
-        "id": "exit-1284"
+        "target": "sspod1"
       }
     ],
     "entrances": [],
@@ -35049,8 +33817,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ssroad2",
-        "id": "exit-1285"
+        "target": "ssroad2"
       },
       {
         "destinationPoint": {
@@ -35070,8 +33837,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ssblock1",
-        "id": "exit-1286"
+        "target": "ssblock1"
       },
       {
         "destinationPoint": {
@@ -35091,8 +33857,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ssmedi1",
-        "id": "exit-1287"
+        "target": "ssmedi1"
       }
     ],
     "entrances": [],
@@ -35118,8 +33883,7 @@ export const exits = {
             "z": -851
           }
         ],
-        "target": "sscont1",
-        "id": "exit-1288"
+        "target": "sscont1"
       },
       {
         "destinationPoint": {
@@ -35139,8 +33903,7 @@ export const exits = {
             "z": -702
           }
         ],
-        "target": "ssroad1",
-        "id": "exit-1289"
+        "target": "ssroad1"
       },
       {
         "destinationPoint": {
@@ -35160,8 +33923,7 @@ export const exits = {
             "z": 59
           }
         ],
-        "target": "ssroad3",
-        "id": "exit-1290"
+        "target": "ssroad3"
       }
     ],
     "entrances": [],
@@ -35187,8 +33949,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "ssroad2",
-        "id": "exit-1291"
+        "target": "ssroad2"
       },
       {
         "destinationPoint": {
@@ -35208,8 +33969,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "sselone1",
-        "id": "exit-1292"
+        "target": "sselone1"
       },
       {
         "destinationPoint": {
@@ -35229,8 +33989,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "sslock1",
-        "id": "exit-1293"
+        "target": "sslock1"
       }
     ],
     "entrances": [],
@@ -35381,8 +34140,7 @@ export const exits = {
             "z": 7
           }
         ],
-        "target": "tgstage1",
-        "id": "exit-1294"
+        "target": "tgstage1"
       },
       {
         "destinationPoint": {
@@ -35402,8 +34160,7 @@ export const exits = {
             "z": 6
           }
         ],
-        "target": "tgstage1",
-        "id": "exit-1295"
+        "target": "tgstage1"
       }
     ],
     "entrances": [],
@@ -35444,8 +34201,7 @@ export const exits = {
             "z": 7
           }
         ],
-        "target": "tgstage1",
-        "id": "exit-1296"
+        "target": "tgstage1"
       },
       {
         "destinationPoint": {
@@ -35465,8 +34221,7 @@ export const exits = {
             "z": 6
           }
         ],
-        "target": "tgstage1",
-        "id": "exit-1297"
+        "target": "tgstage1"
       }
     ],
     "entrances": [],
@@ -35492,8 +34247,7 @@ export const exits = {
             "z": -651
           }
         ],
-        "target": "tggate1",
-        "id": "exit-1298"
+        "target": "tggate1"
       },
       {
         "destinationPoint": {
@@ -35513,8 +34267,7 @@ export const exits = {
             "z": -651
           }
         ],
-        "target": "tggate1",
-        "id": "exit-1299"
+        "target": "tggate1"
       },
       {
         "destinationPoint": {
@@ -35534,8 +34287,7 @@ export const exits = {
             "z": -685
           }
         ],
-        "target": "tgview1",
-        "id": "exit-1300"
+        "target": "tgview1"
       },
       {
         "destinationPoint": {
@@ -35555,8 +34307,7 @@ export const exits = {
             "z": -615
           }
         ],
-        "target": "tggate1",
-        "id": "exit-1301"
+        "target": "tggate1"
       }
     ],
     "entrances": [],
@@ -35582,8 +34333,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tgstage1",
-        "id": "exit-1302"
+        "target": "tgstage1"
       },
       {
         "destinationPoint": {
@@ -35603,8 +34353,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tgroom1",
-        "id": "exit-1303"
+        "target": "tgroom1"
       },
       {
         "destinationPoint": {
@@ -35624,8 +34373,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tggate1",
-        "id": "exit-1304"
+        "target": "tggate1"
       }
     ],
     "entrances": [],
@@ -35651,8 +34399,7 @@ export const exits = {
             "z": -476
           }
         ],
-        "target": "tgfront1",
-        "id": "exit-1305"
+        "target": "tgfront1"
       },
       {
         "destinationPoint": {
@@ -35672,8 +34419,7 @@ export const exits = {
             "z": -442
           }
         ],
-        "target": "tgfront1",
-        "id": "exit-1306"
+        "target": "tgfront1"
       },
       {
         "destinationPoint": {
@@ -35693,8 +34439,7 @@ export const exits = {
             "z": -244
           }
         ],
-        "target": "tggara1",
-        "id": "exit-1307"
+        "target": "tggara1"
       },
       {
         "destinationPoint": {
@@ -35714,8 +34459,7 @@ export const exits = {
             "z": -228
           }
         ],
-        "target": "tggrave1",
-        "id": "exit-1308"
+        "target": "tggrave1"
       },
       {
         "destinationPoint": {
@@ -35735,8 +34479,7 @@ export const exits = {
             "z": -289
           }
         ],
-        "target": "tggrave1",
-        "id": "exit-1309"
+        "target": "tggrave1"
       },
       {
         "destinationPoint": {
@@ -35756,8 +34499,7 @@ export const exits = {
             "z": -340
           }
         ],
-        "target": "tggrave1",
-        "id": "exit-1310"
+        "target": "tggrave1"
       }
     ],
     "entrances": [],
@@ -35783,8 +34525,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tggate1",
-        "id": "exit-1311"
+        "target": "tggate1"
       },
       {
         "destinationPoint": {
@@ -35804,8 +34545,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tggate1",
-        "id": "exit-1312"
+        "target": "tggate1"
       }
     ],
     "entrances": [],
@@ -35831,8 +34571,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tggara1",
-        "id": "exit-1313"
+        "target": "tggara1"
       },
       {
         "destinationPoint": {
@@ -35852,8 +34591,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tggara1",
-        "id": "exit-1314"
+        "target": "tggara1"
       },
       {
         "destinationPoint": {
@@ -35873,8 +34611,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tgroom2",
-        "id": "exit-1315"
+        "target": "tgroom2"
       },
       {
         "destinationPoint": {
@@ -35894,8 +34631,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tgroom2",
-        "id": "exit-1316"
+        "target": "tgroom2"
       }
     ],
     "entrances": [],
@@ -35921,8 +34657,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tgroom1",
-        "id": "exit-1317"
+        "target": "tgroom1"
       },
       {
         "destinationPoint": {
@@ -35942,8 +34677,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tgroom1",
-        "id": "exit-1318"
+        "target": "tgroom1"
       }
     ],
     "entrances": [],
@@ -35969,95 +34703,95 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tggara1",
-        "id": "exit-1319"
-      },
-      {
-        "id": "entrance-1574",
-        "target": "tgcourt1",
-        "destinationPoint": {
-          "x": 386,
-          "y": 1237,
-          "z": 6.5
-        },
-        "sourceLine": [
-          {
-            "x": 440.5306159648637,
-            "y": 1358.76375455156,
-            "z": 6
-          },
-          {
-            "x": 331.4693840351363,
-            "y": 1115.23624544844,
-            "z": 7
-          }
-        ]
-      },
-      {
-        "id": "entrance-1575",
-        "target": "tgcourt1",
-        "destinationPoint": {
-          "x": 276.5,
-          "y": 1484,
-          "z": 5.5
-        },
-        "sourceLine": [
-          {
-            "x": 332.25635453175767,
-            "y": 1608.8858636088526,
-            "z": 5
-          },
-          {
-            "x": 220.74364546824236,
-            "y": 1359.1141363911474,
-            "z": 6
-          }
-        ]
-      },
-      {
-        "id": "entrance-1576",
-        "target": "tgcourt5",
-        "destinationPoint": {
-          "x": 386,
-          "y": 1237,
-          "z": 6.5
-        },
-        "sourceLine": [
-          {
-            "x": 440.5306159648637,
-            "y": 1358.76375455156,
-            "z": 6
-          },
-          {
-            "x": 331.4693840351363,
-            "y": 1115.23624544844,
-            "z": 7
-          }
-        ]
-      },
-      {
-        "id": "entrance-1577",
-        "target": "tgcourt5",
-        "destinationPoint": {
-          "x": 276.5,
-          "y": 1484,
-          "z": 5.5
-        },
-        "sourceLine": [
-          {
-            "x": 332.25635453175767,
-            "y": 1608.8858636088526,
-            "z": 5
-          },
-          {
-            "x": 220.74364546824236,
-            "y": 1359.1141363911474,
-            "z": 6
-          }
-        ]
+        "target": "tggara1"
       }
     ],
-    "entrances": [],
+    "entrances": [
+      {
+        "destinationPoint": {
+          "x": -861,
+          "y": -375,
+          "z": 21
+        },
+        "sourceLine": [
+          {
+            "x": 332,
+            "y": 1359,
+            "z": 6
+          },
+          {
+            "x": 440,
+            "y": 1115,
+            "z": 7
+          }
+        ],
+        "target": "tgstage1",
+        "source": "tgcourt1"
+      },
+      {
+        "destinationPoint": {
+          "x": -861,
+          "y": -375,
+          "z": 21
+        },
+        "sourceLine": [
+          {
+            "x": 221,
+            "y": 1609,
+            "z": 5
+          },
+          {
+            "x": 332,
+            "y": 1359,
+            "z": 6
+          }
+        ],
+        "target": "tgstage1",
+        "source": "tgcourt1"
+      },
+      {
+        "destinationPoint": {
+          "x": -861,
+          "y": -375,
+          "z": 21
+        },
+        "sourceLine": [
+          {
+            "x": 332,
+            "y": 1359,
+            "z": 6
+          },
+          {
+            "x": 440,
+            "y": 1115,
+            "z": 7
+          }
+        ],
+        "target": "tgstage1",
+        "source": "tgcourt5"
+      },
+      {
+        "destinationPoint": {
+          "x": -861,
+          "y": -375,
+          "z": 21
+        },
+        "sourceLine": [
+          {
+            "x": 221,
+            "y": 1609,
+            "z": 5
+          },
+          {
+            "x": 332,
+            "y": 1359,
+            "z": 6
+          }
+        ],
+        "target": "tgstage1",
+        "source": "tgcourt5"
+      }
+    ],
     "orientation": 128
   },
   "tgview1": {
@@ -36080,8 +34814,7 @@ export const exits = {
             "z": 820
           }
         ],
-        "target": "tgfront1",
-        "id": "exit-1320"
+        "target": "tgfront1"
       }
     ],
     "entrances": [],
@@ -36107,8 +34840,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tiagit2",
-        "id": "exit-1321"
+        "target": "tiagit2"
       },
       {
         "destinationPoint": {
@@ -36128,8 +34860,7 @@ export const exits = {
             "z": 228
           }
         ],
-        "target": "tiagit3",
-        "id": "exit-1322"
+        "target": "tiagit3"
       }
     ],
     "entrances": [],
@@ -36155,8 +34886,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tiagit1",
-        "id": "exit-1323"
+        "target": "tiagit1"
       }
     ],
     "entrances": [],
@@ -36182,8 +34912,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tiagit4",
-        "id": "exit-1324"
+        "target": "tiagit4"
       },
       {
         "destinationPoint": {
@@ -36203,8 +34932,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tiagit1",
-        "id": "exit-1325"
+        "target": "tiagit1"
       }
     ],
     "entrances": [],
@@ -36230,8 +34958,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tiagit3",
-        "id": "exit-1326"
+        "target": "tiagit3"
       }
     ],
     "entrances": [],
@@ -36262,8 +34989,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tiback2",
-        "id": "exit-1327"
+        "target": "tiback2"
       },
       {
         "destinationPoint": {
@@ -36283,8 +35009,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tipub1",
-        "id": "exit-1328"
+        "target": "tipub1"
       }
     ],
     "entrances": [],
@@ -36310,8 +35035,7 @@ export const exits = {
             "z": 1229
           }
         ],
-        "target": "titv1",
-        "id": "exit-1329"
+        "target": "titv1"
       },
       {
         "destinationPoint": {
@@ -36331,8 +35055,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tiback1",
-        "id": "exit-1330"
+        "target": "tiback1"
       }
     ],
     "entrances": [],
@@ -36358,8 +35081,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown1",
-        "id": "exit-1331"
+        "target": "titown1"
       }
     ],
     "entrances": [],
@@ -36385,8 +35107,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tihtr1",
-        "id": "exit-1332"
+        "target": "tihtr1"
       },
       {
         "destinationPoint": {
@@ -36406,8 +35127,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown1",
-        "id": "exit-1333"
+        "target": "titown1"
       }
     ],
     "entrances": [],
@@ -36433,8 +35153,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tihtl1",
-        "id": "exit-1334"
+        "target": "tihtl1"
       }
     ],
     "entrances": [],
@@ -36470,8 +35189,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "timania5",
-        "id": "exit-1335"
+        "target": "timania5"
       },
       {
         "destinationPoint": {
@@ -36491,8 +35209,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "timania5",
-        "id": "exit-1336"
+        "target": "timania5"
       }
     ],
     "entrances": [],
@@ -36528,8 +35245,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "timania5",
-        "id": "exit-1337"
+        "target": "timania5"
       }
     ],
     "entrances": [],
@@ -36555,8 +35271,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "timania1",
-        "id": "exit-1338"
+        "target": "timania1"
       },
       {
         "destinationPoint": {
@@ -36576,8 +35291,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "timania4",
-        "id": "exit-1339"
+        "target": "timania4"
       },
       {
         "destinationPoint": {
@@ -36597,8 +35311,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown51",
-        "id": "exit-1340"
+        "target": "titown51"
       }
     ],
     "entrances": [],
@@ -36624,8 +35337,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown7",
-        "id": "exit-1341"
+        "target": "titown7"
       }
     ],
     "entrances": [],
@@ -36651,8 +35363,7 @@ export const exits = {
             "z": 100
           }
         ],
-        "target": "timin22",
-        "id": "exit-1342"
+        "target": "timin22"
       },
       {
         "destinationPoint": {
@@ -36672,8 +35383,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown51",
-        "id": "exit-1343"
+        "target": "titown51"
       }
     ],
     "entrances": [],
@@ -36699,8 +35409,7 @@ export const exits = {
             "z": -73
           }
         ],
-        "target": "timin21",
-        "id": "exit-1344"
+        "target": "timin21"
       }
     ],
     "entrances": [],
@@ -36726,8 +35435,7 @@ export const exits = {
             "z": 84
           }
         ],
-        "target": "tiback1",
-        "id": "exit-1345"
+        "target": "tiback1"
       },
       {
         "destinationPoint": {
@@ -36747,8 +35455,7 @@ export const exits = {
             "z": -14
           }
         ],
-        "target": "titown6",
-        "id": "exit-1346"
+        "target": "titown6"
       }
     ],
     "entrances": [],
@@ -36774,8 +35481,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tistud21",
-        "id": "exit-1347"
+        "target": "tistud21"
       }
     ],
     "entrances": [],
@@ -36801,8 +35507,7 @@ export const exits = {
             "z": 16
           }
         ],
-        "target": "tistud1",
-        "id": "exit-1348"
+        "target": "tistud1"
       }
     ],
     "entrances": [],
@@ -36833,8 +35538,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown2",
-        "id": "exit-1349"
+        "target": "titown2"
       },
       {
         "destinationPoint": {
@@ -36854,8 +35558,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tihtl1",
-        "id": "exit-1350"
+        "target": "tihtl1"
       },
       {
         "destinationPoint": {
@@ -36875,8 +35578,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tigate1",
-        "id": "exit-1351"
+        "target": "tigate1"
       }
     ],
     "entrances": [],
@@ -36902,8 +35604,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown3",
-        "id": "exit-1352"
+        "target": "titown3"
       },
       {
         "destinationPoint": {
@@ -36923,8 +35624,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown1",
-        "id": "exit-1353"
+        "target": "titown1"
       }
     ],
     "entrances": [],
@@ -36950,8 +35650,7 @@ export const exits = {
             "z": 2
           }
         ],
-        "target": "titown2",
-        "id": "exit-1354"
+        "target": "titown2"
       },
       {
         "destinationPoint": {
@@ -36971,8 +35670,7 @@ export const exits = {
             "z": 2
           }
         ],
-        "target": "titown2",
-        "id": "exit-1355"
+        "target": "titown2"
       },
       {
         "destinationPoint": {
@@ -36992,8 +35690,7 @@ export const exits = {
             "z": 2
           }
         ],
-        "target": "titown51",
-        "id": "exit-1356"
+        "target": "titown51"
       },
       {
         "destinationPoint": {
@@ -37013,8 +35710,7 @@ export const exits = {
             "z": -2
           }
         ],
-        "target": "titown4",
-        "id": "exit-1357"
+        "target": "titown4"
       }
     ],
     "entrances": [],
@@ -37040,8 +35736,7 @@ export const exits = {
             "z": 5
           }
         ],
-        "target": "titown3",
-        "id": "exit-1358"
+        "target": "titown3"
       }
     ],
     "entrances": [],
@@ -37067,8 +35762,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "timin21",
-        "id": "exit-1359"
+        "target": "timin21"
       },
       {
         "destinationPoint": {
@@ -37088,8 +35782,7 @@ export const exits = {
             "z": 114
           }
         ],
-        "target": "timania5",
-        "id": "exit-1360"
+        "target": "timania5"
       },
       {
         "destinationPoint": {
@@ -37109,8 +35802,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown3",
-        "id": "exit-1361"
+        "target": "titown3"
       },
       {
         "destinationPoint": {
@@ -37130,8 +35822,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown3",
-        "id": "exit-1362"
+        "target": "titown3"
       },
       {
         "destinationPoint": {
@@ -37151,8 +35842,7 @@ export const exits = {
             "z": -3
           }
         ],
-        "target": "titown52",
-        "id": "exit-1363"
+        "target": "titown52"
       }
     ],
     "entrances": [],
@@ -37178,8 +35868,7 @@ export const exits = {
             "z": -166
           }
         ],
-        "target": "titown51",
-        "id": "exit-1364"
+        "target": "titown51"
       },
       {
         "destinationPoint": {
@@ -37199,8 +35888,7 @@ export const exits = {
             "z": -166
           }
         ],
-        "target": "titown7",
-        "id": "exit-1365"
+        "target": "titown7"
       },
       {
         "destinationPoint": {
@@ -37220,8 +35908,7 @@ export const exits = {
             "z": -166
           }
         ],
-        "target": "titown6",
-        "id": "exit-1366"
+        "target": "titown6"
       }
     ],
     "entrances": [],
@@ -37247,8 +35934,7 @@ export const exits = {
             "z": 318
           }
         ],
-        "target": "titown52",
-        "id": "exit-1367"
+        "target": "titown52"
       },
       {
         "destinationPoint": {
@@ -37268,8 +35954,7 @@ export const exits = {
             "z": 24
           }
         ],
-        "target": "tipub1",
-        "id": "exit-1368"
+        "target": "tipub1"
       }
     ],
     "entrances": [],
@@ -37295,8 +35980,7 @@ export const exits = {
             "z": 465
           }
         ],
-        "target": "timin1",
-        "id": "exit-1369"
+        "target": "timin1"
       },
       {
         "destinationPoint": {
@@ -37316,8 +36000,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "titown52",
-        "id": "exit-1370"
+        "target": "titown52"
       },
       {
         "destinationPoint": {
@@ -37337,8 +36020,7 @@ export const exits = {
             "z": 461
           }
         ],
-        "target": "titown8",
-        "id": "exit-1371"
+        "target": "titown8"
       },
       {
         "destinationPoint": {
@@ -37358,8 +36040,7 @@ export const exits = {
             "z": 465
           }
         ],
-        "target": "titown8",
-        "id": "exit-1372"
+        "target": "titown8"
       }
     ],
     "entrances": [],
@@ -37385,8 +36066,7 @@ export const exits = {
             "z": 448
           }
         ],
-        "target": "titown7",
-        "id": "exit-1373"
+        "target": "titown7"
       },
       {
         "destinationPoint": {
@@ -37406,8 +36086,7 @@ export const exits = {
             "z": 448
           }
         ],
-        "target": "titown7",
-        "id": "exit-1374"
+        "target": "titown7"
       }
     ],
     "entrances": [],
@@ -37438,8 +36117,7 @@ export const exits = {
             "z": 3413
           }
         ],
-        "target": "titvout1",
-        "id": "exit-1375"
+        "target": "titvout1"
       },
       {
         "destinationPoint": {
@@ -37459,8 +36137,7 @@ export const exits = {
             "z": 1908
           }
         ],
-        "target": "tiback2",
-        "id": "exit-1376"
+        "target": "tiback2"
       }
     ],
     "entrances": [],
@@ -37486,8 +36163,7 @@ export const exits = {
             "z": 3418
           }
         ],
-        "target": "titv1",
-        "id": "exit-1377"
+        "target": "titv1"
       }
     ],
     "entrances": [],
@@ -37538,8 +36214,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmdome2",
-        "id": "exit-1378"
+        "target": "tmdome2"
       }
     ],
     "entrances": [],
@@ -37565,8 +36240,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmsand1",
-        "id": "exit-1379"
+        "target": "tmsand1"
       },
       {
         "destinationPoint": {
@@ -37586,8 +36260,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmdome1",
-        "id": "exit-1380"
+        "target": "tmdome1"
       }
     ],
     "entrances": [],
@@ -37613,22 +36286,20 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmmura1",
-        "id": "exit-1381"
+        "target": "tmmura1"
       }
     ],
     "entrances": [],
     "orientation": 148
   },
   "tmele1": {
-    "exits": [
+    "exits": [],
+    "entrances": [
       {
-        "id": "entrance-1578",
-        "target": "tmsand1",
         "destinationPoint": {
-          "x": 2.5,
-          "y": -325,
-          "z": 308
+          "x": 30,
+          "y": -340,
+          "z": 20
         },
         "sourceLine": [
           {
@@ -37641,10 +36312,11 @@ export const exits = {
             "y": -325,
             "z": 308
           }
-        ]
+        ],
+        "target": "tmele1",
+        "source": "tmsand1"
       }
     ],
-    "entrances": [],
     "orientation": 128
   },
   "tmgate1": {
@@ -37667,8 +36339,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmmura1",
-        "id": "exit-1382"
+        "target": "tmmura1"
       },
       {
         "destinationPoint": {
@@ -37688,8 +36359,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmhtl1",
-        "id": "exit-1383"
+        "target": "tmhtl1"
       }
     ],
     "entrances": [],
@@ -37715,8 +36385,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmhtr1",
-        "id": "exit-1384"
+        "target": "tmhtr1"
       },
       {
         "destinationPoint": {
@@ -37736,8 +36405,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmgate1",
-        "id": "exit-1385"
+        "target": "tmgate1"
       }
     ],
     "entrances": [],
@@ -37763,8 +36431,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmhtl1",
-        "id": "exit-1386"
+        "target": "tmhtl1"
       }
     ],
     "entrances": [],
@@ -37790,8 +36457,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmmura2",
-        "id": "exit-1387"
+        "target": "tmmura2"
       }
     ],
     "entrances": [],
@@ -37822,8 +36488,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmmura2",
-        "id": "exit-1388"
+        "target": "tmmura2"
       }
     ],
     "entrances": [],
@@ -37849,8 +36514,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmmura2",
-        "id": "exit-1389"
+        "target": "tmmura2"
       },
       {
         "destinationPoint": {
@@ -37870,8 +36534,7 @@ export const exits = {
             "z": 19
           }
         ],
-        "target": "tmelder1",
-        "id": "exit-1390"
+        "target": "tmelder1"
       },
       {
         "destinationPoint": {
@@ -37891,8 +36554,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmgate1",
-        "id": "exit-1391"
+        "target": "tmgate1"
       }
     ],
     "entrances": [],
@@ -37918,8 +36580,7 @@ export const exits = {
             "z": 919
           }
         ],
-        "target": "tmkobo1",
-        "id": "exit-1392"
+        "target": "tmkobo1"
       },
       {
         "destinationPoint": {
@@ -37939,8 +36600,7 @@ export const exits = {
             "z": 938
           }
         ],
-        "target": "tmmin1",
-        "id": "exit-1393"
+        "target": "tmmin1"
       },
       {
         "destinationPoint": {
@@ -37960,8 +36620,7 @@ export const exits = {
             "z": 683
           }
         ],
-        "target": "tmmura1",
-        "id": "exit-1394"
+        "target": "tmmura1"
       }
     ],
     "entrances": [],
@@ -37987,8 +36646,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmdome2",
-        "id": "exit-1395"
+        "target": "tmdome2"
       },
       {
         "destinationPoint": {
@@ -38008,8 +36666,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tmdome2",
-        "id": "exit-1396"
+        "target": "tmdome2"
       },
       {
         "destinationPoint": {
@@ -38029,8 +36686,7 @@ export const exits = {
             "z": 308
           }
         ],
-        "target": "tmele1",
-        "id": "exit-1397"
+        "target": "tmele1"
       }
     ],
     "entrances": [],
@@ -38056,8 +36712,7 @@ export const exits = {
             "z": -248
           }
         ],
-        "target": "tvglen2",
-        "id": "exit-1398"
+        "target": "tvglen2"
       }
     ],
     "entrances": [],
@@ -38083,8 +36738,7 @@ export const exits = {
             "z": -236
           }
         ],
-        "target": "tvglen3",
-        "id": "exit-1399"
+        "target": "tvglen3"
       },
       {
         "destinationPoint": {
@@ -38104,8 +36758,7 @@ export const exits = {
             "z": 5
           }
         ],
-        "target": "tvglen1",
-        "id": "exit-1400"
+        "target": "tvglen1"
       }
     ],
     "entrances": [],
@@ -38131,8 +36784,7 @@ export const exits = {
             "z": -143
           }
         ],
-        "target": "tvglen4",
-        "id": "exit-1401"
+        "target": "tvglen4"
       },
       {
         "destinationPoint": {
@@ -38152,8 +36804,7 @@ export const exits = {
             "z": 1341
           }
         ],
-        "target": "tvglen2",
-        "id": "exit-1402"
+        "target": "tvglen2"
       }
     ],
     "entrances": [],
@@ -38179,8 +36830,7 @@ export const exits = {
             "z": -719
           }
         ],
-        "target": "tvglen5",
-        "id": "exit-1403"
+        "target": "tvglen5"
       },
       {
         "destinationPoint": {
@@ -38200,8 +36850,7 @@ export const exits = {
             "z": 1374
           }
         ],
-        "target": "tvglen3",
-        "id": "exit-1404"
+        "target": "tvglen3"
       }
     ],
     "entrances": [],
@@ -38227,8 +36876,7 @@ export const exits = {
             "z": 0
           }
         ],
-        "target": "tvglen4",
-        "id": "exit-1405"
+        "target": "tvglen4"
       }
     ],
     "entrances": [],
