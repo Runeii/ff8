@@ -93,18 +93,22 @@ const Field = ({ characterPosition, data, setCharacterPosition, setField }: Fiel
 }
 
 type FieldLoaderProps = Omit<FieldProps, 'data' | 'characterPosition' | 'setCharacterPosition'> & {
-  id: string
+  id: string,
+  setSpring: (opacity: number) => Promise<unknown>
 }
 
-const FieldLoader = ({ id, ...props }: FieldLoaderProps) => {
+const FieldLoader = ({ id, setSpring, ...props }: FieldLoaderProps) => {
   const [data, setData] = useState<FieldData | null>(null);
   const [characterPosition, setCharacterPosition] = useState<Vector3>(new Vector3(0,0,0));
 
   const gl = useThree(({ gl }) => gl);
   useEffect(() => {
-    setData(null);
-    gl.clear();
-    fetch(`/output/${id}.json`).then(response => response.json()).then(data => {
+    const handleTransition = async () => {
+      await setSpring(0);
+      setData(null);
+      gl.clear();
+      const response = await fetch(`/output/${id}.json`);
+      const data = await response.json();
       setData(data);
       setCharacterPosition(currentPosition => {
         if (currentPosition.x !== 0 || currentPosition.y !== 0 || currentPosition.z !== 0) {
@@ -112,8 +116,10 @@ const FieldLoader = ({ id, ...props }: FieldLoaderProps) => {
         }
         return getInitialEntrance(data)
       });
-    });
-  }, [gl, id]);
+      await setSpring(1);
+    }
+    handleTransition();
+  }, [gl, id, setSpring]);
 
   if (!data) {
     return null;

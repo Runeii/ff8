@@ -22,9 +22,8 @@ export const WORLD_DIRECTIONS = {
 
 const RANDOM_STARTS = [
   'titown6',
-  'dotown_1',
+  'dotown_2a',
   'bggate_1',
-  'fhwisef2'
 ]
 
 export const getInitialField = () => {
