@@ -1,11 +1,10 @@
 import {  Group, Mesh, Raycaster, Vector3 } from "three"
-import { vectorToFloatingPoint } from "../../utils"
+import { getPositionOnWalkmesh, vectorToFloatingPoint } from "../../utils"
 import {  useCallback, useEffect, useMemo, useState } from "react"
 import { FieldData } from "../Field"
 import Gateway from "./Gateway/Gateway"
-import GeneratedGateway from "./GeneratedGateway/GeneratedGateway"
 import { useThree } from "@react-three/fiber"
-import { checkForIntersection, findShortestLineForPointOnMesh } from "./gatewayUtils"
+import { adjustSourceLineZOffset, checkForIntersection, findShortestLineForPointOnMesh } from "./gatewayUtils"
 import gatewaysMapping from '../../gateways';
 import { CHARACTER_HEIGHT } from "../../Character/Character"
 
@@ -17,13 +16,17 @@ type GatewaysProps = {
   setField: (fieldId: string) => void
 }
 
-export type FormattedGateway = Omit<FieldData['gateways'][number], 'sourceLine' | 'destinationPoint'> & {
+export type FormattedGateway = {
+  id: string;
+  target: string;
   sourceLine: Vector3[]
   destinationPoint: Vector3
 }
 
 const Gateways = ({ fieldId, setCharacterPosition, setField, walkMeshGeometry }: GatewaysProps) => {
-  const formattedGateways:  FormattedGateway[] = useMemo(() => {
+  const walkmesh = useThree(({ scene }) => scene.getObjectByName('walkmesh') as Group);
+
+  const formattedExits:  FormattedGateway[] = useMemo(() => {
     const {exits} = gateways[fieldId];
 
     return exits.map(exit => {
@@ -33,25 +36,22 @@ const Gateways = ({ fieldId, setCharacterPosition, setField, walkMeshGeometry }:
         } = exit;
 
         const sourceLine = originalSourceLine.map(vectorToFloatingPoint);
-        
-        sourceLine[0].z += CHARACTER_HEIGHT / 2;
-        sourceLine[1].z += CHARACTER_HEIGHT / 2;
+        const adjustedLine = adjustSourceLineZOffset(sourceLine, CHARACTER_HEIGHT / 2);
+      
         return {
           ...exit,
           destinationPoint: vectorToFloatingPoint(originalDestinationPoint),
-          sourceLine,
+          sourceLine: adjustedLine,
         }
     });
   }, [fieldId]);
 
-  const walkmesh = useThree(({ scene }) => scene.getObjectByName('walkmesh') as Group);
   const formattedEntrances: FormattedGateway[] = useMemo(() => {
     const { entrances } = gateways[fieldId];
 
     return entrances.map(entrance => {
       const {
         destinationPoint: originalDestinationPoint,
-        sourceLine
       } = entrance;
 
       const destinationPoint = vectorToFloatingPoint(originalDestinationPoint);
@@ -71,29 +71,27 @@ const Gateways = ({ fieldId, setCharacterPosition, setField, walkMeshGeometry }:
       destinationPoint.z = z
 
       const line = findShortestLineForPointOnMesh(walkMeshGeometry, destinationPoint);
+      const sourceLine = adjustSourceLineZOffset(line, CHARACTER_HEIGHT / 2);
       return {
         ...entrance,
         destinationPoint: destinationPoint, 
-        sourceLine: line
+        sourceLine: sourceLine
       }
     });
   }, [fieldId, walkmesh,walkMeshGeometry]);
 
-  const handleTransition = useCallback((gateway: FieldData["gateways"][number]) => {
+  const mergedGateways = useMemo(() => [...formattedExits, ...formattedEntrances], [formattedExits, formattedEntrances]);
 
-    console.log('Transitioning to', gateway.target, 'via gateway', gateway.id, gateway);
+  const handleTransition = useCallback((gateway: FormattedGateway) => {
+    console.log('Transitioning to', gateway.target, 'via gateway', gateway, 'at', gateway.destinationPoint);
     setField(gateway.target);
-    setCharacterPosition(vectorToFloatingPoint(gateway.destinationPoint));
+    setCharacterPosition(gateway.destinationPoint);
   }, [setField, setCharacterPosition]);
-  
-
+  console.log(formattedEntrances, formattedExits)
   return (
     <>
-      {formattedGateways.map(gateway => ( 
-        <Gateway key={gateway.id} gateway={gateway} onIntersect={handleTransition} />
-      ))}
-      {formattedEntrances.map(entrance => (
-        <GeneratedGateway key={entrance.id} gateway={entrance} onIntersect={handleTransition} />
+      {formattedExits.map(gateway => ( 
+        <Gateway color="green" key={gateway.id} gateway={gateway} onIntersect={handleTransition} />
       ))}
     </>
   )

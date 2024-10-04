@@ -27,7 +27,7 @@ body,
   display: flex;
   place-content: center;
   place-items: center;
-  background-color: black;
+  background-color: yellow;
 }
 
 .canvas {

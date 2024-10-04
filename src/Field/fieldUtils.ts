@@ -10,6 +10,11 @@ export const renderSceneWithLayers = (scene: Scene, camera: Camera, gl: WebGLRen
 
   gl.clear()
   gl.autoClear = false;
+
+  gl.clearDepth();
+  orthoCamera.layers.set(3);
+  gl.render(scene, orthoCamera);
+
   gl.clearDepth();
   orthoCamera.layers.set(1);
   gl.render(scene, orthoCamera);

@@ -15,7 +15,10 @@ import ExampleJson from '../public/output/bghall_5.json';
 
 type InputFile = typeof ExampleJson;
 
-type Gateway = InputFile['gateways'][0] & { source?: string };
+type Gateway = InputFile['gateways'][0] & {
+  id: string,
+  source?: string
+};
 
 // Process each file to map its ID to exits and entrances
 const processFiles = (jsonFiles: InputFile[]) => {
@@ -26,19 +29,23 @@ const processFiles = (jsonFiles: InputFile[]) => {
   }> = Object.fromEntries(jsonFiles.map(({ controlDirection, gateways, id }) => [
     id,
     {
-      exits: gateways,
+      exits: gateways.map((gateway, index) => ({
+        ...gateway,
+        id: `exit-${index}`,
+      })),
       entrances: [],
       orientation: controlDirection,
     }
   ]));
 
-  jsonFiles.forEach(file => file.gateways.forEach((gateway) => {
+  jsonFiles.forEach((file, fileIndex) => file.gateways.forEach((gateway, index) => {
     if (gateways[gateway.target].exits.some(({ target }) => target === file.id)) {
       return;
     }
     gateways[gateway.target].entrances.push({
       ...gateway,
-      source: file.id,
+      id: `entrance-${fileIndex}-${index}`,
+      target: file.id,
     });
   }))
 

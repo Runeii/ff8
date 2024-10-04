@@ -3,12 +3,14 @@ import { Mesh } from "three";
 import { Line } from "@react-three/drei";
 import type { FormattedGateway } from "../Gateways";
 import { checkForIntersection } from "../gatewayUtils";
-
+import { useState } from "react";
 
 const Gateway = ({
+  color,
   gateway,
   onIntersect,
 }: {
+  color: string,
   gateway: FormattedGateway,
   onIntersect: (gateway: FormattedGateway) => void
 }) => {
@@ -27,7 +29,7 @@ const Gateway = ({
   return (
     <Line
       points={gateway.sourceLine}
-      color="green"
+      color={color}
       lineWidth={5}
     />
   )

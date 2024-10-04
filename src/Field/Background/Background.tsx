@@ -30,13 +30,14 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
 
   const groupedTiles = useMemo<TileWithTexture[][]>(() => {
     // Initialize a map to group tiles by their Z value
-    const groupedTiles: Record<number, TileWithTexture[]> = {};
+    const groupedTiles: Record<string, TileWithTexture[]> = {};
   
     // Iterate over the tiles
     tiles.forEach((tile) => {
+      const layerId = `${tile.layerID}-${tile.Z}`;
       // Initialize the Z group if it doesn't exist
-      if (!groupedTiles[tile.Z]) {
-        groupedTiles[tile.Z] = [];
+      if (!groupedTiles[layerId]) {
+        groupedTiles[layerId] = [];
       }
   
       // Calculate the texture for the tile
@@ -63,7 +64,7 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
         TILE_SIZE / (TILE_SIZE + TILE_PADDING) / textureHeightInTiles
       );
   
-      groupedTiles[tile.Z].push({
+      groupedTiles[layerId].push({
         ...tile,
         texture,
       });
@@ -123,7 +124,7 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
           backgroundPanRef={backgroundPanRef}
           cameraZoom={data.cameras[0].camera_zoom}
           currentParameterStates={currentParameterStates}
-          key={tiles[0].Z}
+          key={`${tiles[0].layerID}-${tiles[0].Z}`}
           playerDepthRef={playerDepthRef}
           tiles={tiles}
           tilesTexture={tilesTexture}

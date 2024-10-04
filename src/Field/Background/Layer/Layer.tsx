@@ -32,9 +32,10 @@ const BLENDS = {
   0: NormalBlending // Default to normal blending for unknowns
 };
 
-const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles, tilesTexture }: LayerProps) => {
-
+const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles }: LayerProps) => {
   const layerRef = useRef<Group & { position: Object3D["position"] }>(null);
+
+  const isBackgroundLayer = tiles[0].layerID === 2;
 
   useFrame(() => {
     if (!layerRef.current) return;
@@ -42,8 +43,16 @@ const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles
     layerRef.current.position.set(0, 0, 0);
 
     const { yaw, pitch, cameraZoom, boundaries } = backgroundPanRef.current;
-    if (!boundaries) return;
 
+    if (!boundaries) {
+      return;
+    }
+
+    if (isBackgroundLayer) {
+      layerRef.current.position.x = (boundaries.right - boundaries.left) / 2;
+      layerRef.current.position.y = (boundaries.top - boundaries.bottom) / 2;
+      return;
+    }
     const panX = calculateParallax(yaw, cameraZoom);
     const panY = calculateParallax(-pitch, cameraZoom);
 
@@ -59,6 +68,10 @@ const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles
   useFrame(() => {
     if (!playerDepthRef.current) return;
 
+    if (isBackgroundLayer) {
+      setIsAbove(false);
+      return;
+    }
     const normalisedZ = tiles[0].Z / 1000;
 
     if (playerDepthRef.current > normalisedZ && !isAbove) {
@@ -68,6 +81,11 @@ const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles
     }
   });
 
+  let layer = isAbove ? 2 : 1;
+  if (isBackgroundLayer) {
+    layer = 3;
+  }
+
   return (
     <group position={[0, 0, tiles[0].Z]} ref={layerRef}>
       {tiles.map(({ X, Y, index, parameter, state, texture, isBlended, blendType }) => (
@@ -75,8 +93,8 @@ const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles
           key={index}
           position={[X + TILE_SIZE / 2, -Y - TILE_SIZE / 2, 0]}
           scale={[TILE_SIZE, TILE_SIZE, TILE_SIZE]}
-          layers={isAbove ? 2 : 1}
-          visible={currentParameterStates[parameter] === state}
+          layers={layer}
+          visible={parameter === 255 || currentParameterStates[parameter] === state}
         >
           <spriteMaterial
             map={texture}

@@ -98,7 +98,7 @@ type FieldLoaderProps = Omit<FieldProps, 'data' | 'characterPosition' | 'setChar
 
 const FieldLoader = ({ id, ...props }: FieldLoaderProps) => {
   const [data, setData] = useState<FieldData | null>(null);
-  const [characterPosition, setCharacterPosition] = useState<Vector3>(new Vector3());
+  const [characterPosition, setCharacterPosition] = useState<Vector3>();
 
   const gl = useThree(({ gl }) => gl);
   useEffect(() => {

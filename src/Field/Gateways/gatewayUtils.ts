@@ -5,6 +5,12 @@ import { clamp } from "three/src/math/MathUtils.js";
 const raycaster = new Raycaster();
 let direction = new Vector3()
 
+export const adjustSourceLineZOffset = (sourceLine: Vector3[], height: number) => {
+  sourceLine[0].z += height;
+  sourceLine[1].z += height;
+
+  return sourceLine;
+}
 export const checkForIntersection = (player: Mesh, gateway: FormattedGateway) => {
   const [lineStart, lineEnd] = gateway.sourceLine;
   direction.set(0, 0, 0);

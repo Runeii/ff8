@@ -65,7 +65,7 @@ const Character = ({ position, setHasPlacedCharacter }: CharacterProps) => {
     } else {
       // Create a yellow sphere and add to scene at position
 
-      const sphere = new Mesh(new SphereGeometry(0.05, 32, 32), new MeshBasicMaterial({color: 'yellow'}));
+      const sphere = new Mesh(new SphereGeometry(0.1, 32, 32), new MeshBasicMaterial({color: 'yellow', side: DoubleSide}));
       sphere.position.copy(position);
       scene.add(sphere);
 
