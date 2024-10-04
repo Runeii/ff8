@@ -20,8 +20,15 @@ export const WORLD_DIRECTIONS = {
   UP: new Vector3(0, 1, 0),
 }
 
+const RANDOM_STARTS = [
+  'titown6',
+  'dotown_1',
+  'bggate_1',
+  'fhwisef2'
+]
+
 export const getInitialField = () => {
-  const initialField = new URLSearchParams(window.location.search).get('field') || 'bghall_5';
+  const initialField = new URLSearchParams(window.location.search).get('field') || RANDOM_STARTS[Math.floor(Math.random() * RANDOM_STARTS.length)];
 
   return initialField;
 }
