@@ -14,6 +14,7 @@ export const onMovementKeyPress = (
   value: boolean
 ) => (event: KeyboardEvent) => {
   const movementKey = KEY_MAP[event.code];
+
   if (movementKey) {
     movementFlags.current[movementKey] = value;
   }

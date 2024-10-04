@@ -6,6 +6,7 @@ import Field from './Field/Field'
 import { ASPECT_RATIO } from './constants'
 import {  getInitialField } from './utils'
 import { animated, useSpring } from '@react-spring/web'
+import Controller from './Controller/Controller'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
@@ -21,6 +22,7 @@ export default function App() {
 
   const [spring, setSpring] = useSpring(() => ({
     opacity: 0,
+    position: 'relative',
     config: {
       duration: 500
     }
@@ -39,6 +41,7 @@ export default function App() {
   }, [setSpring, spring.opacity]);
 
   return (
+    <>
     <animated.div style={spring}>
       <Canvas camera={{
         aspect: ASPECT_RATIO,
@@ -51,5 +54,7 @@ export default function App() {
         </Suspense>
       </Canvas>
     </animated.div>
+    <Controller />
+    </>
   )
 }
