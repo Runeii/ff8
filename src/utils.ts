@@ -22,7 +22,7 @@ export const WORLD_DIRECTIONS = {
 
 const RANDOM_STARTS = [
   'titown6',
-  'dotown_2a',
+  'dotown2a',
   'bggate_1',
 ]
 

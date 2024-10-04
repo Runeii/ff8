@@ -22,7 +22,6 @@ export default function App() {
 
   const [spring, setSpring] = useSpring(() => ({
     opacity: 0,
-    position: 'relative',
     config: {
       duration: 500
     }
