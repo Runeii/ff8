@@ -18,7 +18,7 @@ const WalkMesh = ({ setCharacterPosition, setHasPlacedWalkmesh, walkmesh }: Walk
         <mesh key={index} name="walkmesh-triangle" geometry={geometry} onClick={(e) => {
           setCharacterPosition(e.point)
         }}>
-          <meshBasicMaterial color={0x0000ff}transparent opacity={0.2}side={DoubleSide} />
+          <meshBasicMaterial color={0x0000ff}transparent opacity={import.meta.env.DEV ? 0.2 : 0}side={DoubleSide} />
         </mesh>
       ))}
     </group>

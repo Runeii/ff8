@@ -1,10 +1,10 @@
-import {  Group, Mesh, Raycaster, Vector3 } from "three"
-import { getPositionOnWalkmesh, vectorToFloatingPoint } from "../../utils"
-import {  useCallback, useEffect, useMemo, useState } from "react"
+import { BufferGeometry, Group, Raycaster, Vector3 } from "three"
+import { vectorToFloatingPoint } from "../../utils"
+import {  useCallback, useMemo } from "react"
 import { FieldData } from "../Field"
 import Gateway from "./Gateway/Gateway"
 import { useThree } from "@react-three/fiber"
-import { adjustSourceLineZOffset, checkForIntersection, findShortestLineForPointOnMesh } from "./gatewayUtils"
+import { adjustSourceLineZOffset, findShortestLineForPointOnMesh } from "./gatewayUtils"
 import gatewaysMapping from '../../gateways';
 import { CHARACTER_HEIGHT } from "../../Character/Character"
 
@@ -14,6 +14,7 @@ type GatewaysProps = {
   fieldId: FieldData['id']
   setCharacterPosition: (position: Vector3) => void
   setField: (fieldId: string) => void
+  walkMeshGeometry: BufferGeometry[]
 }
 
 export type FormattedGateway = {
@@ -46,6 +47,7 @@ const Gateways = ({ fieldId, setCharacterPosition, setField, walkMeshGeometry }:
     });
   }, [fieldId]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const formattedEntrances: FormattedGateway[] = useMemo(() => {
     const { entrances } = gateways[fieldId];
 
@@ -87,7 +89,8 @@ const Gateways = ({ fieldId, setCharacterPosition, setField, walkMeshGeometry }:
     setField(gateway.target);
     setCharacterPosition(gateway.destinationPoint);
   }, [setField, setCharacterPosition]);
-  console.log(formattedEntrances, formattedExits)
+  
+  mergedGateways;
   return (
     <>
       {formattedExits.map(gateway => ( 

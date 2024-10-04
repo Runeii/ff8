@@ -2,26 +2,22 @@ import { useFrame } from "@react-three/fiber";
 import {
   AdditiveBlending,
   Group,
-  NearestFilter,
   NoBlending,
   NormalBlending,
   Object3D,
   SubtractiveBlending,
-  Texture
 } from "three";
-import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
+import { MutableRefObject, useRef, useState } from "react";
 import { calculateParallax } from "../../Camera/cameraUtils";
 import { clamp } from "three/src/math/MathUtils.js";
-import { FieldData } from "../../Field";
-import { TILE_SIZE } from "../Background";
+import { TILE_SIZE, TileWithTexture } from "../Background";
 
 type LayerProps = {
   backgroundPanRef: React.MutableRefObject<CameraPanAngle>;
   cameraZoom: number;
   currentParameterStates: Record<number, number>;
   playerDepthRef: MutableRefObject<number>;
-  tiles: FieldData["tiles"];
-  tilesTexture: Texture;
+  tiles: TileWithTexture[];
 };
 
 const BLENDS = {
@@ -35,7 +31,7 @@ const BLENDS = {
 const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles }: LayerProps) => {
   const layerRef = useRef<Group & { position: Object3D["position"] }>(null);
 
-  const isBackgroundLayer = tiles[0].layerID === 2;
+  const isBackgroundLayer = tiles[0].layerID > 0;
 
   useFrame(() => {
     if (!layerRef.current) return;
@@ -48,11 +44,6 @@ const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles
       return;
     }
 
-    if (isBackgroundLayer) {
-      layerRef.current.position.x = (boundaries.right - boundaries.left) / 2;
-      layerRef.current.position.y = (boundaries.top - boundaries.bottom) / 2;
-      return;
-    }
     const panX = calculateParallax(yaw, cameraZoom);
     const panY = calculateParallax(-pitch, cameraZoom);
 
@@ -99,7 +90,7 @@ const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles
           <spriteMaterial
             map={texture}
             transparent
-            blending={isBlended ? BLENDS[blendType] : NormalBlending}
+            blending={isBlended ? BLENDS[blendType as keyof typeof BLENDS] : NormalBlending}
           />
         </sprite>
       ))}

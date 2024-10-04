@@ -98,7 +98,7 @@ type FieldLoaderProps = Omit<FieldProps, 'data' | 'characterPosition' | 'setChar
 
 const FieldLoader = ({ id, ...props }: FieldLoaderProps) => {
   const [data, setData] = useState<FieldData | null>(null);
-  const [characterPosition, setCharacterPosition] = useState<Vector3>();
+  const [characterPosition, setCharacterPosition] = useState<Vector3>(new Vector3(0,0,0));
 
   const gl = useThree(({ gl }) => gl);
   useEffect(() => {
@@ -107,7 +107,7 @@ const FieldLoader = ({ id, ...props }: FieldLoaderProps) => {
     fetch(`/output/${id}.json`).then(response => response.json()).then(data => {
       setData(data);
       setCharacterPosition(currentPosition => {
-        if (currentPosition) {
+        if (currentPosition.x !== 0 || currentPosition.y !== 0 || currentPosition.z !== 0) {
           return currentPosition;
         }
         return getInitialEntrance(data)

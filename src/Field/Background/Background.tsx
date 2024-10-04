@@ -17,7 +17,7 @@ export const TILE_SIZE = 16; // Tile size remains 16x16
 const TILE_PADDING = 4; // Additional padding around the tile
 const TILES_PER_COLUMN = 64; // Number of tiles per column in texture
 
-type TileWithTexture = FieldData['tiles'][number] & { texture: Texture };
+export type TileWithTexture = FieldData['tiles'][number] & { texture: Texture };
 
 const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
   const { backgroundDetails, tiles } = data;
@@ -74,7 +74,7 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
     return Object.values(groupedTiles);
   }, [textureHeightInTiles, textureWidthInTiles, tiles, tilesTexture]);
 
-  const [currentParameterStates, setCurrentParameterStates] = useState({});
+  const [currentParameterStates, setCurrentParameterStates] = useState<Record<number, number>>({});
   useEffect(() => {
     const uniqueParameters = new Set(tiles.map((tile) => tile.parameter));
     const parametersMap = Object.fromEntries([...uniqueParameters].map((parameter) => [parameter, 0])) as Record<number, number>;
@@ -88,7 +88,8 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
     const handleFrame = () => {
       setCurrentParameterStates((currentState) => {
         const nextState = {...currentState};
-        Object.entries(maximumParameterStates).forEach(([parameter, maximumState]) => {
+        Object.entries(maximumParameterStates).forEach(([key, maximumState]) => {
+          const parameter = parseInt(key);
           nextState[parameter] =
           nextState[parameter] < maximumState
             ? nextState[parameter] + 1
@@ -127,7 +128,6 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
           key={`${tiles[0].layerID}-${tiles[0].Z}`}
           playerDepthRef={playerDepthRef}
           tiles={tiles}
-          tilesTexture={tilesTexture}
         />
       ))}
     </>
