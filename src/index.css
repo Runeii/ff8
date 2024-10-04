@@ -68,12 +68,12 @@ body,
   width: 100%;
   height: 200px;
   overflow: hidden;
-  display: none;
+  display: block;
 }
 
 @media (pointer: fine) {
   .d-pad {
-    display: block;
+    display: none;
   }
 }
 
