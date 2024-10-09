@@ -18,4 +18,6 @@ export const onMovementKeyPress = (
   if (movementKey) {
     movementFlags.current[movementKey] = value;
   }
+
+  movementFlags.current.isWalking = event.shiftKey;
 };

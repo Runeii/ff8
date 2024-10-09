@@ -33,7 +33,8 @@ export const getInitialField = () => {
 }
 
 export const getInitialEntrance = (initialField: FieldData) => {
-  const { exits, entrances } = gateways[(initialField.id as keyof typeof gateways)];
+  const exits = gateways.filter(gateway => gateway.source === initialField.id);
+  const entrances = gateways.filter(gateway => gateway.target === initialField.id);
 
   if (entrances.length === 0 && exits.length === 0) {
     console.warn('No entrances or exits found for this map... ');
@@ -41,8 +42,7 @@ export const getInitialEntrance = (initialField: FieldData) => {
   }
 
   if (entrances.length > 0) {
-    const entrance = entrances[0]!.destinationPoint;
-    console.log(entrance)
+    const entrance = entrances[0]!.outPoint;
     return vectorToFloatingPoint(entrance);
   }
 

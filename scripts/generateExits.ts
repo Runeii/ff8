@@ -15,42 +15,42 @@ import ExampleJson from '../public/output/bghall_5.json';
 
 type InputFile = typeof ExampleJson;
 
-type Gateway = InputFile['gateways'][0] & {
+type VectorLike = {
+  x: number,
+  y: number,
+  z: number
+}
+
+type OutputGateway = {
   id: string,
-  source?: string
-};
+  source: string
+  target: string;
+  sourceLine: VectorLike[],
+  outPoint: VectorLike;
+  sourceRot: number;
+  destRot: number;
+}
 
 // Process each file to map its ID to exits and entrances
-const processFiles = (jsonFiles: InputFile[]) => {
-  const gateways: Record<string, {
-    exits: Gateway[]
-    entrances: (Gateway)[],
-    orientation: number,
-  }> = Object.fromEntries(jsonFiles.map(({ controlDirection, gateways, id }) => [
-    id,
-    {
-      exits: gateways.map((gateway, index) => ({
-        ...gateway,
-        id: `exit-${index}`,
-      })),
-      entrances: [],
-      orientation: controlDirection,
-    }
-  ]));
+const processFiles = (jsonFiles: InputFile[]): OutputGateway[] =>
+  jsonFiles.flatMap(({ controlDirection, gateways, id }) =>
+    gateways.map((gateway, index) => {
+      const targetFile = jsonFiles.find(file => file.id === gateway.target);
+      if (!targetFile) {
+        console.error(`Target file not found for gateway: ${gateway.target}`);
+      }
+      return {
+        id: `${id}_${index}`,
+        source: id,
+        target: gateway.target,
+        sourceLine: gateway.sourceLine,
+        outPoint: gateway.destinationPoint,
+        sourceRot: controlDirection,
+        destRot: targetFile?.controlDirection ?? 0
+      }
+    })
+  );
 
-  jsonFiles.forEach((file, fileIndex) => file.gateways.forEach((gateway, index) => {
-    if (gateways[gateway.target].exits.some(({ target }) => target === file.id)) {
-      return;
-    }
-    gateways[gateway.target].entrances.push({
-      ...gateway,
-      id: `entrance-${fileIndex}-${index}`,
-      target: file.id,
-    });
-  }))
-
-  return gateways;
-};
 
 
 // Helper functions

@@ -1,17 +1,26 @@
-import { BufferGeometry, Mesh, Raycaster, Vector3 } from "three";
-import { FormattedGateway } from "./Gateways";
+import { BufferGeometry, Matrix4, Mesh, Raycaster, Vector3 } from "three";
 import { clamp } from "three/src/math/MathUtils.js";
+import { CHARACTER_HEIGHT } from "../../Character/Character";
+import { getPositionOnWalkmesh, vectorToFloatingPoint } from "../../utils";
 
 const raycaster = new Raycaster();
 let direction = new Vector3()
 
-export const adjustSourceLineZOffset = (sourceLine: Vector3[], height: number) => {
-  sourceLine[0].z += height;
-  sourceLine[1].z += height;
+export const adjustSourceLineZOffset = (sourceLine: Vector3[], walkmesh: Mesh) => {
+  const midpoint = new Vector3().addVectors(sourceLine[0], sourceLine[1]).divideScalar(2);
+  const pointOnMesh = getPositionOnWalkmesh(midpoint, walkmesh);
+
+  if (!pointOnMesh) {
+    console.warn('Could not find source line point on walkmesh', sourceLine);
+    return sourceLine;
+  }
+
+  sourceLine[0].z = pointOnMesh.z + CHARACTER_HEIGHT / 2;
+  sourceLine[1].z = pointOnMesh.z + CHARACTER_HEIGHT / 2;
 
   return sourceLine;
 }
-export const checkForIntersection = (player: Mesh, gateway: FormattedGateway) => {
+export const checkForIntersection = (player: Mesh, gateway: SimpleGateway) => {
   const [lineStart, lineEnd] = gateway.sourceLine;
   direction.set(0, 0, 0);
   direction = direction.subVectors(lineEnd, lineStart).normalize();
@@ -149,3 +158,78 @@ export const findShortestLineForPointOnMesh = (
     secondClosestEdge.edge.end
   );
 };
+
+
+const translateLineToPoint = (line: Vector3[], point: Vector3) => {
+  const midpoint = new Vector3().addVectors(line[0], line[1]).multiplyScalar(0.5);
+
+  const displacement = new Vector3().subVectors(point, midpoint);
+
+  return line.map((vector) => vector.clone().add(displacement));
+}
+
+const rotateLineAroundPoint = (line: Vector3[], angle: number) => {
+  const midpoint = new Vector3().addVectors(line[0], line[1]).multiplyScalar(0.5);
+
+
+  // Step 2: Translate both vectors so that the midpoint is at the origin
+  const v1Translated = line[0].clone().sub(midpoint);
+  const v2Translated = line[1].clone().sub(midpoint);
+
+  // Step 3: Create a rotation matrix and apply it to the translated vectors
+  const axis = new Vector3(0, 0, 1); // The axis you want to rotate around (y-axis in this case)
+
+  const rotationMatrix = new Matrix4().makeRotationAxis(axis, angle);
+  v1Translated.applyMatrix4(rotationMatrix);
+  v2Translated.applyMatrix4(rotationMatrix);
+
+  // Step 4: Translate the rotated vectors back to their original position
+  const v1Rotated = v1Translated.add(midpoint);
+  const v2Rotated = v2Translated.add(midpoint);
+
+  return [v1Rotated, v2Rotated];
+}
+
+export const formatGateway = (gateway: GeneratedGateway, walkmesh: Mesh): FormattedGateway => {
+  const { sourceLine, outPoint } = gateway;
+  const sourceLineVector = sourceLine.map(vectorToFloatingPoint);
+  const adjustedSourceLine = adjustSourceLineZOffset(sourceLineVector, walkmesh);
+
+  const destinationVector = vectorToFloatingPoint(outPoint);
+  const targetLineVector = translateLineToPoint(sourceLineVector, destinationVector);
+
+  const adjustedTargetLine = adjustSourceLineZOffset(targetLineVector, walkmesh);
+
+  const angle = ((gateway.sourceRot - gateway.destRot) / 255) * 2 * Math.PI;
+  const rotatedTargetLine = rotateLineAroundPoint(adjustedTargetLine, angle);
+
+  return {
+    id: gateway.id,
+    source: gateway.source,
+    target: gateway.target,
+    sourceLine: adjustedSourceLine,
+    targetLine: rotatedTargetLine
+  }
+}
+
+export const formatEntrance = (gateway: FormattedGateway): SimpleGateway => {
+  const midpoint = new Vector3().addVectors(gateway.sourceLine[0], gateway.sourceLine[1]).multiplyScalar(0.5);
+
+  return {
+    id: gateway.id,
+    target: gateway.source,
+    sourceLine: gateway.targetLine,
+    destination: midpoint
+  }
+}
+
+export const formatExit = (gateway: FormattedGateway): SimpleGateway => {
+  const midpoint = new Vector3().addVectors(gateway.targetLine[0], gateway.targetLine[1]).multiplyScalar(0.5);
+
+  return {
+    id: gateway.id,
+    target: gateway.target,
+    sourceLine: gateway.sourceLine,
+    destination: midpoint
+  }
+}

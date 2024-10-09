@@ -2,12 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {  BufferAttribute, BufferGeometry, Vector3 } from 'three';
 import WalkMesh from './WalkMesh/WalkMesh';
 
-import type data from '../../public/output/bcgate1a.json';
+import type data from '../../public/output/bghall_2.json';
 import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
 import { useFrame, useThree } from '@react-three/fiber';
 import Character from '../Character/Character';
+import Scripts from './Scripts/Scripts';
 import { getInitialEntrance, vectorToFloatingPoint } from '../utils';
 import { renderSceneWithLayers } from './fieldUtils';
 export type FieldData = typeof data;
@@ -81,6 +82,7 @@ const Field = ({ characterPosition, data, setCharacterPosition, setField }: Fiel
             setCharacterPosition={setCharacterPosition}
             walkMeshGeometry={walkMeshGeometry}
           />
+          <Scripts data={data} />
           <Camera backgroundPanRef={backgroundPanRef} data={data} setHasPlacedCamera={setHasPlacedCamera} />
         </>
       )}
