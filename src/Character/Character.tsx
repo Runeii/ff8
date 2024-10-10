@@ -5,24 +5,23 @@ import { getCameraDirections } from "../Field/Camera/cameraUtils";
 import { getPositionOnWalkmesh } from "../utils";
 import { onMovementKeyPress } from "./characterUtils";
 import Squall from "./Squall";
+import { Sphere } from "@react-three/drei";
+import useGlobalStore from "../store";
 
 export const CHARACTER_HEIGHT = 0.06;
-const RUNNING_SPEED = 0.0016;
+const RUNNING_SPEED = 0.0018;
 const WALKING_SPEED = 0.0005;
 
 const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
 type CharacterProps = {
-  position: {
-    x: number;
-    y: number;
-    z: number;
-  };
   setHasPlacedCharacter: (value: boolean) => void;
 };
 
-const Character = ({ position, setHasPlacedCharacter }: CharacterProps) => {
+const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
+  const position = useGlobalStore((state) => state.characterPosition) as Vector3;
+
   const { camera, scene } = useThree();
   const playerRef = useRef<Group>(null);
   const movementFlagsRef = useRef<MovementFlags>({
@@ -64,15 +63,9 @@ const Character = ({ position, setHasPlacedCharacter }: CharacterProps) => {
         newPosition.z
       );
     } else {
-      // Create a yellow sphere and add to scene at position
-
-      const sphere = new Mesh(new SphereGeometry(0.1, 32, 32), new MeshBasicMaterial({color: 'yellow', side: DoubleSide}));
-      sphere.position.copy(position);
-    //  scene.add(sphere);
-
       console.warn("Tried to set character position to an invalid position", position);
-
     }
+
     setHasPlacedCharacter(true);
   }, [position, scene, setHasPlacedCharacter]);
 
@@ -115,7 +108,8 @@ const Character = ({ position, setHasPlacedCharacter }: CharacterProps) => {
       direction.add(rightVector);
     }
     
-    if (direction.lengthSq() <= 0) {
+    const isAllowedToMove = useGlobalStore.getState().isUserControllable;
+    if (direction.lengthSq() <= 0 || !isAllowedToMove) {
       setCurrentAction("stand");
       return;
     }
@@ -130,23 +124,19 @@ const Character = ({ position, setHasPlacedCharacter }: CharacterProps) => {
       return
     }
 
-    direction.z = 0; // Nullify the Y component to constrain to horizontal rotation only
+    direction.z = 0;
     direction.normalize();
 
-    // 3. Calculate the angle between the mesh’s forward direction and the direction vector
-    // Assuming mesh's forward direction is along the positive Z-axis
     const angle = Math.atan2(direction.y, direction.x);
 
-    // 4. Apply the rotation around the Y-axis
     player.rotation.z = angle - Math.PI / 2;
-   // player.rotation.x = currentRotation.x
-   // player.rotation.y *= -1
-   // player.rotation.z = currentRotation.z
     player.position.set(newPosition.x, newPosition.y, newPosition.z);
   });
 
   return (
-    <Squall currentAction={currentAction} scale={0.045} rotation={[0,0,0]} ref={playerRef} name="character" />
+    <Squall currentAction={currentAction} scale={0.06} rotation={[0,0,0]} ref={playerRef} name="character">
+      <Sphere args={[0.3, 32, 32]} position={[0, 0, 0.1]} name="hitbox" visible={false} />
+    </Squall>
   );
 };
 

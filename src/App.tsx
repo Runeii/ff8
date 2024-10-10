@@ -1,24 +1,29 @@
 import './index.css'
-import { Suspense, useCallback, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Field from './Field/Field'
 
-import { ASPECT_RATIO } from './constants'
-import {  getInitialField } from './utils'
+import { ASPECT_RATIO } from './constants/constants'
 import { animated, useSpring } from '@react-spring/web'
 import Controller from './Controller/Controller'
+import useGlobalStore from './store'
+import {getInitialField} from './utils'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
+useGlobalStore.setState({
+  fieldId: getInitialField()
+});
+
 export default function App() {
-  const [field, setField] = useState(getInitialField())
+  const fieldId = useGlobalStore(state => state.fieldId);
 
   useEffect(() => {
     if (!hasNamedField) {
       return;
     }
-    window.history.pushState({}, '', `?field=${field}`);
-  }, [field])
+    window.history.pushState({}, '', `?field=${fieldId}`);
+  }, [fieldId])
 
   const [spring, setSpring] = useSpring(() => ({
     opacity: 0,
@@ -49,7 +54,7 @@ export default function App() {
       }} className="canvas">
         <ambientLight />
         <Suspense>
-          <Field id={field} setField={setField} setSpring={asyncSetSpring} />
+          <Field setSpring={asyncSetSpring} />
         </Suspense>
       </Canvas>
     </animated.div>

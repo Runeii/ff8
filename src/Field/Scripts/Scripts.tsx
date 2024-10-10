@@ -1,21 +1,31 @@
 import { useMemo } from "react";
-import { FieldData } from "../Field";
+import Location from "./Location/Location";
+import { Script, ScriptType } from "./types";
 
-type ScriptsProps = {
-  data: FieldData;
+export type ScriptsProps = {
+  scripts: Script[];
 };
 
-const Scripts = ({ data }: ScriptsProps) => {
+
+const Scripts = ({ scripts }: ScriptsProps) => {
   const groupedScripts = useMemo(() => {
-    const result = {};
+    const result: Record<ScriptType, Script[]> = {
+      location: [],
+      model: [],
+      background: [],
+      unknown: [],
+      door: [],
+    };
+
     // Group scripts by script[number].type
-    data.scripts.forEach((script: FieldData['scripts'][number]) => {
-      if (!result[script.type]) {
-        result[script.type] = [];
-      }
-      result[script.type].push(script);
+    scripts.forEach((script) => {
+      result[script.type as ScriptType].push(script);
     })
-  }, [data]);
+
+    return result;
+  }, [scripts]);
+
+  return groupedScripts.location.map((script) => <Location key={script.name} script={script} />);
 }
 
 export default Scripts;

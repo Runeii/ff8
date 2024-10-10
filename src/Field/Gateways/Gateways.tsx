@@ -1,39 +1,27 @@
-import { BufferGeometry, Mesh, Vector3 } from "three"
+import { BufferGeometry, Mesh } from "three"
 import {  useCallback, useMemo } from "react"
 import { FieldData } from "../Field"
-import { formatEntrance, formatExit, formatGateway } from "./gatewayUtils"
-import gatewaysMapping from '../../gateways';
 import Gateway from "./Gateway/Gateway"
-import { OrbitControls } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
-
-const gateways = gatewaysMapping as unknown as GeneratedGateway[]
+import useGlobalStore from '../../store';
 
 export type GatewaysProps = {
-  fieldId: FieldData['id']
-  setCharacterPosition: (position: Vector3) => void
-  setField: (fieldId: string) => void
+  gateways: FieldData['gateways']
   walkMeshGeometry: BufferGeometry[]
 }
 
-const Gateways = ({ fieldId, setCharacterPosition, setField }: GatewaysProps) => {
-  const walkmesh = useThree(({ scene }) => scene.getObjectByName('walkmesh') as Mesh);
-
-  const formattedGateways:  SimpleGateway[] = useMemo(() => {
-    const exits = gateways.filter(gateway => gateway.source === fieldId).map(gateway => formatGateway(gateway, walkmesh)).map(formatExit);
-    return [...exits]
-  }, [fieldId, walkmesh]);
-
-  const handleTransition = useCallback((gateway: SimpleGateway) => {
+const Gateways = ({ gateways }: GatewaysProps) => {
+  const handleTransition = useCallback((gateway) => {
     console.log('Transitioning to', gateway.target, 'via gateway', gateway, 'at', gateway.destination);
-    setField(gateway.target);
-    setCharacterPosition(gateway.destination);
-  }, [setField, setCharacterPosition]);
+    useGlobalStore.setState({
+      fieldId: gateway.target,
+      pendingCharacterPosition: gateway.destination
+    });
+  }, []);
   
   return (
     <>
-      {formattedGateways.map(gateway => ( 
-        <Gateway color="green" key={gateway.id} gateway={gateway} onIntersect={handleTransition} />
+      {gateways.map(gateway => ( 
+        <Gateway color="green" key={`${gateway.destinationPoint.x}-${gateway.destinationPoint.y}-${gateway.destinationPoint.z}`} gateway={gateway} onIntersect={handleTransition} />
       ))}
     </>
   )

@@ -11,16 +11,15 @@ import Character from '../Character/Character';
 import Scripts from './Scripts/Scripts';
 import { getInitialEntrance, vectorToFloatingPoint } from '../utils';
 import { renderSceneWithLayers } from './fieldUtils';
+import useGlobalStore from '../store';
+
 export type FieldData = typeof data;
 
 type FieldProps = {
-  characterPosition: Vector3,
   data: FieldData,
-  setCharacterPosition: (position: Vector3) => void,
-  setField: (fieldId: string) => void,
 }
 
-const Field = ({ characterPosition, data, setCharacterPosition, setField }: FieldProps) => {
+const Field = ({ data }: FieldProps) => {
   useFrame(({ camera, gl, scene }) => renderSceneWithLayers(scene, camera, gl), 1);
 
   const backgroundPanRef = useRef<CameraPanAngle>({
@@ -33,13 +32,6 @@ const Field = ({ characterPosition, data, setCharacterPosition, setField }: Fiel
   const [hasPlacedWalkmesh, setHasPlacedWalkmesh] = useState(false);
   const [hasPlacedCharacter, setHasPlacedCharacter] = useState(false);
   const [hasPlacedCamera, setHasPlacedCamera] = useState(false);
-
-  const handleTransitionField = useCallback((field: FieldData['id']) => {
-    setHasPlacedCharacter(false);
-    setHasPlacedWalkmesh(false);
-    setHasPlacedCamera(false);
-    setField(field);
-  }, [setField]);
 
   const walkMeshGeometry = useMemo(() => {
     const geometries = data.walkmesh.map(triangle => {
@@ -60,29 +52,22 @@ const Field = ({ characterPosition, data, setCharacterPosition, setField }: Fiel
     return geometries;
   }, [data.walkmesh]);
 
-
   return (
-    <group >
+    <group>
       <WalkMesh
-        setCharacterPosition={setCharacterPosition}
         setHasPlacedWalkmesh={setHasPlacedWalkmesh}
         walkmesh={walkMeshGeometry}
       />
       {hasPlacedWalkmesh && (
-        <Character
-          position={characterPosition}
-          setHasPlacedCharacter={setHasPlacedCharacter}
-        />
+        <Character setHasPlacedCharacter={setHasPlacedCharacter} />
       )}
       {hasPlacedCharacter && (
         <>
           <Gateways
-            fieldId={data.id}
-            setField={handleTransitionField}
-            setCharacterPosition={setCharacterPosition}
+            gateways={data.gateways}
             walkMeshGeometry={walkMeshGeometry}
           />
-          <Scripts data={data} />
+          <Scripts scripts={data.scripts} />
           <Camera backgroundPanRef={backgroundPanRef} data={data} setHasPlacedCamera={setHasPlacedCamera} />
         </>
       )}
@@ -94,40 +79,40 @@ const Field = ({ characterPosition, data, setCharacterPosition, setField }: Fiel
   );
 }
 
-type FieldLoaderProps = Omit<FieldProps, 'data' | 'characterPosition' | 'setCharacterPosition'> & {
-  id: string,
+type FieldLoaderProps = Omit<FieldProps, 'data'> & {
   setSpring: (opacity: number) => Promise<unknown>
 }
 
-const FieldLoader = ({ id, setSpring, ...props }: FieldLoaderProps) => {
+const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
+  const fieldId = useGlobalStore(state => state.fieldId);
+  const setCharacterToPendingPosition = useGlobalStore(state => state.setCharacterToPendingPosition);
+
   const [data, setData] = useState<FieldData | null>(null);
-  const [characterPosition, setCharacterPosition] = useState<Vector3>(new Vector3(0,0,0));
 
   const gl = useThree(({ gl }) => gl);
+
   useEffect(() => {
     const handleTransition = async () => {
       await setSpring(0);
       setData(null);
       gl.clear();
-      const response = await fetch(`/output/${id}.json`);
+      const response = await fetch(`/output/${fieldId}.json`);
       const data = await response.json();
       setData(data);
-      setCharacterPosition(currentPosition => {
-        if (currentPosition.x !== 0 || currentPosition.y !== 0 || currentPosition.z !== 0) {
-          return currentPosition;
-        }
-        return getInitialEntrance(data)
-      });
+      if (!useGlobalStore.getState().pendingCharacterPosition) {
+        useGlobalStore.setState({ pendingCharacterPosition: getInitialEntrance(data) });
+      }
+      setCharacterToPendingPosition();
       await setSpring(1);
     }
     handleTransition();
-  }, [gl, id, setSpring]);
+  }, [gl, fieldId, setSpring, setCharacterToPendingPosition]);
 
   if (!data) {
     return null;
   }
   
-  return <Field data={data} {...props} characterPosition={characterPosition} setCharacterPosition={setCharacterPosition} />
+  return <Field data={data} {...props} />
 }
 
 export default FieldLoader

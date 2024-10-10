@@ -4,7 +4,7 @@ import { OrthographicCamera } from "@react-three/drei";
 import { MutableRefObject, useEffect, useMemo, useState } from "react";
 import Layer from "./Layer/Layer";
 import useCalculatePlayerDepth from "../../hooks/useCalculatePlayerDepth";
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants";
 import useTilesTexture from "../../hooks/useTilesTexture";
 import { NearestFilter, Texture } from "three";
 

@@ -27,13 +27,11 @@ type OutputGateway = {
   target: string;
   sourceLine: VectorLike[],
   outPoint: VectorLike;
-  sourceRot: number;
-  destRot: number;
 }
 
 // Process each file to map its ID to exits and entrances
 const processFiles = (jsonFiles: InputFile[]): OutputGateway[] =>
-  jsonFiles.flatMap(({ controlDirection, gateways, id }) =>
+  jsonFiles.flatMap(({ gateways, id }) =>
     gateways.map((gateway, index) => {
       const targetFile = jsonFiles.find(file => file.id === gateway.target);
       if (!targetFile) {
@@ -45,8 +43,6 @@ const processFiles = (jsonFiles: InputFile[]): OutputGateway[] =>
         target: gateway.target,
         sourceLine: gateway.sourceLine,
         outPoint: gateway.destinationPoint,
-        sourceRot: controlDirection,
-        destRot: targetFile?.controlDirection ?? 0
       }
     })
   );

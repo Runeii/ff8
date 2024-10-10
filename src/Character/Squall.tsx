@@ -52,6 +52,7 @@ const Squall = forwardRef((props: JSX.IntrinsicElements['group'] & {
         </group>
         <skinnedMesh name="d000" geometry={nodes.d000.geometry} material={materials.d000} skeleton={nodes.d000.skeleton} />
       </group>
+      {props.children}
     </group>
   )
 });
