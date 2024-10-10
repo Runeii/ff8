@@ -99,6 +99,10 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
       const response = await fetch(`/output/${fieldId}.json`);
       const data = await response.json();
       setData(data);
+      useGlobalStore.setState({
+        currentParameterStates: {},
+        currentParameterVisibility: {},
+      });
       if (!useGlobalStore.getState().pendingCharacterPosition) {
         useGlobalStore.setState({ pendingCharacterPosition: getInitialEntrance(data) });
       }

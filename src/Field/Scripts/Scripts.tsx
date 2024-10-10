@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import Location from "./Location/Location";
 import { Script, ScriptType } from "./types";
 import Background from "./Background/Background";
+import Plane from "./Plane/Plane";
 
 export type ScriptsProps = {
   scripts: Script[];
@@ -10,12 +11,14 @@ export type ScriptsProps = {
 
 const Scripts = ({ scripts }: ScriptsProps) => {
   const groupedScripts = useMemo(() => {
-    const result: Record<ScriptType, Script[]> = {
+    const result: Record<ScriptType | '_planes', Script[]> = {
       location: [],
       model: [],
       background: [],
       unknown: [],
       door: [],
+      // Custom groupings
+      _planes: [],
     };
 
     // Group scripts by script[number].type
@@ -23,6 +26,12 @@ const Scripts = ({ scripts }: ScriptsProps) => {
       result[script.type as ScriptType].push(script);
     })
 
+    result.unknown.forEach((script) => {
+      if (script.name.includes('view1')) {
+        result._planes.push(script);
+        result.unknown = result.unknown.filter((s) => s !== script);
+      }
+    })
     return result;
   }, [scripts]);
 
@@ -30,6 +39,7 @@ const Scripts = ({ scripts }: ScriptsProps) => {
     <>
       {groupedScripts.location.map((script) => <Location key={script.name} script={script} />)}
       {groupedScripts.background.map((script) => <Background key={script.name} script={script} />)}
+      {groupedScripts._planes.map((script) => <Plane key={script.name} script={script} />)}
     </>
   );
 }

@@ -51,6 +51,12 @@ const Location = ({ script }: LocationProps) => {
     }
   });
 
+  useScript(script, 'talk', {
+    condition: isIntersecting,
+    trigger: 'Space',
+    once: false
+  });
+
   useScript(script, 'touchon', {
     condition: isIntersecting,
     once: true
@@ -80,7 +86,7 @@ const Location = ({ script }: LocationProps) => {
         lineWidth={5}
         color="red"
       />
-      <Text position={line[0]} color="black" fontSize={0.1}>{script.name}</Text>
+      <Text position={line[0]} color="black" fontSize={0.05}>{script.name}</Text>
     </>
   );
 }

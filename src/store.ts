@@ -11,6 +11,8 @@ interface GlobalState {
   isUserControllable: boolean,
   pendingCharacterPosition?: Vector3,
   setCharacterToPendingPosition: () => void,
+
+  currentMessages: Message[],
 }
 
 const useGlobalStore = create<GlobalState>()((set) => ({
@@ -24,7 +26,11 @@ const useGlobalStore = create<GlobalState>()((set) => ({
   initialAngle: 0,
 
   currentParameterStates: {},
-  currentParameterVisibility: {},
+  currentParameterVisibility: {
+    1: false,
+  },
+
+  currentMessages: [],
 }))
 
 export default useGlobalStore

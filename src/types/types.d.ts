@@ -30,3 +30,15 @@ type FormattedGateway = {
   sourceLine: Vector3[]
   destination: Vector3;
 }
+
+type Option = {
+  text: string;
+  event: string;
+}
+
+type Message = {
+  text: string;
+  x: number;
+  y: number;
+  options?: Option[]
+}

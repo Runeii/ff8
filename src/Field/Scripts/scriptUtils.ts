@@ -7,6 +7,8 @@ const KEYS: Record<number, string> = {
   192: 'Space'
 }
 
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const waitForKeyPress = (key: number) => {
   return new Promise<void>((resolve) => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -37,9 +39,8 @@ type HandlerFuncWithPromise = (
   currentIndex: number
 ) => Promise<OpcodeObj[] | void>;
 
-export async function executeOpcodes<T>(opcodes: OpcodeObj[]) {
+export async function executeOpcodes<T>(opcodes: OpcodeObj[], setResult: (result: T) => void): Promise<void> {
   const STACK: number[] = [];
-  const RESULT: Record<string, unknown> = {};
 
   const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFunc | HandlerFuncWithPromise>> = {
     LBL: () => { },
@@ -107,24 +108,29 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[]) {
         console.warn(`CAL with param ${opcodeObj.param} not implemented. Script Label ${opcodes[0].param}`);
       }
     },
-    JPF: (opcodeObj, opcodes) => {
+    JPF: (opcodeObj, opcodes, currentIndex) => {
       const condition = STACK.pop() as number;
-
+      if (opcodes[0].param === 131) {
+        console.log('JPF', condition);
+      }
       if (condition === 0) {
-        const labelIndex = opcodes.findIndex((opcode) => opcode.name === `LABEL${opcodeObj.param}`);
-        return opcodes.slice(labelIndex);
+        const newIndex = opcodeObj.param + currentIndex;
+        return opcodes.slice(newIndex);
       }
     },
     JMP: (opcodeObj, opcodes, currentIndex) => {
-      const newIndex = opcodeObj.param + currentIndex;
+      const newIndex = opcodeObj.param + currentIndex + 1;
       return opcodes.slice(newIndex);
     },
     SETLINE: () => {
       const linePointsInMemory = STACK.splice(-6);
-      RESULT.line = {
-        start: linePointsInMemory.slice(0, 3),
-        end: linePointsInMemory.slice(3),
-      }
+      setResult(currentResult => ({
+        ...currentResult,
+        line: {
+          start: linePointsInMemory.slice(0, 3),
+          end: linePointsInMemory.slice(3),
+        }
+      }));
     },
     UCON: () => {
       //useGlobalStore.setState({ isUserControllable: true });
@@ -133,46 +139,123 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[]) {
       //useGlobalStore.setState({ isUserControllable: false });
     },
     LINEOFF: () => {
-      RESULT.isLineOff = true;
+      setResult(currentResult => ({
+        ...currentResult,
+        isLineOff: true
+      }));
     },
-    MAPJUMP3: () => {
+    MAPJUMP3: (opcodeObj, opcodes) => {
       const mapJumpDetailsInMemory = STACK.splice(-6);
-
+      console.log('MAPJUMP3', mapJumpDetailsInMemory, opcodeObj, opcodes);
       useGlobalStore.setState({
         fieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
         initialAngle: mapJumpDetailsInMemory[4],
         pendingCharacterPosition: vectorToFloatingPoint(mapJumpDetailsInMemory.slice(1, 4) as unknown as [number, number, number]),
       });
     },
+    MAPJUMPO: () => {
+      const walkmeshTriangleId = STACK.pop() as number;
+      const fieldId = STACK.pop() as number;
+      useGlobalStore.setState({
+        fieldId: MAP_NAMES[fieldId],
+      });
+    },
     HALT: () => {
-      RESULT.isHalted = true;
+      setResult(currentResult => ({
+        ...currentResult,
+        isHalted: true
+      }));
     },
     SETPLACE: () => {
       useGlobalStore.setState({ currentLocationPlaceName: STACK.pop() as number });
     },
     KEYON: async () => {
       const key = STACK.pop() as number;
+      console.log('KEYON', key, opcodes);
       await waitForKeyPress(key);
     },
     BGDRAW: () => {
       // I don't think this is actually used
       STACK.pop() as number;
-      RESULT.isBackgroundDrawn = true;
+      setResult(currentResult => ({
+        ...currentResult,
+        isBackgroundDrawn: true
+      }));
     },
     BGOFF: () => {
-      RESULT.isBackgroundDrawn = false;
+      setResult(currentResult => ({
+        ...currentResult,
+        isBackgroundDrawn: false
+      }));
     },
     BGANIMESPEED: () => {
       const speed = STACK.pop() as number;
-      RESULT.backgroundAnimationSpeed = speed;
+
+      setResult(currentResult => ({
+        ...currentResult,
+        backgroundAnimationSpeed: speed
+      }));
     },
     RBGANIMELOOP: () => {
       const end = STACK.pop() as number;
       const start = STACK.pop() as number
 
-      RESULT.animationLoop = [start, end];
+      setResult(currentResult => ({
+        ...currentResult,
+        animationLoop: [start, end],
+        isLooping: true,
+      }));
+    },
+    BGSHADE: () => {
+      const lastSeven = STACK.splice(-7);
+    },
+    BGANIME: () => {
+      const end = STACK.pop() as number;
+      const start = STACK.pop() as number
+
+      setResult(currentResult => ({
+        ...currentResult,
+        animationLoop: [start, end],
+        isLooping: true,
+      }));
+    },
+    RND: () => {
+      TEMP_STACK[0] = Math.round(Math.random() * 255);
+    },
+    AMESW: async () => {
+      const y = STACK.pop() as number;
+      const x = STACK.pop() as number;
+      const id = STACK.pop() as number;
+      const channel = STACK.pop() as number;
+
+      const { currentMessages } = useGlobalStore.getState();
+      useGlobalStore.setState({
+        currentMessages: [
+          ...currentMessages,
+          {
+            id,
+            text: id.toString(),
+            x,
+            y,
+          }
+        ]
+      });
+      useGlobalStore.setState({ isUserControllable: false });
+      await waitForKeyPress(192);
+      useGlobalStore.setState({ isUserControllable: true });
+      useGlobalStore.setState({
+        currentMessages: currentMessages.filter(message => message.id !== id)
+      });
     },
 
+    SCROLLMODE2: () => {
+      const lastFive = STACK.splice(-5);
+      const layer = lastFive[0]; // I think this is the layer
+      const x = lastFive[1];
+      const y = lastFive[2];
+      const unknown1 = lastFive[3];
+      const unknown2 = lastFive[4];
+    },
 
     // Dummied out
     RBGSHADELOOP: () => { },
@@ -182,13 +265,22 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[]) {
     PREMAPJUMP2: () => { },
     UNKNOWN10: () => { },
 
-    REQ: () => {
-      // const label = STACK.pop();
-      // const priority = STACK.pop();
+    REQ: (opcodeObj) => {
+      const id = opcodeObj.param;
+      const label = STACK.pop();
+      const priority = STACK.pop();
+    },
+    REQSW: (opcodeObj) => {
+      const id = opcodeObj.param;
+      const label = STACK.pop();
+      const priority = STACK.pop();
+      console.log('REQSW', id, label, priority);
     },
 
     // TO ADD
-    MENUSHOP: () => { },
+    MENUSHOP: () => {
+      console.log('shop');
+    },
     WINCLOSE: () => { },
     EFFECTPLAY: () => { },
     EFFECTPLAY2: () => { },
@@ -197,25 +289,44 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[]) {
 
   let pendingOpcodes = [...opcodes];
 
-  while (pendingOpcodes.length > 0) {
-    const opcode = pendingOpcodes.shift() as OpcodeObj;
+  const runLoop = async (): Promise<void> => {
+    return new Promise((resolve) => {
+      const loop = async () => {
+        if (pendingOpcodes.length === 0) {
+          resolve();
+          return;
+        }
 
-    if (opcode.name.startsWith('LABEL')) {
-      continue;
-    }
+        const opcode = pendingOpcodes.shift() as OpcodeObj;
 
-    const handler = OPCODE_HANDLERS[opcode.name];
+        if (opcode.name.startsWith('LABEL')) {
+          requestAnimationFrame(loop);
+          return;
+        }
 
-    if (!handler) {
-      console.warn(`No handler for opcode ${opcode.name}. Param: ${opcode.param}`);
-      return;
-    }
+        const handler = OPCODE_HANDLERS[opcode.name];
 
-    const modifiedOpcodes = await handler(opcode, opcodes, opcodes.length - pendingOpcodes.length);
-    if (modifiedOpcodes) {
-      pendingOpcodes = modifiedOpcodes;
-    }
-  }
+        if (!handler) {
+          console.warn(`No handler for opcode ${opcode.name}. Param: ${opcode.param}`, `Method: ${opcodes[0].param}`);
+          requestAnimationFrame(loop); // Continue to next iteration
+          return;
+        }
 
-  return RESULT as T;
+        // Execute the handler and handle any modified opcodes
+        const modifiedOpcodes = await handler(opcode, opcodes, opcodes.length - pendingOpcodes.length);
+        if (modifiedOpcodes) {
+          pendingOpcodes = modifiedOpcodes;
+        }
+
+        // Schedule the next iteration using requestAnimationFrame
+        requestAnimationFrame(loop);
+      };
+
+      // Start the loop
+      loop();
+    });
+  };
+
+  // Wait for runLoop to complete
+  await runLoop();
 }

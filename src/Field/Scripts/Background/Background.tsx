@@ -11,31 +11,37 @@ const Background = ({ script }: BackgroundProps) => {
   const targetBackgroundParam = script.backgroundParamId;
 
   const [backgroundAnimationSpeed, setBackgroundAnimationSpeed] = useState<number>(0);
-  const animationLoopRef = useRef<[number, number]>([0, 0]);
+  const animationFramesRef = useRef<[number, number]>([0, 0]);
+  const isLoopingRef = useRef<boolean>(false);
 
   useScript(script, 'constructor?', {
     once: true
   });
 
-  useScript<{animationLoop: [number, number], backgroundAnimationSpeed: number, isBackgroundDrawn: boolean}>(script, 'default', {}, (result) => {
-    if (!result) {
+  const result = useScript<{animationLoop: [number, number], backgroundAnimationSpeed: number, isBackgroundDrawn: boolean, isLooping: boolean}>(script, 'default', {});
+
+  useEffect(() => {
+    if (!result || script.methods.find((method) => method.methodId === 'default')?.scriptLabel !== 90) {
       return;
     }
-
-    const { animationLoop, backgroundAnimationSpeed, isBackgroundDrawn } = result;
+  
+    const { animationLoop, backgroundAnimationSpeed, isBackgroundDrawn, isLooping } = result;
 
     useGlobalStore.setState((state) => {
-      state.currentParameterVisibility[targetBackgroundParam] = isBackgroundDrawn ? true : false
+      state.currentParameterVisibility[targetBackgroundParam] = isBackgroundDrawn === false ? false : true
       return state;
     });
 
     if (backgroundAnimationSpeed) {
       setBackgroundAnimationSpeed(backgroundAnimationSpeed);
     }
+  
     if (animationLoop) {
-      animationLoopRef.current = animationLoop;
+      animationFramesRef.current = animationLoop;
     }
-  });
+
+    isLoopingRef.current = isLooping;
+  }, [result, script.methods, targetBackgroundParam]);
 
   useEffect(() => {
     if (backgroundAnimationSpeed === 0) {
@@ -44,21 +50,24 @@ const Background = ({ script }: BackgroundProps) => {
 
     const interval = setInterval(() => {
       const currentParameterStates = useGlobalStore.getState().currentParameterStates;
+      let thisParameter = currentParameterStates[targetBackgroundParam];
 
-      if (currentParameterStates[targetBackgroundParam] === undefined) {
-        currentParameterStates[targetBackgroundParam] = animationLoopRef.current[0];
+      if (!thisParameter || thisParameter >= animationFramesRef.current[1]) {
+        thisParameter = animationFramesRef.current[0];
       }
 
-      if (currentParameterStates[targetBackgroundParam] >= animationLoopRef.current[1]) {
-        currentParameterStates[targetBackgroundParam] = animationLoopRef.current[0];
-      }
-
-      currentParameterStates[targetBackgroundParam] += 1;
-      console.log('fire',targetBackgroundParam,currentParameterStates[targetBackgroundParam])
+      thisParameter += 1;
 
       useGlobalStore.setState({
-        currentParameterStates: {...currentParameterStates}
+        currentParameterStates: {
+          ...currentParameterStates,
+          [targetBackgroundParam]: thisParameter
+        }
       })
+
+      if (thisParameter === animationFramesRef.current[1] && !isLoopingRef.current) {
+        clearInterval(interval);
+      }
     }, backgroundAnimationSpeed * 32);
 
     return () => clearInterval(interval);

@@ -1,0 +1,49 @@
+.text {
+  --left: calc((var(--x, 0) / 320) * 100%);
+  --top: calc((var(--y, 0) / 224) * 100%);
+  position: absolute;
+  left: var(--left);
+  top: var(--top);
+
+  translate: -50% 0;
+
+  padding: 8px;
+
+  color: white;
+
+  font-size: 3.4vw;
+  line-height: 1.2;
+
+  text-align: left;
+  margin: 8px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+
+  border: 1px solid #292929; /* Dark gray outer border */
+  border-top: 2px solid #848484; /* Light gray on the top */
+  border-left: 2px solid #848484; /* Light gray on the left */
+  border-bottom: 2px solid #3a3a3a; /* Darker gray on the bottom */
+  border-right: 2px solid #3a3a3a; /* Darker gray on the right */
+
+  box-shadow: 1px 1px 0 0 #636363, /* Top-left corner */ -1px -1px 0 0 #828282; /* Bottom-right corner */
+  background-image: url("./menu-fond.png");
+
+  white-space: nowrap;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.blinking {
+  animation: blink 1s infinite;
+}
+
+.icon {
+  width: 15px; /* Icon width varies */
+  height: 12px;
+  padding-right: 2px; /* Padding after icon */
+  background-image: url("icons.png");
+  background-position: /* Custom depending on character */ ;
+}

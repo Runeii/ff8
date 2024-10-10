@@ -30,6 +30,11 @@ body,
   background-color: black;
 }
 
+.container {
+  position: relative;
+  aspect-ratio: 320 / 224;
+}
+
 .canvas {
   height: auto !important;
   aspect-ratio: 320 / 224;

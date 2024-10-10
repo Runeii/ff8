@@ -73,6 +73,7 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
   });
   
   const currentParameterStates = useGlobalStore((state) => state.currentParameterStates);
+  const currentParameterVisibility = useGlobalStore((state) => state.currentParameterVisibility);
 
   let layer = isAbove ? 2 : 1;
   if (isBackgroundLayer) {
@@ -87,7 +88,7 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
           position={[X + TILE_SIZE / 2, -Y - TILE_SIZE / 2, 0]}
           scale={[TILE_SIZE, TILE_SIZE, TILE_SIZE]}
           layers={layer}
-          visible={parameter === 255 || currentParameterStates[parameter] === state}
+          visible={(parameter === 255 || currentParameterStates[parameter] === state) && currentParameterVisibility[parameter] !== false}
         >
           <spriteMaterial
             map={texture}
