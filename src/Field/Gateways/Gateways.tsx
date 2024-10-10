@@ -1,5 +1,5 @@
-import { BufferGeometry, Mesh } from "three"
-import {  useCallback, useMemo } from "react"
+import { BufferGeometry } from "three"
+import {  useCallback } from "react"
 import { FieldData } from "../Field"
 import Gateway from "./Gateway/Gateway"
 import useGlobalStore from '../../store';
@@ -10,7 +10,7 @@ export type GatewaysProps = {
 }
 
 const Gateways = ({ gateways }: GatewaysProps) => {
-  const handleTransition = useCallback((gateway) => {
+  const handleTransition = useCallback((gateway: FormattedGateway) => {
     console.log('Transitioning to', gateway.target, 'via gateway', gateway, 'at', gateway.destination);
     useGlobalStore.setState({
       fieldId: gateway.target,

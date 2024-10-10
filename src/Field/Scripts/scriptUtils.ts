@@ -1,4 +1,3 @@
-import { Key } from "react";
 import MAP_NAMES from "../../constants/maps";
 import useGlobalStore from "../../store";
 import { vectorToFloatingPoint } from "../../utils";
@@ -42,7 +41,7 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[]) {
   const STACK: number[] = [];
   const RESULT: Record<string, unknown> = {};
 
-  const OPCODE_HANDLERS: Record<Opcode, HandlerFunc | HandlerFuncWithPromise> = {
+  const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFunc | HandlerFuncWithPromise>> = {
     LBL: () => { },
     RET: () => { },
     PSHI_L: (opcodeObj) => {
@@ -151,7 +150,7 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[]) {
     SETPLACE: () => {
       useGlobalStore.setState({ currentLocationPlaceName: STACK.pop() as number });
     },
-    KEYON: async (opCodeObj) => {
+    KEYON: async () => {
       const key = STACK.pop() as number;
       await waitForKeyPress(key);
     },
@@ -183,16 +182,15 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[]) {
     PREMAPJUMP2: () => { },
     UNKNOWN10: () => { },
 
-    REQ: (opcodeObj) => {
-      const label = STACK.pop();
-      const priority = STACK.pop();
+    REQ: () => {
+      // const label = STACK.pop();
+      // const priority = STACK.pop();
     },
 
     // TO ADD
     MENUSHOP: () => { },
     WINCLOSE: () => { },
     EFFECTPLAY: () => { },
-    EFFECTSTOP: () => { },
     EFFECTPLAY2: () => { },
     EFFECTLOAD: () => { },
   }

@@ -26,7 +26,7 @@ type OutputGateway = {
   source: string
   target: string;
   sourceLine: VectorLike[],
-  outPoint: VectorLike;
+  destinationPoint: VectorLike;
 }
 
 // Process each file to map its ID to exits and entrances
@@ -42,7 +42,7 @@ const processFiles = (jsonFiles: InputFile[]): OutputGateway[] =>
         source: id,
         target: gateway.target,
         sourceLine: gateway.sourceLine,
-        outPoint: gateway.destinationPoint,
+        destinationPoint: gateway.destinationPoint,
       }
     })
   );

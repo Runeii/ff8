@@ -11,7 +11,6 @@ interface GlobalState {
   isUserControllable: boolean,
   pendingCharacterPosition?: Vector3,
   setCharacterToPendingPosition: () => void,
-  test: number,
 }
 
 const useGlobalStore = create<GlobalState>()((set) => ({
@@ -20,11 +19,9 @@ const useGlobalStore = create<GlobalState>()((set) => ({
   setCharacterToPendingPosition: () => set((state) => ({ characterPosition: state.pendingCharacterPosition })),
 
   currentLocationPlaceName: 0, // we don't currently use this for anything
-  fieldId: undefined,
+  fieldId: '',
   isUserControllable: true,
   initialAngle: 0,
-
-  test: 0,
 
   currentParameterStates: {},
   currentParameterVisibility: {},

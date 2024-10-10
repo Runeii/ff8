@@ -1,6 +1,6 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { Mesh } from "three";
-import { Line, Sphere, } from "@react-three/drei";
+import { Line } from "@react-three/drei";
 import { checkForIntersection } from "../gatewayUtils";
 import { useMemo, useState } from "react";
 import { vectorToFloatingPoint } from "../../../utils";
@@ -13,9 +13,9 @@ const Gateway = ({
 }: {
   color: string,
   gateway: FieldData['gateways'][0],
-  onIntersect: (gateway: FieldData['gateways'][0]) => void
+  onIntersect: (gateway: FormattedGateway) => void
 }) => {
-  const formattedGateway = useMemo(() => {
+  const formattedGateway: FormattedGateway = useMemo(() => {
     return {
       destination: vectorToFloatingPoint(gateway.destinationPoint),
       sourceLine: gateway.sourceLine.map(vectorToFloatingPoint),

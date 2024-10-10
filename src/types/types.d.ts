@@ -25,27 +25,8 @@ type VectorLike = {
   z: number
 }
 
-type GeneratedGateway = {
-  id: string,
-  source: string
-  target: string;
-  sourceLine: VectorLike[],
-  outPoint: VectorLike;
-  sourceRot: number;
-  destRot: number;
-}
-
 type FormattedGateway = {
-  id: string;
-  source: string;
   target: string;
   sourceLine: Vector3[]
-  targetLine: Vector3[]
-}
-
-type SimpleGateway = {
-  id: string;
-  target: string;
-  sourceLine: Vector3[]
-  destination: Vector3
+  destination: Vector3;
 }

@@ -1,13 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Script } from "../types";
-import { executeOpcodes } from "../scriptUtils";
-import { Line, Mesh, Vector3 } from "three";
-import {Text, Line as DreiLine, Sphere } from "@react-three/drei";
+import {  Mesh, Vector3 } from "three";
+import {Text, Line as DreiLine } from "@react-three/drei";
 import { vectorToFloatingPoint } from "../../../utils";
 import { useFrame, useThree } from "@react-three/fiber";
 import { checkForIntersection } from "../../Gateways/gatewayUtils";
 import useScript from "../useScript";
-import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
 
 type LocationProps = {
   script: Script;
@@ -16,22 +14,8 @@ type LocationProps = {
 const Location = ({ script }: LocationProps) => {
   const [line, setLine] = useState<Vector3[]>();
 
-
-  const constructorReturnValue = useScript<{isLineOff: boolean, line: [Vector3, Vector3]}>(script, 'constructor?', {
+  const constructorReturnValue = useScript<{isLineOff: boolean, line: {start: VectorLike, end: VectorLike}}>(script, 'constructor?', {
     once: true
-  }, (result) => {
-    if (!result || !result.line) {
-      return { isLineOff: false, line: undefined };
-    }
-    console.log(result)
-    const isLineOff = (result as {isLineOff: boolean})?.isLineOff ? true : false;
-    const lineStart = vectorToFloatingPoint(result.line.start);
-    const lineEnd = vectorToFloatingPoint(result.line.end);
-
-    return {
-      isLineOff,
-      line: [lineStart, lineEnd]
-    }
   });
 
   useEffect(() => {
@@ -39,16 +23,16 @@ const Location = ({ script }: LocationProps) => {
       return;
     }
     const line = constructorReturnValue.line;
-    setLine(line);
+    const lineStart = vectorToFloatingPoint(line.start);
+    const lineEnd = vectorToFloatingPoint(line.end);
+    setLine([lineStart, lineEnd]);
   }, [constructorReturnValue?.line]);
 
-  const defaultReturnValue = useScript<boolean>(script, 'default', {
+  const defaultReturnValue = useScript<{ isLineOff: boolean }>(script, 'default', {
     condition: constructorReturnValue?.isLineOff,
-  }, (result) => {
-    return (result as {isLineOff: boolean})?.isLineOff ? true : false;
   });
 
-  const isLineOff = constructorReturnValue?.isLineOff || defaultReturnValue;
+  const isLineOff = constructorReturnValue?.isLineOff ?? defaultReturnValue?.isLineOff;
   
   const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
 

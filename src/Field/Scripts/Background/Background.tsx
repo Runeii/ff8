@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import useGlobalStore from "../../../store";
 import { Script } from "../types";
 import useScript from "../useScript";
-import { useFrame } from "@react-three/fiber";
 
 type BackgroundProps = {
   script: Script;
@@ -18,12 +17,12 @@ const Background = ({ script }: BackgroundProps) => {
     once: true
   });
 
-  useScript(script, 'default', {}, (result) => {
-    const { animationLoop, backgroundAnimationSpeed, isBackgroundDrawn } = result ?? {} as {
-      animationLoop?: [number, number];
-      backgroundAnimationSpeed?: number;
-      isBackgroundDrawn?: boolean;
-    };
+  useScript<{animationLoop: [number, number], backgroundAnimationSpeed: number, isBackgroundDrawn: boolean}>(script, 'default', {}, (result) => {
+    if (!result) {
+      return;
+    }
+
+    const { animationLoop, backgroundAnimationSpeed, isBackgroundDrawn } = result;
 
     useGlobalStore.setState((state) => {
       state.currentParameterVisibility[targetBackgroundParam] = isBackgroundDrawn ? true : false

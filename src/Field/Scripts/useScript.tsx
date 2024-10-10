@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { executeOpcodes } from "./scriptUtils";
 import { Script } from "./types";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 type ScriptOptions = {
   condition?: boolean | undefined;
@@ -9,53 +9,68 @@ type ScriptOptions = {
   onComplete?: () => void;
 }
 
-function useScript<T>(script: Script, methodId: string, options: ScriptOptions = {}, onResult?: (result?: object) => T): T {
-  const [currentResult, setCurrentResult] = useState<T>();
+function useScript<T>(
+  script: Script,
+  methodId: string,
+  options: ScriptOptions = {},
+  onResult?: (result: T | undefined) => T | void
+): T | undefined {
+  // Use state to store the result of type R or undefined initially
+  const [currentResult, setCurrentResult] = useState<T | undefined>(undefined);
 
   const isHaltedRef = useRef(false);
   const isProcessingRef = useRef(false);
-
   const wasPreviouslyTrue = useRef(false);
 
+  // Find the handler for the specified methodId
   const handler = script.methods.find((method) => method.methodId === methodId);
 
-  // We need to be able to await results from the script execution
+  // Processing function, potentially async
   const process = async () => {
-    const result = await executeOpcodes<{isHalted?: boolean, waitingForKeyPress?: number, [key: string]: unknown}>(handler.opcodes);
-    isHaltedRef.current = result && result.isHalted ? true : false;
+    if (!handler) {
+      return;
+    }
 
+    // Execute the opcodes and infer result with optional isHalted flag
+    const result = await executeOpcodes<T & { isHalted?: boolean }>(handler.opcodes);
+    isHaltedRef.current = result?.isHalted || false;
+
+    // If onResult is provided and result exists, process it
     if (onResult) {
-      setCurrentResult(onResult(result));
+      delete result?.isHalted;
+      const updatedResult = onResult(result) ?? result;
+      setCurrentResult(updatedResult); // Ensure onResult processes T | undefined
+    } else {
+      setCurrentResult(undefined);
     }
 
-    if (options.onComplete) {
-      options.onComplete();
-    }
-  
+    // Trigger onComplete if provided
+    options.onComplete?.();
     isProcessingRef.current = false;
-  }
+  };
 
+  // Frame-by-frame execution
   useFrame(() => {
     if (!handler || isHaltedRef.current || isProcessingRef.current) {
       return;
     }
 
-    const currentConditionState = options.condition !== undefined ? options.condition : true;
+    const currentConditionState = options.condition ?? true;
     if (!currentConditionState && wasPreviouslyTrue.current) {
       wasPreviouslyTrue.current = false;
     }
-  
-    if (!currentConditionState || wasPreviouslyTrue.current && options.once) {
+
+    if (!currentConditionState || (wasPreviouslyTrue.current && options.once)) {
       return;
     }
 
     wasPreviouslyTrue.current = currentConditionState;
-
     isProcessingRef.current = true;
 
     process();
   });
 
+  // Return the current result if available
   return currentResult;
 }
 

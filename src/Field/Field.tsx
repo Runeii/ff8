@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {  BufferAttribute, BufferGeometry, Vector3 } from 'three';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {  BufferAttribute, BufferGeometry } from 'three';
 import WalkMesh from './WalkMesh/WalkMesh';
 
 import type data from '../../public/output/bghall_2.json';

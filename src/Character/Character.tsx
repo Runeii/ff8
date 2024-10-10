@@ -1,10 +1,10 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import { DoubleSide, Group, Mesh, MeshBasicMaterial, SphereGeometry, Vector3 } from "three";
+import { Group, Vector3 } from "three";
 import { getCameraDirections } from "../Field/Camera/cameraUtils";
 import { getPositionOnWalkmesh } from "../utils";
 import { onMovementKeyPress } from "./characterUtils";
-import Squall from "./Squall";
+import Squall, { ActionName } from "./Squall";
 import { Sphere } from "@react-three/drei";
 import useGlobalStore from "../store";
 
@@ -69,7 +69,7 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
     setHasPlacedCharacter(true);
   }, [position, scene, setHasPlacedCharacter]);
 
-  const [currentAction, setCurrentAction] = useState("stand");
+  const [currentAction, setCurrentAction] = useState<ActionName>("stand");
   useFrame(() => {
     const walkmesh = scene.getObjectByName("walkmesh");
     const player = playerRef.current;

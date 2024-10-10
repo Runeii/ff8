@@ -1,10 +1,11 @@
-import React, { forwardRef, useEffect } from 'react'
+import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { useGraph } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { GLTF, SkeletonUtils } from 'three-stdlib'
-import { AnimationClip, Bone,  LoopRepeat, MeshBasicMaterial, SkinnedMesh } from 'three'
+import { Group, AnimationClip, Bone,  LoopRepeat, MeshBasicMaterial, SkinnedMesh } from 'three'
 
-type ActionName = 'run' | 'stand' | 'walk'
+const ActionNames = ['run', 'stand', 'walk'] as const
+export type ActionName = typeof ActionNames[number]
 
 interface GLTFAction extends AnimationClip {
   name: ActionName
@@ -23,11 +24,14 @@ type GLTFResult = GLTF & {
 
 const Squall = forwardRef((props: JSX.IntrinsicElements['group'] & {
   currentAction: ActionName
-}, ref) => {
+}, ref: ForwardedRef<Group>) => {
+  const localRef = useRef<Group>(new Group());
+  useImperativeHandle(ref, () => localRef.current);
+
   const { scene, animations } = useGLTF('/squall2.glb')
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone) as GLTFResult
-  const { actions } = useAnimations(animations, ref)
+  const { actions } = useAnimations(animations, localRef)
 
   useEffect(() => {
     const action = actions[props.currentAction] ?? actions.stand
@@ -45,7 +49,7 @@ const Squall = forwardRef((props: JSX.IntrinsicElements['group'] & {
   }, [actions, props.currentAction]);
 
   return (
-    <group ref={ref} {...props} dispose={null}>
+    <group ref={localRef} {...props} dispose={null}>
       <group name="Scene">
         <group name="d000_armature">
           <primitive object={nodes.root} />
