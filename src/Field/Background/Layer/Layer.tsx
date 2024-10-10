@@ -11,11 +11,11 @@ import { MutableRefObject, useRef, useState } from "react";
 import { calculateParallax } from "../../Camera/cameraUtils";
 import { clamp } from "three/src/math/MathUtils.js";
 import { TILE_SIZE, TileWithTexture } from "../Background";
+import useGlobalStore from "../../../store";
 
 type LayerProps = {
   backgroundPanRef: React.MutableRefObject<CameraPanAngle>;
   cameraZoom: number;
-  currentParameterStates: Record<number, number>;
   playerDepthRef: MutableRefObject<number>;
   tiles: TileWithTexture[];
 };
@@ -28,7 +28,7 @@ const BLENDS = {
   0: NormalBlending // Default to normal blending for unknowns
 };
 
-const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles }: LayerProps) => {
+const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
   const layerRef = useRef<Group & { position: Object3D["position"] }>(null);
 
   const isBackgroundLayer = tiles[0].layerID > 0;
@@ -71,6 +71,8 @@ const Layer = ({ backgroundPanRef, currentParameterStates, playerDepthRef, tiles
       setIsAbove(false);
     }
   });
+  
+  const currentParameterStates = useGlobalStore((state) => state.currentParameterStates);
 
   let layer = isAbove ? 2 : 1;
   if (isBackgroundLayer) {

@@ -20,9 +20,10 @@ const Location = ({ script }: LocationProps) => {
   const constructorReturnValue = useScript<{isLineOff: boolean, line: [Vector3, Vector3]}>(script, 'constructor?', {
     once: true
   }, (result) => {
-    if (!result) {
+    if (!result || !result.line) {
       return { isLineOff: false, line: undefined };
     }
+    console.log(result)
     const isLineOff = (result as {isLineOff: boolean})?.isLineOff ? true : false;
     const lineStart = vectorToFloatingPoint(result.line.start);
     const lineEnd = vectorToFloatingPoint(result.line.end);

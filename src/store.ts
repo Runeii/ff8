@@ -4,11 +4,14 @@ import { Vector3 } from 'three';
 interface GlobalState {
   characterPosition?: Vector3,
   currentLocationPlaceName: number,
+  currentParameterStates: Record<number, number>,
+  currentParameterVisibility: Record<number, boolean>,
   fieldId: string,
   initialAngle: number,
   isUserControllable: boolean,
   pendingCharacterPosition?: Vector3,
   setCharacterToPendingPosition: () => void,
+  test: number,
 }
 
 const useGlobalStore = create<GlobalState>()((set) => ({
@@ -20,6 +23,11 @@ const useGlobalStore = create<GlobalState>()((set) => ({
   fieldId: undefined,
   isUserControllable: true,
   initialAngle: 0,
+
+  test: 0,
+
+  currentParameterStates: {},
+  currentParameterVisibility: {},
 }))
 
 export default useGlobalStore

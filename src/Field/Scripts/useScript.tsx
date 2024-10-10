@@ -9,7 +9,7 @@ type ScriptOptions = {
   onComplete?: () => void;
 }
 
-function useScript<T>(script: Script, methodId: string, options: ScriptOptions, onResult?: (result?: object) => T): T {
+function useScript<T>(script: Script, methodId: string, options: ScriptOptions = {}, onResult?: (result?: object) => T): T {
   const [currentResult, setCurrentResult] = useState<T>();
 
   const isHaltedRef = useRef(false);
@@ -52,6 +52,7 @@ function useScript<T>(script: Script, methodId: string, options: ScriptOptions, 
     wasPreviouslyTrue.current = currentConditionState;
 
     isProcessingRef.current = true;
+
     process();
   });
 

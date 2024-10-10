@@ -74,39 +74,6 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
     return Object.values(groupedTiles);
   }, [textureHeightInTiles, textureWidthInTiles, tiles, tilesTexture]);
 
-  const [currentParameterStates, setCurrentParameterStates] = useState<Record<number, number>>({});
-  useEffect(() => {
-    const uniqueParameters = new Set(tiles.map((tile) => tile.parameter));
-    const parametersMap = Object.fromEntries([...uniqueParameters].map((parameter) => [parameter, 0])) as Record<number, number>;
-    setCurrentParameterStates(parametersMap);
-
-    const maximumParameterStates = {...parametersMap};
-    tiles.forEach((tile) => {
-      maximumParameterStates[tile.parameter] = Math.max(maximumParameterStates[tile.parameter], tile.state);
-    });
-
-    const handleFrame = () => {
-      setCurrentParameterStates((currentState) => {
-        const nextState = {...currentState};
-        Object.entries(maximumParameterStates).forEach(([key, maximumState]) => {
-          const parameter = parseInt(key);
-          nextState[parameter] =
-          nextState[parameter] < maximumState
-            ? nextState[parameter] + 1
-            : 0;
-        });
-
-        return nextState
-      });
-    }
-
-    const interval = setInterval(handleFrame, 250);
-
-    return () => {
-      clearInterval(interval);
-    }
-  }, [tiles]);
-
   return (
     <>
       <OrthographicCamera
@@ -124,7 +91,6 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
         <Layer
           backgroundPanRef={backgroundPanRef}
           cameraZoom={data.cameras[0].camera_zoom}
-          currentParameterStates={currentParameterStates}
           key={`${tiles[0].layerID}-${tiles[0].Z}`}
           playerDepthRef={playerDepthRef}
           tiles={tiles}

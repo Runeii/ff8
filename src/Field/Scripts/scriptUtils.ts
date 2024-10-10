@@ -155,9 +155,28 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[]) {
       const key = STACK.pop() as number;
       await waitForKeyPress(key);
     },
+    BGDRAW: () => {
+      // I don't think this is actually used
+      STACK.pop() as number;
+      RESULT.isBackgroundDrawn = true;
+    },
+    BGOFF: () => {
+      RESULT.isBackgroundDrawn = false;
+    },
+    BGANIMESPEED: () => {
+      const speed = STACK.pop() as number;
+      RESULT.backgroundAnimationSpeed = speed;
+    },
+    RBGANIMELOOP: () => {
+      const end = STACK.pop() as number;
+      const start = STACK.pop() as number
+
+      RESULT.animationLoop = [start, end];
+    },
 
 
     // Dummied out
+    RBGSHADELOOP: () => { },
     LSCROLL: () => { },
     WAIT: () => { },
     PREMAPJUMP: () => { },
