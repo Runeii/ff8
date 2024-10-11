@@ -13,6 +13,13 @@ interface GlobalState {
   setCharacterToPendingPosition: () => void,
 
   currentMessages: Message[],
+  controlledScrolls: Record<number, {
+    layerID: number,
+    x1: number,
+    x2: number,
+    y1: number
+    y2: number
+  }>,
 }
 
 const useGlobalStore = create<GlobalState>()((set) => ({
@@ -31,6 +38,8 @@ const useGlobalStore = create<GlobalState>()((set) => ({
   },
 
   currentMessages: [],
+
+  controlledScrolls: [],
 }))
 
 export default useGlobalStore

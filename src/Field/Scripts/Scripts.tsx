@@ -27,7 +27,8 @@ const Scripts = ({ scripts }: ScriptsProps) => {
     })
 
     result.unknown.forEach((script) => {
-      if (script.name.includes('view1')) {
+      const planeNames = ['view1', 'plane', 'plane1']
+      if (planeNames.includes(script.name)) {
         result._planes.push(script);
         result.unknown = result.unknown.filter((s) => s !== script);
       }

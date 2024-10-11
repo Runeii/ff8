@@ -32,7 +32,8 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
   const layerRef = useRef<Group & { position: Object3D["position"] }>(null);
 
   const isBackgroundLayer = tiles[0].layerID > 0;
-
+  
+  const controlledScrolls = useGlobalStore((state) => state.controlledScrolls);
   useFrame(() => {
     if (!layerRef.current) return;
 
@@ -49,9 +50,38 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
 
     const finalPanX = clamp(panX, boundaries.left, boundaries.right);
     const finalPanY = clamp(panY, boundaries.top, boundaries.bottom);
+    
+    const controlledScroll = controlledScrolls[tiles[0].layerID / 2]
 
-    layerRef.current.position.x = finalPanX;
-    layerRef.current.position.y = finalPanY;
+    if (!controlledScroll) {
+      layerRef.current.position.x = finalPanX;
+      layerRef.current.position.y = finalPanY;
+      return;
+    }
+
+    if (!controlledScroll.x2 || !controlledScroll.y2) {
+      layerRef.current.position.x = controlledScroll.x1;
+      layerRef.current.position.y = controlledScroll.y1;
+      return
+    }
+
+    const standardXRange = boundaries.right - boundaries.left;
+    const standardYRange = boundaries.top - boundaries.bottom;
+
+    const controlledXRange = controlledScroll.x2 - controlledScroll.x1;
+    const controlledYRange = controlledScroll.y2 - controlledScroll.y1;
+
+    const xRatio = controlledXRange / standardXRange;
+    const yRatio = controlledYRange / standardYRange;
+
+    const x = finalPanX - boundaries.left;
+    const y = finalPanY - boundaries.top;
+
+    const controlledX = x * xRatio + controlledScroll.x1;
+    const controlledY = y * yRatio + controlledScroll.y1;
+
+    layerRef.current.position.x = controlledX;
+    layerRef.current.position.y = controlledY;
   });
 
   const [isAbove, setIsAbove] = useState(false);

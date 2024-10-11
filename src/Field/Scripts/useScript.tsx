@@ -1,22 +1,19 @@
 import { useFrame } from "@react-three/fiber";
 import { executeOpcodes } from "./scriptUtils";
 import { Script } from "./types";
-import { useEffect, useRef, useState } from "react";
-
-type ScriptOptions = {
-  condition?: boolean | undefined;
-  trigger?: string;
-  once?: boolean;
-  onComplete?: () => void;
-}
+import { useEffect, useRef } from "react";
 
 function useScript<T>(
   script: Script,
   methodId: string,
-  options: ScriptOptions = {},
+  options: {
+    condition?: boolean | undefined;
+    trigger?: string;
+    once?: boolean;
+    onComplete?: (finalResult: T) => void;
+  } = {},
 ): T | undefined {
-  // Use state to store the result of type R or undefined initially
-  const [currentResult, setCurrentResult] = useState<T | undefined>(undefined);
+  const currentResult = useRef<T | undefined>(undefined);
 
   const isProcessingRef = useRef(false);
   const wasPreviouslyTrue = useRef(false);
@@ -51,8 +48,8 @@ function useScript<T>(
       return;
     }
 
-    await executeOpcodes<T & { isHalted?: boolean }>(handler.opcodes, setCurrentResult);
-    options.onComplete?.();
+    currentResult.current = await executeOpcodes<T>(handler.opcodes, currentResult.current ?? {});
+    options.onComplete?.(currentResult.current);
     isProcessingRef.current = false;
   }
 
@@ -78,7 +75,7 @@ function useScript<T>(
   });
 
   // Return the current result if available
-  return currentResult;
+  return currentResult.current as T | undefined;
 }
 
 export default useScript;

@@ -39,7 +39,7 @@ type HandlerFuncWithPromise = (
   currentIndex: number
 ) => Promise<OpcodeObj[] | void>;
 
-export async function executeOpcodes<T>(opcodes: OpcodeObj[], setResult: (result: T) => void): Promise<void> {
+export async function executeOpcodes<T>(opcodes: OpcodeObj[], currentResult: Record<string, unknown>): Promise<T> {
   const STACK: number[] = [];
 
   const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFunc | HandlerFuncWithPromise>> = {
@@ -124,13 +124,10 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[], setResult: (result
     },
     SETLINE: () => {
       const linePointsInMemory = STACK.splice(-6);
-      setResult(currentResult => ({
-        ...currentResult,
-        line: {
-          start: linePointsInMemory.slice(0, 3),
-          end: linePointsInMemory.slice(3),
-        }
-      }));
+      currentResult.line = {
+        start: linePointsInMemory.slice(0, 3),
+        end: linePointsInMemory.slice(3),
+      };
     },
     UCON: () => {
       //useGlobalStore.setState({ isUserControllable: true });
@@ -139,10 +136,7 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[], setResult: (result
       //useGlobalStore.setState({ isUserControllable: false });
     },
     LINEOFF: () => {
-      setResult(currentResult => ({
-        ...currentResult,
-        isLineOff: true
-      }));
+      currentResult.isLineOff = true;
     },
     MAPJUMP3: (opcodeObj, opcodes) => {
       const mapJumpDetailsInMemory = STACK.splice(-6);
@@ -161,10 +155,7 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[], setResult: (result
       });
     },
     HALT: () => {
-      setResult(currentResult => ({
-        ...currentResult,
-        isHalted: true
-      }));
+      //currentResult.isHalted = true;
     },
     SETPLACE: () => {
       useGlobalStore.setState({ currentLocationPlaceName: STACK.pop() as number });
@@ -177,34 +168,20 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[], setResult: (result
     BGDRAW: () => {
       // I don't think this is actually used
       STACK.pop() as number;
-      setResult(currentResult => ({
-        ...currentResult,
-        isBackgroundDrawn: true
-      }));
+      currentResult.isBackgroundDrawn = true;
     },
     BGOFF: () => {
-      setResult(currentResult => ({
-        ...currentResult,
-        isBackgroundDrawn: false
-      }));
+      currentResult.isBackgroundDrawn = false;
     },
     BGANIMESPEED: () => {
       const speed = STACK.pop() as number;
-
-      setResult(currentResult => ({
-        ...currentResult,
-        backgroundAnimationSpeed: speed
-      }));
+      currentResult.backgroundAnimationSpeed = speed;
     },
     RBGANIMELOOP: () => {
       const end = STACK.pop() as number;
       const start = STACK.pop() as number
-
-      setResult(currentResult => ({
-        ...currentResult,
-        animationLoop: [start, end],
-        isLooping: true,
-      }));
+      currentResult.animationLoop = [start, end];
+      currentResult.isLooping = true;
     },
     BGSHADE: () => {
       const lastSeven = STACK.splice(-7);
@@ -213,11 +190,8 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[], setResult: (result
       const end = STACK.pop() as number;
       const start = STACK.pop() as number
 
-      setResult(currentResult => ({
-        ...currentResult,
-        animationLoop: [start, end],
-        isLooping: true,
-      }));
+      currentResult.animationLoop = [start, end];
+      currentResult.isLooping = false;
     },
     RND: () => {
       TEMP_STACK[0] = Math.round(Math.random() * 255);
@@ -250,11 +224,24 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[], setResult: (result
 
     SCROLLMODE2: () => {
       const lastFive = STACK.splice(-5);
-      const layer = lastFive[0]; // I think this is the layer
-      const x = lastFive[1];
-      const y = lastFive[2];
-      const unknown1 = lastFive[3];
-      const unknown2 = lastFive[4];
+      const layerID = lastFive[0]; // I think this is the layer
+      const x1 = lastFive[1];
+      const y1 = lastFive[2];
+      const x2 = lastFive[3];
+      const y2 = lastFive[4];
+
+      useGlobalStore.setState({
+        controlledScrolls: {
+          ...useGlobalStore.getState().controlledScrolls,
+          [layerID]: {
+            layerID,
+            x1,
+            x2,
+            y1,
+            y2,
+          }
+        }
+      })
     },
 
     // Dummied out
@@ -329,4 +316,6 @@ export async function executeOpcodes<T>(opcodes: OpcodeObj[], setResult: (result
 
   // Wait for runLoop to complete
   await runLoop();
+
+  return currentResult as T;
 }
