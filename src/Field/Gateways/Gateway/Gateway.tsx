@@ -27,18 +27,25 @@ const Gateway = ({
 
   const [hasExited, setHasExited] = useState(false);
   useFrame(() => {
-    if (!player || hasExited) {
+    if (!player) {
       return;
     }
 
     const isIntersecting = checkForIntersection(player, formattedGateway.sourceLine);
 
-    if (isIntersecting) {
+    if (!isIntersecting) {
       setHasExited(true);
+    }
+  
+    if (isIntersecting && !hasExited) {
+      return;
+    }
+  
+    if (isIntersecting) {
       onIntersect(formattedGateway)
     }
   });
-
+return;
   return (
     <>
       <Line

@@ -1,65 +1,52 @@
 import { useFrame } from "@react-three/fiber";
-import { executeOpcodes } from "./scriptUtils";
+import { executeOpcodes } from "./opcodes/executor";
 import { Script } from "./types";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 function useScript<T>(
   script: Script,
   methodId: string,
+  onUpdate: (latestResult: Partial<T>) => void,
   options: {
-    condition?: boolean | undefined;
+    condition?: boolean;
     trigger?: string;
     once?: boolean;
-    onComplete?: (finalResult: T) => void;
   } = {},
-): T | undefined {
-  const currentResult = useRef<T | undefined>(undefined);
+ ) {
+  const [hasCompleted, setHasCompleted] = useState(false);
+  const onUpdateRef = useRef(onUpdate);
+
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  }, [onUpdate]);
 
   const isProcessingRef = useRef(false);
+  const isHaltedRef = useRef(false);
   const wasPreviouslyTrue = useRef(false);
 
-  const isKeyDownRef = useRef(false);
+  const isConditionTrueRef = useRef<boolean>(!(options.condition === false));
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === options.trigger) {
-        isKeyDownRef.current = true;
-      }
-    }
-    
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code === options.trigger) {
-        isKeyDownRef.current = false;
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    }
-  }, [options.trigger]);
+    isConditionTrueRef.current = !(options.condition === false)
+  }, [options]);
 
   // Find the handler for the specified methodId
-  const handler = script.methods.find((method) => method.methodId === methodId);
-  // Processing function, potentially async
-  const process = async () => {
-    if (!handler) {
+  const handler = useMemo(() => {
+    const method = script.methods.find((method) => method.methodId === methodId);
+    const hasUsefulActions = method?.opcodes.some((opcode) => opcode.name !== 'LBL' && opcode.name !== 'RET' && opcode.name !== 'HALT');
+
+    if (!method || !hasUsefulActions) {
+      return undefined;
+    }
+
+    return method;
+  }, [script, methodId]);
+
+  const execution = useCallback(async () => {
+    if (!handler || isProcessingRef.current || isHaltedRef.current) {
       return;
     }
 
-    currentResult.current = await executeOpcodes<T>(handler.opcodes, currentResult.current ?? {});
-    options.onComplete?.(currentResult.current);
-    isProcessingRef.current = false;
-  }
-
-  // Frame-by-frame execution
-  useFrame(() => {
-    if (!handler || isProcessingRef.current || (options.trigger && !isKeyDownRef.current)) {
-      return;
-    }
-
-    const currentConditionState = options.condition ?? true;
+    const currentConditionState = options.condition === undefined ? true : options.condition;
     if (!currentConditionState && wasPreviouslyTrue.current) {
       wasPreviouslyTrue.current = false;
     }
@@ -70,12 +57,41 @@ function useScript<T>(
 
     wasPreviouslyTrue.current = currentConditionState;
     isProcessingRef.current = true;
-    
-    process();
+
+    await executeOpcodes<T>(
+      handler.opcodes,
+      isConditionTrueRef,
+      isHaltedRef,
+      onUpdateRef
+    );
+
+    isProcessingRef.current = false;
+    setHasCompleted(true);
+  }, [handler, options.condition, options.once]);
+
+  // Frame-by-frame execution
+  useFrame(() => {
+    if (options.trigger) {
+      return;
+    }
+
+    execution();
   });
 
-  // Return the current result if available
-  return currentResult.current as T | undefined;
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === options.trigger) {
+        execution();
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [execution, options.trigger]);
+
+  return hasCompleted;
 }
 
 export default useScript;

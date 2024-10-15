@@ -1,15 +1,15 @@
 import { BufferGeometry } from "three"
-import {  useCallback } from "react"
-import { FieldData } from "../Field"
+import {  useCallback, useMemo } from "react"
 import Gateway from "./Gateway/Gateway"
 import useGlobalStore from '../../store';
+import generatedGateways from '../../gateways.ts';
 
 export type GatewaysProps = {
-  gateways: FieldData['gateways']
+  fieldId: string,
   walkMeshGeometry: BufferGeometry[]
 }
 
-const Gateways = ({ gateways }: GatewaysProps) => {
+const Gateways = ({ fieldId }: GatewaysProps) => {
   const handleTransition = useCallback((gateway: FormattedGateway) => {
     console.log('Transitioning to', gateway.target, 'via gateway', gateway, 'at', gateway.destination);
     useGlobalStore.setState({
@@ -17,11 +17,15 @@ const Gateways = ({ gateways }: GatewaysProps) => {
       pendingCharacterPosition: gateway.destination
     });
   }, []);
+
+  const gateways = useMemo(() => {
+    return generatedGateways.filter((gateway) => gateway.source === fieldId) as unknown as Gateway[];
+  }, [fieldId]);
   
   return (
     <>
       {gateways.map(gateway => ( 
-        <Gateway color="green" key={`${gateway.destinationPoint.x}-${gateway.destinationPoint.y}-${gateway.destinationPoint.z}`} gateway={gateway} onIntersect={handleTransition} />
+        <Gateway color="green" key={gateway.id} gateway={gateway} onIntersect={handleTransition} />
       ))}
     </>
   )

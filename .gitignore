@@ -24,5 +24,6 @@ dist-ssr
 *.sw?
 
 public/output
+public/models
 public/*.glb
 converter/target

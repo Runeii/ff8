@@ -25,6 +25,15 @@ type VectorLike = {
   z: number
 }
 
+type Gateway = {
+  id: string,
+  source: string
+  target: string;
+  sourceLine: VectorLike[],
+  destinationPoint: VectorLike;
+}
+
+
 type FormattedGateway = {
   target: string;
   sourceLine: Vector3[]
@@ -37,7 +46,9 @@ type Option = {
 }
 
 type Message = {
-  text: string;
+  key: number;
+  id: number;
+  text: string[];
   x: number;
   y: number;
   options?: Option[]

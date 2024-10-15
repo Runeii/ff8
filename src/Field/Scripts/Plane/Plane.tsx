@@ -1,13 +1,14 @@
-import useGlobalStore from "../../../store";
 import { Script } from "../types";
 import useScript from "../useScript";
 
 const Plane = ({ script }: { script: Script }) => {
-  useScript<{controlledScroll: {mode: number, x: number, y: number}}>(script, 'constructor?', {
+  const hasCompletedConstructor = useScript<{controlledScroll: {mode: number, x: number, y: number}}>(script, 'constructor?', () => null, {
     once: true
   });
 
-  useScript<{controlledScroll: {mode: number, x: number, y: number}}>(script, 'default')
+  useScript<{controlledScroll: {mode: number, x: number, y: number}}>(script, 'default',  () => null, {
+    condition: hasCompletedConstructor
+  })
 
   return null;
 }

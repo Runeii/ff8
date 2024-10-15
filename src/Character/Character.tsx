@@ -7,9 +7,11 @@ import { onMovementKeyPress } from "./characterUtils";
 import Squall, { ActionName } from "./Squall";
 import { Sphere } from "@react-three/drei";
 import useGlobalStore from "../store";
+import Focus from "./Focus/Focus";
+import { useSpring } from "@react-spring/three";
 
 export const CHARACTER_HEIGHT = 0.06;
-const RUNNING_SPEED = 0.0018;
+const RUNNING_SPEED = 0.0038;
 const WALKING_SPEED = 0.0005;
 
 const direction = new Vector3();
@@ -18,6 +20,7 @@ const ZERO_VECTOR = new Vector3(0, 0, 0);
 type CharacterProps = {
   setHasPlacedCharacter: (value: boolean) => void;
 };
+
 
 const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
   const position = useGlobalStore((state) => state.characterPosition) as Vector3;
@@ -31,6 +34,16 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
     right: false,
     isWalking: false,
   });
+
+  const [, setPositionSpring] = useSpring(() => ({
+    position: [position.x, position.y, position.z],
+    config: {
+      duration: 10,
+    },
+    onChange: ({ value }) => {
+      playerRef.current?.position.set(value.position[0], value.position[1], value.position[2]);
+    }
+  }), [position]);
 
   useEffect(() => {
     const handleKeyDown = onMovementKeyPress(movementFlagsRef, true);
@@ -56,20 +69,19 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
     const newPosition = getPositionOnWalkmesh(initialPosition, walkmesh);
 
     if (newPosition) {
-      newPosition.z += CHARACTER_HEIGHT / 2;
-      playerRef.current?.position.set(
-        newPosition.x,
-        newPosition.y,
-        newPosition.z
-      );
+      setPositionSpring({
+        position: [newPosition.x, newPosition.y, newPosition.z],
+        immediate: true,
+      });
     } else {
       console.warn("Tried to set character position to an invalid position", position);
     }
 
     setHasPlacedCharacter(true);
-  }, [position, scene, setHasPlacedCharacter]);
+  }, [position, scene, setHasPlacedCharacter, setPositionSpring]);
 
-  const [currentAction, setCurrentAction] = useState<ActionName>("stand");
+  const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
+  const [currentAction, setCurrentAction] = useState<ActionName>("d001_act1");
   useFrame(() => {
     const walkmesh = scene.getObjectByName("walkmesh");
     const player = playerRef.current;
@@ -110,12 +122,13 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
     
     const isAllowedToMove = useGlobalStore.getState().isUserControllable;
     if (direction.lengthSq() <= 0 || !isAllowedToMove) {
-      setCurrentAction("stand");
+      setCurrentAction("d001_act0");
       return;
     }
     
-    direction.normalize().multiplyScalar(movementFlags.isWalking ? WALKING_SPEED : RUNNING_SPEED);
-    setCurrentAction(movementFlags.isWalking ? 'walk' : "run");
+    const isWalking = !isRunEnabled || movementFlags.isWalking;
+    direction.normalize().multiplyScalar(isWalking ? WALKING_SPEED : RUNNING_SPEED);
+    setCurrentAction(isWalking ? 'd001_act2' : "d001_act2");
   
     const desiredPosition = player.position.clone().add(direction);
     const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT);
@@ -129,13 +142,14 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
 
     const angle = Math.atan2(direction.y, direction.x);
 
-    player.rotation.z = angle - Math.PI / 2;
-    player.position.set(newPosition.x, newPosition.y, newPosition.z);
+    player.rotation.z = angle - Math.PI * 2
+    setPositionSpring({ position: [newPosition.x, newPosition.y, newPosition.z] });
   });
 
   return (
-    <Squall currentAction={currentAction} scale={0.06} rotation={[0,0,0]} ref={playerRef} name="character">
-      <Sphere args={[0.3, 32, 32]} position={[0, 0, 0.1]} name="hitbox" visible={false} />
+    <Squall currentAction={currentAction} scale={0.06} name="character" ref={playerRef}>
+      <Sphere args={[0.05, 32, 32]}  name="hitbox" visible={true} />
+      <Focus />
     </Squall>
   );
 };

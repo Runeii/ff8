@@ -53,35 +53,15 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
     
     const controlledScroll = controlledScrolls[tiles[0].layerID / 2]
 
+    
     if (!controlledScroll) {
       layerRef.current.position.x = finalPanX;
       layerRef.current.position.y = finalPanY;
       return;
     }
 
-    if (!controlledScroll.x2 || !controlledScroll.y2) {
-      layerRef.current.position.x = controlledScroll.x1;
-      layerRef.current.position.y = controlledScroll.y1;
-      return
-    }
-
-    const standardXRange = boundaries.right - boundaries.left;
-    const standardYRange = boundaries.top - boundaries.bottom;
-
-    const controlledXRange = controlledScroll.x2 - controlledScroll.x1;
-    const controlledYRange = controlledScroll.y2 - controlledScroll.y1;
-
-    const xRatio = controlledXRange / standardXRange;
-    const yRatio = controlledYRange / standardYRange;
-
-    const x = finalPanX - boundaries.left;
-    const y = finalPanY - boundaries.top;
-
-    const controlledX = x * xRatio + controlledScroll.x1;
-    const controlledY = y * yRatio + controlledScroll.y1;
-
-    layerRef.current.position.x = controlledX;
-    layerRef.current.position.y = controlledY;
+    layerRef.current.position.x = controlledScroll.x1 ?? 0
+    layerRef.current.position.y = controlledScroll.y1 ?? 0
   });
 
   const [isAbove, setIsAbove] = useState(false);
@@ -102,6 +82,7 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
     }
   });
   
+  const isLayerVisible = useGlobalStore((state) => state.backgroundLayerVisibility[tiles[0].layerID] !== false);
   const currentParameterStates = useGlobalStore((state) => state.currentParameterStates);
   const currentParameterVisibility = useGlobalStore((state) => state.currentParameterVisibility);
 
@@ -110,15 +91,18 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
     layer = 3;
   }
 
+  if (!isLayerVisible) {
+    return null;
+  }
   return (
-    <group position={[0, 0, tiles[0].Z]} ref={layerRef}>
+    <group position={[0, 0, tiles[0].Z]} ref={layerRef} visible={false}>
       {tiles.map(({ X, Y, index, parameter, state, texture, isBlended, blendType }) => (
         <sprite
           key={index}
           position={[X + TILE_SIZE / 2, -Y - TILE_SIZE / 2, 0]}
           scale={[TILE_SIZE, TILE_SIZE, TILE_SIZE]}
           layers={layer}
-          visible={(parameter === 255 || currentParameterStates[parameter] === state) && currentParameterVisibility[parameter] !== false}
+          visible={(parameter === 255 || !currentParameterStates[parameter] || currentParameterStates[parameter] === state) && currentParameterVisibility[parameter] !== false}
         >
           <spriteMaterial
             map={texture}

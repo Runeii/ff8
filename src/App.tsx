@@ -8,7 +8,7 @@ import { animated, useSpring } from '@react-spring/web'
 import Controller from './Controller/Controller'
 import useGlobalStore from './store'
 import {getInitialField} from './utils'
-import Text from './components/Text/Text'
+import Ui from './UI/UI'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
@@ -18,7 +18,6 @@ useGlobalStore.setState({
 
 export default function App() {
   const fieldId = useGlobalStore(state => state.fieldId);
-  const currentMessages = useGlobalStore(state => state.currentMessages);
 
   useEffect(() => {
     if (!hasNamedField) {
@@ -30,7 +29,7 @@ export default function App() {
   const [spring, setSpring] = useSpring(() => ({
     opacity: 0,
     config: {
-      duration: 500
+      duration: 1000,
     }
   }), []);
 
@@ -46,6 +45,12 @@ export default function App() {
     })
   }, [setSpring, spring.opacity]);
 
+  useEffect(() => {
+    useGlobalStore.setState({
+      fadeSpring: spring,
+    })
+  }, [spring])
+
   return (
     <>
     <animated.div className="container" style={spring}>
@@ -58,16 +63,8 @@ export default function App() {
         <Suspense>
           <Field setSpring={asyncSetSpring} />
         </Suspense>
+        <Ui />
       </Canvas>
-      <>
-        {currentMessages.map(message => (
-          <Text
-            text={message.text}
-            x={message.x}
-            y={message.y}
-          />
-        ))}
-      </>
       </animated.div>
     <Controller />
     </>

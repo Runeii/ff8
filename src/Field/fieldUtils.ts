@@ -2,6 +2,7 @@ import { Camera, OrthographicCamera, PerspectiveCamera, Scene, WebGLRenderer } f
 
 export const renderSceneWithLayers = (scene: Scene, camera: Camera, gl: WebGLRenderer) => {
   const orthoCamera = scene.getObjectByName('orthoCamera') as OrthographicCamera;
+  const uiCamera = scene.getObjectByName('uiCamera') as OrthographicCamera;
   const perspectiveCamera = camera as PerspectiveCamera;
 
   if (!orthoCamera) {
@@ -26,4 +27,8 @@ export const renderSceneWithLayers = (scene: Scene, camera: Camera, gl: WebGLRen
   gl.clearDepth();
   orthoCamera.layers.set(2);
   gl.render(scene, orthoCamera);
+
+  gl.clearDepth();
+  uiCamera.layers.set(3);
+  gl.render(scene, uiCamera);
 }

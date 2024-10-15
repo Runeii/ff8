@@ -64,7 +64,7 @@ const Field = ({ data }: FieldProps) => {
       {hasPlacedCharacter && (
         <>
           <Gateways
-            gateways={data.gateways}
+            fieldId={data.id}
             walkMeshGeometry={walkMeshGeometry}
           />
           <Scripts scripts={data.scripts} />
@@ -97,17 +97,21 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
       setData(null);
       gl.clear();
       const response = await fetch(`/output/${fieldId}.json`);
-      const data = await response.json();
+      const data = await response.json() as FieldData;
       setData(data);
       useGlobalStore.setState({
         currentParameterStates: {},
         currentParameterVisibility: {},
+        controlledScrolls: {},
+        currentMessages: [],
+        hasExitedGateway: false,
+
+        availableMessages: data.text,
       });
       if (!useGlobalStore.getState().pendingCharacterPosition) {
         useGlobalStore.setState({ pendingCharacterPosition: getInitialEntrance(data) });
       }
       setCharacterToPendingPosition();
-      await setSpring(1);
     }
     handleTransition();
   }, [gl, fieldId, setSpring, setCharacterToPendingPosition]);

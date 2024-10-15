@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { Script } from "../types";
 import {  Mesh, Vector3 } from "three";
 import {Text, Line as DreiLine } from "@react-three/drei";
@@ -13,27 +13,28 @@ type LocationProps = {
 
 const Location = ({ script }: LocationProps) => {
   const [line, setLine] = useState<Vector3[]>();
+  const [isLineOff, setIsLineOff] = useState(false);
 
-  const constructorReturnValue = useScript<{isLineOff: boolean, line: {start: VectorLike, end: VectorLike}}>(script, 'constructor?', {
-    once: true
-  });
-
-  useEffect(() => {
-    if (!constructorReturnValue?.line) {
-      return;
+  useScript<{isLineOff: boolean, line: {start: VectorLike, end: VectorLike}}>(script, 'constructor?', (result) => {
+    if (result.line !== undefined) {
+      const lineStart = vectorToFloatingPoint(result.line.start);
+      const lineEnd = vectorToFloatingPoint(result.line.end);
+      setLine([lineStart, lineEnd]);
     }
-    const line = constructorReturnValue.line;
-    const lineStart = vectorToFloatingPoint(line.start);
-    const lineEnd = vectorToFloatingPoint(line.end);
-    setLine([lineStart, lineEnd]);
-  }, [constructorReturnValue?.line]);
 
-  const defaultReturnValue = useScript<{ isLineOff: boolean }>(script, 'default', {
-    condition: constructorReturnValue?.isLineOff,
+    if (result.isLineOff !== undefined) {
+      setIsLineOff(!!result.isLineOff);
+    }
+  }, {
+    once: true,
   });
 
-  const isLineOff = constructorReturnValue?.isLineOff ?? defaultReturnValue?.isLineOff;
-  
+  useScript<{ isLineOff: boolean }>(script, 'default', (result) => {
+    setIsLineOff(!!result.isLineOff);
+  }, {
+    condition: isLineOff,
+  });
+
   const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
 
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -51,28 +52,27 @@ const Location = ({ script }: LocationProps) => {
     }
   });
 
-  useScript(script, 'talk', {
+  useScript(script, 'talk', () => null, {
     condition: isIntersecting,
     trigger: 'Space',
     once: false
   });
 
-  useScript(script, 'touchon', {
+  useScript(script, 'touchon', () => null, {
     condition: isIntersecting,
     once: true
   });
 
-  useScript(script, 'touch', {
+  useScript(script, 'touch', () => null, {
     condition: isIntersecting,
     once: false
   });
 
-  useScript(script, 'touchoff', {
+  useScript(script, 'touchoff', () => {
+    setWasIntersecting(false);
+  },{
     condition: !isIntersecting && wasIntersecting,
     once: true,
-    onComplete: () => {
-      setWasIntersecting(false);
-    }
   });
 
   if (!line || isLineOff) {

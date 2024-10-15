@@ -14,34 +14,34 @@ const Background = ({ script }: BackgroundProps) => {
   const animationFramesRef = useRef<[number, number]>([0, 0]);
   const isLoopingRef = useRef<boolean>(false);
 
-  useScript(script, 'constructor?', {
+  useScript(script, 'constructor?', () => null, {
     once: true
   });
 
-  const result = useScript<{animationLoop: [number, number], backgroundAnimationSpeed: number, isBackgroundDrawn: boolean, isLooping: boolean}>(script, 'default', {});
-
-  useEffect(() => {
-    if (!result || script.methods.find((method) => method.methodId === 'default')?.scriptLabel !== 90) {
-      return;
-    }
+  useScript<{animationLoop: [number, number], backgroundAnimationSpeed: number, isBackgroundDrawn: boolean, isLooping: boolean}>(script, 'default',
+    (result) => {
+      const { animationLoop, backgroundAnimationSpeed, isBackgroundDrawn, isLooping } = result;
   
-    const { animationLoop, backgroundAnimationSpeed, isBackgroundDrawn, isLooping } = result;
-
-    useGlobalStore.setState((state) => {
-      state.currentParameterVisibility[targetBackgroundParam] = isBackgroundDrawn === false ? false : true
-      return state;
-    });
-
-    if (backgroundAnimationSpeed) {
-      setBackgroundAnimationSpeed(backgroundAnimationSpeed);
-    }
+      if (isBackgroundDrawn === undefined) {
+        useGlobalStore.setState((state) => {
+          state.currentParameterVisibility[targetBackgroundParam] = isBackgroundDrawn === false ? false : true
+          return state;
+        });
+      }
+    
+      if (backgroundAnimationSpeed !== undefined) {
+        setBackgroundAnimationSpeed(backgroundAnimationSpeed);
+      }
+    
+      if (animationLoop !== undefined) {
+        animationFramesRef.current = animationLoop;
+      }
   
-    if (animationLoop) {
-      animationFramesRef.current = animationLoop;
+      if (isLooping !== undefined) {
+        isLoopingRef.current = isLooping;
+      }
     }
-
-    isLoopingRef.current = isLooping;
-  }, [result, script.methods, targetBackgroundParam]);
+  );
 
   useEffect(() => {
     if (backgroundAnimationSpeed === 0) {
