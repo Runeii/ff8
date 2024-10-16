@@ -27,3 +27,6 @@ public/output
 public/models
 public/*.glb
 converter/target
+
+# Local Netlify folder
+.netlify

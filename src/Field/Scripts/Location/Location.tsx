@@ -80,14 +80,12 @@ const Location = ({ script }: LocationProps) => {
   }
 
   return (
-    <>
-      <DreiLine
-        points={line}
-        lineWidth={5}
-        color="red"
-      />
-      <Text position={line[0]} color="black" fontSize={0.05}>{script.name}</Text>
-    </>
+    <DreiLine
+      points={line}
+      lineWidth={5}
+      color="red"
+      visible={import.meta.env.DEV}
+    />
   );
 }
 

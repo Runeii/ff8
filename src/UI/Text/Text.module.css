@@ -1,15 +1,22 @@
+.container {
+  position: fixed;
+  inset: 10%;
+  left: 0;
+  top: 0;
+  width: 100cqw;
+  height: 100cqh;
+}
 .text {
-  --left: (100 / 320 * var(--x));
-  --top: (100 / 224 * var(--y));
   position: absolute;
-  left: calc(var(--left) * 1vw);
-  top: calc(var(--top) * 1vh);
+  left: calc(var(--x) * 1cqw);
+  top: calc(var(--y) * 1cqh);
+  font-size: 3cqw;
 
+  transform-origin: center center;
   padding: 8px;
 
   color: white;
 
-  font-size: 3.4vw;
   line-height: 1.2;
 
   text-align: left;
@@ -25,7 +32,7 @@
   box-shadow: 1px 1px 0 0 #636363, /* Top-left corner */ -1px -1px 0 0 #828282; /* Bottom-right corner */
   background-image: url("./menu-fond.png");
 
-  white-space: pre-line;
+  white-space: nowrap;
 
   color: rgb(231, 231, 231);
 

@@ -148,7 +148,7 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
 
   return (
     <Squall currentAction={currentAction} scale={0.06} name="character" ref={playerRef}>
-      <Sphere args={[0.05, 32, 32]}  name="hitbox" visible={true} />
+      <Sphere args={[0.4, 32, 32]}  name="hitbox" visible={false} />
       <Focus />
     </Squall>
   );

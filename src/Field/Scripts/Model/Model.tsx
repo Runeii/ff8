@@ -56,7 +56,7 @@ const Model = ({ script }: { script: Script }) => {
   // Typing here is not ideal, but it works for now
   const ref = useRef<{actions: Record<string, AnimationAction>, mesh: Group} | null>(null);
   const setComponentRef = useCallback((node: unknown) => {
-    if (node) {
+    if (!node) {
       return;
     }
     ref.current = node as typeof ref.current;
@@ -215,7 +215,7 @@ const Model = ({ script }: { script: Script }) => {
     const angleInDegrees = (angle / 255) * 360;
     const angleInRadians = MathUtils.degToRad(angleInDegrees);
     setRotationSpring({
-      rotation: [base + angleInRadians, 0,0]
+      rotation: [angleInRadians,0,0]
     });
   }, [angle, setRotationSpring]);
 
@@ -230,10 +230,10 @@ const Model = ({ script }: { script: Script }) => {
         <animated.group rotation={rotationSpring.rotation as unknown as [number, number, number]}>
           <ModelComponent name={`model--${script.modelId}`} ref={setComponentRef} visible={isVisible} scale={0.058} position={[-0.053,-0.05,0]} />
           <Sphere
-            args={[talkRadius / 4000 / 10]}
+            args={[talkRadius / 4000]}
             position={[0, 0, 0]}
             ref={talkSphereRef}
-            visible={true}
+            visible={false}
           >
             <meshBasicMaterial color="white" side={DoubleSide} />
           </Sphere>

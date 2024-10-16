@@ -31,8 +31,20 @@ body,
 }
 
 .container {
+  container-type: inline-size;
+  container-name: canvas;
   position: relative;
+  display: flex;
+  place-content: center;
+  place-items: center;
+  width: 100vw;
+  height: auto;
   aspect-ratio: 320 / 224;
+
+  @media (orientation: landscape) {
+    height: 100vh;
+    width: auto;
+  }
 }
 
 .canvas {
@@ -46,14 +58,12 @@ body,
   flex-direction: column;
   place-content: center;
   place-items: center;
-  width: 100vw !important;
 }
 
 .canvas canvas {
   aspect-ratio: 320 / 224;
   width: 100% !important;
   height: 100% !important;
-  max-height: 80vh;
   object-fit: contain;
 }
 

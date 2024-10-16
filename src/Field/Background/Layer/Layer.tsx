@@ -95,7 +95,7 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
     return null;
   }
   return (
-    <group position={[0, 0, tiles[0].Z]} ref={layerRef} visible={false}>
+    <group position={[0, 0, tiles[0].Z]} ref={layerRef}>
       {tiles.map(({ X, Y, index, parameter, state, texture, isBlended, blendType }) => (
         <sprite
           key={index}

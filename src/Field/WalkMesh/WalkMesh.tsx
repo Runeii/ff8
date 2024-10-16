@@ -20,8 +20,8 @@ const WalkMesh = ({ setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
           useGlobalStore.setState({
             characterPosition: e.point
         })
-        }}>
-          <meshBasicMaterial color={"red"}transparent opacity={import.meta.env.DEV ? 1 : 0}side={DoubleSide} />
+        }} visible={import.meta.env.DEV}>
+          <meshBasicMaterial color={"red"} transparent opacity={0.2} side={DoubleSide} />
         </mesh>
       ))}
     </group>
