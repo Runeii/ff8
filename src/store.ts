@@ -62,8 +62,8 @@ const useGlobalStore = create<GlobalState>()((set) => ({
     opacity: new SpringValue(0),
   },
 
-  availableCharacters: [],
-  party: [],
+  availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7],
+  party: [0, 1, 2],
 
   currentFocusActor: undefined,
 }))

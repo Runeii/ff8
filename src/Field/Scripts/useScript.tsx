@@ -1,4 +1,4 @@
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { executeOpcodes } from "./opcodes/executor";
 import { Script } from "./types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -13,6 +13,12 @@ function useScript<T>(
     once?: boolean;
   } = {},
  ) {
+  const scene = useThree(({ scene }) => scene);
+  const sceneRef = useRef(scene);
+  useEffect(() => {
+    sceneRef.current = scene;
+  }, [scene]);
+
   const [hasCompleted, setHasCompleted] = useState(false);
   const onUpdateRef = useRef(onUpdate);
 
@@ -62,7 +68,8 @@ function useScript<T>(
       handler.opcodes,
       isConditionTrueRef,
       isHaltedRef,
-      onUpdateRef
+      sceneRef,
+      onUpdateRef,
     );
 
     isProcessingRef.current = false;

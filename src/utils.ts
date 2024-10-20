@@ -1,4 +1,4 @@
-import { Object3D, Raycaster, Vector3 } from "three";
+import { Mesh, Object3D, Raycaster, Scene, Vector3 } from "three";
 import { FieldData } from "./Field/Field";
 import gateways from './gateways.ts';
 
@@ -77,3 +77,17 @@ export const getPositionOnWalkmesh = (desiredPosition: Vector3, walkmesh: Object
 
   return sortedIntersects[0].point;
 }
+
+export const getMeshByUserDataValue = (scene: Scene, name: string, value: string | number) => {
+  let mesh: Mesh | undefined;
+
+  scene.traverse((node) => {
+    console.log(node.userData.partyMemberId)
+    if (node.userData[name] === value) {
+      mesh = node as Mesh;
+    }
+  });
+
+  return mesh;
+};
+

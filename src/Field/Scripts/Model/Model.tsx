@@ -1,11 +1,12 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Script } from "../types";
 import useScript from "../useScript";
-import { AnimationAction, Box3, DoubleSide, Group, LoopRepeat, MathUtils, Mesh } from "three";
+import { AnimationAction, Box3, DoubleSide, Group, LoopRepeat, MathUtils, Mesh, Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import {animated, useSpring } from "@react-spring/three";
 import { Sphere } from "@react-three/drei";
 import { getAnimationById, playAnimation } from "./modelUtils";
+import { getPositionOnWalkmesh } from "../../../utils";
 
 const modelFiles = import.meta.glob('./gltf/d*.tsx');
 
@@ -20,7 +21,10 @@ const models = Object.keys(modelFiles).reduce((acc, path) => {
 }, {} as Record<number, React.LazyExoticComponent<React.ComponentType<JSX.IntrinsicElements['group']>>>);
 
 const Model = ({ script }: { script: Script }) => {
+  const walkmesh = useThree(({ scene }) => scene.getObjectByName('walkmesh') as Mesh);
+
   const [modelId, setModelId] = useState<number | undefined>();
+  const [partyMemberId, setPartyMemberId] = useState<number | undefined>();
   const [idleAnimationId, setIdleAnimationId] = useState<number | undefined>();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -100,6 +104,7 @@ const Model = ({ script }: { script: Script }) => {
     angle: number
     talkRadius: number
     pushRadius: number
+    partyMemberId: number
   }
 
   const completionHandler = (data: Partial<CompletionResult>) => {
@@ -107,6 +112,10 @@ const Model = ({ script }: { script: Script }) => {
       setModelId(data.modelId < 75 ? data.modelId : 1);
     }
 
+    if (data.partyMemberId !== undefined) {
+      setPartyMemberId(data.partyMemberId);
+    }
+  
     if (data.idleAnimationId !== undefined) {
       setIdleAnimationId(data.idleAnimationId);
     }
@@ -137,7 +146,7 @@ const Model = ({ script }: { script: Script }) => {
       setPosition.start({
         x: data.position[0],
         y: data.position[1],
-        z: data.position[2],
+        z: data.position[2] ?? getPositionOnWalkmesh(new Vector3(data.position[0], data.position[1], 0), walkmesh)?.z,
         immediate: movementSpeed === 0,
         config: { duration: movementSpeed * 2 },
       })
@@ -152,7 +161,6 @@ const Model = ({ script }: { script: Script }) => {
     }
 
     if (data.movementSpeed !== undefined) {
-      console.log(movementSpeed)
       setMovementSpeed(data.movementSpeed);
     }
 
@@ -223,12 +231,21 @@ const Model = ({ script }: { script: Script }) => {
   if (!ModelComponent || isUnused) {
     return null;
   }
-
+console.log('model--', script.modelId, partyMemberId)
   return (
     <Suspense fallback={null}>
       <animated.group ref={containerRef} rotation={[0,Math.PI / 2, 0]}>
         <animated.group rotation={rotationSpring.rotation as unknown as [number, number, number]}>
-          <ModelComponent name={`model--${script.modelId}`} ref={setComponentRef} visible={isVisible} scale={0.058} position={[-0.053,-0.05,0]} />
+          <ModelComponent
+            name={`model--${script.modelId}`}
+            ref={setComponentRef}
+            position={[-0.053,-0.05,0]}
+            scale={0.058}
+            userData={{
+              partyMemberId
+            }}
+            visible={isVisible}
+          />
           <Sphere
             args={[talkRadius / 4000]}
             position={[0, 0, 0]}

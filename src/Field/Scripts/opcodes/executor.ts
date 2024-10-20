@@ -3,9 +3,10 @@
 import { MutableRefObject } from "react";
 import MAP_NAMES from "../../../constants/maps";
 import useGlobalStore from "../../../store";
-import { numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
+import { getMeshByUserDataValue, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj } from "../types";
 import { dummiedCommand, remoteExecute, unusedCommand, wait, waitForKeyPress } from "./common";
+import { Scene } from "three";
 
 const MEMORY: Record<number, number> = {};
 
@@ -28,10 +29,18 @@ export async function executeOpcodes<T>(
   opcodes: OpcodeObj[],
   isExecutionPermitted: MutableRefObject<boolean>,
   isHaltedRef: MutableRefObject<boolean>,
+  sceneRef: MutableRefObject<Scene>,
   onUpdate: MutableRefObject<(currentResult: Partial<T>) => void>,
 ) {
   const STACK: number[] = [];
-  const currentResult: Record<string, unknown> = {};
+  const currentResult: Record<string, unknown> = {
+    256: 255,
+    438: 255,
+    439: 255,
+    440: 255,
+    441: 255,
+    442: 255,
+  };
 
   const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFunc | HandlerFuncWithPromise>> = {
     LBL: () => { },
@@ -146,7 +155,7 @@ export async function executeOpcodes<T>(
     },
     MAPJUMP3: () => {
       const mapJumpDetailsInMemory = STACK.splice(-6);
-      console.log('MAPJUMP', mapJumpDetailsInMemory);
+
       useGlobalStore.setState({
         fieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
         initialAngle: mapJumpDetailsInMemory[4],
@@ -185,7 +194,7 @@ export async function executeOpcodes<T>(
     BGCLEAR: (opcodeObj) => {
       // Maybe?
       const unknown = STACK.pop() as number;
-      console.log('BGCLEAR', unknown, opcodeObj.param);
+
       useGlobalStore.setState({
         backgroundLayerVisibility: {
           ...useGlobalStore.getState().backgroundLayerVisibility,
@@ -271,7 +280,6 @@ export async function executeOpcodes<T>(
         currentMessages: useGlobalStore.getState().currentMessages.slice(0, -1)
       });
       useGlobalStore.setState({ isUserControllable: true });
-      console.log('Close')
     },
     ISTOUCH: () => {
       //const actorId = 
@@ -313,17 +321,17 @@ export async function executeOpcodes<T>(
 
       STACK.pop(); // priority, we don't use it
 
-      remoteExecute(label);
+      remoteExecute(label, sceneRef);
     },
     REQEW: async () => {
       const label = STACK.pop() as number;
       STACK.pop();
-      await remoteExecute(label);
+      await remoteExecute(label, sceneRef);
     },
     REQSW: () => {
       const label = STACK.pop() as number;
       STACK.pop();
-      remoteExecute(label);
+      remoteExecute(label, sceneRef);
     },
     FADEIN: async () => {
       const fadeSpring = useGlobalStore.getState().fadeSpring;
@@ -384,7 +392,7 @@ export async function executeOpcodes<T>(
     SETPC: () => {
       const partyMemberId = STACK.pop() as number;
       currentResult.partyMemberId = partyMemberId;
-      console.warn('UNFINISHED SETPC', partyMemberId);
+      console.log('SETPC', partyMemberId);
     },
     ADDMEMBER: () => {
       const characterID = STACK.pop() as number;
@@ -485,6 +493,11 @@ export async function executeOpcodes<T>(
     },
     SHOW: () => {
       currentResult.isVisible = true;
+    },
+    SET: () => {
+      const lastTwo = STACK.splice(-2);
+      currentResult.position = [...lastTwo.map(numberToFloatingPoint), undefined] as [number, number, undefined];
+      currentResult.movementDuration = 0;
     },
     SET3: () => {
       const lastThree = STACK.splice(-3);
@@ -616,6 +629,20 @@ export async function executeOpcodes<T>(
         currentFocusActor: undefined,
       })
     },
+    PGETINFO: () => {
+      const partyMemberId = STACK.pop() as number;
+      const mesh = getMeshByUserDataValue(sceneRef.current, 'partyMemberId', partyMemberId);
+
+      if (!mesh) {
+        console.warn('No mesh found for actor ID', partyMemberId);
+        return;
+      }
+
+      const { x, y, z } = mesh.position;
+      TEMP_STACK[0] = x;
+      TEMP_STACK[1] = y;
+      TEMP_STACK[2] = z;
+    },
 
 
     GAMEOVER: () => {
@@ -623,9 +650,7 @@ export async function executeOpcodes<T>(
     },
 
     // TO ADD
-    MENUSHOP: () => {
-      console.log('shop');
-    },
+    MENUSHOP: () => { },
     DRAWPOINT: () => {
       // drawpoint ID
       STACK.pop() as number;
@@ -639,6 +664,14 @@ export async function executeOpcodes<T>(
     },
     IDLOCK: () => { },
     IDUNLOCK: () => { },
+    SAVEENABLE: () => {
+      // const isEnabled =
+      STACK.pop() as number;
+    },
+    SHAKE: () => {
+      const lastFour = STACK.splice(-4);
+    },
+    SHAKEOFF: () => { },
 
     RBGSHADELOOP: dummiedCommand,
     LSCROLL: dummiedCommand,
@@ -709,7 +742,7 @@ export async function executeOpcodes<T>(
         const handler = OPCODE_HANDLERS[opcode.name];
 
         if (!handler) {
-          console.warn(`No handler for opcode ${opcode.name}. Param: ${opcode.param}`, `Method: ${opcodes[0].param}`);
+          console.warn(`No handler for opcode ${opcode.name}. Param: ${opcode.param}`, `Method: ${opcodes[0].param}.`, `Stack: ${STACK}`);
           requestAnimationFrame(loop); // Continue to next iteration
           return;
         }

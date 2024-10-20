@@ -1,6 +1,8 @@
+import { MutableRefObject } from "react";
 import useGlobalStore from "../../../store";
 import { OpcodeObj } from "../types";
 import { executeOpcodes } from "./executor";
+import { Scene } from "three";
 
 export const KEYS: Record<number, string> = {
   192: 'Space'
@@ -21,7 +23,7 @@ export const waitForKeyPress = (key: number) => {
   });
 }
 
-export const remoteExecute = async (labelId: number) => {
+export const remoteExecute = async (labelId: number, sceneRef: MutableRefObject<Scene>) => {
   const { fieldScripts } = useGlobalStore.getState()
   const targetScript = fieldScripts.find(script => script.methods.some(method => method.scriptLabel === labelId));
   const targetMethod = targetScript?.methods.find(method => method.scriptLabel === labelId);
@@ -30,8 +32,14 @@ export const remoteExecute = async (labelId: number) => {
     console.warn('Could not find script or method with labelId', labelId);
     return;
   }
-  console.log('Executing!', targetScript, targetMethod);
-  await executeOpcodes(targetMethod.opcodes, { current: true }, { current: false }, { current: console.log });
+  console.log('Executing!', targetScript, targetMethod, labelId);
+  await executeOpcodes(
+    targetMethod.opcodes,
+    { current: true },
+    { current: false },
+    sceneRef,
+    { current: (...result) => console.log('remote execute result', result) }
+  );
   return;
 }
 
