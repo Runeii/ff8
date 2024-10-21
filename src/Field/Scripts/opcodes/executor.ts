@@ -42,7 +42,7 @@ export async function executeOpcodes<T>(
     442: 255,
   };
 
-  const OPCODE_HANDLERS: Record<Opcode, HandlerFunc | HandlerFuncWithPromise> = {
+  const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFunc | HandlerFuncWithPromise>> = {
     LBL: () => { },
     RET: () => { },
     PSHI_L: (opcodeObj) => {
@@ -194,7 +194,7 @@ export async function executeOpcodes<T>(
       const speed = STACK.pop() as number;
       currentResult.backgroundAnimationSpeed = speed;
     },
-    BGCLEAR: (opcodeObj) => {
+    BGCLEAR: () => {
       // Maybe?
       const unknown = STACK.pop() as number;
 
@@ -672,7 +672,8 @@ export async function executeOpcodes<T>(
       STACK.pop() as number;
     },
     SHAKE: () => {
-      const lastFour = STACK.splice(-4);
+      //const lastFour =
+      STACK.splice(-4);
     },
     SHAKEOFF: () => { },
 

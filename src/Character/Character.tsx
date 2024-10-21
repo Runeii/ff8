@@ -83,7 +83,7 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
   const isTransitioningMap = useGlobalStore((state) => state.isTransitioningMap);
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   const [currentAction, setCurrentAction] = useState<ActionName>("d001_act1");
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (isTransitioningMap) {
       return
     }
