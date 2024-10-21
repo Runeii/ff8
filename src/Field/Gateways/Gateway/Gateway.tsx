@@ -45,7 +45,7 @@ const Gateway = ({
       onIntersect(formattedGateway)
     }
   });
-return;
+
   return (
     <>
       <Line

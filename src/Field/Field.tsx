@@ -104,9 +104,9 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
         currentParameterVisibility: {},
         controlledScrolls: {},
         currentMessages: [],
-        hasExitedGateway: false,
 
         availableMessages: data.text,
+        isTransitioningMap: false,
       });
       if (!useGlobalStore.getState().pendingCharacterPosition) {
         useGlobalStore.setState({ pendingCharacterPosition: getInitialEntrance(data) });

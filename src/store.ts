@@ -12,12 +12,12 @@ interface GlobalState {
   fieldId: string,
   initialAngle: number,
   isUserControllable: boolean,
+  isTransitioningMap: boolean,
   isRunEnabled: boolean,
   pendingCharacterPosition?: Vector3,
   setCharacterToPendingPosition: () => void,
 
   availableMessages: string[][],
-  hasExitedGateway: boolean,
   fieldScripts: Script[]
 
   currentMessages: Message[],
@@ -45,8 +45,8 @@ const useGlobalStore = create<GlobalState>()((set) => ({
 
   currentLocationPlaceName: 0, // we don't currently use this for anything
   fieldId: '',
-  hasExitedGateway: false,
   isUserControllable: true,
+  isTransitioningMap: true,
   isRunEnabled: true,
   initialAngle: 0,
 

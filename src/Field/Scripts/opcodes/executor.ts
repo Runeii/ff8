@@ -42,7 +42,7 @@ export async function executeOpcodes<T>(
     442: 255,
   };
 
-  const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFunc | HandlerFuncWithPromise>> = {
+  const OPCODE_HANDLERS: Record<Opcode, HandlerFunc | HandlerFuncWithPromise> = {
     LBL: () => { },
     RET: () => { },
     PSHI_L: (opcodeObj) => {
@@ -58,6 +58,9 @@ export async function executeOpcodes<T>(
       STACK.push(MEMORY[opcodeObj.param] ?? 0);
     },
     PSHM_W: (opcodeObj) => {
+      STACK.push(MEMORY[opcodeObj.param] ?? 0);
+    },
+    PSHM_L: (opcodeObj) => {
       STACK.push(MEMORY[opcodeObj.param] ?? 0);
     },
     PSHSM_B: (opcodeObj) => {
@@ -720,6 +723,7 @@ export async function executeOpcodes<T>(
     OPENEYES: unusedCommand,
     BLINKEYES: unusedCommand,
     SETPARTY2: unusedCommand,
+    DYING: unusedCommand,
   }
 
   let pendingOpcodes = [...opcodes];

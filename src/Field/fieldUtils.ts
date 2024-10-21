@@ -29,6 +29,6 @@ export const renderSceneWithLayers = (scene: Scene, camera: Camera, gl: WebGLRen
   gl.render(scene, orthoCamera);
 
   gl.clearDepth();
-  uiCamera.layers.set(3);
+  uiCamera.layers.set(4);
   gl.render(scene, uiCamera);
 }

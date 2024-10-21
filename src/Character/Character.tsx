@@ -11,8 +11,8 @@ import Focus from "./Focus/Focus";
 import { useSpring } from "@react-spring/three";
 
 export const CHARACTER_HEIGHT = 0.06;
-const RUNNING_SPEED = 0.0038;
-const WALKING_SPEED = 0.0005;
+const RUNNING_SPEED = 0.3;
+const WALKING_SPEED = 0.08;
 
 const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
@@ -80,9 +80,13 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
     setHasPlacedCharacter(true);
   }, [position, scene, setHasPlacedCharacter, setPositionSpring]);
 
+  const isTransitioningMap = useGlobalStore((state) => state.isTransitioningMap);
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   const [currentAction, setCurrentAction] = useState<ActionName>("d001_act1");
-  useFrame(() => {
+  useFrame((state, delta) => {
+    if (isTransitioningMap) {
+      return
+    }
     const walkmesh = scene.getObjectByName("walkmesh");
     const player = playerRef.current;
     const movementFlags = movementFlagsRef.current;
@@ -127,8 +131,8 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
     }
     
     const isWalking = !isRunEnabled || movementFlags.isWalking;
-    direction.normalize().multiplyScalar(isWalking ? WALKING_SPEED : RUNNING_SPEED);
-    setCurrentAction(isWalking ? 'd001_act2' : "d001_act2");
+    direction.normalize().multiplyScalar(isWalking ? WALKING_SPEED : RUNNING_SPEED).multiplyScalar(delta);
+    setCurrentAction(isWalking ? 'd001_act1' : "d001_act2");
   
     const desiredPosition = player.position.clone().add(direction);
     const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT);

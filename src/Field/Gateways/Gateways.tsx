@@ -10,18 +10,28 @@ export type GatewaysProps = {
 }
 
 const Gateways = ({ fieldId }: GatewaysProps) => {
+  const isTransitioningMap = useGlobalStore(state => state.isTransitioningMap);
+
   const handleTransition = useCallback((gateway: FormattedGateway) => {
+    if (isTransitioningMap) {
+      return;
+    }
     console.log('Transitioning to', gateway.target, 'via gateway', gateway, 'at', gateway.destination);
     useGlobalStore.setState({
       fieldId: gateway.target,
+      isTransitioningMap: true,
       pendingCharacterPosition: gateway.destination
     });
-  }, []);
+  }, [isTransitioningMap]);
 
   const gateways = useMemo(() => {
     return generatedGateways.filter((gateway) => gateway.source === fieldId) as unknown as Gateway[];
   }, [fieldId]);
   
+  if (isTransitioningMap) {
+    return null;
+  }
+
   return (
     <>
       {gateways.map(gateway => ( 
