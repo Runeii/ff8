@@ -231,7 +231,7 @@ const Model = ({ script }: { script: Script }) => {
   if (!ModelComponent || isUnused) {
     return null;
   }
-console.log('model--', script.modelId, partyMemberId)
+
   return (
     <Suspense fallback={null}>
       <animated.group ref={containerRef} rotation={[0,Math.PI / 2, 0]}>
