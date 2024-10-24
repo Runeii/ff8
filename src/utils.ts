@@ -4,7 +4,7 @@ import gateways from './gateways.ts';
 
 export const numberToFloatingPoint = (value: number) => value / 4096;
 
-export const vectorToFloatingPoint = (value: Vector3 | { x: number, y: number, z: number } | [number, number, number]) => {
+export const vectorToFloatingPoint = (value: Vector3 | { x: number, y: number, z: number } | number[]) => {
   if (Array.isArray(value)) {
     return new Vector3(
       numberToFloatingPoint(value[0]),

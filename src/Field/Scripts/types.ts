@@ -1,3 +1,4 @@
+import { Vector3 } from "three";
 import { FieldData } from "../Field";
 import { OPCODES } from "./constants";
 
@@ -19,3 +20,38 @@ export type Script = Omit<FieldData['scripts'][number], 'methods' | 'type'> & {
   methods: ScriptMethod[];
   type: ScriptType;
 };
+
+export type ScriptState = {
+  animation: {
+    id: number;
+    isHoldingFinalFrame: boolean;
+    isLooping: boolean;
+  },
+  idleAnimationId: number;
+
+  backgroundAnimationSpeed: number,
+  backgroundStartFrame: number,
+  backgroundEndFrame: number,
+  isBackgroundLooping: boolean
+  isBackgroundVisible: boolean;
+
+  isLineOn: boolean;
+  linePoints: Vector3[] | null;
+
+  isVisible: boolean;
+  isSolid: boolean;
+  isUnused: boolean;
+
+  modelId: number;
+  partyMemberId: number;
+
+  pushRadius: number;
+  talkRadius: number;
+  isPushable: boolean;
+  isTalkable: boolean;
+
+  angle: number;
+  position: [number, number, number];
+  movementDuration: number;
+  movementSpeed: number;
+}

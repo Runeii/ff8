@@ -1,23 +1,34 @@
-const colorTagRegex = /\{(\w+)\}/g;
+const colorTagRegex = /\{(darkgrey|grey|yellow|red|green|blue|purple|white)\}/g;
 const waitTagRegex = /\{Wait\d+\}/g;
+const generalTagRegex = /\{(\w+)\}/g; // General match for any tag in braces
 
 const processSegment = (segment: string, openColor?: string) => {
-  const matches = segment.match(colorTagRegex);
+  const colorMatch = segment.match(colorTagRegex);
+  const waitMatch = segment.match(waitTagRegex);
+  const generalMatch = segment.match(generalTagRegex);
 
-  if (!matches || matches.length === 0) {
-    return { text: segment, newColor: openColor };
-  }
-
-  const tag = matches[0];
-
-  if (tag.includes('Wait')) {
+  if (waitMatch) {
+    // Handle Wait tag by removing it from the segment
     const removedWaitTag = segment.replace(waitTagRegex, '');
     return { text: removedWaitTag, newColor: openColor };
   }
 
-  const closeColor = openColor ? '</span>' : '';
-  const openNewColor = `<span class="${tag.replace('{', '').replace('}', '').toLowerCase()}">`;
-  return { text: closeColor + openNewColor, newColor: tag }; // Open new color
+  if (colorMatch) {
+    // Handle Color tag
+    const tag = colorMatch[0];
+    const closeColor = openColor ? '</span>' : '';
+    const openNewColor = `<span class="${tag.replace('{', '').replace('}', '').toLowerCase()}">`;
+    return { text: closeColor + openNewColor, newColor: tag }; // Open new color
+  }
+
+  if (generalMatch) {
+    // Handle any other tag by removing the braces and returning the content
+    const removedBraces = segment.replace(/\{|\}/g, '');
+    return { text: removedBraces, newColor: openColor };
+  }
+
+  // If no matches, just return the segment as is
+  return { text: segment, newColor: openColor };
 };
 
 export const processTagsInString = (input: string) => {
@@ -27,9 +38,11 @@ export const processTagsInString = (input: string) => {
   const textWithLineBreaks = input.replace(/\n/g, '<br />');
 
   const segments = textWithLineBreaks.split(/(\{[^}]+\})/g);
+
   const result = segments.reduce(
     ({ output, openColor }, segment) => {
       const { text, newColor } = processSegment(segment, openColor);
+
       return {
         output: output + text,
         openColor: newColor

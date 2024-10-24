@@ -13,13 +13,13 @@
   },
   "dependencies": {
     "@react-spring/three": "^9.7.5",
-    "@react-spring/web": "^9.7.4",
-    "@react-three/drei": "^9.109.2",
-    "@react-three/fiber": "^8.16.8",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "three": "^0.167.1",
-    "zustand": "^5.0.0-rc.2"
+    "@react-spring/web": "^9.7.5",
+    "@react-three/drei": "^9.114.6",
+    "@react-three/fiber": "^8.17.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.169.0",
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

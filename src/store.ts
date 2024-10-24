@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { Vector3 } from 'three';
 import { SpringValue } from '@react-spring/web';
-import { Script } from './Field/Scripts/types';
 
 interface GlobalState {
   characterPosition?: Vector3,
@@ -18,7 +17,6 @@ interface GlobalState {
   setCharacterToPendingPosition: () => void,
 
   availableMessages: string[][],
-  fieldScripts: Script[]
 
   currentMessages: Message[],
   controlledScrolls: Record<number, {
@@ -54,7 +52,6 @@ const useGlobalStore = create<GlobalState>()((set) => ({
   currentParameterStates: {},
   currentParameterVisibility: {},
 
-  fieldScripts: [],
   currentMessages: [],
 
   controlledScrolls: [],

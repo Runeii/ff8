@@ -53,3 +53,17 @@ type Message = {
   y: number;
   options?: Option[]
 }
+
+declare global {
+  interface ExecuteScriptEventDetail {
+    scriptId: number;
+    methodId: number;
+  }
+
+  // Extend the existing DocumentEventMap interface
+  interface DocumentEventMap {
+    'executeScript': CustomEvent<ExecuteScriptEventDetail>;
+  }
+}
+
+export { };
