@@ -225,6 +225,40 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   AMESW: async ({ STACK }) => {
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
+
+    const id = STACK.pop() as number;
+    STACK.pop() as number; // const channel = STACK.pop() as number;
+
+    const { availableMessages, currentMessages } = useGlobalStore.getState();
+
+    useGlobalStore.setState({
+      currentMessages: [
+        ...currentMessages,
+        {
+          key: Date.now(),
+          id,
+          text: availableMessages[id],
+          x,
+          y,
+        }
+      ]
+    });
+    useGlobalStore.setState({ isUserControllable: false });
+    while (useGlobalStore.getState().currentMessages.some(message => message.id === id)) {
+      await waitForKeyPress(192);
+      await wait(100);
+    }
+    useGlobalStore.setState({ isUserControllable: true });
+  },
+  AASK: async ({ STACK }) => {
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+
+    const cancelOpt = STACK.pop() as number;
+    const defaultOpt = STACK.pop() as number;
+    const last = STACK.pop() as number;
+    const first = STACK.pop() as number;
+
     const id = STACK.pop() as number;
     STACK.pop() as number; // const channel = STACK.pop() as number;
 

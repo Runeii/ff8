@@ -20,7 +20,7 @@ const DEFAULT_STATE: ScriptState = {
   isLineOn: true,
   linePoints: null,
 
-  isVisible: false,
+  isVisible: true,
   isSolid: false,
   isUnused: false,
 
@@ -51,6 +51,17 @@ const useMethod = (script: Script, activeMethodId: number | undefined, setActive
 
   const [previousActiveMethodName, setPreviousActiveMethodName] = useState<string>();
 
+  const STACKRef = useRef<number[]>([]);
+  const TEMP_STACKRef = useRef<Record<number, number>>({});
+
+  useEffect(() => {
+    return () => {
+      setCurrentOpcodeIndex(0);
+      STACKRef.current = [];
+      TEMP_STACKRef.current = {};
+    }
+  }, [activeMethodId, hasCompletedConstructor]);
+
   const activeMethod = useMemo(() => {
     const [constructor, ...methods] = script.methods;
 
@@ -78,22 +89,19 @@ const useMethod = (script: Script, activeMethodId: number | undefined, setActive
     setActiveMethodId(undefined);
   }, [activeMethod, activeMethodId, setActiveMethodId]);
 
-
-  const STACKRef = useRef<number[]>([]);
-  const TEMP_STACKRef = useRef<Record<number, number>>({});
-
-  useEffect(() => {
-    setCurrentOpcodeIndex(0);
-    STACKRef.current = [];
-    TEMP_STACKRef.current = {};
-  }, [activeMethod, activeMethodId]);
-
+  const thisRunMethodId = useRef<string>();
   useEffect(() => {
     if (!activeMethod) {
       return;
     }
 
     const { methodId, opcodes } = activeMethod;
+
+    if (thisRunMethodId.current && methodId !== thisRunMethodId.current && currentOpcodeIndex > 0) {
+      return;
+    }
+
+    thisRunMethodId.current = methodId;
 
     const goToNextOpcode = () => {
       const isLooping = methodId === 'default' || methodId === 'touch';
@@ -136,7 +144,7 @@ const useMethod = (script: Script, activeMethodId: number | undefined, setActive
         scene,
         script,
         STACK: STACKRef.current,
-        TEMP_STACK: STACKRef.current,
+        TEMP_STACK: TEMP_STACKRef.current,
       });
 
       if (nextIndex) {
