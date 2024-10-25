@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
 import { Script as ScriptType } from "../types";
 import useMethod from "./useMethod";
 import { Sphere } from "@react-three/drei";
 import { DoubleSide } from "three";
 import Background from "./Background/Background";
 import Location from "./Location/Location";
+import TalkRadius from "./TalkRadius/TalkRadius";
 
 type ScriptProps = {
   script: ScriptType;
@@ -12,8 +13,11 @@ type ScriptProps = {
 
 const Script = ({ script }: ScriptProps) => {
   const [activeMethodId, setActiveMethodId] = useState<number>();
-
   const scriptState = useMethod(script, activeMethodId, setActiveMethodId);
+
+  if (activeMethodId) {
+    console.log('activeMethodId', activeMethodId);
+  }
 
   useEffect(() => {
     const handleExecutionRequest = ({ detail: { scriptId, methodId } }: {detail: ExecuteScriptEventDetail}) => {
@@ -36,12 +40,7 @@ const Script = ({ script }: ScriptProps) => {
 
   return (
     <group position={scriptState.position}>
-      <Sphere
-        args={[scriptState.talkRadius / 4000]}
-        visible={true}
-      >
-        <meshBasicMaterial color="white" side={DoubleSide} />
-      </Sphere>
+      <TalkRadius isTalkEnabled={scriptState.isTalkable} radius={scriptState.talkRadius / 4000} script={script} setActiveMethodId={setActiveMethodId} />
       {script.type === 'background' && <Background script={script} state={scriptState} />}
       {script.type === 'location' && <Location script={script} state={scriptState} setActiveMethodId={setActiveMethodId} />}
     </group>
