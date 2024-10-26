@@ -87,7 +87,7 @@ const Text = ({ id, text, x, y }: TextProps) => {
       return [0,0,0]
     }}>
       <div className={styles.container} ref={containerRef}>
-        <animated.div className={styles.text} ref={textRef} dangerouslySetInnerHTML={{__html: processTagsInString(text[0])}} style={spring} />
+        <animated.div className={styles.text} ref={textRef} dangerouslySetInnerHTML={{__html: processTagsInString(text[currentIndex])}} style={spring} />
       </div>
     </Html>
   );

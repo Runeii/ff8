@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Script, ScriptState } from "../types";
 import { OPCODE_HANDLERS } from "./handlers";
 import { useFrame, useThree } from "@react-three/fiber";
+import useGlobalStore from "../../../store";
 
 const DEFAULT_STATE: ScriptState = {
   animation: {
@@ -47,20 +48,9 @@ const useMethod = (script: Script, activeMethodId: number | undefined, setActive
   });
 
   const [hasCompletedConstructor, setHasCompletedConstructor] = useState(false);
-  const [currentOpcodeIndex, setCurrentOpcodeIndex] = useState(0);
 
   const [previousActiveMethodName, setPreviousActiveMethodName] = useState<string>();
 
-  const STACKRef = useRef<number[]>([]);
-  const TEMP_STACKRef = useRef<Record<number, number>>({});
-
-  useEffect(() => {
-    return () => {
-      setCurrentOpcodeIndex(0);
-      STACKRef.current = [];
-      TEMP_STACKRef.current = {};
-    }
-  }, [activeMethodId, hasCompletedConstructor]);
 
   const activeMethod = useMemo(() => {
     const [constructor, ...methods] = script.methods;
@@ -80,6 +70,19 @@ const useMethod = (script: Script, activeMethodId: number | undefined, setActive
     return methods.find(method => method.methodId === 'default');
   }, [activeMethodId, hasCompletedConstructor, previousActiveMethodName, script.methods]);
 
+  const [currentOpcodeIndex, setCurrentOpcodeIndex] = useState(0);
+
+  const STACKRef = useRef<number[]>([]);
+  const TEMP_STACKRef = useRef<Record<number, number>>({});
+
+  useEffect(() => {
+    return () => {
+      setCurrentOpcodeIndex(0);
+      STACKRef.current = [];
+      TEMP_STACKRef.current = {};
+    }
+  }, [activeMethodId, hasCompletedConstructor]);
+
   const handleCompleteRun = useCallback(() => {
     if (!activeMethodId || !activeMethod) {
       return;
@@ -87,6 +90,7 @@ const useMethod = (script: Script, activeMethodId: number | undefined, setActive
 
     setPreviousActiveMethodName(activeMethod.methodId);
     setActiveMethodId(undefined);
+    useGlobalStore.setState({ hasActiveTalkMethod: false });
   }, [activeMethod, activeMethodId, setActiveMethodId]);
 
   const thisRunMethodId = useRef<string>();
@@ -144,8 +148,12 @@ const useMethod = (script: Script, activeMethodId: number | undefined, setActive
         scene,
         script,
         STACK: STACKRef.current,
-        TEMP_STACK: TEMP_STACKRef.current,
+        TEMP_STACK: [],
       });
+
+      if (methodId !== thisRunMethodId.current) {
+        return;
+      }
 
       if (nextIndex) {
         setCurrentOpcodeIndex(nextIndex);

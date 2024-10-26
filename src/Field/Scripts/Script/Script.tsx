@@ -6,6 +6,7 @@ import Location from "./Location/Location";
 import TalkRadius from "./TalkRadius/TalkRadius";
 import Model from "./Model/Model";
 import useLerpPosition from "./useLerpPosition";
+import useGlobalStore from "../../../store";
 
 type ScriptProps = {
   script: ScriptType;
@@ -37,15 +38,16 @@ const Script = ({ script }: ScriptProps) => {
   }, [script.groupId, script.methods]);
 
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
+  const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
 
   const currentPosition = useLerpPosition(scriptState.position, scriptState.movementSpeed / (4096 * 2));
 
   return (
     <group position={currentPosition} visible={scriptState.isVisible}>
-      {scriptState.isTalkable && talkMethod && talkMethod.scriptLabel !== activeMethodId && (
+      {scriptState.isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
           isTalkEnabled={scriptState.isTalkable}
-          radius={scriptState.talkRadius / 4096}
+          radius={scriptState.talkRadius / 4096 / 2}
           setActiveMethodId={setActiveMethodId}
           talkMethod={talkMethod}
         />

@@ -245,12 +245,18 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     });
     useGlobalStore.setState({ isUserControllable: false });
     while (useGlobalStore.getState().currentMessages.some(message => message.id === id)) {
-      await waitForKeyPress(192);
+      const messages = useGlobalStore.getState().currentMessages;
+
+      if (messages.length === 0) {
+        break
+      }
+
       await wait(100);
     }
+    console.log('passed')
     useGlobalStore.setState({ isUserControllable: true });
   },
-  AASK: async ({ STACK }) => {
+  AASK: async ({ STACK, TEMP_STACK }) => {
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
 
@@ -276,11 +282,19 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
         }
       ]
     });
+
     useGlobalStore.setState({ isUserControllable: false });
     while (useGlobalStore.getState().currentMessages.some(message => message.id === id)) {
-      await waitForKeyPress(192);
+      const messages = useGlobalStore.getState().currentMessages;
+
+      if (messages.length === 0) {
+        break
+      }
+
       await wait(100);
     }
+
+    TEMP_STACK[0] = cancelOpt;
     useGlobalStore.setState({ isUserControllable: true });
   },
 

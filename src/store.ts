@@ -33,6 +33,8 @@ interface GlobalState {
   party: number[],
 
   currentFocusActor?: number,
+
+  hasActiveTalkMethod: boolean,
 }
 
 const useGlobalStore = create<GlobalState>()((set) => ({
@@ -63,6 +65,8 @@ const useGlobalStore = create<GlobalState>()((set) => ({
   party: [0, 1, 2],
 
   currentFocusActor: undefined,
+
+  hasActiveTalkMethod: false,
 }))
 
 export default useGlobalStore

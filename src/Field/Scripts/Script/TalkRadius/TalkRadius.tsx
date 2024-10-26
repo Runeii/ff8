@@ -3,6 +3,7 @@ import { Box3, DoubleSide, Group, Mesh } from "three";
 import { ScriptMethod } from "../../types";
 import {  useEffect, useRef, useState } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
+import useGlobalStore from "../../../../store";
 
 type TalkRadiusProps = {
   isTalkEnabled: boolean;
@@ -38,14 +39,19 @@ const TalkRadius = ({ isTalkEnabled, radius, setActiveMethodId, talkMethod }: Ta
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
+      console.log('In talk radius handler!')
       event.stopImmediatePropagation();
       if (event.key !== ' ') {
         return;
       }
 
+      useGlobalStore.setState({ hasActiveTalkMethod: true });
       setActiveMethodId(talkMethod?.scriptLabel);
     }
-    window.addEventListener('keydown', onKeyDown);
+
+    window.addEventListener('keydown', onKeyDown, {
+      once: true,
+    });
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     }

@@ -11,6 +11,7 @@ export const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve,
 export const waitForKeyPress = (key: number) => {
   return new Promise<void>((resolve) => {
     const handleKeyPress = (event: KeyboardEvent) => {
+      event.stopImmediatePropagation();
       if (event.code === KEYS[key]) {
         window.removeEventListener('keydown', handleKeyPress);
         resolve();
