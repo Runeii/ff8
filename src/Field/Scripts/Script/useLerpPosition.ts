@@ -2,7 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { Vector3 } from "three";
 
-const useLerpPosition = (targetArray: number[], speed: number) => {
+const useLerpPosition = (targetArray: Vector3, speed: number) => {
   const [currentPosition, setCurrentPosition] = useState<Vector3>();
 
   const targetRef = useRef(new Vector3());

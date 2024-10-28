@@ -9,6 +9,7 @@ import Controller from './Controller/Controller'
 import useGlobalStore from './store'
 import {getInitialField} from './utils'
 import Ui from './UI/UI'
+import WorldMap from './WorldMap/WorldMap'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
@@ -61,7 +62,7 @@ export default function App() {
       }} className="canvas">
         <ambientLight />
         <Suspense>
-          <Field setSpring={asyncSetSpring} />
+          {fieldId === 'WORLD_MAP' ? <WorldMap /> : <Field setSpring={asyncSetSpring} />}
         </Suspense>
         <Ui />
       </Canvas>

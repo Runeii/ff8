@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { KeyboardEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import styles from './Text.module.css';
 import useGlobalStore from '../../store';
 import { processTagsInString } from './textUtils';
@@ -7,20 +7,14 @@ import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../../constants/constants';
 import { animated, useSpring } from '@react-spring/web';
 import { useFrame } from '@react-three/fiber';
 
-type TextProps = {
-  id: number;
-  text: string[];
-  x: number;
-  y: number;
-};
-
 const MARGIN = 8;
 
-const Text = ({ id, text, x, y }: TextProps) => {
+const Text = ({ id, text, x, y, askOptions }: Message) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState((askOptions?.default ?? 0) - (askOptions?.first ?? 0));
   const [xPos, setXPos] = useState(0);
   const [yPos, setYPos] = useState(0);
 
@@ -36,24 +30,45 @@ const Text = ({ id, text, x, y }: TextProps) => {
     }
   }, [xPos, yPos]);
 
+  const [formattedText, options] = useMemo(() => {
+    const formattedText = processTagsInString(text[currentPage]);
+    if (!askOptions) {
+      return [formattedText, null];
+    }
+    const splitLines = formattedText.split('<br />');
+    // askOptions.first is first line, askOptions.last is last line, extract array of lines without mutating original array
+    const options = splitLines.slice(askOptions.first, askOptions.last ? askOptions.last + 1 : splitLines.length);
+    const originalText = splitLines.slice(0, askOptions.first).join('<br />');
+    return [originalText, options];
+  }, [text, currentPage, askOptions]);
+
   useLayoutEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code !== 'Space') {
+    const handleKeyDown = (e: Event) => {
+      const event = e as unknown as KeyboardEvent; 
+    
+      if (event.code === 'Space') {
+        setCurrentPage(prev => prev + 1);
+      }
+      if (!options) {
         return;
       }
-      setCurrentIndex(prev => prev + 1);
+      if (event.key === 'ArrowUp') {
+        setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+      }
+      if (event.key === 'ArrowDown') {
+        setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, options.length - 1));
+      }
     }
 
-  
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [text, x, y]);
+  }, [options, text, x, y]);
 
   useEffect(() => {
-    if (currentIndex < text.length) {
+    if (currentPage < text.length) {
       return;
     }
 
@@ -64,7 +79,14 @@ const Text = ({ id, text, x, y }: TextProps) => {
         currentMessages
       };
     });
-  }, [currentIndex, id, text.length]);
+
+    document.dispatchEvent(new CustomEvent('messageClosed', {
+      detail: {
+        id,
+        selectedOption: currentIndex,
+      }
+    }));
+  }, [currentIndex, currentPage, id, text.length]);
 
   useFrame(() => {
     const container = containerRef.current;
@@ -87,7 +109,16 @@ const Text = ({ id, text, x, y }: TextProps) => {
       return [0,0,0]
     }}>
       <div className={styles.container} ref={containerRef}>
-        <animated.div className={styles.text} ref={textRef} dangerouslySetInnerHTML={{__html: processTagsInString(text[currentIndex])}} style={spring} />
+        <animated.div className={styles.text} ref={textRef} style={spring}>
+          <span dangerouslySetInnerHTML={{__html: formattedText}}></span>
+          {options && (
+            <div className={styles.options}>
+              {options.map((option, index) => (
+                <div key={index} className={`${styles.option} ${currentIndex === index && styles.isActive}`}>{option}</div>
+              ))}
+            </div>
+          )}
+        </animated.div>
       </div>
     </Html>
   );

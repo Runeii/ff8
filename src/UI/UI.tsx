@@ -20,11 +20,12 @@ const Ui = () => {
       />
       {currentMessages.map(message => (
         <Text
-          key={message.key}
+          key={message.id}
           id={message.id}
           text={message.text}
           x={message.x}
           y={message.y}
+          askOptions={message.askOptions}
         />
       ))}
     </>

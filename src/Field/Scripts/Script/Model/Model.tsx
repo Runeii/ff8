@@ -6,16 +6,16 @@ type ModelProps = {
   state: ScriptState;
 }
 
-const Model = ({ script, state }: ModelProps) => {
-  const modelId = state.modelId < 75 ? state.modelId : 1;
-  const idleAnimationId = state.idleAnimationId;
-  const isSolid = state.isSolid;
+const Model = ({ state }: ModelProps) => {
+  //const modelId = state.modelId < 75 ? state.modelId : 1;
+  //const idleAnimationId = state.idleAnimationId;
+  //const isSolid = state.isSolid;
   const isUnused = state.isUnused;
-  const angle = state.angle
+  //const angle = state.angle
 
   return (
     <Sphere args={[0.006]}>
-      <meshBasicMaterial attach="material" color="blue" />
+      <meshBasicMaterial attach="material" color={isUnused ? 'black' : 'blue'} />
     </Sphere>
   );
 }

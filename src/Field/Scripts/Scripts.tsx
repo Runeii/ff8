@@ -1,8 +1,8 @@
-import { FieldData } from "../Field";
 import Script from "./Script/Script";
+import { Script as ScriptType } from "./types";
 
 export type ScriptsProps = {
-  scripts: FieldData['scripts']
+  scripts: ScriptType[]
 };
 
 

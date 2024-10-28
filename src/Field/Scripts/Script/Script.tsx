@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Script as ScriptType } from "../types";
 import useMethod from "./useMethod";
 import Background from "./Background/Background";
 import Location from "./Location/Location";
 import TalkRadius from "./TalkRadius/TalkRadius";
 import Model from "./Model/Model";
-import useLerpPosition from "./useLerpPosition";
 import useGlobalStore from "../../../store";
+import { animated, useSpring } from "@react-spring/three";
+import { wait } from "./utils";
 
 type ScriptProps = {
   script: ScriptType;
@@ -16,18 +17,40 @@ type ScriptProps = {
 // * Pushable
 const Script = ({ script }: ScriptProps) => {
   const [activeMethodId, setActiveMethodId] = useState<number>();
-  const scriptState = useMethod(script, activeMethodId, setActiveMethodId);
+  const activeMethodRef = useRef<number>();
+  useEffect(() => {
+    activeMethodRef.current = activeMethodId;
+  }, [activeMethodId]);
+
+  const [movementSpring, setSpring] = useSpring(() => ({
+    config: {
+      duration: 100,
+    },
+    position: [0,0,0],
+  }), []);
+
+  const scriptState = useMethod(script, activeMethodId, setActiveMethodId, setSpring);
 
   useEffect(() => {
-    const handleExecutionRequest = ({ detail: { scriptId, methodId } }: {detail: ExecuteScriptEventDetail}) => {
-      if (scriptId !== script.groupId) {
+    const handleExecutionRequest = async ({ detail: { key, scriptLabel, partyMemberId } }: {detail: ExecuteScriptEventDetail}) => {
+      if (partyMemberId !== undefined && partyMemberId !== scriptState.partyMemberId) {
         return;
       }
-      const matchingMethod = script.methods.find(method => method.scriptLabel === methodId);
+      const matchingMethod = script.methods.find((method, index) => {
+        if (partyMemberId !== undefined) {
+          return index === scriptLabel;
+        }
+        return method.scriptLabel === scriptLabel
+      });
       if (!matchingMethod) {
         return;
       }
+
       setActiveMethodId(matchingMethod?.scriptLabel);
+      while (activeMethodRef.current !== undefined) {
+        await wait(250);
+      }
+      document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key } }));
     }
 
     document.addEventListener('executeScript', handleExecutionRequest);
@@ -35,15 +58,13 @@ const Script = ({ script }: ScriptProps) => {
     return () => {
       document.removeEventListener('executeScript', handleExecutionRequest);
     }
-  }, [script.groupId, script.methods]);
+  }, [activeMethodId, script.groupId, script.methods, scriptState.partyMemberId]);
 
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
   const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
 
-  const currentPosition = useLerpPosition(scriptState.position, scriptState.movementSpeed / (4096 * 2));
-
   return (
-    <group position={currentPosition} visible={scriptState.isVisible}>
+    <animated.group position={movementSpring.position as unknown as [number,number,number]} visible={scriptState.isVisible}>
       {scriptState.isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
           isTalkEnabled={scriptState.isTalkable}
@@ -55,7 +76,7 @@ const Script = ({ script }: ScriptProps) => {
       {script.type === 'background' && <Background script={script} state={scriptState} />}
       {script.type === 'location' && <Location script={script} state={scriptState} setActiveMethodId={setActiveMethodId} />}
       {script.type === 'model' && <Model script={script} state={scriptState} />}
-    </group>
+    </animated.group>
   );
 }
 

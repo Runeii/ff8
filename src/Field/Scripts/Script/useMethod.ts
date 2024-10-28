@@ -3,6 +3,8 @@ import { Script, ScriptState } from "../types";
 import { OPCODE_HANDLERS } from "./handlers";
 import { useFrame, useThree } from "@react-three/fiber";
 import useGlobalStore from "../../../store";
+import { Vector3 } from "three";
+import { SpringRef } from "@react-spring/web";
 
 const DEFAULT_STATE: ScriptState = {
   animation: {
@@ -15,7 +17,7 @@ const DEFAULT_STATE: ScriptState = {
   backgroundAnimationSpeed: 0,
   backgroundStartFrame: 0,
   backgroundEndFrame: 0,
-  isBackgroundVisible: true,
+  isBackgroundVisible: false,
   isBackgroundLooping: false,
 
   isLineOn: true,
@@ -26,7 +28,7 @@ const DEFAULT_STATE: ScriptState = {
   isUnused: false,
 
   modelId: 0,
-  partyMemberId: 0,
+  partyMemberId: 99,
 
   pushRadius: 0,
   talkRadius: 200,
@@ -34,23 +36,28 @@ const DEFAULT_STATE: ScriptState = {
   isTalkable: true,
 
   angle: 0,
-  position: [0, 0, 0],
+  position: new Vector3(0, 0, 0),
   movementDuration: 0,
   movementSpeed: 0,
 }
-const useMethod = (script: Script, activeMethodId: number | undefined, setActiveMethodId: (methodId?: number) => void) => {
+
+const useMethod = (
+  script: Script,
+  activeMethodId: number | undefined,
+  setActiveMethodId: (methodId?: number) => void,
+  movementSpring: SpringRef<{ position: number[]; }>,
+) => {
   const scene = useThree((state) => state.scene);
 
   const currentScriptStateRef = useRef<ScriptState>({ ...DEFAULT_STATE });
   const [scriptState, setScriptState] = useState<ScriptState>({ ...DEFAULT_STATE });
   useFrame(() => {
-    setScriptState(currentScriptStateRef.current);
+    setScriptState({ ...currentScriptStateRef.current });
   });
 
   const [hasCompletedConstructor, setHasCompletedConstructor] = useState(false);
 
   const [previousActiveMethodName, setPreviousActiveMethodName] = useState<string>();
-
 
   const activeMethod = useMemo(() => {
     const [constructor, ...methods] = script.methods;
@@ -140,16 +147,30 @@ const useMethod = (script: Script, activeMethodId: number | undefined, setActive
         return;
       }
 
+      const abortController = new AbortController();
+
+      const monitor = setInterval(() => {
+        if (thisRunMethodId.current !== methodId) {
+          console.log('Aborting method:', methodId);
+          abortController.abort();
+          clearInterval(monitor);
+        }
+      }, 50);
+
       const nextIndex = await handler({
         activeMethod,
         currentOpcode,
         opcodes,
         currentStateRef: currentScriptStateRef,
+        movementSpring,
         scene,
         script,
+        signal: abortController.signal,
         STACK: STACKRef.current,
-        TEMP_STACK: [],
+        TEMP_STACK: TEMP_STACKRef.current,
       });
+
+      clearInterval(monitor);
 
       if (methodId !== thisRunMethodId.current) {
         return;
@@ -163,7 +184,7 @@ const useMethod = (script: Script, activeMethodId: number | undefined, setActive
     }
 
     execute();
-  }, [activeMethod, activeMethodId, currentOpcodeIndex, handleCompleteRun, hasCompletedConstructor, scene, script]);
+  }, [activeMethod, activeMethodId, currentOpcodeIndex, handleCompleteRun, hasCompletedConstructor, scene, script, movementSpring]);
 
   return scriptState;
 }

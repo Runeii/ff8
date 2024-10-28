@@ -51,7 +51,7 @@ export type ScriptState = {
   isTalkable: boolean;
 
   angle: number;
-  position: [number, number, number];
+  position: Vector3;
   movementDuration: number;
   movementSpeed: number;
 }

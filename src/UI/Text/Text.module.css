@@ -85,3 +85,23 @@
   background-image: url("icons.png");
   background-position: /* Custom depending on character */ ;
 }
+
+.options {
+  margin: 0.25em 0 0 1.5em;
+  padding-right: 1em;
+}
+
+.option {
+  margin: 0 0 0.125em;
+  &::before {
+    content: "•";
+    position: absolute;
+    left: 0.75em;
+    margin-right: 0.5em;
+    color: white;
+    display: none;
+  }
+  &.isActive::before {
+    display: block;
+  }
+}

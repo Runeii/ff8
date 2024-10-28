@@ -12,11 +12,14 @@ import Scripts from './Scripts/Scripts';
 import { getInitialEntrance, vectorToFloatingPoint } from '../utils';
 import { renderSceneWithLayers } from './fieldUtils';
 import useGlobalStore from '../store';
+import { Script } from './Scripts/types';
 
 export type FieldData = typeof data;
 
 type FieldProps = {
-  data: FieldData,
+  data: Omit<FieldData, 'scripts'> & {
+    scripts: Script[];
+  },
 }
 
 const Field = ({ data }: FieldProps) => {
@@ -87,7 +90,7 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
   const fieldId = useGlobalStore(state => state.fieldId);
   const setCharacterToPendingPosition = useGlobalStore(state => state.setCharacterToPendingPosition);
 
-  const [data, setData] = useState<FieldData | null>(null);
+  const [data, setData] = useState<FieldProps['data'] | null>(null);
 
   const gl = useThree(({ gl }) => gl);
 
@@ -97,7 +100,7 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
       setData(null);
       gl.clear();
       const response = await fetch(`/output/${fieldId}.json`);
-      const data = await response.json() as FieldData;
+      const data = await response.json() as FieldProps['data'];
       setData(data);
       useGlobalStore.setState({
         currentParameterStates: {},

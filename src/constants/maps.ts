@@ -982,7 +982,7 @@ const MAP_NAMES = [
   "ehenter4",
   "ehroom1b",
   "ehsea1a"
-];
+] as const;
 
 
 export default MAP_NAMES;

@@ -23,7 +23,7 @@ type LayerProps = {
 const BLENDS = {
   1: AdditiveBlending,
   2: SubtractiveBlending,
-  3: NoBlending, // "+25%"
+  3: AdditiveBlending, // "+25%"
   4: NoBlending,
   0: NormalBlending // Default to normal blending for unknowns
 };
@@ -109,6 +109,7 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
             map={texture}
             transparent
             blending={isBlended ? BLENDS[blendType as keyof typeof BLENDS] : NormalBlending}
+            opacity={blendType === 3 ? 0.25 : 1}
           />
         </sprite>
       ))}

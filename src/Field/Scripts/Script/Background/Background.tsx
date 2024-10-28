@@ -1,7 +1,6 @@
+import { Script, ScriptState } from "../../types";
 import { useEffect } from "react";
 import useGlobalStore from "../../../../store";
-import { Script } from "../../../ScriptsOld/types";
-import { ScriptState } from "../../types";
 
 type BackgroundProps = {
   script: Script;

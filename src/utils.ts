@@ -26,14 +26,8 @@ export const WORLD_DIRECTIONS = {
   UP: new Vector3(0, 1, 0),
 }
 
-const RANDOM_STARTS = [
-  'titown6',
-  'dotown2a',
-  'bggate_1',
-]
-
 export const getInitialField = () => {
-  const initialField = new URLSearchParams(window.location.search).get('field') || RANDOM_STARTS[Math.floor(Math.random() * RANDOM_STARTS.length)];
+  const initialField = new URLSearchParams(window.location.search).get('field') || 'WORLD_MAP'
 
   return initialField;
 }
@@ -82,7 +76,6 @@ export const getMeshByUserDataValue = (scene: Scene, name: string, value: string
   let mesh: Mesh | undefined;
 
   scene.traverse((node) => {
-    console.log(node.userData.partyMemberId)
     if (node.userData[name] === value) {
       mesh = node as Mesh;
     }
