@@ -9,12 +9,13 @@ import useGlobalStore from "../../../store";
 import { animated, useSpring } from "@react-spring/three";
 
 type ScriptProps = {
+  models: string[];
   script: ScriptType;
 }
 
 // Not implemented
 // * Pushable
-const Script = ({ script }: ScriptProps) => {
+const Script = ({ models, script }: ScriptProps) => {
   const [activeMethodId, setActiveMethodId] = useState<string>();
   const [remoteExecutionKey, setRemoteExecutionKey] = useState<string>();
 
@@ -71,11 +72,16 @@ const Script = ({ script }: ScriptProps) => {
 
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
   const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
+  
+  const activeParty = useGlobalStore(storeState => storeState.party);
 
   if (scriptState.isUnused) {
     return null;
   }
 
+  if (scriptState.partyMemberId !== undefined && !activeParty.includes(scriptState.partyMemberId)) {
+    return null;
+  }
   return (
     <animated.group position={movementSpring.position as unknown as [number,number,number]} visible={scriptState.isVisible}>
       {scriptState.isTalkable && talkMethod && !hasActiveTalkMethod && (
@@ -88,7 +94,7 @@ const Script = ({ script }: ScriptProps) => {
       )}
       {script.type === 'background' && <Background script={script} state={scriptState} />}
       {script.type === 'location' && <Location activeMethodId={activeMethodId} script={script} state={scriptState} setActiveMethodId={setActiveMethodId} />}
-      {script.type === 'model' && <Model script={script} state={scriptState} />}
+      {script.type === 'model' && <Model models={models} script={script} state={scriptState} />}
     </animated.group>
   );
 }

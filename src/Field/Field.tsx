@@ -70,7 +70,7 @@ const Field = ({ data }: FieldProps) => {
             fieldId={data.id}
             walkMeshGeometry={walkMeshGeometry}
           />
-          <Scripts scripts={data.scripts} />
+          <Scripts models={data.models} scripts={data.scripts} />
           <Camera backgroundPanRef={backgroundPanRef} data={data} setHasPlacedCamera={setHasPlacedCamera} />
         </>
       )}

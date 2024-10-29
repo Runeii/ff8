@@ -21,7 +21,7 @@ const WalkMesh = ({ setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
             characterPosition: e.point
         })
         }} visible={import.meta.env.DEV}>
-          <meshBasicMaterial color={"red"} transparent opacity={0.2} side={DoubleSide} />
+          <meshBasicMaterial color={"red"} transparent opacity={1} side={DoubleSide} />
         </mesh>
       ))}
     </group>

@@ -669,11 +669,13 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const angle = STACK.pop() as number;
     currentStateRef.current.angle = angle;
   },
-  PCTURN: ({ currentStateRef, scene, STACK }) => {
+  // TODO: fix
+  PCTURN: ({ scene, STACK }) => {
     const speed = STACK.pop() as number;
     const unknown = STACK.pop() as number;
 
-    const targetMesh = getPartyMemberEntity(scene, 0);
+    //const targetMesh =
+    getPartyMemberEntity(scene, 0);
   },
   // I imagine rotates to player
   PDIRA: ({ STACK }) => {
