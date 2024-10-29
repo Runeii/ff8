@@ -8,7 +8,7 @@ import useGlobalStore from "../../../../store";
 type TalkRadiusProps = {
   isTalkEnabled: boolean;
   radius: number;
-  setActiveMethodId: (methodId?: number) => void;
+  setActiveMethodId: (methodId?: string) => void;
   talkMethod: ScriptMethod,
 }
 
@@ -46,7 +46,7 @@ const TalkRadius = ({ isTalkEnabled, radius, setActiveMethodId, talkMethod }: Ta
       }
 
       useGlobalStore.setState({ hasActiveTalkMethod: true });
-      setActiveMethodId(talkMethod?.scriptLabel);
+      setActiveMethodId(talkMethod?.methodId);
     }
 
     window.addEventListener('keydown', onKeyDown, {

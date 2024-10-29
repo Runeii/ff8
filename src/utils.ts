@@ -72,15 +72,6 @@ export const getPositionOnWalkmesh = (desiredPosition: Vector3, walkmesh: Object
   return sortedIntersects[0].point;
 }
 
-export const getMeshByUserDataValue = (scene: Scene, name: string, value: string | number) => {
-  let mesh: Mesh | undefined;
-
-  scene.traverse((node) => {
-    if (node.userData[name] === value) {
-      mesh = node as Mesh;
-    }
-  });
-
-  return mesh;
-};
-
+export const getPartyMemberEntity = (scene: Scene, partyMemberId: number) => {
+  return scene.getObjectByName(`party--${partyMemberId}`) as Mesh;
+}

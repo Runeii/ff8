@@ -1,6 +1,6 @@
 import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
-import { getMeshByUserDataValue, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
+import { getPartyMemberEntity, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script, ScriptMethod, ScriptState } from "../types";
 import { asyncSetSpring, dummiedCommand, openMessage, remoteExecute, unusedCommand, wait, waitForKeyPress } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
@@ -23,7 +23,7 @@ type HandlerFuncWithPromise = (args: {
 
 const MEMORY: Record<number, number> = {
   72: 9999, // gil
-  256: 500,
+  256: 205,
 };
 
 export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = {
@@ -248,13 +248,25 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number; // const channel = STACK.pop() as number;
 
     const { availableMessages } = useGlobalStore.getState();
-
     useGlobalStore.setState({ isUserControllable: false });
 
     const uniqueId = `${id}--${Date.now()}`;
     await openMessage(uniqueId, availableMessages[id], x, y);
 
     useGlobalStore.setState({ isUserControllable: true });
+  },
+  RAMESW: async ({ STACK, script, activeMethod, opcodes }) => {
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+
+    const id = STACK.pop() as number;
+    STACK.pop() as number; // const channel = STACK.pop() as number;
+
+    const { availableMessages } = useGlobalStore.getState();
+
+    const uniqueId = `${id}--${Date.now()}`;
+    console.log('FIRE ONE', script, activeMethod, opcodes)
+    openMessage(uniqueId, availableMessages[id], x, y);
   },
   AASK: async ({ STACK, TEMP_STACK }) => {
     const y = STACK.pop() as number;
@@ -356,10 +368,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop(); // priority, we don't use it
     remoteExecute(label, currentOpcode.param)
   },
-  PREQEW: async ({ currentOpcode, STACK, opcodes }) => {
+  PREQEW: async ({ currentOpcode, STACK }) => {
     const label = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
-    console.log('PREQEW', label, currentOpcode.param, opcodes)
     await remoteExecute(label, currentOpcode.param)
   },
   FADEIN: async () => {
@@ -626,7 +637,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     await asyncSetSpring(movementSpring, {
       immediate: false,
       config: {
-        duration: currentStateRef.current.movementSpeed * 3
+        duration: currentStateRef.current.movementSpeed
       },
       position: [position.x, position.y, position.z],
     });
@@ -657,6 +668,12 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number;
     const angle = STACK.pop() as number;
     currentStateRef.current.angle = angle;
+  },
+  PCTURN: ({ currentStateRef, scene, STACK }) => {
+    const speed = STACK.pop() as number;
+    const unknown = STACK.pop() as number;
+
+    const targetMesh = getPartyMemberEntity(scene, 0);
   },
   // I imagine rotates to player
   PDIRA: ({ STACK }) => {
@@ -730,7 +747,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
   PGETINFO: ({ scene, STACK, TEMP_STACK }) => {
     const partyMemberId = STACK.pop() as number;
-    const mesh = getMeshByUserDataValue(scene, 'partyMemberId', partyMemberId);
+    const mesh = getPartyMemberEntity(scene, partyMemberId);
 
     if (!mesh) {
       console.warn('No mesh found for actor ID', partyMemberId);
@@ -808,6 +825,12 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   ADDGIL: ({ STACK }) => {
     const gil = STACK.pop() as number;
     MEMORY[72] += gil;
+  },
+  PARTICLEON: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  SHADESET: ({ STACK }) => {
+    STACK.pop() as number;
   },
 
   JOIN: dummiedCommand,

@@ -28,7 +28,7 @@ const DEFAULT_STATE: ScriptState = {
   isUnused: false,
 
   modelId: 0,
-  partyMemberId: 99,
+  partyMemberId: undefined,
 
   pushRadius: 0,
   talkRadius: 200,
@@ -43,8 +43,8 @@ const DEFAULT_STATE: ScriptState = {
 
 const useMethod = (
   script: Script,
-  activeMethodId: number | undefined,
-  setActiveMethodId: (methodId?: number) => void,
+  activeMethodId: string | undefined,
+  setActiveMethodId: (methodId?: string) => void,
   movementSpring: SpringRef<{ position: number[]; }>,
 ) => {
   const scene = useThree((state) => state.scene);
@@ -67,11 +67,18 @@ const useMethod = (
     }
 
     if (activeMethodId) {
-      return methods.find(method => method.scriptLabel === activeMethodId);
+      return methods.find(method => method.methodId === activeMethodId);
     }
 
-    if (previousActiveMethodName === 'touchon') {
-      return methods.find(method => method.methodId === 'touch');
+    const touch = methods.find(method => method.methodId === 'touch');
+    if (previousActiveMethodName === 'touchon' && touch) {
+      return touch;
+    }
+
+    const across = methods.find(method => method.methodId === 'across');
+
+    if (previousActiveMethodName === 'touchoff' && across) {
+      return across;
     }
 
     return methods.find(method => method.methodId === 'default');
@@ -95,9 +102,9 @@ const useMethod = (
       return;
     }
 
+    useGlobalStore.setState({ hasActiveTalkMethod: false });
     setPreviousActiveMethodName(activeMethod.methodId);
     setActiveMethodId(undefined);
-    useGlobalStore.setState({ hasActiveTalkMethod: false });
   }, [activeMethod, activeMethodId, setActiveMethodId]);
 
   const thisRunMethodId = useRef<string>();
@@ -126,6 +133,9 @@ const useMethod = (
     const execute = async () => {
       const currentOpcode = opcodes[currentOpcodeIndex] ?? undefined;
 
+      if (script.groupId === 4) {
+        // console.log('Executing', currentOpcode?.name, currentOpcode?.param, currentOpcodeIndex, methodId);
+      }
       if (!currentOpcode && !hasCompletedConstructor) {
         setHasCompletedConstructor(true);
       }
@@ -151,7 +161,7 @@ const useMethod = (
 
       const monitor = setInterval(() => {
         if (thisRunMethodId.current !== methodId) {
-          console.log('Aborting method:', methodId);
+          console.log('Aborting method:', methodId, 'now is', thisRunMethodId.current, activeMethod);
           abortController.abort();
           clearInterval(monitor);
         }

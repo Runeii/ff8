@@ -25,11 +25,21 @@ export const waitForKeyPress = (key: number) => {
   });
 }
 
-export function asyncSetSpring<T extends object>(setSpring: SpringRef<T>, state: object) {
-  return new Promise((resolve) => {
+type PossibleState = Record<string, unknown> & {
+  immediate?: boolean;
+  config?: Record<string, unknown>;
+}
+export function asyncSetSpring<T extends object>(setSpring: SpringRef<T>, state: PossibleState) {
+  return new Promise<void>((resolve) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { config, immediate, ...values } = state;
+    if (JSON.stringify(setSpring.current[0].get()) === JSON.stringify(values)) {
+      resolve();
+      return;
+    }
     setSpring({
       ...state,
-      onRest: resolve,
+      onRest: () => resolve(),
     });
   });
 }

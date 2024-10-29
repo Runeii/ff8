@@ -1,16 +1,16 @@
 import { useEffect } from "react";
 import { Script } from "../types";
 
-const useTriggerEvent = (eventName: string, script: Script, setActiveMethodId: (methodId: number) => void, condition: boolean) => {
-  const matchingMethodId = script.methods.find(method => method.methodId === eventName)?.scriptLabel;
+const useTriggerEvent = (methodId: string, script: Script, setActiveMethodId: (methodId: string) => void, condition: boolean) => {
 
   useEffect(() => {
+    const matchingMethodId = script.methods.find(method => method.methodId === methodId)?.methodId;
+
     if (!matchingMethodId || !condition) {
       return;
     }
-
     setActiveMethodId(matchingMethodId);
-  }, [condition, matchingMethodId, setActiveMethodId]);
+  }, [condition, methodId, script.methods, setActiveMethodId]);
 }
 
 export default useTriggerEvent;

@@ -5,6 +5,7 @@ import Text from "./Text/Text";
 
 const Ui = () => {
   const currentMessages = useGlobalStore(state => state.currentMessages);
+  console.log(currentMessages)
   return (
     <>
       <OrthographicCamera

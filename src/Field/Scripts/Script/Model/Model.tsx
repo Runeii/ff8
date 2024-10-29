@@ -12,9 +12,10 @@ const Model = ({ state }: ModelProps) => {
   //const isSolid = state.isSolid;
   const isUnused = state.isUnused;
   //const angle = state.angle
+  const partyMemberId = state.partyMemberId
 
   return (
-    <Sphere args={[0.006]}>
+    <Sphere args={[0.006]} name={partyMemberId === undefined ? 'model' : `party--${partyMemberId}`}>
       <meshBasicMaterial attach="material" color={isUnused ? 'black' : 'blue'} />
     </Sphere>
   );

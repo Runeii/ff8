@@ -11,16 +11,19 @@ const Background = ({ script, state }: BackgroundProps) => {
   const targetBackgroundParam = script.backgroundParamId;
 
   useEffect(() => {
-    useGlobalStore.setState((storeState) => {
-      storeState.currentParameterVisibility[script.backgroundParamId] = state.isBackgroundVisible;
-      return storeState;
-    });
+    const originalParameterVisibility = useGlobalStore.getState().currentParameterVisibility;
+    
+    useGlobalStore.setState({
+      currentParameterVisibility: {
+        ...originalParameterVisibility,
+        [script.backgroundParamId]: state.isBackgroundVisible
+      }
+    })
 
     return () => {
-      useGlobalStore.setState((storeState) => {
-        delete storeState.currentParameterVisibility[script.backgroundParamId];
-        return storeState;
-      });
+      useGlobalStore.setState({
+        currentParameterVisibility: originalParameterVisibility
+      })
     }
   }, [script.backgroundParamId, state.isBackgroundVisible]);
 

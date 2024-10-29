@@ -43,7 +43,7 @@ export type ScriptState = {
   isUnused: boolean;
 
   modelId: number;
-  partyMemberId: number;
+  partyMemberId?: number;
 
   pushRadius: number;
   talkRadius: number;
