@@ -54,4 +54,6 @@ export type ScriptState = {
   position: Vector3;
   movementDuration: number;
   movementSpeed: number;
+
+  isDoorOn: boolean;
 }

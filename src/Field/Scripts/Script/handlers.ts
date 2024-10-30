@@ -707,6 +707,12 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       currentFocusActor: actorCode
     });
   },
+  DOORLINEON: ({ currentStateRef }) => {
+    currentStateRef.current.isDoorOn = true;
+  },
+  DOORLINEOFF: ({ currentStateRef }) => {
+    currentStateRef.current.isDoorOn = false;
+  },
 
   // ?
   MLIMIT: ({ STACK }) => {

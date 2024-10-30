@@ -39,6 +39,8 @@ const DEFAULT_STATE: ScriptState = {
   position: new Vector3(0, 0, 0),
   movementDuration: 0,
   movementSpeed: 0,
+
+  isDoorOn: true,
 }
 
 const useMethod = (
@@ -133,8 +135,8 @@ const useMethod = (
     const execute = async () => {
       const currentOpcode = opcodes[currentOpcodeIndex] ?? undefined;
 
-      if (script.groupId === 4) {
-        // console.log('Executing', currentOpcode?.name, currentOpcode?.param, currentOpcodeIndex, methodId);
+      if (script.groupId === 19) {
+        //console.log('Executing', currentOpcode?.name, currentOpcode?.param, currentOpcodeIndex, methodId);
       }
       if (!currentOpcode && !hasCompletedConstructor) {
         setHasCompletedConstructor(true);

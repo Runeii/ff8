@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import WalkMesh from './WalkMesh/WalkMesh';
 
-import type data from '../../public/output/bghall_2.json';
+import type data from '../../public/output/escouse2.json';
 import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
@@ -49,7 +49,11 @@ const Field = ({ data }: FieldProps) => {
           <Gateways
             fieldId={data.id}
           />
-          <Scripts models={data.models} scripts={data.scripts} />
+          <Scripts
+            doors={data.doors}
+            models={data.models}
+            scripts={data.scripts}
+          />
           <Camera backgroundPanRef={backgroundPanRef} data={data} setHasPlacedCamera={setHasPlacedCamera} />
         </>
       )}

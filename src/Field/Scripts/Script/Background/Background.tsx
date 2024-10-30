@@ -56,7 +56,7 @@ const Background = ({ script, state }: BackgroundProps) => {
       if (thisParameter === endFrame && !isLooping) {
         clearInterval(interval);
       }
-    }, state.backgroundAnimationSpeed * 32);
+    }, state.backgroundAnimationSpeed * 33);
 
     return () => clearInterval(interval);
   }, [script.backgroundParamId, state.backgroundEndFrame, state.backgroundAnimationSpeed, state.backgroundStartFrame, state.isBackgroundLooping, targetBackgroundParam]);

@@ -7,15 +7,18 @@ import TalkRadius from "./TalkRadius/TalkRadius";
 import Model from "./Model/Model";
 import useGlobalStore from "../../../store";
 import { animated, useSpring } from "@react-spring/three";
+import Door from "./Door/Door";
+import { FieldData } from "../../Field";
 
 type ScriptProps = {
+  doors: FieldData['doors'],
   models: string[];
   script: ScriptType;
 }
 
 // Not implemented
 // * Pushable
-const Script = ({ models, script }: ScriptProps) => {
+const Script = ({ doors, models, script }: ScriptProps) => {
   const [activeMethodId, setActiveMethodId] = useState<string>();
   const [remoteExecutionKey, setRemoteExecutionKey] = useState<string>();
 
@@ -29,6 +32,7 @@ const Script = ({ models, script }: ScriptProps) => {
     }
 
     document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key: remoteExecutionKey } }));
+    setRemoteExecutionKey(undefined);
   }, [activeMethodId, remoteExecutionKey]);
 
   const [movementSpring, setSpring] = useSpring(() => ({
@@ -38,6 +42,9 @@ const Script = ({ models, script }: ScriptProps) => {
     position: [0,0,0],
   }), []);
 
+  if (script.groupId === 18 || script.groupId === 19) {
+    //console.log('Executing', activeMethodId, remoteExecutionKey);
+  }
   const scriptState = useMethod(script, activeMethodId, setActiveMethodId, setSpring);
 
   useEffect(() => {
@@ -55,6 +62,7 @@ const Script = ({ models, script }: ScriptProps) => {
         }
         return method.scriptLabel === scriptLabel
       });
+
       if (!matchingMethod) {
         return;
       }
@@ -94,8 +102,9 @@ const Script = ({ models, script }: ScriptProps) => {
         />
       )}
       {script.type === 'background' && <Background script={script} state={scriptState} />}
-      {script.type === 'location' && <Location activeMethodId={activeMethodId} script={script} state={scriptState} setActiveMethodId={setActiveMethodId} />}
+      {script.type === 'location' && <Location script={script} state={scriptState} setActiveMethodId={setActiveMethodId} />}
       {script.type === 'model' && <Model models={models} script={script} state={scriptState} />}
+      {script.type === 'door' && <Door doors={doors} script={script} setActiveMethodId={setActiveMethodId} state={scriptState} />}
     </animated.group>
   );
 }
