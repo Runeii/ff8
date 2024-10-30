@@ -1,6 +1,8 @@
 import { Mesh, Object3D, Raycaster, Scene, Vector3 } from "three";
 import { FieldData } from "./Field/Field";
 import gateways from './gateways.ts';
+import { normalize } from "three/webgpu";
+import useGlobalStore from "./store.ts";
 
 export const numberToFloatingPoint = (value: number) => value / 4096;
 
@@ -68,6 +70,13 @@ export const getPositionOnWalkmesh = (desiredPosition: Vector3, walkmesh: Object
     return a.distance - b.distance;
   });
 
+  const targetTriangle = sortedIntersects[0];
+  const targetTriangleId = parseInt(targetTriangle.object.name);
+  const { lockedTriangles } = useGlobalStore.getState()
+
+  if (lockedTriangles.includes(targetTriangleId)) {
+    return null;
+  }
 
   return sortedIntersects[0].point;
 }

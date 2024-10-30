@@ -780,8 +780,18 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   EFFECTLOAD: ({ STACK }) => {
     STACK.pop() as number;
   },
-  IDLOCK: () => { },
-  IDUNLOCK: () => { },
+  IDLOCK: ({ currentOpcode }) => {
+    const currentLockedTriangles = useGlobalStore.getState().lockedTriangles;
+    useGlobalStore.setState({
+      lockedTriangles: [...currentLockedTriangles, currentOpcode.param]
+    })
+  },
+  IDUNLOCK: ({ currentOpcode }) => {
+    const currentLockedTriangles = useGlobalStore.getState().lockedTriangles;
+    useGlobalStore.setState({
+      lockedTriangles: currentLockedTriangles.filter(id => id !== currentOpcode.param)
+    })
+  },
   SAVEENABLE: ({ STACK }) => {
     // const isEnabled =
     STACK.pop() as number;
@@ -838,6 +848,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   JOIN: dummiedCommand,
   FOLLOWOFF: dummiedCommand,
   FOLLOWON: dummiedCommand,
+  REFRESHPARTY: dummiedCommand,
 
   RBGSHADELOOP: dummiedCommand,
   LSCROLL: dummiedCommand,

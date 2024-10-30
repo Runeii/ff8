@@ -6,7 +6,6 @@ import generatedGateways from '../../gateways.ts';
 
 export type GatewaysProps = {
   fieldId: string,
-  walkMeshGeometry: BufferGeometry[]
 }
 
 const Gateways = ({ fieldId }: GatewaysProps) => {

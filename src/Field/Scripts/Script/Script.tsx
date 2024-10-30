@@ -82,6 +82,7 @@ const Script = ({ models, script }: ScriptProps) => {
   if (scriptState.partyMemberId !== undefined && !activeParty.includes(scriptState.partyMemberId)) {
     return null;
   }
+
   return (
     <animated.group position={movementSpring.position as unknown as [number,number,number]} visible={scriptState.isVisible}>
       {scriptState.isTalkable && talkMethod && !hasActiveTalkMethod && (

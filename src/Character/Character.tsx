@@ -2,10 +2,10 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { Group, Vector3 } from "three";
 import { getCameraDirections } from "../Field/Camera/cameraUtils";
-import { getPositionOnWalkmesh } from "../utils";
+import { getPositionOnWalkmesh, getUnlockedRouteToPoint } from "../utils";
 import { onMovementKeyPress } from "./characterUtils";
 import Squall, { ActionName } from "./Squall";
-import { Sphere } from "@react-three/drei";
+import { Box, Sphere } from "@react-three/drei";
 import useGlobalStore from "../store";
 import Focus from "./Focus/Focus";
 import { useSpring } from "@react-spring/three";
@@ -136,7 +136,7 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
   
     const desiredPosition = player.position.clone().add(direction);
     const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT);
-    
+      
     if (!newPosition) {
       return
     }
@@ -152,7 +152,7 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
 
   return (
     <Squall currentAction={currentAction} scale={0.06} name="character" ref={playerRef}>
-      <Sphere args={[0.4, 32, 32]}  name="hitbox" visible={false} />
+      <Box args={[0.4, 0.4, 1.2]} position={[0,0,0.6]} name="hitbox" visible={false} />
       <Focus />
     </Squall>
   );

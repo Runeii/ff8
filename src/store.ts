@@ -35,6 +35,7 @@ interface GlobalState {
   currentFocusActor?: number,
 
   hasActiveTalkMethod: boolean,
+  lockedTriangles: number[],
 }
 
 const useGlobalStore = create<GlobalState>()((set) => ({
@@ -67,6 +68,8 @@ const useGlobalStore = create<GlobalState>()((set) => ({
   currentFocusActor: undefined,
 
   hasActiveTalkMethod: false,
+
+  lockedTriangles: [],
 }))
 
 export default useGlobalStore

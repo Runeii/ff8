@@ -36,30 +36,11 @@ const Field = ({ data }: FieldProps) => {
   const [hasPlacedCharacter, setHasPlacedCharacter] = useState(false);
   const [hasPlacedCamera, setHasPlacedCamera] = useState(false);
 
-  const walkMeshGeometry = useMemo(() => {
-    const geometries = data.walkmesh.map(triangle => {
-      const geometry = new BufferGeometry();
-      const vertices = new Float32Array([
-        ...vectorToFloatingPoint(triangle.vertices[0]).toArray(),
-        ...vectorToFloatingPoint(triangle.vertices[1]).toArray(),
-        ...vectorToFloatingPoint(triangle.vertices[2]).toArray(),
-        ...vectorToFloatingPoint(triangle.vertices[0]).toArray(),
-      ]);
-
-      geometry.setAttribute('position', new BufferAttribute(vertices, 3));      
-      geometry.computeVertexNormals();
-      
-      return geometry;
-    });
-
-    return geometries;
-  }, [data.walkmesh]);
-
   return (
     <group>
       <WalkMesh
         setHasPlacedWalkmesh={setHasPlacedWalkmesh}
-        walkmesh={walkMeshGeometry}
+        walkmesh={data.walkmesh}
       />
       {hasPlacedWalkmesh && (
         <Character setHasPlacedCharacter={setHasPlacedCharacter} />
@@ -68,7 +49,6 @@ const Field = ({ data }: FieldProps) => {
         <>
           <Gateways
             fieldId={data.id}
-            walkMeshGeometry={walkMeshGeometry}
           />
           <Scripts models={data.models} scripts={data.scripts} />
           <Camera backgroundPanRef={backgroundPanRef} data={data} setHasPlacedCamera={setHasPlacedCamera} />
