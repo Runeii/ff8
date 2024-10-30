@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import {  BufferAttribute, BufferGeometry } from 'three';
+import { useEffect, useRef, useState } from 'react';
 import WalkMesh from './WalkMesh/WalkMesh';
 
 import type data from '../../public/output/bghall_2.json';
@@ -9,7 +8,7 @@ import Background from './Background/Background';
 import { useFrame, useThree } from '@react-three/fiber';
 import Character from '../Character/Character';
 import Scripts from './Scripts/Scripts';
-import { getInitialEntrance, vectorToFloatingPoint } from '../utils';
+import { getInitialEntrance } from '../utils';
 import { renderSceneWithLayers } from './fieldUtils';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';

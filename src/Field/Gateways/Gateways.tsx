@@ -1,4 +1,3 @@
-import { BufferGeometry } from "three"
 import {  useCallback, useMemo } from "react"
 import Gateway from "./Gateway/Gateway"
 import useGlobalStore from '../../store';
