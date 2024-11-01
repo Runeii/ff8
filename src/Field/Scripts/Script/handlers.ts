@@ -86,7 +86,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     } else if (currentOpcode.param === 4) {
       STACK.push(value1 % value2);
     } else if (currentOpcode.param === 5) {
-      STACK.push(value1);
+      // STACK.push(value1); //maybe this shouldn't exist?
       STACK.push(-value2);
     } else if (currentOpcode.param === 6) {
       STACK.push(value1 === value2 ? 1 : 0);
@@ -174,8 +174,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       fieldId: 'WORLD_MAP',
     });
   },
-  // TODO: Implement
-  HALT: () => { },
+  HALT: ({ currentStateRef }) => {
+    currentStateRef.current.isHalted = true;
+  },
   SETPLACE: ({ STACK }) => {
     useGlobalStore.setState({ currentLocationPlaceName: STACK.pop() as number });
   },
@@ -681,8 +682,10 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
   // TODO: fix
   PCTURN: ({ scene, STACK }) => {
-    const speed = STACK.pop() as number;
-    const unknown = STACK.pop() as number;
+    // const speed =
+    STACK.pop() as number;
+    // const unknown =
+    STACK.pop() as number;
 
     //const targetMesh =
     getPartyMemberEntity(scene, 0);

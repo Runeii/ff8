@@ -9,6 +9,7 @@ interface GlobalState {
   currentParameterStates: Record<number, number>,
   currentParameterVisibility: Record<number, boolean>,
   fieldId: string,
+  fieldTimestamp: number,
   initialAngle: number,
   isUserControllable: boolean,
   isTransitioningMap: boolean,
@@ -46,6 +47,7 @@ const useGlobalStore = create<GlobalState>()((set) => ({
 
   currentLocationPlaceName: 0, // we don't currently use this for anything
   fieldId: '',
+  fieldTimestamp: 0, // used to cleanup timers in state
   isUserControllable: true,
   isTransitioningMap: true,
   isRunEnabled: true,

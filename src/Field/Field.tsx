@@ -86,6 +86,8 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
       const data = await response.json() as FieldProps['data'];
       setData(data);
       useGlobalStore.setState({
+        fieldTimestamp: Date.now(),
+
         currentParameterStates: {},
         currentParameterVisibility: {},
         controlledScrolls: {},

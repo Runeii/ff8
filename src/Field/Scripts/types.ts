@@ -22,6 +22,8 @@ export type Script = Omit<FieldData['scripts'][number], 'methods' | 'type'> & {
 };
 
 export type ScriptState = {
+  isHalted: boolean;
+
   animation: {
     id: number;
     isHoldingFinalFrame: boolean;

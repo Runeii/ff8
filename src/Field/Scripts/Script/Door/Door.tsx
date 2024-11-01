@@ -63,7 +63,7 @@ const Door = ({ doors, script, setActiveMethodId, state }: DoorProps) => {
     playerPosition = playerHitbox.getWorldPosition(playerPosition);
     const doorPosition = box.hitboxMidpoint;
     const distanceFromDoor = playerPosition.distanceTo(doorPosition);
-    setIsNearDoor(distanceFromDoor < 0.07);
+    setIsNearDoor(distanceFromDoor < 0.1);
   });
   useTriggerEvent('open', script, setDoorOpenState(true), isIntersecting && !isDoorOpen);
   useTriggerEvent('close', script, setDoorOpenState(false), !isNearDoor && isDoorOpen);
@@ -77,22 +77,22 @@ const Door = ({ doors, script, setActiveMethodId, state }: DoorProps) => {
   return (
     <>
       <Box
-        args={[0.001, 0.1, 0.1]}
+        args={[0.001, box.length, 0.1]}
         name={isDoorOpen ? 'door-open' : 'door-closed'}
         position={box.midpoint}
         rotation={box.rotation}
-        visible={true}
+        visible={false}
         >
-        <meshBasicMaterial color={isDoorOpen ? 'green' : 'red'} opacity={0.7} transparent />
+        <meshBasicMaterial color={isDoorOpen ? 'green' : 'red'} opacity={1} transparent />
       </Box>
         <Box
-          args={[0.02, box.length, 0.1]} 
+          args={[0.03, box.length, 0.1]} 
           position={box.midpoint}
           rotation={box.rotation}
           ref={hitboxRef}
-          visible={true}
+          visible={false}
           >
-          <meshBasicMaterial color="blue" opacity={0.5} transparent />
+          <meshBasicMaterial color="blue" opacity={1} transparent />
         </Box>
     </>
   );

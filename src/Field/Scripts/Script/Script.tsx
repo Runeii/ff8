@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Script as ScriptType } from "../types";
 import useMethod from "./useMethod";
 import Background from "./Background/Background";
@@ -9,6 +9,8 @@ import useGlobalStore from "../../../store";
 import { animated, useSpring } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
+import { useFrame, useThree } from "@react-three/fiber";
+import { Group } from "three";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -39,12 +41,9 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     config: {
       duration: 100,
     },
-    position: [0,0,0],
+    position: [0,0,0]
   }), []);
 
-  if (script.groupId === 18 || script.groupId === 19) {
-    //console.log('Executing', activeMethodId, remoteExecutionKey);
-  }
   const scriptState = useMethod(script, activeMethodId, setActiveMethodId, setSpring);
 
   useEffect(() => {
@@ -83,6 +82,19 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   
   const activeParty = useGlobalStore(storeState => storeState.party);
 
+  const camera = useThree().camera;
+  const containerRef = useRef<Group>(null);
+
+  // Needs to correctly face camera
+  useFrame(() => {
+    if (!containerRef.current || !camera.userData.initialPosition) {
+      return;
+    }
+    //const currentRotation = containerRef.current.rotation.clone();
+    //containerRef.current.lookAt(camera.userData.initialPosition);
+    //containerRef.current.rotation.z += (Math.PI * 2) / 255 * 255;
+  });
+
   if (scriptState.isUnused) {
     return null;
   }
@@ -91,12 +103,18 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     return null;
   }
 
+
   return (
-    <animated.group position={movementSpring.position as unknown as [number,number,number]} visible={scriptState.isVisible}>
+    <animated.group
+      position={movementSpring.position as unknown as [number,number,number]}
+      rotation={[0, 0, 0]}
+      ref={containerRef}
+      visible={scriptState.isVisible}
+    >
       {scriptState.isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
           isTalkEnabled={scriptState.isTalkable}
-          radius={scriptState.talkRadius / 4096 / 2}
+          radius={scriptState.talkRadius / 4096}
           setActiveMethodId={setActiveMethodId}
           talkMethod={talkMethod}
         />

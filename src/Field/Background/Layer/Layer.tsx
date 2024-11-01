@@ -110,7 +110,8 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
             key={index}
             position={[X + TILE_SIZE / 2, -Y - TILE_SIZE / 2, 0]}
             scale={[TILE_SIZE, TILE_SIZE, TILE_SIZE]}
-            layers={layer + (state > 0 ? 1 : 0)}
+            layers={layer}
+            renderOrder={state}
             visible={isVisible}
             >
             <spriteMaterial

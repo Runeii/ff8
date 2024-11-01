@@ -7,6 +7,8 @@ import { Vector3 } from "three";
 import { SpringRef } from "@react-spring/web";
 
 const DEFAULT_STATE: ScriptState = {
+  isHalted: false,
+
   animation: {
     id: 0,
     isHoldingFinalFrame: false,
@@ -81,6 +83,10 @@ const useMethod = (
 
     if (previousActiveMethodName === 'touchoff' && across) {
       return across;
+    }
+
+    if (currentScriptStateRef.current.isHalted) {
+      return null;
     }
 
     return methods.find(method => method.methodId === 'default');
