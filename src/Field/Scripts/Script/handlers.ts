@@ -8,6 +8,7 @@ import { MutableRefObject } from "react";
 import { Group } from "three";
 import { SpringRef } from "@react-spring/web";
 import { animateFrames } from "./Background/backgroundUtils";
+import { playAnimation } from "./Model/modelUtils";
 
 type HandlerFuncWithPromise = (args: {
   activeMethod: ScriptMethod,
@@ -86,7 +87,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     } else if (currentOpcode.param === 4) {
       STACK.push(value1 % value2);
     } else if (currentOpcode.param === 5) {
-      // STACK.push(value1); //maybe this shouldn't exist?
+      STACK.push(value1);
       STACK.push(-value2);
     } else if (currentOpcode.param === 6) {
       STACK.push(value1 === value2 ? 1 : 0);
@@ -460,96 +461,142 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const modelId = currentOpcode.param;
     currentStateRef.current.modelId = modelId;
   },
-  BASEANIME: ({ currentStateRef, currentOpcode, STACK }) => {
+  BASEANIME: ({ currentStateRef, currentOpcode, scene, script, STACK }) => {
     const animationId = currentOpcode.param;
-    // const firstFrame = 
-    STACK.pop() as number;
-    // const lastFrame = 
-    STACK.pop() as number;
+    const firstFrame = STACK.pop() as number;
+    const lastFrame = STACK.pop() as number;
+
     currentStateRef.current.idleAnimationId = animationId;
+
+    playAnimation(
+      animationId,
+      currentStateRef.current,
+      scene,
+      script,
+      false,
+      true,
+      [firstFrame, lastFrame]
+    )
   },
-  // THIS NEEDS TO BE AWAITED
-  ANIME: ({ currentStateRef, currentOpcode }) => {
+  ANIME: async ({ currentStateRef, currentOpcode, scene, script }) => {
     const animationId = currentOpcode.param;
 
-    currentStateRef.current.animation = {
-      ...currentStateRef.current.animation,
-      id: animationId,
-      isHoldingFinalFrame: false,
-    }
+    await playAnimation(
+      animationId,
+      currentStateRef.current,
+      scene,
+      script,
+      false,
+      false
+    )
   },
-  // THIS NEEDS TO BE AWAITED
-  ANIMEKEEP: ({ currentStateRef, currentOpcode }) => {
+  ANIMEKEEP: async ({ currentStateRef, currentOpcode, scene, script }) => {
     const animationId = currentOpcode.param;
 
-    currentStateRef.current.animation = {
-      ...currentStateRef.current.animation,
-      id: animationId,
-      isHoldingFinalFrame: false,
-    }
+    await playAnimation(
+      animationId,
+      currentStateRef.current,
+      scene,
+      script,
+      true,
+      false
+    )
   },
-  // NEEDS TO ACCEPT A RANGE OF FRAMES
-  CANIME: ({ currentStateRef, currentOpcode, STACK }) => {
-    // const firstFrame = 
-    STACK.pop() as number;
-    // const lastFrame = 
-    STACK.pop() as number;
+  CANIME: async ({ currentStateRef, currentOpcode, scene, script, STACK }) => {
     const animationId = currentOpcode.param;
-    currentStateRef.current.animation = {
-      ...currentStateRef.current.animation,
-      id: animationId,
-      isHoldingFinalFrame: false,
-    }
+    const firstFrame = STACK.pop() as number;
+    const lastFrame = STACK.pop() as number;
+
+    await playAnimation(
+      animationId,
+      currentStateRef.current,
+      scene,
+      script,
+      false,
+      false,
+      [firstFrame, lastFrame]
+    )
   },
-  // NEEDS TO ACCEPT A RANGE OF FRAMES
-  CANIMEKEEP: ({ currentStateRef, currentOpcode, STACK }) => {
-    // const firstFrame = 
-    STACK.pop() as number;
-    // const lastFrame = 
-    STACK.pop() as number;
+  CANIMEKEEP: async ({ currentStateRef, currentOpcode, scene, script, STACK }) => {
+    const animationId = currentOpcode.param;
+    const firstFrame = STACK.pop() as number;
+    const lastFrame = STACK.pop() as number;
+
+    await playAnimation(
+      animationId,
+      currentStateRef.current,
+      scene,
+      script,
+      true,
+      false,
+      [firstFrame, lastFrame]
+    )
+  },
+  RANIME: ({ currentStateRef, currentOpcode, scene, script }) => {
     const animationId = currentOpcode.param;
 
-    currentStateRef.current.animation = {
-      ...currentStateRef.current.animation,
-      id: animationId,
-      isHoldingFinalFrame: true,
-    }
+    playAnimation(
+      animationId,
+      currentStateRef.current,
+      scene,
+      script,
+      false,
+      false
+    )
   },
-  RANIME: ({ currentStateRef, currentOpcode }) => {
+  RANIMEKEEP: ({ currentStateRef, currentOpcode, scene, script }) => {
     const animationId = currentOpcode.param;
 
-    currentStateRef.current.animation = {
-      ...currentStateRef.current.animation,
-      id: animationId,
-      isHoldingFinalFrame: false,
-    }
+    playAnimation(
+      animationId,
+      currentStateRef.current,
+      scene,
+      script,
+      true,
+      false
+    )
   },
-  RANIMEKEEP: ({ currentStateRef, currentOpcode }) => {
+  RCANIME: ({ currentStateRef, currentOpcode, scene, script, STACK }) => {
+    const animationId = currentOpcode.param;
+    const firstFrame = STACK.pop() as number;
+    const lastFrame = STACK.pop() as number;
+
+    playAnimation(
+      animationId,
+      currentStateRef.current,
+      scene,
+      script,
+      false,
+      false,
+      [firstFrame, lastFrame]
+    )
+  },
+  RCANIMEKEEP: ({ currentStateRef, currentOpcode, scene, script, STACK }) => {
+    const animationId = currentOpcode.param;
+    const firstFrame = STACK.pop() as number;
+    const lastFrame = STACK.pop() as number;
+
+    playAnimation(
+      animationId,
+      currentStateRef.current,
+      scene,
+      script,
+      true,
+      false,
+      [firstFrame, lastFrame]
+    )
+  },
+  RANIMELOOP: ({ currentStateRef, currentOpcode, scene, script }) => {
     const animationId = currentOpcode.param;
 
-    currentStateRef.current.animation = {
-      ...currentStateRef.current.animation,
-      id: animationId,
-      isHoldingFinalFrame: true,
-    }
-  },
-  RANIMELOOP: ({ currentStateRef, currentOpcode }) => {
-    const animationId = currentOpcode.param;
-
-    currentStateRef.current.animation = {
-      ...currentStateRef.current.animation,
-      id: animationId,
-      isLooping: true,
-    }
-  },
-  RCANIMEKEEP: ({ currentStateRef, currentOpcode }) => {
-    const animationId = currentOpcode.param;
-
-    currentStateRef.current.animation = {
-      ...currentStateRef.current.animation,
-      id: animationId,
-      isHoldingFinalFrame: true,
-    }
+    playAnimation(
+      animationId,
+      currentStateRef.current,
+      scene,
+      script,
+      false,
+      true
+    )
   },
   RCANIMELOOP: ({ currentStateRef, currentOpcode }) => {
     const animationId = currentOpcode.param;

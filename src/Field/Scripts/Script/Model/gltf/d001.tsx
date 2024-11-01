@@ -5,7 +5,7 @@ Command: npx gltfjsx@6.5.2 ./models/d001.glb --types --exportdefault --output=./
 
 import * as THREE from 'three'
 import React from 'react'
-import { useRef, useMemo, useImperativeHandle } from 'react';
+import {  useImperativeHandle } from 'react';
 import { useGraph } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { GLTF, SkeletonUtils } from 'three-stdlib'

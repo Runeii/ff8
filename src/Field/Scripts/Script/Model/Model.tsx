@@ -1,6 +1,5 @@
-import { useFrame, useThree } from "@react-three/fiber";
 import { Script, ScriptState } from "../../types";
-import { lazy, useRef } from "react";
+import { lazy, useCallback, useRef } from "react";
 import { AnimationAction } from "three";
 
 type ModelProps = {
@@ -16,26 +15,19 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   return [name, lazy(modelFiles[path] as () => Promise<{default: React.ComponentType<JSX.IntrinsicElements['group']>}>)];
 }));
 
-const Model = ({ models, state }: ModelProps) => {
+const Model = ({ models, script, state }: ModelProps) => {
   const modelId = state.modelId;
 
-  //const idleAnimationId = state.idleAnimationId;
-  //const isSolid = state.isSolid;
-  //const angle = state.angle
   const partyMemberId = state.partyMemberId
 
   const modelRef = useRef<{ actions: AnimationAction[] }>();
 
-  const setModelRef = (ref: { actions: AnimationAction[] } | null) => {
+  const setModelRef = useCallback((ref: { actions: AnimationAction[] } | null) => {
     if (!ref) {
       return;
     }
     modelRef.current = ref;
-    if (!ref.actions) {
-      return;
-    }
-    Object.values(ref.actions)[0]?.play();
-  }
+  }, []);
   
   let modelName = models[modelId];
   if (modelName === 'd000') {
@@ -43,16 +35,21 @@ const Model = ({ models, state }: ModelProps) => {
   }
   const ModelComponent = components['d001'] ?? components['fallback'];
 
+
   if (!ModelComponent) {
     return null;
   }
-
   return (
     <group rotation={[Math.PI / 2,Math.PI,0]}>
       <ModelComponent
-        name={partyMemberId === undefined ? 'model' : `party--${partyMemberId}`}
+        name={partyMemberId === undefined ? `model--${script.groupId}` : `party--${partyMemberId}`}
         scale={0.06}
+        // @ts-expect-error Need to use same ref format on all models
         ref={setModelRef}
+        userData={{
+          scriptId: script.groupId,
+          actions: modelRef.current?.actions ?? [],
+        }}
       />
     </group>
   );

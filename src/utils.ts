@@ -1,4 +1,4 @@
-import { Line, Mesh, Object3D, PerspectiveCamera, Raycaster, Scene, Vector3 } from "three";
+import { Mesh, Object3D, Raycaster, Scene, Vector3 } from "three";
 import { FieldData } from "./Field/Field";
 import gateways from './gateways.ts';
 import useGlobalStore from "./store.ts";
