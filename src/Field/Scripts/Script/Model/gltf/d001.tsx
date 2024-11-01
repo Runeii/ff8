@@ -22,22 +22,19 @@ type GLTFResult = GLTF & {
     root: THREE.Bone
   }
   materials: {
-    d001: THREE.MeshPhysicalMaterial
+    d001: THREE.MeshStandardMaterial
   }
   animations: GLTFAction[]
 }
 
-export default React.forwardRef(function d001(props: JSX.IntrinsicElements['group'], ref: React.Ref<{ actions: any, mesh: Group }>) {
+export default React.forwardRef(function d001(props: JSX.IntrinsicElements['group'], ref: React.Ref<{ actions: any }>) {
   const group = React.useRef<THREE.Group>()
   const { scene, animations } = useGLTF('/models/d001.glb')
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone) as GLTFResult
   const { actions } = useAnimations(animations, group)
         // Expose actions to the parent via the ref
-      useImperativeHandle(ref, () => ({
-        actions,
-        mesh: group.current
-      }));
+      useImperativeHandle(ref, () => ({ actions }));
         return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">

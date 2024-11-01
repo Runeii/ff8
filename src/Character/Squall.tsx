@@ -52,7 +52,7 @@ const { scene, animations } = useGLTF('/models/d001.glb') as GLTFResult
 
   return (
     <group ref={localRef} {...props} dispose={null}>
-      <group name="Scene" position={[0,-1,0.9]} rotation={[0, Math.PI / 2, 0]}>
+      <group name="Scene" rotation={[Math.PI / 2, Math.PI, 0]}>
         <group name="d001_armature" >
           <primitive object={nodes.root} />
         </group>

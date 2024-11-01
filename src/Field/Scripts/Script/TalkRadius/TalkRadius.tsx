@@ -61,7 +61,7 @@ const TalkRadius = ({ isTalkEnabled, radius, setActiveMethodId, talkMethod }: Ta
     <Sphere
       args={[radius]}
       ref={talkSphereRef}
-      visible={true}
+      visible={false}
     >
       <meshBasicMaterial color={isTalkEnabled ? `white` : `red`} side={DoubleSide} opacity={0.2} transparent />
     </Sphere>

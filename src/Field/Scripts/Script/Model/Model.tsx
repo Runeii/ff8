@@ -41,18 +41,17 @@ const Model = ({ models, state }: ModelProps) => {
   if (modelName === 'd000') {
     modelName = 'd001'
   }
-  const ModelComponent = components['fallback'];
+  const ModelComponent = components['d001'] ?? components['fallback'];
 
   if (!ModelComponent) {
     return null;
   }
 
   return (
-    <group rotation={[Math.PI / 2,0,Math.PI / -2]}>
-    {/*position={[-0.055,0,0.054]}*/}
+    <group rotation={[Math.PI / 2,Math.PI,0]}>
       <ModelComponent
         name={partyMemberId === undefined ? 'model' : `party--${partyMemberId}`}
-        scale={0.058}
+        scale={0.06}
         ref={setModelRef}
       />
     </group>

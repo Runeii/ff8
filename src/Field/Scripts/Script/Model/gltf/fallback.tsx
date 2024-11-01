@@ -6,7 +6,7 @@ const Fallback = forwardRef((props, ref) => {
     <Box args={[0.08, 0.01, 0.01]} position={[-0.03,0,0]} ref={ref}>
       <meshStandardMaterial color="white" />
       <Box args={[0.01, 0.01, 0.01]} position={[0, 0, 0.01]}>
-        <meshStandardMaterial color="black" />
+        <meshStandardMaterial color="blue" />
       </Box>
     </Box>
   )

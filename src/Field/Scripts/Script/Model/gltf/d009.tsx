@@ -22,7 +22,7 @@ type GLTFResult = GLTF & {
     root: THREE.Bone
   }
   materials: {
-    d009: THREE.MeshPhysicalMaterial
+    d009: THREE.MeshStandardMaterial
   }
   animations: GLTFAction[]
 }

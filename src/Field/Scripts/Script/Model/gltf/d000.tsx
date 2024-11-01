@@ -7,28 +7,42 @@ import * as THREE from 'three'
 import React from 'react'
 import { useRef, useMemo, useImperativeHandle } from 'react';
 import { useGraph } from '@react-three/fiber'
-import { useGLTF } from '@react-three/drei'
+import { useGLTF, useAnimations } from '@react-three/drei'
 import { GLTF, SkeletonUtils } from 'three-stdlib'
+
+type ActionName = 'd000_act0' | 'd000_act1' | 'd000_act2'
+
+interface GLTFAction extends THREE.AnimationClip {
+  name: ActionName
+}
 
 type GLTFResult = GLTF & {
   nodes: {
-    d002: THREE.SkinnedMesh
+    d000: THREE.SkinnedMesh
     root: THREE.Bone
   }
   materials: {
-    d002: THREE.MeshPhysicalMaterial
+    d000: THREE.MeshStandardMaterial
   }
   animations: GLTFAction[]
 }
 
 export default React.forwardRef(function d000(props: JSX.IntrinsicElements['group'], ref: React.Ref<{ actions: any }>) {
-  const { scene } = useGLTF('/models/d000.glb')
+  const group = React.useRef<THREE.Group>()
+  const { scene, animations } = useGLTF('/models/d000.glb')
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone) as GLTFResult
-  return (
-    <group {...props} dispose={null}>
-      <skinnedMesh geometry={nodes.d002.geometry} material={materials.d002} skeleton={nodes.d002.skeleton} />
-      <primitive object={nodes.root} />
+  const { actions } = useAnimations(animations, group)
+        // Expose actions to the parent via the ref
+      useImperativeHandle(ref, () => ({ actions }));
+        return (
+    <group ref={group} {...props} dispose={null}>
+      <group name="Scene">
+        <group name="d000_armature">
+          <primitive object={nodes.root} />
+        </group>
+        <skinnedMesh name="d000" geometry={nodes.d000.geometry} material={materials.d000} skeleton={nodes.d000.skeleton} />
+      </group>
     </group>
     ); })
 
