@@ -1,3 +1,4 @@
+import { useFrame, useThree } from "@react-three/fiber";
 import { Script, ScriptState } from "../../types";
 import { lazy, useRef } from "react";
 import { AnimationAction } from "three";
@@ -8,7 +9,7 @@ type ModelProps = {
   state: ScriptState;
 }
 
-const modelFiles = import.meta.glob('./gltf/d*.tsx');
+const modelFiles = import.meta.glob('./gltf/*.tsx');
 
 const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   const name = path.replace('./gltf/', '').replace('.tsx', '');
@@ -30,21 +31,25 @@ const Model = ({ models, state }: ModelProps) => {
       return;
     }
     modelRef.current = ref;
+    if (!ref.actions) {
+      return;
+    }
     Object.values(ref.actions)[0]?.play();
   }
-
+  
   let modelName = models[modelId];
   if (modelName === 'd000') {
     modelName = 'd001'
   }
-  const ModelComponent = components[modelName] ?? components[''];
+  const ModelComponent = components['fallback'];
 
   if (!ModelComponent) {
     return null;
   }
 
   return (
-    <group rotation={[Math.PI / 2,0,Math.PI / -2]} position={[-0.055,0,0.054]}>
+    <group rotation={[Math.PI / 2,0,Math.PI / -2]}>
+    {/*position={[-0.055,0,0.054]}*/}
       <ModelComponent
         name={partyMemberId === undefined ? 'model' : `party--${partyMemberId}`}
         scale={0.058}

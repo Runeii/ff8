@@ -7,6 +7,7 @@ import MAP_NAMES from "../../../constants/maps";
 import { MutableRefObject } from "react";
 import { Group } from "three";
 import { SpringRef } from "@react-spring/web";
+import { animateFrames } from "./Background/backgroundUtils";
 
 type HandlerFuncWithPromise = (args: {
   activeMethod: ScriptMethod,
@@ -24,6 +25,7 @@ type HandlerFuncWithPromise = (args: {
 const MEMORY: Record<number, number> = {
   72: 9999, // gil
   256: 205,
+  534: 1,
 };
 
 export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = {
@@ -204,26 +206,34 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       }
     })
   },
-  RBGANIMELOOP: ({ currentStateRef, STACK }) => {
+  RBGANIMELOOP: async ({ currentStateRef, script, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
-    currentStateRef.current.isBackgroundLooping = true;
     currentStateRef.current.isBackgroundVisible = true;
-    currentStateRef.current.backgroundStartFrame = start;
-    currentStateRef.current.backgroundEndFrame = end;
+    animateFrames(
+      script.backgroundParamId,
+      start,
+      end,
+      currentStateRef.current.backgroundAnimationSpeed,
+      true
+    );
   },
   BGSHADE: ({ STACK }) => {
     STACK.splice(-7); // const lastSeven = STACK.splice(-7);
   },
-  BGANIME: ({ currentStateRef, STACK }) => {
+  BGANIME: async ({ currentStateRef, STACK, script }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
-    currentStateRef.current.isBackgroundLooping = false;
     currentStateRef.current.isBackgroundVisible = true;
-    currentStateRef.current.backgroundStartFrame = start;
-    currentStateRef.current.backgroundEndFrame = end;
+    await animateFrames(
+      script.backgroundParamId,
+      start,
+      end,
+      currentStateRef.current.backgroundAnimationSpeed,
+      false
+    );
   },
   RND: ({ TEMP_STACK }) => {
     TEMP_STACK[0] = Math.round(Math.random() * 255);
@@ -637,7 +647,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     await asyncSetSpring(movementSpring, {
       immediate: false,
       config: {
-        duration: currentStateRef.current.movementSpeed
+        duration: currentStateRef.current.movementSpeed * 4
       },
       position: [position.x, position.y, position.z],
     });
@@ -856,7 +866,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   FOLLOWON: dummiedCommand,
   REFRESHPARTY: dummiedCommand,
 
-  RBGSHADELOOP: dummiedCommand,
+  RBGSHADELOOP: ({ STACK }) => {
+    STACK.splice(-10);
+  },
   LSCROLL: dummiedCommand,
   PREMAPJUMP: dummiedCommand,
   PREMAPJUMP2: dummiedCommand,

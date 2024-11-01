@@ -93,6 +93,9 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
 
         availableMessages: data.text,
         isTransitioningMap: false,
+
+        hasActiveTalkMethod: false,
+        lockedTriangles: [],
       });
       if (!useGlobalStore.getState().pendingCharacterPosition) {
         useGlobalStore.setState({ pendingCharacterPosition: getInitialEntrance(data) });

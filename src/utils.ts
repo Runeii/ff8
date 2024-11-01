@@ -1,4 +1,4 @@
-import { Mesh, Object3D, Raycaster, Scene, Vector3 } from "three";
+import { Line, Mesh, Object3D, PerspectiveCamera, Raycaster, Scene, Vector3 } from "three";
 import { FieldData } from "./Field/Field";
 import gateways from './gateways.ts';
 import useGlobalStore from "./store.ts";
@@ -78,6 +78,16 @@ export const getPositionOnWalkmesh = (desiredPosition: Vector3, walkmesh: Object
   }
 
   return sortedIntersects[0].point;
+}
+
+const intersectionRaycaster = new Raycaster();
+export const checkForIntersections = (position: Vector3, target: Vector3, doors: Object3D[]) => {
+  const direction = new Vector3().subVectors(target, position).normalize();
+  intersectionRaycaster.set(position, direction);
+  intersectionRaycaster.far = position.distanceTo(target);
+  intersectionRaycaster.near = 0;
+  const intersects = intersectionRaycaster.intersectObjects(doors);
+  return intersects.length === 0;
 }
 
 export const getPartyMemberEntity = (scene: Scene, partyMemberId: number) => {

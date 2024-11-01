@@ -86,9 +86,9 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
   const currentParameterStates = useGlobalStore((state) => state.currentParameterStates);
   const currentParameterVisibility = useGlobalStore((state) => state.currentParameterVisibility);
 
-  let layer = isAbove ? 2 : 1;
+  let layer = isAbove ? 3 : 2;
   if (isBackgroundLayer) {
-    layer = 3;
+    layer = 1;
   }
 
   if (!isLayerVisible) {
@@ -97,22 +97,31 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
 
   return (
     <group position={[0, 0, tiles[0].Z]} ref={layerRef}>
-      {tiles.map(({ X, Y, index, parameter, state, texture, isBlended, blendType }) => (
-        <sprite
-          key={index}
-          position={[X + TILE_SIZE / 2, -Y - TILE_SIZE / 2, 0]}
-          scale={[TILE_SIZE, TILE_SIZE, TILE_SIZE]}
-          layers={layer}
-          visible={(parameter === 255 || !currentParameterStates[parameter] || currentParameterStates[parameter] === state) && currentParameterVisibility[parameter] !== false}
-        >
-          <spriteMaterial
-            map={texture}
-            transparent
-            blending={isBlended ? BLENDS[blendType as keyof typeof BLENDS] : NormalBlending}
-            opacity={blendType === 3 ? 0.25 : 1}
-          />
-        </sprite>
-      ))}
+      {tiles.map(({ X, Y, index, parameter, state, texture, isBlended, blendType }) => {
+        let isVisible = true;
+        if (currentParameterStates[parameter] && currentParameterStates[parameter] !== state) {
+          isVisible = false;
+        } else if (currentParameterVisibility[parameter] === false) {
+          isVisible = false;
+        }
+
+        return (
+          <sprite
+            key={index}
+            position={[X + TILE_SIZE / 2, -Y - TILE_SIZE / 2, 0]}
+            scale={[TILE_SIZE, TILE_SIZE, TILE_SIZE]}
+            layers={layer + (state > 0 ? 1 : 0)}
+            visible={isVisible}
+            >
+            <spriteMaterial
+              map={texture}
+              transparent
+              blending={isBlended ? BLENDS[blendType as keyof typeof BLENDS] : NormalBlending}
+              opacity={blendType === 3 ? 0.25 : 1}
+            />
+          </sprite>
+        );
+      })}
     </group>
   );
 };

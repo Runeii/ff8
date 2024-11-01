@@ -104,10 +104,17 @@ const useMethod = (
       return;
     }
 
+    // Doors behave differently and do not return to default loop
+    const isDoorOpenOrCloseState = script.type === 'door' && (activeMethodId === 'open' || activeMethodId === 'close');
+
+    if (isDoorOpenOrCloseState) {
+      return;
+    }
+
     useGlobalStore.setState({ hasActiveTalkMethod: false });
     setPreviousActiveMethodName(activeMethod.methodId);
     setActiveMethodId(undefined);
-  }, [activeMethod, activeMethodId, setActiveMethodId]);
+  }, [activeMethod, activeMethodId, script.type, setActiveMethodId]);
 
   const thisRunMethodId = useRef<string>();
   useEffect(() => {
@@ -135,9 +142,6 @@ const useMethod = (
     const execute = async () => {
       const currentOpcode = opcodes[currentOpcodeIndex] ?? undefined;
 
-      if (script.groupId === 19) {
-        //console.log('Executing', currentOpcode?.name, currentOpcode?.param, currentOpcodeIndex, methodId);
-      }
       if (!currentOpcode && !hasCompletedConstructor) {
         setHasCompletedConstructor(true);
       }
@@ -163,7 +167,6 @@ const useMethod = (
 
       const monitor = setInterval(() => {
         if (thisRunMethodId.current !== methodId) {
-          console.log('Aborting method:', methodId, 'now is', thisRunMethodId.current, activeMethod);
           abortController.abort();
           clearInterval(monitor);
         }

@@ -1,8 +1,8 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import { Group, Vector3 } from "three";
+import { Group, Object3D, Vector3 } from "three";
 import { getCameraDirections } from "../Field/Camera/cameraUtils";
-import { getPositionOnWalkmesh, getUnlockedRouteToPoint } from "../utils";
+import { checkForIntersections, checkForLineIntersections, getPositionOnWalkmesh } from "../utils";
 import { onMovementKeyPress } from "./characterUtils";
 import Squall, { ActionName } from "./Squall";
 import { Box, Sphere } from "@react-three/drei";
@@ -11,7 +11,7 @@ import Focus from "./Focus/Focus";
 import { useSpring } from "@react-spring/three";
 
 export const CHARACTER_HEIGHT = 0.06;
-const RUNNING_SPEED = 0.3;
+const RUNNING_SPEED = 0.2;
 const WALKING_SPEED = 0.08;
 
 const direction = new Vector3();
@@ -135,10 +135,25 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
     setCurrentAction(isWalking ? 'd001_act1' : "d001_act2");
   
     const desiredPosition = player.position.clone().add(direction);
+
     const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT);
-      
+
+
     if (!newPosition) {
       return
+    }
+
+    const closedDoors: Object3D[] = [];
+    scene.traverse((object) => {
+      if (object.name === "door-closed") {
+        closedDoors.push(object);
+      }
+    });
+  
+    const isPermitted = checkForIntersections(position, newPosition, closedDoors);
+  
+    if (!isPermitted) {
+      return;
     }
 
     direction.z = 0;
@@ -151,10 +166,12 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
   });
 
   return (
+    <>
     <Squall currentAction={currentAction} scale={0.06} name="character" ref={playerRef}>
       <Box args={[0.4, 0.4, 1.2]} position={[0,0,0.6]} name="hitbox" visible={false} />
       <Focus />
     </Squall>
+    </>
   );
 };
 

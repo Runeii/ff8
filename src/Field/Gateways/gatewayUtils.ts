@@ -1,4 +1,4 @@
-import { Mesh, Raycaster, Vector3 } from "three"
+import { Box3, Mesh, Raycaster, Vector3 } from "three"
 
 const raycaster = new Raycaster();
 let direction = new Vector3()
@@ -17,4 +17,11 @@ export const checkForIntersection = (player: Mesh, points: Vector3[]) => {
   const intersects = raycaster.intersectObject(player, true);
 
   return intersects.length > 0
+}
+
+export const checkForIntersectingMeshes = (mesh1: Mesh, mesh2: Mesh) => {
+  const box1 = new Box3().setFromObject(mesh1);
+  const box2 = new Box3().setFromObject(mesh2);
+  const intersects = box1.intersectsBox(box2);
+  return intersects;
 }
