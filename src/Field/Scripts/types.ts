@@ -22,6 +22,7 @@ export type Script = Omit<FieldData['scripts'][number], 'methods' | 'type'> & {
 };
 
 export type ScriptState = {
+  hasRemovedControl: boolean;
   isHalted: boolean;
 
   animation: {

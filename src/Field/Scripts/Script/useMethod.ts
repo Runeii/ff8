@@ -7,6 +7,7 @@ import { Vector3 } from "three";
 import { SpringRef } from "@react-spring/web";
 
 const DEFAULT_STATE: ScriptState = {
+  hasRemovedControl: false,
   isHalted: false,
 
   animation: {
@@ -108,6 +109,10 @@ const useMethod = (
   const handleCompleteRun = useCallback(() => {
     if (!activeMethodId || !activeMethod) {
       return;
+    }
+
+    if (currentScriptStateRef.current.hasRemovedControl) {
+      useGlobalStore.setState({ isUserControllable: true });
     }
 
     // Doors behave differently and do not return to default loop

@@ -18,12 +18,15 @@ const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
 type CharacterProps = {
+  hasPlacedCharacter: boolean;
   setHasPlacedCharacter: (value: boolean) => void;
 };
 
 
-const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
-  const position = useGlobalStore((state) => state.characterPosition) as Vector3;
+const Character = ({ hasPlacedCharacter, setHasPlacedCharacter }: CharacterProps) => {
+  const characterPosition = useGlobalStore((state) => state.characterPosition) as Vector3;
+  const isTransitioningMap = useGlobalStore((state) => state.isTransitioningMap);
+  const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
 
   const { camera, scene } = useThree();
   const playerRef = useRef<Group>(null);
@@ -36,14 +39,14 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
   });
 
   const [, setPositionSpring] = useSpring(() => ({
-    position: [position.x, position.y, position.z],
+    position: [0,0,0],
     config: {
       duration: 10,
     },
     onChange: ({ value }) => {
       playerRef.current?.position.set(value.position[0], value.position[1], value.position[2]);
     }
-  }), [position]);
+  }), [characterPosition]);
 
   useEffect(() => {
     const handleKeyDown = onMovementKeyPress(movementFlagsRef, true);
@@ -61,32 +64,30 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
   useEffect(() => {
     const walkmesh = scene.getObjectByName("walkmesh") as Group;
 
-    if (!walkmesh) {
+    if (!walkmesh || !characterPosition || isTransitioningMap) {
       return;
     }
 
-    const initialPosition = new Vector3(position.x, position.y, position.z);
+    const initialPosition = new Vector3(characterPosition.x, characterPosition.y, characterPosition.z);
     const newPosition = getPositionOnWalkmesh(initialPosition, walkmesh);
-
     if (newPosition) {
       setPositionSpring({
         position: [newPosition.x, newPosition.y, newPosition.z],
         immediate: true,
       });
     } else {
-      console.warn("Tried to set character position to an invalid position", position);
+      console.warn("Tried to set character position to an invalid position", characterPosition);
     }
 
     setHasPlacedCharacter(true);
-  }, [position, scene, setHasPlacedCharacter, setPositionSpring]);
+  }, [characterPosition, isTransitioningMap, scene, setHasPlacedCharacter, setPositionSpring]);
 
-  const isTransitioningMap = useGlobalStore((state) => state.isTransitioningMap);
-  const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   const [currentAction, setCurrentAction] = useState<ActionName>("d001_act1");
   useFrame((_, delta) => {
-    if (isTransitioningMap) {
+    if (isTransitioningMap || !hasPlacedCharacter) {
       return
     }
+
     const walkmesh = scene.getObjectByName("walkmesh");
     const player = playerRef.current;
     const movementFlags = movementFlagsRef.current;
@@ -150,7 +151,7 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
       }
     });
   
-    const isPermitted = checkForIntersections(position, newPosition, closedDoors);
+    const isPermitted = checkForIntersections(player.position, newPosition, closedDoors);
   
     if (!isPermitted) {
       return;
@@ -166,12 +167,10 @@ const Character = ({ setHasPlacedCharacter }: CharacterProps) => {
   });
 
   return (
-    <>
     <Squall currentAction={currentAction} scale={0.06} name="character" ref={playerRef}>
       <Box args={[0.5, 0.5, 1.2]} position={[0,0,0.6]} name="hitbox" visible={false} />
       <Focus />
     </Squall>
-    </>
   );
 };
 

@@ -4,6 +4,8 @@ import { SpringValue } from '@react-spring/web';
 
 interface GlobalState {
   characterPosition?: Vector3,
+  pendingCharacterPosition?: Vector3, // Ensures we can mark user start position before transitioning map
+
   currentLocationPlaceName: number,
   backgroundLayerVisibility: Record<number, boolean>,
   currentParameterStates: Record<number, number>,
@@ -14,8 +16,6 @@ interface GlobalState {
   isUserControllable: boolean,
   isTransitioningMap: boolean,
   isRunEnabled: boolean,
-  pendingCharacterPosition?: Vector3,
-  setCharacterToPendingPosition: () => void,
 
   availableMessages: string[][],
 
@@ -39,11 +39,10 @@ interface GlobalState {
   lockedTriangles: number[],
 }
 
-const useGlobalStore = create<GlobalState>()((set) => ({
+const useGlobalStore = create<GlobalState>()(() => ({
   availableMessages: [],
   characterPosition: undefined as unknown as Vector3,
-  pendingCharacterPosition: undefined,
-  setCharacterToPendingPosition: () => set((state) => ({ characterPosition: state.pendingCharacterPosition })),
+  pendingCharacterPosition: undefined as unknown as Vector3,
 
   currentLocationPlaceName: 0, // we don't currently use this for anything
   fieldId: '',

@@ -27,6 +27,7 @@ const MEMORY: Record<number, number> = {
   72: 9999, // gil
   256: 205,
   534: 1,
+  1025: 2,
 };
 
 export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = {
@@ -134,7 +135,11 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   UCON: () => {
     useGlobalStore.setState({ isUserControllable: true });
   },
-  UCOFF: () => {
+  UCOFF: ({ currentStateRef, }) => {
+    const isUserControllable = useGlobalStore.getState().isUserControllable;
+    if (isUserControllable) {
+      currentStateRef.current.hasRemovedControl = true;
+    }
     useGlobalStore.setState({ isUserControllable: false });
   },
   LINEON: ({ currentStateRef }) => {
@@ -148,6 +153,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const fieldId = STACK.pop() as number;
     useGlobalStore.setState({
       fieldId: MAP_NAMES[fieldId],
+      isTransitioningMap: true,
     });
   },
   MAPJUMP: ({ STACK }) => {
@@ -155,15 +161,18 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
 
     useGlobalStore.setState({
       fieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
+      isTransitioningMap: true,
       pendingCharacterPosition: vectorToFloatingPoint(mapJumpDetailsInMemory.slice(1, 4) as unknown as [number, number, number]),
     });
   },
   MAPJUMP3: ({ STACK }) => {
     const mapJumpDetailsInMemory = STACK.splice(-5);
 
+    console.log(MAP_NAMES[mapJumpDetailsInMemory[0]], mapJumpDetailsInMemory.slice(1, 4), mapJumpDetailsInMemory[4], vectorToFloatingPoint(mapJumpDetailsInMemory.slice(1, 4)))
     useGlobalStore.setState({
       fieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
       initialAngle: mapJumpDetailsInMemory[4],
+      isTransitioningMap: true,
       pendingCharacterPosition: vectorToFloatingPoint(mapJumpDetailsInMemory.slice(1, 4) as unknown as [number, number, number]),
     });
   },

@@ -33,14 +33,16 @@ const WalkMesh = ({ setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
     setHasPlacedWalkmesh(true);
   }, [setHasPlacedWalkmesh]);
 
+  const handleClick = (e) => {
+    useGlobalStore.setState({
+      characterPosition: e.point
+    });
+  }
+
   return (
     <group name="walkmesh">
       {walkMeshGeometry.map((geometry, index) => (
-        <mesh key={index} name={`${index}`} geometry={geometry} onClick={(e) => {
-          useGlobalStore.setState({
-            characterPosition: e.point
-        })
-        }} visible={import.meta.env.DEV}>
+        <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={import.meta.env.DEV}>
           <meshBasicMaterial color={"red"} transparent opacity={0.2} side={DoubleSide} />
         </mesh>
       ))}

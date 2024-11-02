@@ -8,10 +8,10 @@ import Background from './Background/Background';
 import { useFrame, useThree } from '@react-three/fiber';
 import Character from '../Character/Character';
 import Scripts from './Scripts/Scripts';
-import { getInitialEntrance } from '../utils';
 import { renderSceneWithLayers } from './fieldUtils';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
+import { getInitialEntrance } from '../utils';
 
 export type FieldData = typeof data;
 
@@ -42,7 +42,7 @@ const Field = ({ data }: FieldProps) => {
         walkmesh={data.walkmesh}
       />
       {hasPlacedWalkmesh && (
-        <Character setHasPlacedCharacter={setHasPlacedCharacter} />
+        <Character hasPlacedCharacter={hasPlacedCharacter} setHasPlacedCharacter={setHasPlacedCharacter} />
       )}
       {hasPlacedCharacter && (
         <>
@@ -71,7 +71,6 @@ type FieldLoaderProps = Omit<FieldProps, 'data'> & {
 
 const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
   const fieldId = useGlobalStore(state => state.fieldId);
-  const setCharacterToPendingPosition = useGlobalStore(state => state.setCharacterToPendingPosition);
 
   const [data, setData] = useState<FieldProps['data'] | null>(null);
 
@@ -85,8 +84,13 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
       const response = await fetch(`/output/${fieldId}.json`);
       const data = await response.json() as FieldProps['data'];
       setData(data);
+
+      const pendingCharacterPosition = useGlobalStore.getState().pendingCharacterPosition;
       useGlobalStore.setState({
+        characterPosition: pendingCharacterPosition ?? getInitialEntrance(data),
+        pendingCharacterPosition: undefined,
         fieldTimestamp: Date.now(),
+        isUserControllable: true,
 
         currentParameterStates: {},
         currentParameterVisibility: {},
@@ -99,13 +103,9 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
         hasActiveTalkMethod: false,
         lockedTriangles: [],
       });
-      if (!useGlobalStore.getState().pendingCharacterPosition) {
-        useGlobalStore.setState({ pendingCharacterPosition: getInitialEntrance(data) });
-      }
-      setCharacterToPendingPosition();
     }
     handleTransition();
-  }, [gl, fieldId, setSpring, setCharacterToPendingPosition]);
+  }, [gl, fieldId, setSpring]);
 
   if (!data) {
     return null;
