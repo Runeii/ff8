@@ -4,7 +4,7 @@ import { OPCODE_HANDLERS } from "../Field/Scripts/Script/handlers";
 import MAP_NAMES from "../constants/maps";
 import useGlobalStore from "../store";
 
-const text = 'Select destination:\nBalamb\nTrabia Garden\nEsthar\nDeling City\nTimber\nDollet Town\nDeep Sea Research Centre\nLab\nTear\'s Point'
+const text = 'Select destination:\nBalamb\nTrabia Garden\nEsthar\nDeling City\nTimber\nDollet Town\nDeep Sea Research Centre\nLab\nTear\'s Point\nWinhill\nFisherman\'s Horizon\nShumi Village';
 const WorldMap = () => {
   const [selectedFieldId, setSelectedFieldId] = useState<typeof MAP_NAMES[number]>();
   useEffect(() => {
@@ -12,7 +12,7 @@ const WorldMap = () => {
     OPCODE_HANDLERS.FADEIN?.();
     openMessage('worldMap', [text], 0, 0, {
       first: 1,
-      default: 0,
+      default: 1,
       cancel: undefined
     }).then((selectedOption) => {
       switch (selectedOption) {
@@ -23,7 +23,7 @@ const WorldMap = () => {
           setSelectedFieldId("tgcourt2")
           break;
         case 2:
-          setSelectedFieldId("esview1");
+          setSelectedFieldId("ecpview1");
           break;
         case 3:
           setSelectedFieldId("glform1");
@@ -42,6 +42,15 @@ const WorldMap = () => {
           break;
         case 8:
           setSelectedFieldId("eeview1");
+          break;
+        case 9:
+          setSelectedFieldId("gflain1a")
+          break;
+        case 10:
+          setSelectedFieldId("fhwisef2")
+          break;
+        case 11:
+          setSelectedFieldId("tmdome1")
           break;
         default:
           setSelectedFieldId("bghall_1");

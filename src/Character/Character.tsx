@@ -5,7 +5,7 @@ import { getCameraDirections } from "../Field/Camera/cameraUtils";
 import { checkForIntersections, getPositionOnWalkmesh } from "../utils";
 import { onMovementKeyPress } from "./characterUtils";
 import Squall, { ActionName } from "./Squall";
-import { Box } from "@react-three/drei";
+import { Box, OrbitControls } from "@react-three/drei";
 import useGlobalStore from "../store";
 import Focus from "./Focus/Focus";
 import { useSpring } from "@react-spring/three";

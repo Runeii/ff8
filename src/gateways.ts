@@ -352,6 +352,28 @@ export const exits = [
     }
   },
   {
+    "id": "bcgate1a_2",
+    "source": "bcgate1a",
+    "target": "wm01",
+    "sourceLine": [
+      {
+        "x": 191,
+        "y": 6140,
+        "z": 0
+      },
+      {
+        "x": -201,
+        "y": 6140,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "bcgate_1_0",
     "source": "bcgate_1",
     "target": "bccent_1",
@@ -1867,6 +1889,28 @@ export const exits = [
       "x": 1531,
       "y": -173,
       "z": 75
+    }
+  },
+  {
+    "id": "bggate_1_2",
+    "source": "bggate_1",
+    "target": "wm00",
+    "sourceLine": [
+      {
+        "x": -1878,
+        "y": -2389,
+        "z": 271
+      },
+      {
+        "x": -1667,
+        "y": -3119,
+        "z": 271
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     }
   },
   {
@@ -4598,6 +4642,28 @@ export const exits = [
     }
   },
   {
+    "id": "crview1_3",
+    "source": "crview1",
+    "target": "wm16",
+    "sourceLine": [
+      {
+        "x": -1041,
+        "y": -695,
+        "z": 138
+      },
+      {
+        "x": -1002,
+        "y": -888,
+        "z": 138
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "ddruins1_0",
     "source": "ddruins1",
     "target": "ddruins2",
@@ -5216,6 +5282,28 @@ export const exits = [
   {
     "id": "dogate_2_1",
     "source": "dogate_2",
+    "target": "wm03",
+    "sourceLine": [
+      {
+        "x": -12,
+        "y": 5029,
+        "z": 0
+      },
+      {
+        "x": 1096,
+        "y": 5025,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "dogate_2_2",
+    "source": "dogate_2",
     "target": "doport_1",
     "sourceLine": [
       {
@@ -5236,7 +5324,7 @@ export const exits = [
     }
   },
   {
-    "id": "dogate_2_2",
+    "id": "dogate_2_3",
     "source": "dogate_2",
     "target": "doport_1",
     "sourceLine": [
@@ -6179,6 +6267,270 @@ export const exits = [
       "x": -1182,
       "y": -2601,
       "z": 101
+    }
+  },
+  {
+    "id": "eaplane1_0",
+    "source": "eaplane1",
+    "target": "wm32",
+    "sourceLine": [
+      {
+        "x": 412,
+        "y": -6612,
+        "z": 0
+      },
+      {
+        "x": 1382,
+        "y": -5914,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eaplane1_1",
+    "source": "eaplane1",
+    "target": "wm32",
+    "sourceLine": [
+      {
+        "x": -890,
+        "y": -6310,
+        "z": 0
+      },
+      {
+        "x": 607,
+        "y": -6587,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eapod1_0",
+    "source": "eapod1",
+    "target": "wm45",
+    "sourceLine": [
+      {
+        "x": 1019,
+        "y": -7154,
+        "z": 0
+      },
+      {
+        "x": 1249,
+        "y": -6674,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eapod1_1",
+    "source": "eapod1",
+    "target": "wm45",
+    "sourceLine": [
+      {
+        "x": 786,
+        "y": -7635,
+        "z": 0
+      },
+      {
+        "x": 1019,
+        "y": -7154,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eapod1_2",
+    "source": "eapod1",
+    "target": "wm45",
+    "sourceLine": [
+      {
+        "x": 555,
+        "y": -8115,
+        "z": 0
+      },
+      {
+        "x": 786,
+        "y": -7635,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eapod1_3",
+    "source": "eapod1",
+    "target": "wm45",
+    "sourceLine": [
+      {
+        "x": 334,
+        "y": -8569,
+        "z": 0
+      },
+      {
+        "x": 555,
+        "y": -8115,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eapod1_4",
+    "source": "eapod1",
+    "target": "wm45",
+    "sourceLine": [
+      {
+        "x": -95,
+        "y": -8569,
+        "z": 0
+      },
+      {
+        "x": 334,
+        "y": -8569,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eapod1_5",
+    "source": "eapod1",
+    "target": "wm45",
+    "sourceLine": [
+      {
+        "x": -381,
+        "y": -8575,
+        "z": 0
+      },
+      {
+        "x": -95,
+        "y": -8569,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eapod1_6",
+    "source": "eapod1",
+    "target": "wm45",
+    "sourceLine": [
+      {
+        "x": -647,
+        "y": -8115,
+        "z": 0
+      },
+      {
+        "x": -381,
+        "y": -8575,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eapod1_7",
+    "source": "eapod1",
+    "target": "wm45",
+    "sourceLine": [
+      {
+        "x": -923,
+        "y": -7635,
+        "z": 0
+      },
+      {
+        "x": -647,
+        "y": -8115,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eapod1_8",
+    "source": "eapod1",
+    "target": "wm45",
+    "sourceLine": [
+      {
+        "x": -1195,
+        "y": -7154,
+        "z": 40
+      },
+      {
+        "x": -923,
+        "y": -7635,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "eapod1_9",
+    "source": "eapod1",
+    "target": "wm45",
+    "sourceLine": [
+      {
+        "x": -1547,
+        "y": -6491,
+        "z": 73
+      },
+      {
+        "x": -1195,
+        "y": -7154,
+        "z": 40
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     }
   },
   {
@@ -12738,6 +13090,94 @@ export const exits = [
     }
   },
   {
+    "id": "edview2_1",
+    "source": "edview2",
+    "target": "wm28",
+    "sourceLine": [
+      {
+        "x": 659,
+        "y": -410,
+        "z": -299
+      },
+      {
+        "x": 3239,
+        "y": 1679,
+        "z": -300
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "edview2_2",
+    "source": "edview2",
+    "target": "wm28",
+    "sourceLine": [
+      {
+        "x": -852,
+        "y": -1008,
+        "z": -300
+      },
+      {
+        "x": 659,
+        "y": -410,
+        "z": -299
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "edview2_3",
+    "source": "edview2",
+    "target": "wm28",
+    "sourceLine": [
+      {
+        "x": -2387,
+        "y": -235,
+        "z": -300
+      },
+      {
+        "x": -852,
+        "y": -1008,
+        "z": -300
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "edview2_4",
+    "source": "edview2",
+    "target": "wm28",
+    "sourceLine": [
+      {
+        "x": -2810,
+        "y": 2564,
+        "z": -300
+      },
+      {
+        "x": -2387,
+        "y": -235,
+        "z": -300
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "eein1_0",
     "source": "eein1",
     "target": "eeview1",
@@ -13200,6 +13640,116 @@ export const exits = [
     }
   },
   {
+    "id": "efview2_1",
+    "source": "efview2",
+    "target": "wm30",
+    "sourceLine": [
+      {
+        "x": -1607,
+        "y": -487,
+        "z": 0
+      },
+      {
+        "x": 428,
+        "y": -2165,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "efview2_2",
+    "source": "efview2",
+    "target": "wm30",
+    "sourceLine": [
+      {
+        "x": 428,
+        "y": -2165,
+        "z": 0
+      },
+      {
+        "x": 2651,
+        "y": -3624,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "efview2_3",
+    "source": "efview2",
+    "target": "wm30",
+    "sourceLine": [
+      {
+        "x": 2230,
+        "y": -3373,
+        "z": 0
+      },
+      {
+        "x": 3786,
+        "y": -2468,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "efview2_4",
+    "source": "efview2",
+    "target": "wm30",
+    "sourceLine": [
+      {
+        "x": 3786,
+        "y": -2468,
+        "z": 0
+      },
+      {
+        "x": 5381,
+        "y": -1365,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "efview2_5",
+    "source": "efview2",
+    "target": "wm30",
+    "sourceLine": [
+      {
+        "x": 4972,
+        "y": -814,
+        "z": 0
+      },
+      {
+        "x": 4866,
+        "y": -1916,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "ehback1_0",
     "source": "ehback1",
     "target": "ehroom1",
@@ -13530,6 +14080,28 @@ export const exits = [
     }
   },
   {
+    "id": "ehenter2_2",
+    "source": "ehenter2",
+    "target": "wm18",
+    "sourceLine": [
+      {
+        "x": -266,
+        "y": -855,
+        "z": 0
+      },
+      {
+        "x": -71,
+        "y": -855,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "ehenter3_0",
     "source": "ehenter3",
     "target": "ehroom1a",
@@ -13555,6 +14127,50 @@ export const exits = [
     "id": "ehenter3_1",
     "source": "ehenter3",
     "target": "ehblan1a",
+    "sourceLine": [
+      {
+        "x": -80,
+        "y": 1682,
+        "z": 223
+      },
+      {
+        "x": 76,
+        "y": 1682,
+        "z": 223
+      }
+    ],
+    "destinationPoint": {
+      "x": -294,
+      "y": -481,
+      "z": 91
+    }
+  },
+  {
+    "id": "ehenter4_0",
+    "source": "ehenter4",
+    "target": "ehroom1b",
+    "sourceLine": [
+      {
+        "x": 503,
+        "y": 94,
+        "z": 41
+      },
+      {
+        "x": 503,
+        "y": -75,
+        "z": 41
+      }
+    ],
+    "destinationPoint": {
+      "x": -772,
+      "y": 263,
+      "z": 43
+    }
+  },
+  {
+    "id": "ehenter4_1",
+    "source": "ehenter4",
+    "target": "ehblan1b",
     "sourceLine": [
       {
         "x": -80,
@@ -14099,6 +14715,28 @@ export const exits = [
       "x": -290,
       "y": 364,
       "z": 1
+    }
+  },
+  {
+    "id": "elview2_1",
+    "source": "elview2",
+    "target": "wm25",
+    "sourceLine": [
+      {
+        "x": -696,
+        "y": -397,
+        "z": -214
+      },
+      {
+        "x": 376,
+        "y": -397,
+        "z": -214
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     }
   },
   {
@@ -14872,6 +15510,72 @@ export const exits = [
     }
   },
   {
+    "id": "esview2_1",
+    "source": "esview2",
+    "target": "wm29",
+    "sourceLine": [
+      {
+        "x": 10644,
+        "y": -8792,
+        "z": 292
+      },
+      {
+        "x": 11210,
+        "y": -8457,
+        "z": 292
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "esview2_2",
+    "source": "esview2",
+    "target": "wm29",
+    "sourceLine": [
+      {
+        "x": 9912,
+        "y": -9193,
+        "z": 292
+      },
+      {
+        "x": 10644,
+        "y": -8792,
+        "z": 292
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "esview2_3",
+    "source": "esview2",
+    "target": "wm29",
+    "sourceLine": [
+      {
+        "x": 9097,
+        "y": -9579,
+        "z": 292
+      },
+      {
+        "x": 9912,
+        "y": -9193,
+        "z": 292
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "etsta1_0",
     "source": "etsta1",
     "target": "fhrail2",
@@ -14918,6 +15622,28 @@ export const exits = [
   {
     "id": "etsta2_0",
     "source": "etsta2",
+    "target": "wm24",
+    "sourceLine": [
+      {
+        "x": 599,
+        "y": -882,
+        "z": 18
+      },
+      {
+        "x": 887,
+        "y": -882,
+        "z": 18
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "etsta2_1",
+    "source": "etsta2",
     "target": "fhrail2",
     "sourceLine": [
       {
@@ -14938,7 +15664,7 @@ export const exits = [
     }
   },
   {
-    "id": "etsta2_1",
+    "id": "etsta2_2",
     "source": "etsta2",
     "target": "fhrail2",
     "sourceLine": [
@@ -17182,6 +17908,94 @@ export const exits = [
     }
   },
   {
+    "id": "ffhole1_3",
+    "source": "ffhole1",
+    "target": "wm43",
+    "sourceLine": [
+      {
+        "x": 999,
+        "y": 4098,
+        "z": -1991
+      },
+      {
+        "x": 999,
+        "y": 3780,
+        "z": -1991
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "ffhole1_4",
+    "source": "ffhole1",
+    "target": "wm42",
+    "sourceLine": [
+      {
+        "x": -950,
+        "y": 4397,
+        "z": -2274
+      },
+      {
+        "x": -926,
+        "y": 4714,
+        "z": -2274
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "ffhole1_5",
+    "source": "ffhole1",
+    "target": "wm41",
+    "sourceLine": [
+      {
+        "x": -1022,
+        "y": 3088,
+        "z": -1768
+      },
+      {
+        "x": -981,
+        "y": 3403,
+        "z": -1768
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "ffhole1_6",
+    "source": "ffhole1",
+    "target": "wm40",
+    "sourceLine": [
+      {
+        "x": -1035,
+        "y": 1728,
+        "z": -1322
+      },
+      {
+        "x": -1035,
+        "y": 2046,
+        "z": -1322
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "ffhole1a_0",
     "source": "ffhole1a",
     "target": "ffbrdg1",
@@ -17245,6 +18059,94 @@ export const exits = [
       "x": 354,
       "y": 646,
       "z": 28
+    }
+  },
+  {
+    "id": "ffhole1a_3",
+    "source": "ffhole1a",
+    "target": "wm43",
+    "sourceLine": [
+      {
+        "x": 999,
+        "y": 4098,
+        "z": -1991
+      },
+      {
+        "x": 999,
+        "y": 3780,
+        "z": -1991
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "ffhole1a_4",
+    "source": "ffhole1a",
+    "target": "wm42",
+    "sourceLine": [
+      {
+        "x": -950,
+        "y": 4397,
+        "z": -2274
+      },
+      {
+        "x": -926,
+        "y": 4714,
+        "z": -2274
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "ffhole1a_5",
+    "source": "ffhole1a",
+    "target": "wm41",
+    "sourceLine": [
+      {
+        "x": -1022,
+        "y": 3088,
+        "z": -1768
+      },
+      {
+        "x": -981,
+        "y": 3403,
+        "z": -1768
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "ffhole1a_6",
+    "source": "ffhole1a",
+    "target": "wm40",
+    "sourceLine": [
+      {
+        "x": -1035,
+        "y": 1728,
+        "z": -1322
+      },
+      {
+        "x": -1035,
+        "y": 2046,
+        "z": -1322
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     }
   },
   {
@@ -19646,6 +20548,50 @@ export const exits = [
     }
   },
   {
+    "id": "gfview1a_4",
+    "source": "gfview1a",
+    "target": "wm15",
+    "sourceLine": [
+      {
+        "x": 4236,
+        "y": 281,
+        "z": 210
+      },
+      {
+        "x": 4237,
+        "y": -323,
+        "z": 215
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "gfview1a_5",
+    "source": "gfview1a",
+    "target": "wm15",
+    "sourceLine": [
+      {
+        "x": 4235,
+        "y": 957,
+        "z": 204
+      },
+      {
+        "x": 4236,
+        "y": 281,
+        "z": 210
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "gfvill1_0",
     "source": "gfvill1",
     "target": "gfcross1",
@@ -19907,6 +20853,28 @@ export const exits = [
       "x": -362,
       "y": -577,
       "z": 10
+    }
+  },
+  {
+    "id": "gfvill24_4",
+    "source": "gfvill24",
+    "target": "wm14",
+    "sourceLine": [
+      {
+        "x": 2386,
+        "y": 2654,
+        "z": 0
+      },
+      {
+        "x": 2386,
+        "y": 1977,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     }
   },
   {
@@ -21780,6 +22748,28 @@ export const exits = [
     }
   },
   {
+    "id": "ggsta1_0",
+    "source": "ggsta1",
+    "target": "wm07",
+    "sourceLine": [
+      {
+        "x": 651,
+        "y": -3333,
+        "z": -878
+      },
+      {
+        "x": 1524,
+        "y": -3031,
+        "z": -898
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "ggstaen1_0",
     "source": "ggstaen1",
     "target": "ggroad5",
@@ -21931,6 +22921,116 @@ export const exits = [
       "x": -18,
       "y": -3276,
       "z": 1
+    }
+  },
+  {
+    "id": "ggview1_2",
+    "source": "ggview1",
+    "target": "wm06",
+    "sourceLine": [
+      {
+        "x": -690,
+        "y": -18253,
+        "z": 864
+      },
+      {
+        "x": -1122,
+        "y": -17777,
+        "z": 889
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "ggview1_3",
+    "source": "ggview1",
+    "target": "wm06",
+    "sourceLine": [
+      {
+        "x": -504,
+        "y": -18564,
+        "z": 839
+      },
+      {
+        "x": -690,
+        "y": -18253,
+        "z": 864
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "ggview1_4",
+    "source": "ggview1",
+    "target": "wm06",
+    "sourceLine": [
+      {
+        "x": -24,
+        "y": -19048,
+        "z": 810
+      },
+      {
+        "x": -504,
+        "y": -18564,
+        "z": 839
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "ggview1_5",
+    "source": "ggview1",
+    "target": "wm06",
+    "sourceLine": [
+      {
+        "x": 500,
+        "y": -19048,
+        "z": 810
+      },
+      {
+        "x": -24,
+        "y": -19048,
+        "z": 810
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "ggview1_6",
+    "source": "ggview1",
+    "target": "wm06",
+    "sourceLine": [
+      {
+        "x": 1130,
+        "y": -18253,
+        "z": 863
+      },
+      {
+        "x": 500,
+        "y": -19048,
+        "z": 810
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     }
   },
   {
@@ -26070,6 +27170,94 @@ export const exits = [
     }
   },
   {
+    "id": "gppark1_2",
+    "source": "gppark1",
+    "target": "wm10",
+    "sourceLine": [
+      {
+        "x": -2029,
+        "y": -4851,
+        "z": 6830
+      },
+      {
+        "x": -2692,
+        "y": -4231,
+        "z": 6950
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "gppark1_3",
+    "source": "gppark1",
+    "target": "wm10",
+    "sourceLine": [
+      {
+        "x": -18,
+        "y": -5442,
+        "z": 6867
+      },
+      {
+        "x": 1086,
+        "y": -4985,
+        "z": 6927
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "gppark1_4",
+    "source": "gppark1",
+    "target": "wm10",
+    "sourceLine": [
+      {
+        "x": -1035,
+        "y": -5752,
+        "z": 6888
+      },
+      {
+        "x": -18,
+        "y": -5442,
+        "z": 6867
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "gppark1_5",
+    "source": "gppark1",
+    "target": "wm10",
+    "sourceLine": [
+      {
+        "x": -2029,
+        "y": -4851,
+        "z": 6830
+      },
+      {
+        "x": -1654,
+        "y": -5184,
+        "z": 6813
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "gproof1_0",
     "source": "gproof1",
     "target": "gpexit1",
@@ -29040,6 +30228,28 @@ export const exits = [
     }
   },
   {
+    "id": "tgview1_1",
+    "source": "tgview1",
+    "target": "wm19",
+    "sourceLine": [
+      {
+        "x": -1436,
+        "y": -2108,
+        "z": -244
+      },
+      {
+        "x": -875,
+        "y": -2108,
+        "z": -244
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
     "id": "tiagit1_0",
     "source": "tiagit1",
     "target": "tiagit2",
@@ -29261,6 +30471,28 @@ export const exits = [
   },
   {
     "id": "tigate1_0",
+    "source": "tigate1",
+    "target": "wm04",
+    "sourceLine": [
+      {
+        "x": -331,
+        "y": -499,
+        "z": 0
+      },
+      {
+        "x": 322,
+        "y": -499,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "tigate1_1",
     "source": "tigate1",
     "target": "titown1",
     "sourceLine": [
@@ -30296,6 +31528,28 @@ export const exits = [
   {
     "id": "tmdome1_0",
     "source": "tmdome1",
+    "target": "wm20",
+    "sourceLine": [
+      {
+        "x": -411,
+        "y": -5838,
+        "z": 0
+      },
+      {
+        "x": 398,
+        "y": -5862,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "tmdome1_1",
+    "source": "tmdome1",
     "target": "tmdome2",
     "sourceLine": [
       {
@@ -30736,6 +31990,28 @@ export const exits = [
   {
     "id": "tvglen1_0",
     "source": "tvglen1",
+    "target": "wm22",
+    "sourceLine": [
+      {
+        "x": -15,
+        "y": 1722,
+        "z": 245
+      },
+      {
+        "x": 174,
+        "y": 1722,
+        "z": 245
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "tvglen1_1",
+    "source": "tvglen1",
     "target": "tvglen2",
     "sourceLine": [
       {
@@ -30889,6 +32165,28 @@ export const exits = [
   },
   {
     "id": "tvglen5_0",
+    "source": "tvglen5",
+    "target": "wm23",
+    "sourceLine": [
+      {
+        "x": 631,
+        "y": 1536,
+        "z": 0
+      },
+      {
+        "x": 755,
+        "y": 1359,
+        "z": 0
+      }
+    ],
+    "destinationPoint": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "id": "tvglen5_1",
     "source": "tvglen5",
     "target": "tvglen4",
     "sourceLine": [

@@ -114,7 +114,7 @@ const Script = ({ doors, models, script }: ScriptProps) => {
       {scriptState.isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
           isTalkEnabled={scriptState.isTalkable}
-          radius={scriptState.talkRadius / 4096}
+          radius={scriptState.talkRadius / 4096 / 1.5}
           setActiveMethodId={setActiveMethodId}
           talkMethod={talkMethod}
         />

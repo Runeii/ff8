@@ -6,6 +6,13 @@ export const animateFrames = (backgroundId: number, startFrame: number, endFrame
     const currentParameterStates = useGlobalStore.getState().currentParameterStates;
     let thisParameter = currentParameterStates[backgroundId];
 
+    const timeStampNow = useGlobalStore.getState().fieldTimestamp;
+    if ((thisParameter === endFrame && !isLooping) || fieldTimestamp !== timeStampNow) {
+      clearInterval(interval);
+      resolve();
+      return;
+    }
+
     if (!thisParameter || thisParameter >= endFrame) {
       thisParameter = startFrame;
     }
@@ -18,11 +25,5 @@ export const animateFrames = (backgroundId: number, startFrame: number, endFrame
         [backgroundId]: thisParameter
       }
     })
-
-    const timeStampNow = useGlobalStore.getState().fieldTimestamp;
-    if ((thisParameter === endFrame && !isLooping) || fieldTimestamp !== timeStampNow) {
-      clearInterval(interval);
-      resolve();
-    }
   }, speed * (1000 / 30));
 });

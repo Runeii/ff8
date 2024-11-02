@@ -14,6 +14,14 @@ const Gateways = ({ fieldId }: GatewaysProps) => {
     if (isTransitioningMap) {
       return;
     }
+    if (gateway.target.startsWith('wm')) {
+      console.log('Transitioning to world map');
+      useGlobalStore.setState({
+        fieldId: 'WORLD_MAP',
+        isTransitioningMap: true,
+      });
+      return
+    }
     console.log('Transitioning to', gateway.target, 'via gateway', gateway, 'at', gateway.destination);
     useGlobalStore.setState({
       fieldId: gateway.target,
@@ -21,11 +29,11 @@ const Gateways = ({ fieldId }: GatewaysProps) => {
       pendingCharacterPosition: gateway.destination
     });
   }, [isTransitioningMap]);
-
   const gateways = useMemo(() => {
     return generatedGateways.filter((gateway) => gateway.source === fieldId) as unknown as Gateway[];
   }, [fieldId]);
   
+  console.log(gateways)
   if (isTransitioningMap) {
     return null;
   }

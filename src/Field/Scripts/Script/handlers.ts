@@ -25,7 +25,7 @@ type HandlerFuncWithPromise = (args: {
 
 const MEMORY: Record<number, number> = {
   72: 9999, // gil
-  256: 205,
+  256: 5000,
   534: 1,
   1025: 2,
 };
@@ -135,7 +135,8 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   UCON: () => {
     useGlobalStore.setState({ isUserControllable: true });
   },
-  UCOFF: ({ currentStateRef, }) => {
+  UCOFF: ({ currentStateRef, opcodes }) => {
+    console.log('UCOFF', opcodes[0].param)
     const isUserControllable = useGlobalStore.getState().isUserControllable;
     if (isUserControllable) {
       currentStateRef.current.hasRemovedControl = true;
@@ -220,6 +221,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   RBGANIMELOOP: async ({ currentStateRef, script, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
+    console.trace('RBGANIMELOOP', script.backgroundParamId, script.groupId)
 
     currentStateRef.current.isBackgroundVisible = true;
     animateFrames(
@@ -238,6 +240,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const start = STACK.pop() as number
 
     currentStateRef.current.isBackgroundVisible = true;
+    console.trace('BGANIME', script.backgroundParamId, script.groupId)
     await animateFrames(
       script.backgroundParamId,
       start,

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Script, ScriptState } from "../../types";
 import { FieldData } from "../../../Field";
-import { Box, useFBO } from "@react-three/drei";
+import { Box } from "@react-three/drei";
 import { vectorToFloatingPoint } from "../../../../utils";
 import useTriggerEvent from "../useTriggerEvent";
 import { useFrame, useThree } from "@react-three/fiber";
@@ -20,13 +20,15 @@ const Door = ({ doors, script, setActiveMethodId, state }: DoorProps) => {
 
   const door = useMemo(() => {
     // Feels hacky, but seems to work?
-    const doorId = parseInt(script.name.replace('Door', '')) - 1
+    const doorId = parseInt(script.name.toLowerCase().replace('door', '')) - 1
     const entry = doors.find(door => door.doorID === doorId)!
-  
     return entry;
   }, [doors, script.name]);
 
   const box = useMemo(() => {
+    if (!door) {
+      return null;
+    }
     const [startPoint, endPoint] = door.line.map(vectorToFloatingPoint);
     const midpoint = new Vector3().addVectors(startPoint, endPoint).multiplyScalar(0.5);
     const direction = new Vector3().subVectors(endPoint, startPoint);
@@ -60,6 +62,9 @@ const Door = ({ doors, script, setActiveMethodId, state }: DoorProps) => {
   let playerPosition = playerHitbox.getWorldPosition(new Vector3());
   const [isNearDoor, setIsNearDoor] = useState(false);
   useFrame(() => {
+    if (!box) {
+      return;
+    }
     playerPosition = playerHitbox.getWorldPosition(playerPosition);
     const doorPosition = box.hitboxMidpoint;
     const distanceFromDoor = playerPosition.distanceTo(doorPosition);
@@ -68,9 +73,9 @@ const Door = ({ doors, script, setActiveMethodId, state }: DoorProps) => {
   useTriggerEvent('open', script, setDoorOpenState(true), isIntersecting && !isDoorOpen);
   useTriggerEvent('close', script, setDoorOpenState(false), !isNearDoor && isDoorOpen);
 
-  const linePoints = useMemo(() => door.line, [door]);
+  const linePoints = useMemo(() => door?.line, [door]);
 
-  if (!linePoints || !state.isDoorOn) {
+  if (!linePoints || !state.isDoorOn || !box) {
     return null;
   }
 

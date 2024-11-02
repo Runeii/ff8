@@ -81,6 +81,10 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
       await setSpring(0);
       setData(null);
       gl.clear();
+
+      if (fieldId === 'WORLD_MAP') {
+        return;
+      }
       const response = await fetch(`/output/${fieldId}.json`);
       const data = await response.json() as FieldProps['data'];
       setData(data);

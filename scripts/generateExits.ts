@@ -34,7 +34,7 @@ const processFiles = (jsonFiles: InputFile[]): OutputGateway[] =>
   jsonFiles.flatMap(({ gateways, id }) =>
     gateways.map((gateway, index) => {
       const targetFile = jsonFiles.find(file => file.id === gateway.target);
-      if (!targetFile) {
+      if (!targetFile && !gateway.target.startsWith('wm')) {
         console.error(`Target file not found for gateway: ${gateway.target}`);
       }
       return {
