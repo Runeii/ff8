@@ -29,6 +29,7 @@ interface GlobalState {
   }>,
 
   fadeSpring: { opacity: SpringValue<number> }
+  isMapFadeEnabled: boolean,
 
   availableCharacters: number[],
   party: number[],
@@ -62,6 +63,7 @@ const useGlobalStore = create<GlobalState>()(() => ({
   fadeSpring: {
     opacity: new SpringValue(0),
   },
+  isMapFadeEnabled: true,
 
   availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7],
   party: [0, 1, 4],

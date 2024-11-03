@@ -10,7 +10,7 @@ import { animated, useSpring } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Group } from "three";
+import { Group, Quaternion, Vector3 } from "three";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -85,11 +85,42 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   const camera = useThree().camera;
   const containerRef = useRef<Group>(null);
 
-  // Needs to correctly face camera
-  useFrame(() => {
-    if (!containerRef.current || !camera.userData.initialPosition) {
+  const [modelQuaternion] = useState(new Quaternion());
+  const [upAxis] = useState(new Vector3(0, 1, 0)); // TODO: Can this be better? Sometimes meshes are on an angle
+  useFrame(({camera}) => {
+    if (!containerRef.current || !camera.userData.initialPosition || script.type !== 'model') {
       return;
     }
+
+    const quaternion = camera.userData.initialQuaternion.clone();
+
+    const baseAngle = Math.PI / 2; // facing 'down';
+    quaternion.multiply(modelQuaternion.setFromAxisAngle(upAxis, baseAngle));
+    containerRef.current.quaternion.copy(quaternion);
+  
+    if (scriptState.lookTarget) {
+      const targetDirection = scriptState.lookTarget.clone().sub(containerRef.current.position).normalize();
+      const projectedTargetDirection = targetDirection.clone().projectOnPlane(upAxis).normalize();
+      
+      const baseForward = new Vector3(0, 0, 1).applyQuaternion(quaternion).projectOnPlane(upAxis).normalize();
+
+      const angle = Math.acos(baseForward.dot(projectedTargetDirection));
+      const cross = new Vector3().crossVectors(baseForward, projectedTargetDirection);
+      
+      const signedAngle = cross.dot(upAxis) < 0 ? -angle : angle;
+
+      const rotationQuat = new Quaternion();
+      rotationQuat.setFromAxisAngle(upAxis, signedAngle);
+
+      const finalQuaternion = quaternion.clone().multiply(rotationQuat);
+      containerRef.current.quaternion.copy(finalQuaternion);
+
+      return;
+    }
+    const angle = baseAngle + ((Math.PI * 2) / 255 * scriptState.angle);
+    quaternion.multiply(modelQuaternion.setFromAxisAngle(upAxis, angle));
+    containerRef.current.quaternion.copy(quaternion);
+
     //const currentRotation = containerRef.current.rotation.clone();
     //containerRef.current.lookAt(camera.userData.initialPosition);
     //containerRef.current.rotation.z += (Math.PI * 2) / 255 * 255;

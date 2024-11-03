@@ -58,6 +58,7 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
       initialRotation: camAxisZ,
       initialLookAt: lookAtTarget,
       initialDirection: direction,
+      initialQuaternion: new Quaternion().setFromEuler(camera.rotation),
     }
 
     setInitialCameraTargetPosition(lookAtTarget.clone());

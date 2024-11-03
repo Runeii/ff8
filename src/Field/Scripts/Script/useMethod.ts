@@ -44,6 +44,10 @@ const DEFAULT_STATE: ScriptState = {
   movementSpeed: 0,
 
   isDoorOn: true,
+
+  backroundMusicId: 0,
+  backgroundMusicVolume: 127,
+  isPlayingBackgroundMusic: false,
 }
 
 const useMethod = (
@@ -153,6 +157,9 @@ const useMethod = (
     const execute = async () => {
       const currentOpcode = opcodes[currentOpcodeIndex] ?? undefined;
 
+      if (script.groupId === 10) {
+        // console.log(currentOpcode, currentOpcodeIndex);
+      }
       if (!currentOpcode && !hasCompletedConstructor) {
         setHasCompletedConstructor(true);
       }

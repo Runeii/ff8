@@ -40,7 +40,7 @@ const Model = ({ models, script, state }: ModelProps) => {
     return null;
   }
   return (
-    <group rotation={[Math.PI / 2,Math.PI,0]}>
+    <group rotation={[0,0,0]}>
       <ModelComponent
         name={partyMemberId === undefined ? `model--${script.groupId}` : `party--${partyMemberId}`}
         scale={0.06}

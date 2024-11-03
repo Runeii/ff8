@@ -27,16 +27,16 @@ const MEMORY: Record<number, number> = {
   72: 9999, // gil
   256: 5000,
   534: 1,
-  1025: 2,
 };
 
+let testState = {}
+
 export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = {
-  LBL: () => { },
   RET: () => {
     return 999999
   },
   PSHI_L: ({ currentOpcode, STACK, TEMP_STACK }) => {
-    STACK.push(TEMP_STACK[currentOpcode.param]);
+    STACK.push(TEMP_STACK[currentOpcode.param] ?? 0);
   },
   POPI_L: ({ currentOpcode, STACK, TEMP_STACK }) => {
     TEMP_STACK[currentOpcode.param] = STACK.pop() as number;
@@ -135,8 +135,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   UCON: () => {
     useGlobalStore.setState({ isUserControllable: true });
   },
-  UCOFF: ({ currentStateRef, opcodes }) => {
-    console.log('UCOFF', opcodes[0].param)
+  UCOFF: ({ currentStateRef }) => {
     const isUserControllable = useGlobalStore.getState().isUserControllable;
     if (isUserControllable) {
       currentStateRef.current.hasRemovedControl = true;
@@ -169,13 +168,15 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   MAPJUMP3: ({ STACK }) => {
     const mapJumpDetailsInMemory = STACK.splice(-5);
 
-    console.log(MAP_NAMES[mapJumpDetailsInMemory[0]], mapJumpDetailsInMemory.slice(1, 4), mapJumpDetailsInMemory[4], vectorToFloatingPoint(mapJumpDetailsInMemory.slice(1, 4)))
     useGlobalStore.setState({
       fieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
       initialAngle: mapJumpDetailsInMemory[4],
       isTransitioningMap: true,
       pendingCharacterPosition: vectorToFloatingPoint(mapJumpDetailsInMemory.slice(1, 4) as unknown as [number, number, number]),
     });
+  },
+  DISCJUMP: (...args) => {
+    OPCODE_HANDLERS?.['MAPJUMP3']?.(...args);
   },
   WORLDMAPJUMP: ({ STACK }) => {
     STACK.pop() as number;
@@ -221,7 +222,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   RBGANIMELOOP: async ({ currentStateRef, script, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
-    console.trace('RBGANIMELOOP', script.backgroundParamId, script.groupId)
 
     currentStateRef.current.isBackgroundVisible = true;
     animateFrames(
@@ -240,7 +240,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const start = STACK.pop() as number
 
     currentStateRef.current.isBackgroundVisible = true;
-    console.trace('BGANIME', script.backgroundParamId, script.groupId)
     await animateFrames(
       script.backgroundParamId,
       start,
@@ -273,13 +272,12 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
 
     const { availableMessages } = useGlobalStore.getState();
     useGlobalStore.setState({ isUserControllable: false });
-
     const uniqueId = `${id}--${Date.now()}`;
+    console.log('open', id)
     await openMessage(uniqueId, availableMessages[id], x, y);
-
     useGlobalStore.setState({ isUserControllable: true });
   },
-  RAMESW: async ({ STACK, script, activeMethod, opcodes }) => {
+  RAMESW: async ({ STACK }) => {
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
 
@@ -289,7 +287,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const { availableMessages } = useGlobalStore.getState();
 
     const uniqueId = `${id}--${Date.now()}`;
-    console.log('FIRE ONE', script, activeMethod, opcodes)
     openMessage(uniqueId, availableMessages[id], x, y);
   },
   AASK: async ({ STACK, TEMP_STACK }) => {
@@ -315,13 +312,19 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       default: defaultOpt,
       cancel: cancelOpt,
     });
-    console.log('result', result, first, last, defaultOpt, cancelOpt)
     TEMP_STACK[0] = result;
-    console.log(TEMP_STACK[0])
     useGlobalStore.setState({ isUserControllable: true });
   },
+  ASK: (...args) => {
+    const { STACK } = args[0];
+    // We cannot set x,y with ask, so we spoof it here to reuse AASK
+    STACK.push(5);
+    STACK.push(5);
 
-  MESSYNC: () => {
+    OPCODE_HANDLERS?.AASK?.(...args);
+  },
+  MESSYNC: ({ STACK }) => {
+    const channel = STACK.pop() as number;
     useGlobalStore.setState({
       currentMessages: useGlobalStore.getState().currentMessages.slice(0, -1)
     });
@@ -610,7 +613,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       true
     )
   },
-  RCANIMELOOP: ({ currentStateRef, currentOpcode }) => {
+  RCANIMELOOP: ({ currentStateRef, currentOpcode, STACK }) => {
+    const firstFrame = STACK.pop() as number;
+    const lastFrame = STACK.pop() as number;
     const animationId = currentOpcode.param;
 
     currentStateRef.current.animation = {
@@ -685,10 +690,10 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     // const actorId = 
     STACK.pop() as number;
   },
-  GETINFO: ({ STACK }) => {
-    STACK.push(0); // entity X
-    STACK.push(0); // entity Y
-    STACK.push(0); // entity Z
+  GETINFO: ({ TEMP_STACK }) => {
+    // We need to get this script entity's X/Y and stick it in to:
+    TEMP_STACK[0] = 0; // X
+    TEMP_STACK[1] = 0; // Y
   },
   DIRA: ({ STACK }) => {
     // const targetActorId = 
@@ -740,14 +745,12 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     currentStateRef.current.angle = angle;
   },
   // TODO: fix
-  PCTURN: ({ scene, STACK }) => {
-    // const speed =
-    STACK.pop() as number;
-    // const unknown =
+  PCTURN: ({ currentStateRef, scene, STACK }) => {
+    const speed = STACK.pop() as number;
     STACK.pop() as number;
 
-    //const targetMesh =
-    getPartyMemberEntity(scene, 0);
+    const targetMesh = getPartyMemberEntity(scene, 0);
+    currentStateRef.current.lookTarget = targetMesh.position.clone();
   },
   // I imagine rotates to player
   PDIRA: ({ STACK }) => {
@@ -796,26 +799,64 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number;
   },
   INITSOUND: () => { },
-  MUSICSTOP: ({ STACK }) => {
-    // 0 OR 1
+
+  MUSICVOLSYNC: () => { },
+  //PRELOADS TRACK
+  MUSICLOAD: ({ currentStateRef, STACK }) => {
+    currentStateRef.current.backroundMusicId = STACK.pop() as number;
+  },
+  // PLAYS PRELOADED TRACK
+  MUSICCHANGE: ({ currentStateRef }) => {
+    console.log('Would play', currentStateRef.current.backroundMusicId)
+  },
+  MUSICSTOP: ({ currentStateRef, STACK }) => {
+    // 0 OR 1. No idea why. It's even sometimes called successively with 1 and 0
+    STACK.pop() as number;
+    currentStateRef.current.backroundMusicId = undefined;
+  },
+  MUSICVOL: ({ currentStateRef, STACK }) => {
+    // const unknown = 
+    STACK.pop() as number;
+    const volume = STACK.pop() as number;
+    currentStateRef.current.backgroundMusicVolume = volume;
+  },
+  MUSICVOLTRANS: ({ currentStateRef, STACK }) => {
+    // const unknown = 
+    STACK.pop() as number;
+    // const duration =
+    STACK.pop() as number;
+    const volume = STACK.pop() as number;
+    currentStateRef.current.backgroundMusicVolume = volume;
+  },
+  // This is used once. I think it restarts the track?
+  MUSICREPLAY: () => {
+  },
+  MUSICSKIP: ({ STACK }) => {
+    // const unknown = 
     STACK.pop() as number;
   },
-  MUSICVOLTRANS: ({ STACK }) => {
-    STACK.splice(-3);
+  // This is an assumption
+  MUSICSTATUS: ({ currentStateRef, TEMP_STACK }) => {
+    const isPlaying = currentStateRef.current.isPlayingBackgroundMusic ? 1 : 0
+    TEMP_STACK[0] = isPlaying;
   },
-  MUSICVOLSYNC: () => { },
+  MUSICVOLFADE: ({ STACK }) => {
+    // const unknown = 
+    const startVolume = STACK.pop() as number; //maybe?
+    const frames = STACK.pop() as number; //maybe?
+    const endVolume = STACK.pop() as number;
+    STACK.pop() as number; // ???
+  },
+
   LOADSYNC: () => { },
-  MUSICVOL: ({ STACK }) => {
-    STACK.splice(-2);
-  },
   FOOTSTEPON: () => { },
   SESTOP: ({ STACK }) => {
     // Likely sound effect ID
     STACK.pop() as number;
   },
   LSCROLLP: ({ STACK }) => {
-    // Does this scroll to a position? Only has x/y
-    STACK.splice(-2);
+    // Does this scroll to a position? Only has x/y/framecount
+    STACK.splice(-3);
   },
   DSCROLLP: ({ STACK }) => {
     // Does this reset the camera?
@@ -839,24 +880,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     TEMP_STACK[1] = y;
     TEMP_STACK[2] = z;
   },
-
-
-  GAMEOVER: () => {
+  GAMEOVER: ({ STACK }) => {
+    STACK.pop() as number;
     console.error('GAME OVER WHAT DID YOU DO');
-  },
-
-  // TO ADD
-  MENUSHOP: () => { },
-  DRAWPOINT: ({ STACK }) => {
-    // drawpoint ID
-    STACK.pop() as number;
-  },
-  EFFECTPLAY: () => { },
-  EFFECTPLAY2: ({ STACK }) => {
-    STACK.splice(-3);
-  },
-  EFFECTLOAD: ({ STACK }) => {
-    STACK.pop() as number;
   },
   IDLOCK: ({ currentOpcode }) => {
     const currentLockedTriangles = useGlobalStore.getState().lockedTriangles;
@@ -869,6 +895,35 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     useGlobalStore.setState({
       lockedTriangles: currentLockedTriangles.filter(id => id !== currentOpcode.param)
     })
+  },
+  MOVIE: () => {
+    MEMORY['80'] = 0;
+    setInterval(() => {
+      MEMORY['80'] += 100;
+      if (MEMORY['80'] === 3000) {
+        clearInterval(this);
+      }
+    }, 1000 / 30);
+  },
+  ADDGIL: ({ STACK }) => {
+    const gil = STACK.pop() as number;
+    MEMORY[72] += gil;
+  },
+
+  // TO ADD
+  MENUSHOP: () => { },
+  DRAWPOINT: ({ STACK }) => {
+    // drawpoint ID
+    STACK.pop() as number;
+  },
+  EFFECTPLAY: ({ STACK }) => {
+    STACK.splice(-4);
+  },
+  EFFECTPLAY2: ({ STACK }) => {
+    STACK.splice(-3);
+  },
+  EFFECTLOAD: ({ STACK }) => {
+    STACK.pop() as number;
   },
   SAVEENABLE: ({ STACK }) => {
     // const isEnabled =
@@ -888,15 +943,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number;
     STACK.pop() as number;
   },
-  MOVIE: () => {
-    MEMORY['80'] = 0;
-    setInterval(() => {
-      MEMORY['80'] += 100;
-      if (MEMORY['80'] === 3000) {
-        clearInterval(this);
-      }
-    }, 1000 / 30);
-  },
   SEVOL: ({ STACK }) => {
     STACK.splice(-2);
   },
@@ -912,57 +958,131 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   SETBATTLEMUSIC: ({ STACK }) => {
     STACK.pop() as number;
   },
-  ADDGIL: ({ STACK }) => {
-    const gil = STACK.pop() as number;
-    MEMORY[72] += gil;
-  },
   PARTICLEON: ({ STACK }) => {
     STACK.pop() as number;
   },
   SHADESET: ({ STACK }) => {
     STACK.pop() as number;
   },
+  RBGSHADELOOP: ({ STACK }) => {
+    STACK.splice(-10);
+  },
+  CARDGAME: ({ STACK }) => {
+    STACK.splice(-7);
+  },
+  SETWITCH: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  PREMAPJUMP2: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  TUTO: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  // Sets message box style for channel (we don't use channels atm)
+  MESMODE: ({ STACK }) => {
+    STACK.splice(-3);
+  },
+  BATTLE: ({ STACK }) => {
+    STACK.splice(-2);
+    console.log('BATTLE!')
+  },
+  BATTLEMODE: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  JUNCTION: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  PHSENABLE: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  LSCROLL: ({ STACK }) => {
+    STACK.splice(-3);
+  },
+  // Sets draw point ID
+  UNKNOWN16: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  ADDITEM: ({ STACK }) => {
+    STACK.splice(-2);
+  },
+  SETVIBRATE: ({ STACK }) => {
+    STACK.splice(-2);
+  },
+  PHSPOWER: ({ STACK }) => {
+    STACK.pop() as number;
+  },
 
+  // Set: unused, but manipulate stack. here for completeness
+  ALLSEPOS: ({ STACK }) => {
+    STACK.splice(-1);
+  },
+  MESW: ({ STACK }) => {
+    STACK.splice(-2);
+  },
+  UNKNOWN1: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  UNKNOWN17: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  UNKNOWN18: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  HOWMANYCARD: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  DISC: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  UNKNOWN13: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  MENUNAME: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+
+
+  PREMAPJUMP: dummiedCommand,
+  DYING: dummiedCommand,
+  UNKNOWN10: dummiedCommand,
+  BATTLEON: dummiedCommand,
+  BATTLEOFF: dummiedCommand,
+  BATTLERESULT: dummiedCommand,
+  BATTLECUT: dummiedCommand,
+  MENUENABLE: dummiedCommand,
+  MENUDISABLE: dummiedCommand,
+  SETDRAWPOINT: dummiedCommand,
+  MOVIESYNC: dummiedCommand,
+  REST: dummiedCommand,
   JOIN: dummiedCommand,
   FOLLOWOFF: dummiedCommand,
   FOLLOWON: dummiedCommand,
   REFRESHPARTY: dummiedCommand,
 
-  RBGSHADELOOP: ({ STACK }) => {
-    STACK.splice(-10);
-  },
-  LSCROLL: dummiedCommand,
-  PREMAPJUMP: dummiedCommand,
-  PREMAPJUMP2: dummiedCommand,
-  UNKNOWN10: dummiedCommand,
-  UNKNOWN16: dummiedCommand,
-  MESMODE: dummiedCommand,
-  BATTLEON: dummiedCommand,
-  BATTLEOFF: dummiedCommand,
-  BATTLEMODE: dummiedCommand,
-  BATTLE: dummiedCommand,
-  BATTLERESULT: dummiedCommand,
-  BATTLECUT: dummiedCommand,
-  PHSENABLE: dummiedCommand,
-  MUSICLOAD: dummiedCommand,
-  MUSICCHANGE: dummiedCommand,
-  MENUENABLE: dummiedCommand,
-  MENUDISABLE: dummiedCommand,
-  SETDRAWPOINT: dummiedCommand,
-  JUNCTION: dummiedCommand,
-  MOVIESYNC: dummiedCommand,
-  REST: dummiedCommand,
+  // Checked
+  SETCARD: dummiedCommand,
+  ADDSEEDLEVEL: dummiedCommand,
+  MOVIECUT: dummiedCommand,
+  MENUSAVE: dummiedCommand,
+  SETODIN: dummiedCommand,
+  MENUPHS: dummiedCommand,
+  MENUNORMAL: dummiedCommand,
+  FACEDIRINIT: dummiedCommand,
+  SARALYDISPON: dummiedCommand,
+  SARALYDISPOFF: dummiedCommand,
+  SARALYON: dummiedCommand,
+  SARALYOFF: dummiedCommand,
+  CLEAR: dummiedCommand,
 
   NOP: unusedCommand,
   GJMP: unusedCommand,
   DEBUG: unusedCommand,
-  MESW: unusedCommand,
   ISMEMBER: unusedCommand,
   MESFORCUS: unusedCommand,
   SHADETIMER: unusedCommand,
   STOPVIBRATE: unusedCommand,
   ENDING: unusedCommand,
-  ALLSEPOS: unusedCommand,
   BGANIMEFLAG: unusedCommand,
   LSCROLLA2: unusedCommand,
   DSCROLLP2: unusedCommand,
@@ -976,8 +1096,33 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   PMOVECANCEL: unusedCommand,
   GETHP: unusedCommand,
   KEYON2: unusedCommand,
+  KEYSIGHNCHANGE: unusedCommand,
   OPENEYES: unusedCommand,
   BLINKEYES: unusedCommand,
   SETPARTY2: unusedCommand,
-  DYING: unusedCommand,
+
+  LBL: state => {
+    testState = state;
+  },
 }
+
+/*
+window.setTimeout(() => {
+  console.log(testState)
+  const entries = Object.entries(OPCODE_HANDLERS).map(([key, value]) => {
+    const dummyState = {
+      ...testState,
+      STACK: new Array(100).fill(0),
+    }
+    value(dummyState);
+
+    return [
+      key,
+      100 - dummyState.STACK.length
+    ]
+  });
+
+  console.log(Object.fromEntries(entries))
+}, 5000);
+
+*/

@@ -1,4 +1,4 @@
-import { Vector3 } from "three";
+import { Mesh, Vector3 } from "three";
 import { FieldData } from "../Field";
 import { OPCODES } from "./constants";
 
@@ -54,9 +54,15 @@ export type ScriptState = {
   isTalkable: boolean;
 
   angle: number;
+  lookTarget: Vector3;
+
   position: Vector3;
   movementDuration: number;
   movementSpeed: number;
 
   isDoorOn: boolean;
+
+  backroundMusicId?: number;
+  backgroundMusicVolume: number;
+  isPlayingBackgroundMusic: boolean;
 }

@@ -27,12 +27,14 @@ export default function App() {
     window.history.pushState({}, '', `?field=${fieldId}`);
   }, [fieldId])
 
+  const isMapFadeEnabled = useGlobalStore(state => state.isMapFadeEnabled);
   const [spring, setSpring] = useSpring(() => ({
     opacity: 0,
     config: {
       duration: 1000,
-    }
-  }), []);
+    },
+    immediate: isMapFadeEnabled,
+  }), [isMapFadeEnabled]);
 
   const asyncSetSpring = useCallback(async (opacity: number) => {
     if (spring.opacity.get() === opacity) {
