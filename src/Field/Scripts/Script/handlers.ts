@@ -1,32 +1,33 @@
 import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
-import { getPartyMemberEntity, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
+import { floatingPointToNumber, getPartyMemberEntity, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script, ScriptMethod, ScriptState } from "../types";
-import { asyncSetSpring, dummiedCommand, openMessage, remoteExecute, unusedCommand, wait, waitForKeyPress } from "./utils";
+import { dummiedCommand, openMessage, remoteExecute, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
 import { MutableRefObject } from "react";
 import { Group } from "three";
-import { SpringRef } from "@react-spring/web";
 import { animateFrames } from "./Background/backgroundUtils";
 import { playAnimation } from "./Model/modelUtils";
+import { fadeOutMap, turnToFacePlayer, turnWithDuration } from "./common";
 
-type HandlerFuncWithPromise = (args: {
+export type HandlerArgs = {
   activeMethod: ScriptMethod,
   currentOpcode: OpcodeObj,
   opcodes: OpcodeObj[],
   currentStateRef: MutableRefObject<ScriptState>,
-  movementSpring: SpringRef<{ position: number[] }>,
   scene: Scene,
   script: Script,
   signal: AbortSignal,
   STACK: number[],
   TEMP_STACK: Record<number, number>
-}) => Promise<number | void> | (number | void);
+}
+type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (number | void);
 
-const MEMORY: Record<number, number> = {
+export const MEMORY: Record<number, number> = {
   72: 9999, // gil
-  256: 5000,
+  256: 500,
   534: 1,
+  84: 196
 };
 
 let testState = {}
@@ -88,7 +89,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     } else if (currentOpcode.param === 4) {
       STACK.push(value1 % value2);
     } else if (currentOpcode.param === 5) {
-      STACK.push(value1);
+      if (value1 !== undefined) {
+        STACK.push(value1);
+      }
       STACK.push(-value2);
     } else if (currentOpcode.param === 6) {
       STACK.push(value1 === value2 ? 1 : 0);
@@ -151,6 +154,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   MAPJUMPO: ({ STACK }) => {
     STACK.pop() as number; // const walkmeshTriangleId = STACK.pop() as number;
     const fieldId = STACK.pop() as number;
+
     useGlobalStore.setState({
       fieldId: MAP_NAMES[fieldId],
       isTransitioningMap: true,
@@ -192,9 +196,27 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   SETPLACE: ({ STACK }) => {
     useGlobalStore.setState({ currentLocationPlaceName: STACK.pop() as number });
   },
-  KEYON: async ({ STACK }) => {
+  // TODO: This needs to handle loops better
+  KEYON: async ({ STACK, TEMP_STACK }) => {
     const key = STACK.pop() as number;
-    await waitForKeyPress(key);
+
+    const keydown = (event: KeyboardEvent) => {
+      if (event.keyCode === key) {
+        TEMP_STACK[0] = 1;
+      }
+    }
+
+    const keyup = () => {
+      TEMP_STACK[0] = 0;
+    }
+
+    window.addEventListener('keydown', keydown, { once: true });
+    window.addEventListener('keyup', keyup, { once: true });
+    window.setTimeout(() => {
+      window.removeEventListener('keydown', keydown);
+      window.removeEventListener('keyup', keyup);
+    }, 1000);
+    TEMP_STACK[7] = 200;
   },
   BGDRAW: ({ currentStateRef, STACK }) => {
     // I don't think this is actually used
@@ -247,6 +269,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       currentStateRef.current.backgroundAnimationSpeed,
       false
     );
+    console.log('BGANIME', start, end)
   },
   RND: ({ TEMP_STACK }) => {
     TEMP_STACK[0] = Math.round(Math.random() * 255);
@@ -273,7 +296,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const { availableMessages } = useGlobalStore.getState();
     useGlobalStore.setState({ isUserControllable: false });
     const uniqueId = `${id}--${Date.now()}`;
-    console.log('open', id)
     await openMessage(uniqueId, availableMessages[id], x, y);
     useGlobalStore.setState({ isUserControllable: true });
   },
@@ -411,14 +433,8 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     await wait(500)
     fadeSpring.opacity.start(1);
   },
-  FADEOUT: () => {
-    const fadeSpring = useGlobalStore.getState().fadeSpring;
-    fadeSpring.opacity.start(0);
-  },
-  FADEBLACK: () => {
-    const fadeSpring = useGlobalStore.getState().fadeSpring;
-    fadeSpring.opacity.start(0);
-  },
+  FADEOUT: fadeOutMap,
+  FADEBLACK: fadeOutMap,
   FADESYNC: async () => {
     const fadeSpring = useGlobalStore.getState().fadeSpring;
     if (fadeSpring.opacity.get() !== 1) {
@@ -642,7 +658,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   SHOW: ({ currentStateRef }) => {
     currentStateRef.current.isVisible = true;
   },
-  SET: ({ movementSpring, scene, STACK }) => {
+  SET: ({ currentStateRef, scene, STACK }) => {
     const lastTwo = STACK.splice(-2);
     const walkmesh = scene.getObjectByName('walkmesh') as Group;
     const knownPosition = lastTwo.map(numberToFloatingPoint) as [number, number];
@@ -652,19 +668,14 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       console.warn('Position not found on walkmesh', vector);
       return;
     }
-    movementSpring.start({
-      immediate: true,
-      position: [position.x, position.y, position.z]
-    });
+
+    currentStateRef.current.position.set([position.x, position.y, position.z]);
   },
-  SET3: async ({ movementSpring, STACK }) => {
+  SET3: async ({ currentStateRef, STACK }) => {
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    movementSpring.start({
-      immediate: true,
-      position: [position.x, position.y, position.z]
-    });
+    currentStateRef.current.position.set([position.x, position.y, position.z]);
   },
   TALKRADIUS: ({ currentStateRef, STACK }) => {
     const radius = STACK.pop() as number;
@@ -703,19 +714,23 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const movementSpeed = STACK.pop() as number;
     currentStateRef.current.movementSpeed = movementSpeed;
   },
-  MOVE: async ({ currentStateRef, movementSpring, STACK }) => {
+  MOVE: ({ currentStateRef, STACK }) => {
     // const distanceToStop =
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    await asyncSetSpring(movementSpring, {
-      immediate: false,
-      config: {
-        duration: currentStateRef.current.movementSpeed * 4
-      },
-      position: [position.x, position.y, position.z],
-    });
+    return new Promise((resolve) => {
+      currentStateRef.current.position.start([position.x, position.y, position.z], {
+        immediate: false,
+        config: {
+          duration: currentStateRef.current.movementSpeed
+        },
+        onRest: () => {
+          resolve();
+        }
+      });
+    })
   },
   // This should keep animation and face direction
   CMOVE: async (...args) => {
@@ -725,39 +740,62 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   FMOVE: async (...args) => {
     await OPCODE_HANDLERS.MOVE?.(...args);
   },
+  FMOVEA: (...args) => {
+    OPCODE_HANDLERS.MOVE?.(...args);
+  },
+  FMOVEP: async (...args) => {
+    await OPCODE_HANDLERS.MOVE?.(...args);
+  },
   RMOVE: async (...args) => {
     await OPCODE_HANDLERS.MOVE?.(...args);
   },
   DIR: ({ currentStateRef, STACK }) => {
     const angle = STACK.pop() as number;
-    currentStateRef.current.angle = angle;
+    currentStateRef.current.angle.set(angle);
   },
-  CTURNL: ({ currentStateRef, STACK }) => {
-    // const duration = 
-    STACK.pop() as number;
-    const angle = STACK.pop() as number;
-    currentStateRef.current.angle = angle;
-  },
-  CTURNR: ({ currentStateRef, STACK }) => {
-    // const duration = 
-    STACK.pop() as number;
-    const angle = STACK.pop() as number;
-    currentStateRef.current.angle = angle;
-  },
+  CTURN: turnWithDuration,
+  CTURNL: turnWithDuration,
+  CTURNR: turnWithDuration,
+  LTURNL: turnWithDuration,
+  LTURNR: turnWithDuration,
+  LTURN: turnWithDuration,
+  UNKNOWN6: turnWithDuration,
+  UNKNOWN7: turnWithDuration,
+  UNKNOWN8: turnWithDuration,
+  UNKNOWN9: turnWithDuration,
+
+  // I cannot work out what this does. Also sometimes uses STACK but often doesn't?
+  // Only used on two maps though.
+  PLTURN: dummiedCommand,
+
+
   // TODO: fix
-  PCTURN: ({ currentStateRef, scene, STACK }) => {
-    const speed = STACK.pop() as number;
-    STACK.pop() as number;
-
-    const targetMesh = getPartyMemberEntity(scene, 0);
-    currentStateRef.current.lookTarget = targetMesh.position.clone();
+  PCTURN: (args) => {
+    const { STACK } = args
+    STACK.push(0);
+    turnToFacePlayer(args);
   },
-  // I imagine rotates to player
-  PDIRA: ({ STACK }) => {
-    // const actorId = 
-    STACK.pop() as number;
+  PDIRA: ({ currentStateRef, scene, STACK }) => {
+    const actorId = STACK.pop() as number;
+    turnToFacePlayer(actorId, currentStateRef, scene);
+  },
+  // These are technically just meant to be head, but whatever
+  FACEDIR: turnToFacePlayer,
+  FACEDIRA: turnToFacePlayer,
+  FACEDIRP: turnToFacePlayer,
+  RFACEDIR: turnToFacePlayer,
+  RFACEDIRA: turnToFacePlayer,
+  RFACEDIRP: turnToFacePlayer,
+  FACEDIRI: ({ STACK }) => {
+    STACK.slice(-4);
+  },
+  FACEDIRLIMIT: ({ STACK }) => {
+    STACK.slice(-3);
   },
 
+  ADDMAGIC: ({ STACK }) => {
+    STACK.splice(-3);
+  },
   POLYCOLORALL: ({ STACK }) => {
     // const lastThree = 
     STACK.splice(-3);
@@ -876,13 +914,10 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     }
 
     const { x, y, z } = mesh.position;
-    TEMP_STACK[0] = x;
-    TEMP_STACK[1] = y;
-    TEMP_STACK[2] = z;
-  },
-  GAMEOVER: ({ STACK }) => {
-    STACK.pop() as number;
-    console.error('GAME OVER WHAT DID YOU DO');
+
+    TEMP_STACK[0] = floatingPointToNumber(x);
+    TEMP_STACK[1] = floatingPointToNumber(y);
+    TEMP_STACK[2] = floatingPointToNumber(z);
   },
   IDLOCK: ({ currentOpcode }) => {
     const currentLockedTriangles = useGlobalStore.getState().lockedTriangles;
@@ -896,6 +931,51 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       lockedTriangles: currentLockedTriangles.filter(id => id !== currentOpcode.param)
     })
   },
+  MAPFADEON: () => {
+    useGlobalStore.setState({ isMapFadeEnabled: true });
+  },
+  MAPFADEOFF: () => {
+    useGlobalStore.setState({ isMapFadeEnabled: false });
+  },
+  SPUREADY: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  SPUSYNC: async ({ currentStateRef, STACK }) => {
+    const frames = STACK.pop() as number;
+    while (currentStateRef.current.spuValue < frames) {
+      await wait(100);
+    }
+  },
+  // Unclear which of these three does what
+  LADDERANIME: ({ currentStateRef, STACK }) => {
+    currentStateRef.current.ladderAnimationId = STACK.pop() as number;
+    STACK.splice(-2);
+  },
+  LADDERDOWN2: async (args) => {
+    const { currentOpcode, scene, STACK } = args;
+    // Speed? Offset?
+    currentOpcode.param;
+
+    const end = vectorToFloatingPoint(STACK.splice(-3));
+    const middle = vectorToFloatingPoint(STACK.splice(-3));
+    const start = vectorToFloatingPoint(STACK.splice(-3));
+
+    const playerMesh = getPartyMemberEntity(scene, 0);
+    playerMesh.position.copy(start);
+    await wait(1000);
+    playerMesh.position.copy(middle);
+    await wait(1000);
+    playerMesh.position.copy(end);
+  },
+  LADDERUP2: args => OPCODE_HANDLERS?.LADDERDOWN2?.(args),
+
+
+
+  // FAKED
+  GAMEOVER: ({ STACK }) => {
+    STACK.pop() as number;
+    console.error('GAME OVER WHAT DID YOU DO');
+  },
   MOVIE: () => {
     MEMORY['80'] = 0;
     setInterval(() => {
@@ -908,6 +988,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   ADDGIL: ({ STACK }) => {
     const gil = STACK.pop() as number;
     MEMORY[72] += gil;
+  },
+  HASITEM: ({ STACK }) => {
+    STACK.push(1);
   },
 
   // TO ADD
@@ -985,7 +1068,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
   BATTLE: ({ STACK }) => {
     STACK.splice(-2);
-    console.log('BATTLE!')
   },
   BATTLEMODE: ({ STACK }) => {
     STACK.pop() as number;
@@ -1011,6 +1093,38 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
   PHSPOWER: ({ STACK }) => {
     STACK.pop() as number;
+  },
+  GETCARD: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  WHERECARD: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  MENUTIPS: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  SETDCAMERA: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  SETMESSPEED: ({ STACK }) => {
+    STACK.pop() as number;
+    STACK.pop() as number;
+  },
+  CHOICEMUSIC: ({ STACK }) => {
+    STACK.pop() as number;
+    STACK.pop() as number;
+  },
+  CROSSMUSIC: ({ STACK }) => {
+    STACK.pop() as number;
+    STACK.pop() as number;
+  },
+  DUALMUSIC: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+
+  // Completely unknown. Mainly used in cmwood maps?
+  BROKEN: ({ STACK }) => {
+    STACK.splice(-8);
   },
 
   // Set: unused, but manipulate stack. here for completeness
@@ -1041,9 +1155,63 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   MENUNAME: ({ STACK }) => {
     STACK.pop() as number;
   },
+  LASTIN: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  LASTOUT: dummiedCommand,
+  SEALEDOFF: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  KILLBAR: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  SETBAR: ({ STACK }) => {
+    STACK.splice(-2);
+  },
+  DISPBAR: ({ STACK }) => {
+    STACK.splice(-7);
+  },
+  SETHP: ({ STACK }) => {
+    // I assume actorId + HP
+    STACK.splice(-2);
+  },
+  ACTORMODE: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  RESETGF: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  HOLD: ({ STACK }) => {
+    STACK.splice(-3);
+  },
+  AXIS: ({ STACK }) => {
+    STACK.splice(-2);
+  },
+  PREMAPJUMP: ({ STACK }) => {
+    STACK.splice(-4);
+  },
+  SETDRAWPOINT: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  PARTICLEOFF: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  UNKNOWN11: ({ STACK }) => {
+    STACK.splice(-2);
+  },
+  UNKNOWN14: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  UNKNOWN15: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  // Used once in the balamb basement. I think it might clear a ladder key?
+  KEY: ({ STACK }) => {
+    STACK.pop() as number;
+  },
 
-
-  PREMAPJUMP: dummiedCommand,
+  UNKNOWN12: dummiedCommand,
+  CLOSEEYES: dummiedCommand,
   DYING: dummiedCommand,
   UNKNOWN10: dummiedCommand,
   BATTLEON: dummiedCommand,
@@ -1052,15 +1220,13 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   BATTLECUT: dummiedCommand,
   MENUENABLE: dummiedCommand,
   MENUDISABLE: dummiedCommand,
-  SETDRAWPOINT: dummiedCommand,
   MOVIESYNC: dummiedCommand,
   REST: dummiedCommand,
   JOIN: dummiedCommand,
   FOLLOWOFF: dummiedCommand,
   FOLLOWON: dummiedCommand,
   REFRESHPARTY: dummiedCommand,
-
-  // Checked
+  FOOTSTEPCOPY: dummiedCommand,
   SETCARD: dummiedCommand,
   ADDSEEDLEVEL: dummiedCommand,
   MOVIECUT: dummiedCommand,
@@ -1074,6 +1240,8 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   SARALYON: dummiedCommand,
   SARALYOFF: dummiedCommand,
   CLEAR: dummiedCommand,
+  SWAP: dummiedCommand,
+  BGSHADEOFF: dummiedCommand,
 
   NOP: unusedCommand,
   GJMP: unusedCommand,
@@ -1106,23 +1274,22 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
 }
 
-/*
-window.setTimeout(() => {
-  console.log(testState)
-  const entries = Object.entries(OPCODE_HANDLERS).map(([key, value]) => {
-    const dummyState = {
-      ...testState,
-      STACK: new Array(100).fill(0),
-    }
-    value(dummyState);
 
-    return [
-      key,
-      100 - dummyState.STACK.length
-    ]
-  });
-
-  console.log(Object.fromEntries(entries))
-}, 5000);
-
-*/
+//window.setTimeout(() => {
+//  console.log(testState)
+//  const entries = Object.entries(OPCODE_HANDLERS).map(([key, value]) => {
+//    const dummyState = {
+//      ...testState,
+//      STACK: new Array(100).fill(0),
+//    }
+//    value(dummyState);
+//
+//    return [
+//      key,
+//      100 - dummyState.STACK.length
+//    ]
+//  });
+//
+//  console.log(Object.fromEntries(entries))
+//}, 5000);
+//

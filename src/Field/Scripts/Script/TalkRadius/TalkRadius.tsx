@@ -6,20 +6,19 @@ import { useThree, useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
 
 type TalkRadiusProps = {
-  isTalkEnabled: boolean;
   radius: number;
   setActiveMethodId: (methodId?: string) => void;
   talkMethod: ScriptMethod,
 }
 
-const TalkRadius = ({ isTalkEnabled, radius, setActiveMethodId, talkMethod }: TalkRadiusProps) => {
+const TalkRadius = ({ radius, setActiveMethodId, talkMethod }: TalkRadiusProps) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const talkSphereRef = useRef<Mesh>(null);
 
   const character = useThree(({ scene }) => scene.getObjectByName('character') as Group);
   const talkSphereBox = useRef(new Box3());
   const characterBox = useRef(new Box3());
-  
+
   useFrame(() => {
     if (!talkSphereRef.current || !character) return;
   
@@ -63,7 +62,7 @@ const TalkRadius = ({ isTalkEnabled, radius, setActiveMethodId, talkMethod }: Ta
       ref={talkSphereRef}
       visible={true}
     >
-      <meshBasicMaterial color={isTalkEnabled ? `white` : `red`} side={DoubleSide} opacity={0.2} transparent />
+      <meshBasicMaterial color={`white`} side={DoubleSide} opacity={0.2} transparent />
     </Sphere>
   );
 }

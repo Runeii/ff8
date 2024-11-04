@@ -5,6 +5,8 @@ import useGlobalStore from "./store.ts";
 
 export const numberToFloatingPoint = (value: number) => value / 4096;
 
+export const floatingPointToNumber = (value: number) => value * 4096;
+
 export const vectorToFloatingPoint = (value: Vector3 | { x: number, y: number, z: number } | number[]) => {
   if (Array.isArray(value)) {
     return new Vector3(

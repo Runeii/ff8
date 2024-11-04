@@ -35,7 +35,9 @@ export const processTagsInString = (input: string) => {
   if (!input) {
     return '';
   }
-  const textWithLineBreaks = input.replace(/\n/g, '<br />');
+
+  const withControls = input.replaceAll('{x0527}', '{Red}[ACTION]{White}')
+  const textWithLineBreaks = withControls.replace(/\n/g, '<br />');
 
   const segments = textWithLineBreaks.split(/(\{[^}]+\})/g);
 

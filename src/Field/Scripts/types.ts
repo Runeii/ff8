@@ -1,6 +1,7 @@
-import { Mesh, Vector3 } from "three";
+import { Vector3 } from "three";
 import { FieldData } from "../Field";
 import { OPCODES } from "./constants";
+import { SpringValue } from "@react-spring/web";
 
 export type ScriptType = 'location' | 'model' | 'background' | 'unknown' | 'door';
 
@@ -31,6 +32,7 @@ export type ScriptState = {
     isLooping: boolean;
   },
   idleAnimationId: number;
+  ladderAnimationId: number;
 
   backgroundAnimationSpeed: number,
   backgroundStartFrame: number,
@@ -53,10 +55,10 @@ export type ScriptState = {
   isPushable: boolean;
   isTalkable: boolean;
 
-  angle: number;
-  lookTarget: Vector3;
+  angle: SpringValue<number>;
+  lookTarget?: Vector3;
 
-  position: Vector3;
+  position: SpringValue<number[]>;
   movementDuration: number;
   movementSpeed: number;
 
@@ -65,4 +67,6 @@ export type ScriptState = {
   backroundMusicId?: number;
   backgroundMusicVolume: number;
   isPlayingBackgroundMusic: boolean;
+
+  spuValue: number;
 }

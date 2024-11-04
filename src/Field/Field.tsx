@@ -12,6 +12,8 @@ import { renderSceneWithLayers } from './fieldUtils';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
 import { getInitialEntrance } from '../utils';
+import { MEMORY, OPCODE_HANDLERS } from './Scripts/Script/handlers';
+import MAP_NAMES from '../constants/maps';
 
 export type FieldData = typeof data;
 
@@ -71,14 +73,29 @@ type FieldLoaderProps = Omit<FieldProps, 'data'> & {
 
 const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
   const fieldId = useGlobalStore(state => state.fieldId);
-
+  
+  const currentFieldIdRef = useRef(fieldId);
   const [data, setData] = useState<FieldProps['data'] | null>(null);
-
+  
   const gl = useThree(({ gl }) => gl);
+  
+  useEffect(() => {
+    if (fieldId === currentFieldIdRef.current) {
+      return;
+    }
+
+    MEMORY[84] = Object.values(MAP_NAMES).indexOf(currentFieldIdRef.current);
+    currentFieldIdRef.current = fieldId;
+  }, [fieldId]);
 
   useEffect(() => {
     const handleTransition = async () => {
-      await setSpring(0);
+      const {isMapFadeEnabled} = useGlobalStore.getState();
+
+      if (isMapFadeEnabled) {
+        await setSpring(0);
+      }
+
       setData(null);
       gl.clear();
 
@@ -95,6 +112,7 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
         pendingCharacterPosition: undefined,
         fieldTimestamp: Date.now(),
         isUserControllable: true,
+        isRunEnabled: true,
 
         currentParameterStates: {},
         currentParameterVisibility: {},

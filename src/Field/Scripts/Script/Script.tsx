@@ -6,10 +6,10 @@ import Location from "./Location/Location";
 import TalkRadius from "./TalkRadius/TalkRadius";
 import Model from "./Model/Model";
 import useGlobalStore from "../../../store";
-import { animated, useSpring } from "@react-spring/three";
+import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { Group, Quaternion, Vector3 } from "three";
 
 type ScriptProps = {
@@ -23,7 +23,6 @@ type ScriptProps = {
 const Script = ({ doors, models, script }: ScriptProps) => {
   const [activeMethodId, setActiveMethodId] = useState<string>();
   const [remoteExecutionKey, setRemoteExecutionKey] = useState<string>();
-
   useEffect(() => {
     if (activeMethodId) {
       return;
@@ -36,15 +35,9 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key: remoteExecutionKey } }));
     setRemoteExecutionKey(undefined);
   }, [activeMethodId, remoteExecutionKey]);
+  
 
-  const [movementSpring, setSpring] = useSpring(() => ({
-    config: {
-      duration: 100,
-    },
-    position: [0,0,0]
-  }), []);
-
-  const scriptState = useMethod(script, activeMethodId, setActiveMethodId, setSpring);
+  const scriptState = useMethod(script, activeMethodId, setActiveMethodId);
 
   useEffect(() => {
     if (scriptState.isUnused) {
@@ -82,7 +75,6 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   
   const activeParty = useGlobalStore(storeState => storeState.party);
 
-  const camera = useThree().camera;
   const containerRef = useRef<Group>(null);
 
   const [modelQuaternion] = useState(new Quaternion());
@@ -91,7 +83,6 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     if (!containerRef.current || !camera.userData.initialPosition || script.type !== 'model') {
       return;
     }
-
     const quaternion = camera.userData.initialQuaternion.clone();
 
     const baseAngle = Math.PI / 2; // facing 'down';
@@ -115,15 +106,16 @@ const Script = ({ doors, models, script }: ScriptProps) => {
       const finalQuaternion = quaternion.clone().multiply(rotationQuat);
       containerRef.current.quaternion.copy(finalQuaternion);
 
+
       return;
     }
-    const angle = baseAngle + ((Math.PI * 2) / 255 * scriptState.angle);
+
+    const angle = baseAngle + ((Math.PI * 2) / 255 * scriptState.angle.get());
     quaternion.multiply(modelQuaternion.setFromAxisAngle(upAxis, angle));
     containerRef.current.quaternion.copy(quaternion);
 
-    //const currentRotation = containerRef.current.rotation.clone();
-    //containerRef.current.lookAt(camera.userData.initialPosition);
-    //containerRef.current.rotation.z += (Math.PI * 2) / 255 * 255;
+    //console.log('camera', camera.position)
+    //console.log('model', containerRef.current.position)
   });
 
   if (scriptState.isUnused) {
@@ -134,17 +126,20 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     return null;
   }
 
+  if (script.groupId === 0) {
+   // console.log('Script group id is 8',  activeMethodId);
+  }
 
+  
   return (
     <animated.group
-      position={movementSpring.position as unknown as [number,number,number]}
+      position={scriptState.position}
       rotation={[0, 0, 0]}
       ref={containerRef}
       visible={scriptState.isVisible}
     >
       {scriptState.isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
-          isTalkEnabled={scriptState.isTalkable}
           radius={scriptState.talkRadius / 4096 / 1.5}
           setActiveMethodId={setActiveMethodId}
           talkMethod={talkMethod}

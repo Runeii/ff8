@@ -163,12 +163,13 @@ const Character = ({ hasPlacedCharacter, setHasPlacedCharacter }: CharacterProps
     const angle = Math.atan2(direction.y, direction.x);
 
     player.rotation.z = angle - Math.PI * 2
+    player.userData.hasMoved = true;
     setPositionSpring({ position: [newPosition.x, newPosition.y, newPosition.z] });
   });
 
   return (
     <Squall currentAction={currentAction} scale={0.06} name="character" ref={playerRef}>
-      <Box args={[0.5, 0.5, 1.2]} position={[0,0,0.6]} name="hitbox" visible={false} />
+      <Box args={[0.5, 0.5, 1.2]} position={[0,0,0.6]} name="hitbox" visible={true} />
       <Focus />
     </Squall>
   );

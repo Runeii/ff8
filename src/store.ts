@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { Vector3 } from 'three';
 import { SpringValue } from '@react-spring/web';
+import MAP_NAMES from './constants/maps';
 
 interface GlobalState {
   characterPosition?: Vector3,
@@ -10,7 +11,7 @@ interface GlobalState {
   backgroundLayerVisibility: Record<number, boolean>,
   currentParameterStates: Record<number, number>,
   currentParameterVisibility: Record<number, boolean>,
-  fieldId: string,
+  fieldId: typeof MAP_NAMES[number],
   fieldTimestamp: number,
   initialAngle: number,
   isUserControllable: boolean,
@@ -46,7 +47,7 @@ const useGlobalStore = create<GlobalState>()(() => ({
   pendingCharacterPosition: undefined as unknown as Vector3,
 
   currentLocationPlaceName: 0, // we don't currently use this for anything
-  fieldId: '',
+  fieldId: '' as typeof MAP_NAMES[number],
   fieldTimestamp: 0, // used to cleanup timers in state
   isUserControllable: true,
   isTransitioningMap: true,

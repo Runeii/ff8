@@ -3,66 +3,73 @@ import { Script, ScriptState } from "../types";
 import { OPCODE_HANDLERS } from "./handlers";
 import { useFrame, useThree } from "@react-three/fiber";
 import useGlobalStore from "../../../store";
-import { Vector3 } from "three";
-import { SpringRef } from "@react-spring/web";
-
-const DEFAULT_STATE: ScriptState = {
-  hasRemovedControl: false,
-  isHalted: false,
-
-  animation: {
-    id: 0,
-    isHoldingFinalFrame: false,
-    isLooping: false,
-  },
-  idleAnimationId: 0,
-
-  backgroundAnimationSpeed: 0,
-  backgroundStartFrame: 0,
-  backgroundEndFrame: 0,
-  isBackgroundVisible: false,
-  isBackgroundLooping: false,
-
-  isLineOn: true,
-  linePoints: null,
-
-  isVisible: true,
-  isSolid: false,
-  isUnused: false,
-
-  modelId: 0,
-  partyMemberId: undefined,
-
-  pushRadius: 0,
-  talkRadius: 200,
-  isPushable: false,
-  isTalkable: true,
-
-  angle: 0,
-  position: new Vector3(0, 0, 0),
-  movementDuration: 0,
-  movementSpeed: 0,
-
-  isDoorOn: true,
-
-  backroundMusicId: 0,
-  backgroundMusicVolume: 127,
-  isPlayingBackgroundMusic: false,
-}
+import { SpringValue } from "@react-spring/web";
 
 const useMethod = (
   script: Script,
   activeMethodId: string | undefined,
   setActiveMethodId: (methodId?: string) => void,
-  movementSpring: SpringRef<{ position: number[]; }>,
 ) => {
   const scene = useThree((state) => state.scene);
 
-  const currentScriptStateRef = useRef<ScriptState>({ ...DEFAULT_STATE });
-  const [scriptState, setScriptState] = useState<ScriptState>({ ...DEFAULT_STATE });
+  const currentScriptStateRef = useRef<ScriptState>({
+    hasRemovedControl: false,
+    isHalted: false,
+
+    animation: {
+      id: 0,
+      isHoldingFinalFrame: false,
+      isLooping: false,
+    },
+    idleAnimationId: 0,
+    ladderAnimationId: 0,
+
+    backgroundAnimationSpeed: 0,
+    backgroundStartFrame: 0,
+    backgroundEndFrame: 0,
+    isBackgroundVisible: false,
+    isBackgroundLooping: false,
+
+    isLineOn: true,
+    linePoints: null,
+
+    isVisible: true,
+    isSolid: false,
+    isUnused: false,
+
+    modelId: 0,
+    partyMemberId: undefined,
+
+    pushRadius: 0,
+    talkRadius: 200,
+    isPushable: false,
+    isTalkable: true,
+
+    angle: new SpringValue(0),
+    lookTarget: undefined,
+
+    position: new SpringValue([0, 0, 0]),
+    movementDuration: 0,
+    movementSpeed: 0,
+
+    isDoorOn: true,
+
+    backroundMusicId: 0,
+    backgroundMusicVolume: 127,
+    isPlayingBackgroundMusic: false,
+
+    spuValue: 0,
+  });
+  const [scriptState, setScriptState] = useState<ScriptState>(currentScriptStateRef.current);
   useFrame(() => {
     setScriptState({ ...currentScriptStateRef.current });
   });
+
+  useEffect(() => {
+    window.setTimeout(() => {
+      currentScriptStateRef.current.spuValue += 1;
+    }, 1000);
+  }, []);
 
   const [hasCompletedConstructor, setHasCompletedConstructor] = useState(false);
 
@@ -157,8 +164,8 @@ const useMethod = (
     const execute = async () => {
       const currentOpcode = opcodes[currentOpcodeIndex] ?? undefined;
 
-      if (script.groupId === 10) {
-        // console.log(currentOpcode, currentOpcodeIndex);
+      if (script.groupId === 8) {
+        //        console.log(currentOpcode, activeMethodId, STACKRef.current);
       }
       if (!currentOpcode && !hasCompletedConstructor) {
         setHasCompletedConstructor(true);
@@ -195,7 +202,6 @@ const useMethod = (
         currentOpcode,
         opcodes,
         currentStateRef: currentScriptStateRef,
-        movementSpring,
         scene,
         script,
         signal: abortController.signal,
@@ -217,7 +223,7 @@ const useMethod = (
     }
 
     execute();
-  }, [activeMethod, activeMethodId, currentOpcodeIndex, handleCompleteRun, hasCompletedConstructor, scene, script, movementSpring]);
+  }, [activeMethod, activeMethodId, currentOpcodeIndex, handleCompleteRun, hasCompletedConstructor, scene, script]);
 
   return scriptState;
 }

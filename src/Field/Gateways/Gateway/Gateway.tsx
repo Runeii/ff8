@@ -22,11 +22,12 @@ const Gateway = ({
       target: gateway.target,
     }
   }, [gateway]);
+
   const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh | undefined);
 
   const [hasExited, setHasExited] = useState(false);
   useFrame(() => {
-    if (!player) {
+    if (!player || !player.userData.hasMoved) {
       return;
     }
 

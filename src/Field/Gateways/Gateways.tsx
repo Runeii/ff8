@@ -33,7 +33,7 @@ const Gateways = ({ fieldId }: GatewaysProps) => {
     return generatedGateways.filter((gateway) => gateway.source === fieldId) as unknown as Gateway[];
   }, [fieldId]);
   
-  console.log(gateways)
+
   if (isTransitioningMap) {
     return null;
   }
