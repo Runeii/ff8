@@ -59,10 +59,10 @@ const Door = ({ doors, script, setActiveMethodId, state }: DoorProps) => {
     }
   }, [setActiveMethodId]);
 
-  let playerPosition = playerHitbox.getWorldPosition(new Vector3());
+  let playerPosition = new Vector3();
   const [isNearDoor, setIsNearDoor] = useState(false);
   useFrame(() => {
-    if (!box) {
+    if (!box || !playerHitbox) {
       return;
     }
     playerPosition = playerHitbox.getWorldPosition(playerPosition);

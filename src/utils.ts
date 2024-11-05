@@ -1,4 +1,4 @@
-import { Mesh, Object3D, Raycaster, Scene, Vector3 } from "three";
+import { Object3D, Raycaster, Vector3 } from "three";
 import { FieldData } from "./Field/Field";
 import gateways from './gateways.ts';
 import useGlobalStore from "./store.ts";
@@ -83,15 +83,14 @@ export const getPositionOnWalkmesh = (desiredPosition: Vector3, walkmesh: Object
 }
 
 const intersectionRaycaster = new Raycaster();
-export const checkForIntersections = (position: Vector3, target: Vector3, doors: Object3D[]) => {
-  const direction = new Vector3().subVectors(target, position).normalize();
-  intersectionRaycaster.set(position, direction);
-  intersectionRaycaster.far = position.distanceTo(target);
+export const checkForIntersections = (object: Object3D, target: Vector3, doors: Object3D[]) => {
+  const needlePosition = new Vector3();
+  object.getWorldPosition(needlePosition);
+  const direction = new Vector3().subVectors(target, needlePosition).normalize();
+  intersectionRaycaster.set(needlePosition, direction);
+  intersectionRaycaster.far = needlePosition.distanceTo(target);
   intersectionRaycaster.near = 0;
   const intersects = intersectionRaycaster.intersectObjects(doors);
-  return intersects.length === 0;
-}
 
-export const getPartyMemberEntity = (scene: Scene, partyMemberId: number) => {
-  return scene.getObjectByName(`party--${partyMemberId}`) as Mesh;
+  return intersects.length === 0;
 }

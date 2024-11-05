@@ -1,8 +1,9 @@
 import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
-import { useEffect, useMemo } from "react";
+import {  useEffect, useMemo } from "react";
 import useGlobalStore from "../../store";
 import { FieldData } from "../Field";
 import { vectorToFloatingPoint } from "../../utils";
+import { ThreeEvent } from "@react-three/fiber";
 
 type WalkMeshProps = {
   setHasPlacedWalkmesh: (value: boolean) => void;
@@ -33,7 +34,7 @@ const WalkMesh = ({ setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
     setHasPlacedWalkmesh(true);
   }, [setHasPlacedWalkmesh]);
 
-  const handleClick = (e) => {
+  const handleClick = (e: ThreeEvent<MouseEvent>) => {
     useGlobalStore.setState({
       characterPosition: e.point
     });
@@ -43,7 +44,7 @@ const WalkMesh = ({ setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
     <group name="walkmesh">
       {walkMeshGeometry.map((geometry, index) => (
         <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={import.meta.env.DEV}>
-          <meshBasicMaterial color={"red"} transparent opacity={0.2} side={DoubleSide} />
+          <meshBasicMaterial color={"red"} transparent opacity={0} side={DoubleSide} />
         </mesh>
       ))}
     </group>

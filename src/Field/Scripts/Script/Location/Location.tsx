@@ -1,10 +1,10 @@
 import { Line } from "@react-three/drei";
 import { Script, ScriptState } from "../../types";
 import { useThree } from "@react-three/fiber";
-import { Mesh, Vector3 } from "three";
+import { Group, Mesh, Vector3 } from "three";
 import useTriggerEvent from "../useTriggerEvent";
 import useLineIntersection from "../useLineIntersection";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import TalkRadius from "../TalkRadius/TalkRadius";
 
 type LocationProps = {
@@ -14,7 +14,7 @@ type LocationProps = {
 }
 
 const Location = ({ setActiveMethodId, script, state }: LocationProps) => {
-  const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
+  const player = useThree(({ scene }) => scene.getObjectByName("character") as Group);
 
   const { isLineOn, linePoints } = state;
 

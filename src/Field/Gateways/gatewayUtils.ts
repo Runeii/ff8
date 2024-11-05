@@ -1,9 +1,9 @@
-import { Box3, Mesh, Raycaster, Vector3 } from "three"
+import { Box3, Mesh, Object3D, Raycaster, Vector3 } from "three"
 
 const raycaster = new Raycaster();
 let direction = new Vector3()
 
-export const checkForIntersection = (player: Mesh, points: Vector3[]) => {
+export const checkForIntersection = (player: Object3D, points: Vector3[]) => {
   const [lineStart, lineEnd] = points;
 
   direction.set(0, 0, 0);

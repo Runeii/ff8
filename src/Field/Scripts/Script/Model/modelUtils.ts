@@ -1,6 +1,9 @@
-import { AnimationAction, LoopOnce, LoopRepeat, Scene } from "three";
+import { AnimationAction, LoopOnce, LoopRepeat, Mesh, Scene } from "three";
 import { Script, ScriptState } from "../../types";
 
+export const getPartyMemberModelComponent = (scene: Scene, partyMemberId: number) => {
+  return scene.getObjectByName(`party--${partyMemberId}`) as Mesh;
+}
 
 export const playAnimation = (
   // @ts-expect-error Temporarily ignore real ID, need to wait for models

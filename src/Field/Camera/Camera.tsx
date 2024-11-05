@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import {  Mesh, PerspectiveCamera, Quaternion, Vector3 } from 'three';
+import {  PerspectiveCamera, Quaternion, Vector3 } from 'three';
 import { vectorToFloatingPoint, WORLD_DIRECTIONS } from "../../utils";
 import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useMemo, useState } from "react";
@@ -19,7 +19,6 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
   const [initialCameraTargetPosition, setInitialCameraTargetPosition] = useState(new Vector3());
 
   const camera = useThree(({ camera }) => camera as PerspectiveCamera);
-  const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh);
 
   useEffect(() => {
     const {camera_axis,camera_position,camera_zoom} = cameras[0];
@@ -72,8 +71,10 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
   );
 
   // This is the main logic for the camera movement
-  useFrame(() => {
-    if (!initialCameraTargetPosition) {
+  useFrame(({ scene }) => {
+    const player = scene.getObjectByName("character");
+  
+    if (!initialCameraTargetPosition || !player) {
       return
     }
 
@@ -83,15 +84,16 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
 
     const { UP, RIGHT } = WORLD_DIRECTIONS;
 
-    const position = player.position;
+    const position = player.position.clone();
     player.getWorldPosition(position);
+
     camera.lookAt(position);
     const currentCameraQuaternion = new Quaternion().setFromEuler(camera.rotation);
 
     const yawAngle = getRotationAngleAroundAxis(
       initialCameraQuaternion,
       currentCameraQuaternion,
-      camera.up
+      UP
     );
     
     const pitchAngle = getRotationAngleAroundAxis(

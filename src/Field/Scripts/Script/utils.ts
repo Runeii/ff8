@@ -70,7 +70,7 @@ export const openMessage = (id: string, text: string[], x: number, y: number, as
     if (detail.id !== id) {
       return;
     }
-    console.log('CLOSED')
+
     resolve(detail.selectedOption);
   });
 

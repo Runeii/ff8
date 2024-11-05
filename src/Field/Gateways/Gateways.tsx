@@ -2,6 +2,7 @@ import {  useCallback, useMemo } from "react"
 import Gateway from "./Gateway/Gateway"
 import useGlobalStore from '../../store';
 import generatedGateways from '../../gateways.ts';
+import MAP_NAMES from "../../constants/maps.ts";
 
 export type GatewaysProps = {
   fieldId: string,
@@ -14,26 +15,27 @@ const Gateways = ({ fieldId }: GatewaysProps) => {
     if (isTransitioningMap) {
       return;
     }
+
     if (gateway.target.startsWith('wm')) {
-      console.log('Transitioning to world map');
       useGlobalStore.setState({
         fieldId: 'WORLD_MAP',
         isTransitioningMap: true,
       });
       return
     }
+
     console.log('Transitioning to', gateway.target, 'via gateway', gateway, 'at', gateway.destination);
     useGlobalStore.setState({
-      fieldId: gateway.target,
+      fieldId: gateway.target as typeof MAP_NAMES[number],
       isTransitioningMap: true,
       pendingCharacterPosition: gateway.destination
     });
   }, [isTransitioningMap]);
+
   const gateways = useMemo(() => {
     return generatedGateways.filter((gateway) => gateway.source === fieldId) as unknown as Gateway[];
   }, [fieldId]);
   
-
   if (isTransitioningMap) {
     return null;
   }

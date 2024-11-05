@@ -2,8 +2,9 @@ import { Sphere } from "@react-three/drei"
 import { Box3, DoubleSide, Group, Mesh } from "three";
 import { ScriptMethod } from "../../types";
 import {  useEffect, useRef, useState } from "react";
-import { useThree, useFrame } from "@react-three/fiber";
+import {  useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
+import { CHARACTER_HEIGHT } from "../Model/Controls/Controls";
 
 type TalkRadiusProps = {
   radius: number;
@@ -15,11 +16,12 @@ const TalkRadius = ({ radius, setActiveMethodId, talkMethod }: TalkRadiusProps) 
   const [isIntersecting, setIsIntersecting] = useState(false);
   const talkSphereRef = useRef<Mesh>(null);
 
-  const character = useThree(({ scene }) => scene.getObjectByName('character') as Group);
   const talkSphereBox = useRef(new Box3());
   const characterBox = useRef(new Box3());
 
-  useFrame(() => {
+  useFrame(({scene}) => {
+    const character = scene.getObjectByName("character") as Group;
+
     if (!talkSphereRef.current || !character) return;
   
     talkSphereRef.current.updateMatrixWorld();
@@ -38,7 +40,6 @@ const TalkRadius = ({ radius, setActiveMethodId, talkMethod }: TalkRadiusProps) 
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
-      console.log('In talk radius handler!', talkMethod)
       event.stopImmediatePropagation();
       if (event.key !== ' ') {
         return;
@@ -59,10 +60,11 @@ const TalkRadius = ({ radius, setActiveMethodId, talkMethod }: TalkRadiusProps) 
   return (
     <Sphere
       args={[radius]}
+      position={[0, (CHARACTER_HEIGHT / 2), 0]}
       ref={talkSphereRef}
-      visible={true}
+      visible={false}
     >
-      <meshBasicMaterial color={`white`} side={DoubleSide} opacity={0.2} transparent />
+      <meshBasicMaterial color={`white`} side={DoubleSide} opacity={0.1} transparent />
     </Sphere>
   );
 }

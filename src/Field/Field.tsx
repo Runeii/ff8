@@ -34,7 +34,6 @@ const Field = ({ data }: FieldProps) => {
   });
 
   const [hasPlacedWalkmesh, setHasPlacedWalkmesh] = useState(false);
-  const [hasPlacedCharacter, setHasPlacedCharacter] = useState(false);
   const [hasPlacedCamera, setHasPlacedCamera] = useState(false);
 
   return (
@@ -44,9 +43,6 @@ const Field = ({ data }: FieldProps) => {
         walkmesh={data.walkmesh}
       />
       {hasPlacedWalkmesh && (
-        <Character hasPlacedCharacter={hasPlacedCharacter} setHasPlacedCharacter={setHasPlacedCharacter} />
-      )}
-      {hasPlacedCharacter && (
         <>
           <Gateways
             fieldId={data.id}

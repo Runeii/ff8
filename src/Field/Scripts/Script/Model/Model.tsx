@@ -1,6 +1,8 @@
 import { Script, ScriptState } from "../../types";
-import { lazy, useCallback, useRef } from "react";
+import { lazy, useCallback, useState } from "react";
 import { AnimationAction } from "three";
+import useGlobalStore from "../../../../store";
+import Controls from "./Controls/Controls";
 
 type ModelProps = {
   models: string[];
@@ -19,15 +21,16 @@ const Model = ({ models, script, state }: ModelProps) => {
   const modelId = state.modelId;
 
   const partyMemberId = state.partyMemberId
+  const isPlayerControlled = useGlobalStore(state => state.party[0] === partyMemberId);
 
-  const modelRef = useRef<{ actions: AnimationAction[] }>();
+  const [actions, setActions] = useState<Record<string, AnimationAction>>({});
 
-  const setModelRef = useCallback((ref: { actions: AnimationAction[] } | null) => {
-    if (!ref) {
+  const setModelRef = useCallback((ref: { actions: Record<string, AnimationAction> } | null) => {
+    if (!ref || ref.actions === actions) {
       return;
     }
-    modelRef.current = ref;
-  }, []);
+    setActions(ref.actions);
+  }, [actions]);
   
   let modelName = models[modelId];
   if (modelName === 'd000') {
@@ -39,8 +42,9 @@ const Model = ({ models, script, state }: ModelProps) => {
   if (!ModelComponent) {
     return null;
   }
-  return (
-    <group rotation={[0,0,0]}>
+
+  const modelJsx = (
+    <group>
       <ModelComponent
         name={partyMemberId === undefined ? `model--${script.groupId}` : `party--${partyMemberId}`}
         scale={0.06}
@@ -48,11 +52,21 @@ const Model = ({ models, script, state }: ModelProps) => {
         ref={setModelRef}
         userData={{
           scriptId: script.groupId,
-          actions: modelRef.current?.actions ?? [],
+          actions: actions,
         }}
       />
     </group>
   );
+
+  if (isPlayerControlled) {
+    return (
+      <Controls actions={actions} state={state}>
+        {modelJsx}
+      </Controls>
+    );
+  }
+
+  return modelJsx;
 };
 
 export default Model;

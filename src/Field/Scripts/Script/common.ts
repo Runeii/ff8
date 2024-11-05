@@ -1,6 +1,6 @@
 import useGlobalStore from "../../../store";
-import { getPartyMemberEntity } from "../../../utils";
 import { HandlerArgs } from "./handlers";
+import { getPartyMemberModelComponent } from "./Model/modelUtils";
 
 export const turnWithDuration = async ({ currentStateRef, STACK }: HandlerArgs) => {
   const frames = STACK.pop() as number;
@@ -17,7 +17,7 @@ export const turnWithDuration = async ({ currentStateRef, STACK }: HandlerArgs) 
 export const turnToFacePlayer = async ({ currentStateRef, scene, opcodes, STACK }: HandlerArgs) => {
   const actorId = STACK.pop() as number;
   const frames = STACK.pop() as number;
-  const targetMesh = getPartyMemberEntity(scene, actorId);
+  const targetMesh = getPartyMemberModelComponent(scene, actorId);
   console.trace(actorId, frames, targetMesh, opcodes[0].param)
   currentStateRef.current.lookTarget = targetMesh.position.clone();
 }

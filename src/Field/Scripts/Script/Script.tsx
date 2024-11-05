@@ -10,7 +10,8 @@ import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
 import { useFrame } from "@react-three/fiber";
-import { Group, Quaternion, Vector3 } from "three";
+import { Group, Quaternion } from "three";
+import { WORLD_DIRECTIONS } from "../../../utils";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -78,7 +79,7 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   const containerRef = useRef<Group>(null);
 
   const [modelQuaternion] = useState(new Quaternion());
-  const [upAxis] = useState(new Vector3(0, 1, 0)); // TODO: Can this be better? Sometimes meshes are on an angle
+  //const [upAxis] = useState(new Vector3(0, 1, 0)); // TODO: Can this be better? Sometimes meshes are on an angle
   useFrame(({camera}) => {
     if (!containerRef.current || !camera.userData.initialPosition || script.type !== 'model') {
       return;
@@ -86,36 +87,31 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     const quaternion = camera.userData.initialQuaternion.clone();
 
     const baseAngle = Math.PI / 2; // facing 'down';
-    quaternion.multiply(modelQuaternion.setFromAxisAngle(upAxis, baseAngle));
-    containerRef.current.quaternion.copy(quaternion);
   
-    if (scriptState.lookTarget) {
-      const targetDirection = scriptState.lookTarget.clone().sub(containerRef.current.position).normalize();
-      const projectedTargetDirection = targetDirection.clone().projectOnPlane(upAxis).normalize();
-      
-      const baseForward = new Vector3(0, 0, 1).applyQuaternion(quaternion).projectOnPlane(upAxis).normalize();
+  //  if (scriptState.lookTarget) {
+  //    const targetDirection = scriptState.lookTarget.clone().sub(containerRef.current.position).normalize();
+  //    const projectedTargetDirection = targetDirection.clone().projectOnPlane(upAxis).normalize();
+  //    
+  //    const baseForward = new Vector3(0, 0, 1).applyQuaternion(quaternion).projectOnPlane(upAxis).normalize();
+//
+  //    const angle = Math.acos(baseForward.dot(projectedTargetDirection));
+  //    const cross = new Vector3().crossVectors(baseForward, projectedTargetDirection);
+  //    
+  //    const signedAngle = cross.dot(upAxis) < 0 ? -angle : angle;
+//
+  //    const rotationQuat = new Quaternion();
+  //    rotationQuat.setFromAxisAngle(upAxis, signedAngle);
+//
+  //    const finalQuaternion = quaternion.clone().multiply(rotationQuat);
+  //    containerRef.current.quaternion.copy(finalQuaternion);
+//
+//
+  //    return;
+  //  }
 
-      const angle = Math.acos(baseForward.dot(projectedTargetDirection));
-      const cross = new Vector3().crossVectors(baseForward, projectedTargetDirection);
-      
-      const signedAngle = cross.dot(upAxis) < 0 ? -angle : angle;
-
-      const rotationQuat = new Quaternion();
-      rotationQuat.setFromAxisAngle(upAxis, signedAngle);
-
-      const finalQuaternion = quaternion.clone().multiply(rotationQuat);
-      containerRef.current.quaternion.copy(finalQuaternion);
-
-
-      return;
-    }
-
-    const angle = baseAngle + ((Math.PI * 2) / 255 * scriptState.angle.get());
-    quaternion.multiply(modelQuaternion.setFromAxisAngle(upAxis, angle));
+    const angle = baseAngle - ((Math.PI * 2) / 255 * scriptState.angle.get());
+    quaternion.multiply(modelQuaternion.setFromAxisAngle(WORLD_DIRECTIONS.UP, angle));
     containerRef.current.quaternion.copy(quaternion);
-
-    //console.log('camera', camera.position)
-    //console.log('model', containerRef.current.position)
   });
 
   if (scriptState.isUnused) {

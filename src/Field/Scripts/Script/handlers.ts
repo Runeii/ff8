@@ -1,13 +1,13 @@
 import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
-import { floatingPointToNumber, getPartyMemberEntity, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
+import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script, ScriptMethod, ScriptState } from "../types";
 import { dummiedCommand, openMessage, remoteExecute, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
 import { MutableRefObject } from "react";
 import { Group } from "three";
 import { animateFrames } from "./Background/backgroundUtils";
-import { playAnimation } from "./Model/modelUtils";
+import { getPartyMemberModelComponent, playAnimation } from "./Model/modelUtils";
 import { fadeOutMap, turnToFacePlayer, turnWithDuration } from "./common";
 
 export type HandlerArgs = {
@@ -17,7 +17,6 @@ export type HandlerArgs = {
   currentStateRef: MutableRefObject<ScriptState>,
   scene: Scene,
   script: Script,
-  signal: AbortSignal,
   STACK: number[],
   TEMP_STACK: Record<number, number>
 }
@@ -25,7 +24,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
-  256: 500,
+  256: 8000,
   534: 1,
   84: 196
 };
@@ -719,7 +718,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
-
+    console.log(lastThree, position)
     return new Promise((resolve) => {
       currentStateRef.current.position.start([position.x, position.y, position.z], {
         immediate: false,
@@ -906,7 +905,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
   PGETINFO: ({ scene, STACK, TEMP_STACK }) => {
     const partyMemberId = STACK.pop() as number;
-    const mesh = getPartyMemberEntity(scene, partyMemberId);
+    const mesh = getPartyMemberModelComponent(scene, partyMemberId);
 
     if (!mesh) {
       console.warn('No mesh found for actor ID', partyMemberId);
@@ -960,7 +959,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const middle = vectorToFloatingPoint(STACK.splice(-3));
     const start = vectorToFloatingPoint(STACK.splice(-3));
 
-    const playerMesh = getPartyMemberEntity(scene, 0);
+    const playerMesh = getPartyMemberModelComponent(scene, 0);
     playerMesh.position.copy(start);
     await wait(1000);
     playerMesh.position.copy(middle);
@@ -1293,3 +1292,19 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
 //  console.log(Object.fromEntries(entries))
 //}, 5000);
 //
+
+export const executeOpcode = async (currentOpcode: Opcode, state: ScriptState, args: Partial<HandlerArgs>) => {
+  OPCODE_HANDLERS[currentOpcode]?.({
+    activeMethod: {} as ScriptMethod,
+    currentOpcode: {} as OpcodeObj,
+    opcodes: [],
+    scene: new Scene(),
+    script: {} as Script,
+    TEMP_STACK: {},
+    STACK: [],
+    ...args,
+    currentStateRef: {
+      current: state,
+    },
+  });
+}

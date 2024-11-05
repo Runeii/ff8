@@ -23,14 +23,14 @@ const Gateway = ({
     }
   }, [gateway]);
 
-  const player = useThree(({ scene }) => scene.getObjectByName('character') as Mesh | undefined);
-
   const [hasExited, setHasExited] = useState(false);
-  useFrame(() => {
+  useFrame(({ scene }) => {
+    const player = scene.getObjectByName("character");
+
     if (!player || !player.userData.hasMoved) {
       return;
     }
-
+  
     const isIntersecting = checkForIntersection(player, formattedGateway.sourceLine);
 
     if (!isIntersecting) {

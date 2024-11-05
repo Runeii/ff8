@@ -8,7 +8,7 @@ const useMeshIntersection = (mesh: Mesh, mesh2: Mesh, isActive = true) => {
   const [wasIntersecting, setWasIntersecting] = useState(false);
 
   useFrame(() => {
-    if (!mesh2 || !isActive) {
+    if (!mesh || !mesh2 || !isActive) {
       return false;
     }
 
