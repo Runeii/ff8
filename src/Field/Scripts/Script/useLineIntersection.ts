@@ -1,14 +1,14 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useState } from "react";
 import { checkForIntersection } from "../../Gateways/gatewayUtils";
-import { Mesh, Object3D, Vector3 } from "three";
+import { Object3D, Vector3 } from "three";
 
 const useLineIntersection = (points: Vector3[] | undefined, mesh: Object3D, isActive = true) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [wasIntersecting, setWasIntersecting] = useState(false);
 
   useFrame(() => {
-    if (!points || !isActive) {
+    if (!mesh || !points || !isActive) {
       return false;
     }
 

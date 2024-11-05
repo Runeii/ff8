@@ -473,6 +473,12 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   SETPC: ({ currentStateRef, STACK }) => {
     const partyMemberId = STACK.pop() as number;
     currentStateRef.current.partyMemberId = partyMemberId;
+
+    if (useGlobalStore.getState().party.length < 3) {
+      useGlobalStore.setState({
+        party: [...useGlobalStore.getState().party, partyMemberId]
+      });
+    }
   },
   ADDMEMBER: ({ STACK }) => {
     const characterID = STACK.pop() as number;
