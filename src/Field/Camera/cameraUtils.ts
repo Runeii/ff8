@@ -1,6 +1,6 @@
 import { Camera, Quaternion, Vector3 } from "three";
-import { WORLD_DIRECTIONS } from "../../utils";
 import { FieldData } from "../Field";
+import { WORLD_DIRECTIONS } from "../../utils";
 
 export const getRotationAngleAroundAxis = (initialRotation: Quaternion, currentRotation: Quaternion, axis: Vector3) => {
   // Ensure the axis is normalized
@@ -76,11 +76,9 @@ export const getCameraDirections = (camera: Camera) => {
   // Ensure the camera's matrixWorld is up to date
   camera.updateMatrixWorld();
 
-  // Create local axes vectors
-  // Transform the local axes to world space
-  const rightVector = WORLD_DIRECTIONS.RIGHT.clone().applyMatrix4(camera.matrixWorld).sub(camera.position).normalize();
-  const upVector = WORLD_DIRECTIONS.UP.clone().applyMatrix4(camera.matrixWorld).sub(camera.position).normalize();
-  const forwardVector = WORLD_DIRECTIONS.FORWARD.clone().applyMatrix4(camera.matrixWorld).sub(camera.position).normalize();
+  const forwardVector = (camera.userData.initialDirection?.clone() ?? new Vector3(0, 0, -1)).normalize(); // Z-axis in camera space
+  const rightVector = new Vector3().crossVectors(camera.up, forwardVector).normalize().negate(); // X-axis in camera space
+  const upVector = new Vector3().crossVectors(forwardVector, rightVector).normalize(); // Y-axis in camera space
 
   return {
     rightVector,
@@ -89,6 +87,31 @@ export const getCameraDirections = (camera: Camera) => {
   };
 };
 
+
+export const getReliableRotationAxes = (camera: Camera) => {
+  // Step 1: Get the camera's forward direction (world direction)
+  const forward = new Vector3();
+  camera.getWorldDirection(forward);
+
+  // Step 2: Define the up direction based on world space (or adjust if needed)
+  const worldUp = WORLD_DIRECTIONS.UP.clone();
+
+  // Step 3: Compute the camera's right vector in world space
+  const right = new Vector3().crossVectors(forward, camera.up).normalize();
+
+  // Step 4: Determine which axes to use
+  // If the forward vector is nearly aligned with the world up, choose alternative axis to avoid gimbal lock.
+  let yawAxis = camera.up.clone().normalize();
+  let pitchAxis = right;
+  const alignment = Math.abs(forward.dot(worldUp));
+  if (alignment > 0.99) {
+    // Near gimbal lock, swap to ensure stability
+    yawAxis = right;
+    pitchAxis = worldUp;
+  }
+
+  return { yawAxis, pitchAxis };
+}
 
 export const getBoundaries = (limits: FieldData['limits']) => ({
   left: limits.cameraRange.left + limits.screenRange.right / 2,

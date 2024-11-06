@@ -130,7 +130,6 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   return (
     <animated.group
       position={scriptState.position}
-      rotation={[0, 0, 0]}
       ref={containerRef}
       visible={scriptState.isVisible}
     >

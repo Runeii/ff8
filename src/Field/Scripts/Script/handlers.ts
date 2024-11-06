@@ -268,7 +268,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       currentStateRef.current.backgroundAnimationSpeed,
       false
     );
-    console.log('BGANIME', start, end)
   },
   RND: ({ TEMP_STACK }) => {
     TEMP_STACK[0] = Math.round(Math.random() * 255);
@@ -724,7 +723,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
-    console.log(lastThree, position)
     return new Promise((resolve) => {
       currentStateRef.current.position.start([position.x, position.y, position.z], {
         immediate: false,
