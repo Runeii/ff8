@@ -33,18 +33,17 @@ const Model = ({ models, script, state }: ModelProps) => {
   }, [actions]);
   
   let modelName = models[modelId];
-  if (modelName === 'd000') {
-    modelName = 'd001'
+  if (modelName.includes('p')) {
+    modelName = 'd010'
   }
   const ModelComponent = components['d001'] ?? components['fallback'];
-
 
   if (!ModelComponent) {
     return null;
   }
 
   const modelJsx = (
-    <group>
+    <group rotation={[Math.PI / 2,0,0]}>
       <ModelComponent
         name={partyMemberId === undefined ? `model--${script.groupId}` : `party--${partyMemberId}`}
         scale={0.06}
