@@ -3,6 +3,8 @@
 The aim is not to implement the full game, but a simulation of the world by parsing the real game files.
 
 
+
+Opcode progress:
 https://docs.google.com/spreadsheets/d/1A19nUPFqvhmwBfkm0oJiAowiaPbEgGUX4jCSOSelohk/edit?usp=sharing
 
 
