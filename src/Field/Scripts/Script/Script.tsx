@@ -9,9 +9,10 @@ import useGlobalStore from "../../../store";
 import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Group, Quaternion } from "three";
-import { WORLD_DIRECTIONS } from "../../../utils";
+import { getCameraDirections, getCharacterForwardDirection } from "../../Camera/cameraUtils";
+import { Line } from "@react-three/drei";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -84,9 +85,8 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     if (!containerRef.current || !camera.userData.initialPosition || script.type !== 'model') {
       return;
     }
-    const quaternion = camera.userData.initialQuaternion.clone();
 
-    const baseAngle = Math.PI / 2; // facing 'down';
+    const baseAngle = Math.PI; // facing 'down';
   
   //  if (scriptState.lookTarget) {
   //    const targetDirection = scriptState.lookTarget.clone().sub(containerRef.current.position).normalize();
@@ -109,10 +109,19 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   //    return;
   //  }
 
+    // TODO: 0 should point down
+    const {forwardVector} = getCharacterForwardDirection(camera)
+    //const targetVector = new Vector3().subVectors(camera.position, containerRef.current.position).normalize();
+    //const forwardDot = forwardVector.dot(targetVector);
+    //const backwardDot = forwardVector.clone().negate().dot(targetVector); 
+    //const angle = Math.acos(forwardDot);
     const angle = baseAngle - ((Math.PI * 2) / 255 * scriptState.angle.get());
-    quaternion.multiply(modelQuaternion.setFromAxisAngle(WORLD_DIRECTIONS.UP, angle));
-    containerRef.current.quaternion.copy(quaternion);
+    containerRef.current.quaternion.setFromAxisAngle(camera.up, angle * 1.5);
   });
+
+  const { forwardVector, upVector, rightVector} = getCameraDirections(useThree().camera);
+
+  const camera = useThree().camera;
 
   if (scriptState.isUnused) {
     return null;
@@ -122,17 +131,20 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     return null;
   }
 
-  if (script.groupId === 0) {
-   // console.log('Script group id is 8',  activeMethodId);
+  if (!camera.userData.initialLookAt) {
+    return;
   }
 
-  
   return (
     <animated.group
       position={scriptState.position}
       ref={containerRef}
       visible={scriptState.isVisible}
     >
+    <Line points={[[0, 0, 0], camera.up]} color="white" lineWidth={5} />
+    <Line points={[[0, 0, 0], upVector]} color="yellow" lineWidth={10} />
+    <Line points={[[0, 0, 0], forwardVector]} color="red" />
+    <Line points={[[0, 0, 0], rightVector]} color="blue" />
       {scriptState.isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
           radius={scriptState.talkRadius / 4096 / 1.5}

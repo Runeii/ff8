@@ -7,7 +7,9 @@ export const KEYS: Record<number, string> = {
 
 export const dummiedCommand = () => { }
 
-export const unusedCommand = () => { }
+export const unusedCommand = ({ currentStateRef }) => {
+  currentStateRef.current.triggeredUnused = true;
+}
 
 export const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

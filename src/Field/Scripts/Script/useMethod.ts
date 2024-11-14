@@ -59,6 +59,10 @@ const useMethod = (
     isPlayingBackgroundMusic: false,
 
     spuValue: 0,
+
+    countdownTime: 0,
+    countdownTimer: undefined,
+    winSize: {}
   });
   const [scriptState, setScriptState] = useState<ScriptState>(currentScriptStateRef.current);
   useFrame(() => {

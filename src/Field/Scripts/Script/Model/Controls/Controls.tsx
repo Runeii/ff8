@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimationAction, Group, Mesh, Object3D, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
 import { useFrame, useThree } from "@react-three/fiber";
-import { getCameraDirections } from "../../../../Camera/cameraUtils";
+import { getCameraDirections, getCharacterForwardDirection } from "../../../../Camera/cameraUtils";
 import { checkForIntersections, getPositionOnWalkmesh } from "../../../../../utils";
 import useGlobalStore from "../../../../../store";
 import { radToDeg } from "three/src/math/MathUtils.js";
@@ -75,17 +75,9 @@ const Controls = ({ actions, children, state }: ControlsProps) => {
 
 
     direction.copy(ZERO_VECTOR);
-    const { forwardVector, rightVector, upVector } = getCameraDirections(camera);
-    //console.log(forwardVector, rightVector, upVector)
+    const { forwardVector, rightVector } = getCameraDirections(camera);
 
-    let characterForwardsVector = upVector;
-
-    if (Math.abs(forwardVector.z) < 0.9) {
-      forwardVector.setZ(0)
-      rightVector.setZ(0)
-
-      characterForwardsVector = forwardVector;
-    }
+    const {forwardVector: characterForwardsVector} = getCharacterForwardDirection(camera);
 
     if (movementFlags.forward) {
       direction.add(characterForwardsVector);
@@ -136,7 +128,7 @@ const Controls = ({ actions, children, state }: ControlsProps) => {
     direction.z = 0;
     direction.normalize();
 
-    let angle = Math.atan2(direction.y, direction.x) - Math.atan2(forwardVector.y, forwardVector.x);
+    let angle = Math.atan2(direction.y, direction.x) - Math.atan2(characterForwardsVector.y, characterForwardsVector.x);
     angle = radToDeg(angle);
     if (angle < 0) {
       angle += 360;

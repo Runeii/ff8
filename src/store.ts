@@ -18,6 +18,8 @@ interface GlobalState {
   isTransitioningMap: boolean,
   isRunEnabled: boolean,
 
+  isMapJumpEnabled: boolean,
+
   availableMessages: string[][],
 
   currentMessages: Message[],
@@ -39,6 +41,8 @@ interface GlobalState {
 
   hasActiveTalkMethod: boolean,
   lockedTriangles: number[],
+
+  activeCameraId: number,
 }
 
 const useGlobalStore = create<GlobalState>()(() => ({
@@ -58,6 +62,8 @@ const useGlobalStore = create<GlobalState>()(() => ({
   currentParameterStates: {},
   currentParameterVisibility: {},
 
+  isMapJumpEnabled: true,
+
   currentMessages: [],
 
   controlledScrolls: [],
@@ -74,6 +80,8 @@ const useGlobalStore = create<GlobalState>()(() => ({
   hasActiveTalkMethod: false,
 
   lockedTriangles: [],
+
+  activeCameraId: 0,
 }))
 
 export default useGlobalStore

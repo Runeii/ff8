@@ -72,13 +72,14 @@ export const calculateAngleForParallax = (pan: number, depth: number): number =>
   //return Math.asin(sinAngle) * 0.92; /// 0.92 is a magic number to adjust the angle
 }
 
+const forwardVector = new Vector3();
 export const getCameraDirections = (camera: Camera) => {
   // Ensure the camera's matrixWorld is up to date
   camera.updateMatrixWorld();
 
-  const forwardVector = (camera.userData.initialDirection?.clone() ?? new Vector3(0, 0, -1)).normalize(); // Z-axis in camera space
+  camera.getWorldDirection(forwardVector);
   const rightVector = new Vector3().crossVectors(camera.up, forwardVector).normalize().negate(); // X-axis in camera space
-  const upVector = new Vector3().crossVectors(forwardVector, rightVector).normalize(); // Y-axis in camera space
+  const upVector = new Vector3().crossVectors(forwardVector, rightVector).normalize().negate(); // Y-axis in camera space
 
   return {
     rightVector,
@@ -86,6 +87,22 @@ export const getCameraDirections = (camera: Camera) => {
     forwardVector
   };
 };
+
+export const getCharacterForwardDirection = (camera: Camera) => {
+  const { forwardVector, upVector } = getCameraDirections(camera);
+
+  if (Math.abs(forwardVector.z) < 0.9) {
+    return {
+      forwardVector,
+      upVector
+    }
+  }
+
+  return {
+    upVector: forwardVector,
+    forwardVector: upVector
+  };
+}
 
 
 export const getReliableRotationAxes = (camera: Camera) => {

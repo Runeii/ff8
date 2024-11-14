@@ -52,7 +52,11 @@ const Field = ({ data }: FieldProps) => {
             models={data.models}
             scripts={data.scripts}
           />
-          <Camera backgroundPanRef={backgroundPanRef} data={data} setHasPlacedCamera={setHasPlacedCamera} />
+            <Camera
+              backgroundPanRef={backgroundPanRef}
+              data={data}
+              setHasPlacedCamera={setHasPlacedCamera}
+            />
         </>
       )}
       {hasPlacedCamera && (
@@ -120,6 +124,8 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
 
         hasActiveTalkMethod: false,
         lockedTriangles: [],
+
+        activeCameraId: 0,
       });
     }
     handleTransition();

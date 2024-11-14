@@ -6,6 +6,7 @@ import { MutableRefObject, useEffect, useMemo, useState } from "react";
 import { calculateAngleForParallax, calculateParallax, getBoundaries, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
 import { clamp, radToDeg } from "three/src/math/MathUtils.js";
 import { SCREEN_HEIGHT } from "../../constants/constants";
+import useGlobalStore from "../../store";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
@@ -18,10 +19,11 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
 
   const [initialCameraTargetPosition, setInitialCameraTargetPosition] = useState(new Vector3());
 
+  const activeCameraId = useGlobalStore((state) => state.activeCameraId);
   const camera = useThree(({ camera }) => camera as PerspectiveCamera);
 
   useEffect(() => {
-    const {camera_axis,camera_position,camera_zoom} = cameras[0];
+    const {camera_axis,camera_position,camera_zoom} = cameras[activeCameraId];
     camera.far = camera_zoom;
     camera.near = 0.00001;
     const camAxisX = vectorToFloatingPoint(camera_axis[0])
@@ -62,7 +64,7 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
 
     setInitialCameraTargetPosition(lookAtTarget.clone());
     setHasPlacedCamera(true);
-  }, [camera, cameras, data, setHasPlacedCamera]);
+  }, [activeCameraId, camera, cameras, data, setHasPlacedCamera]);
 
   // Precompute boundaries
   const boundaries = useMemo(
@@ -72,6 +74,9 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
 
   // This is the main logic for the camera movement
   useFrame(({ scene }) => {
+    if (activeCameraId !== 0) {
+      return
+    }
     const player = scene.getObjectByName("character");
   
     if (!initialCameraTargetPosition || !player) {

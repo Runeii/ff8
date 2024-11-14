@@ -69,4 +69,16 @@ export type ScriptState = {
   isPlayingBackgroundMusic: boolean;
 
   spuValue: number;
+
+  countdownTime: number;
+  countdownTimer: number | undefined;
+
+  winSize: {
+    [key: number]: {
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+    }
+  }
 }

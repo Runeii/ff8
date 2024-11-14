@@ -1,10 +1,10 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { Mesh } from "three";
 import { Line } from "@react-three/drei";
 import { checkForIntersection } from "../gatewayUtils";
 import { useMemo, useState } from "react";
 import { vectorToFloatingPoint } from "../../../utils";
 import { FieldData } from "../../Field";
+import useGlobalStore from "../../../store";
 
 const Gateway = ({
   color,
@@ -24,10 +24,11 @@ const Gateway = ({
   }, [gateway]);
 
   const [hasExited, setHasExited] = useState(false);
+  const isMapJumpEnabled = useGlobalStore((state) => state.isMapJumpEnabled);
   useFrame(({ scene }) => {
     const player = scene.getObjectByName("character");
 
-    if (!player || !player.userData.hasMoved) {
+    if (!player || !player.userData.hasMoved || !isMapJumpEnabled) {
       return;
     }
   

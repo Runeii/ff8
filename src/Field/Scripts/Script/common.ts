@@ -1,6 +1,7 @@
 import useGlobalStore from "../../../store";
 import { HandlerArgs } from "./handlers";
 import { getPartyMemberModelComponent } from "./Model/modelUtils";
+import { openMessage } from "./utils";
 
 export const turnWithDuration = async ({ currentStateRef, STACK }: HandlerArgs) => {
   const frames = STACK.pop() as number;
@@ -18,18 +19,21 @@ export const turnToFacePlayer = async ({ currentStateRef, scene, opcodes, STACK 
   const actorId = STACK.pop() as number;
   const frames = STACK.pop() as number;
   const targetMesh = getPartyMemberModelComponent(scene, actorId);
-  console.trace(actorId, frames, targetMesh, opcodes[0].param)
   currentStateRef.current.lookTarget = targetMesh.position.clone();
 }
 
 
-export const fadeOutMap = async ({ currentStateRef, STACK }: HandlerArgs) => {
+export const fadeOutMap = async () => {
   const { fadeSpring, isMapFadeEnabled } = useGlobalStore.getState()
-  console.log(fadeSpring, isMapFadeEnabled)
   if (!isMapFadeEnabled) {
-    console.log('cancel fade')
     return;
   }
-  console.log(fadeSpring, isMapFadeEnabled)
   fadeSpring.opacity.start(0);
+}
+
+export const displayMessage = async (id: number, x: number, y: number, channel: number) => {
+  const { availableMessages } = useGlobalStore.getState();
+
+  const uniqueId = `${id}--${Date.now()}`;
+  await openMessage(uniqueId, availableMessages[id], x, y);
 }

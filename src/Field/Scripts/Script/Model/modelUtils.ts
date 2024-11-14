@@ -1,4 +1,4 @@
-import { AnimationAction, LoopOnce, LoopRepeat, Mesh, Scene } from "three";
+import { AnimationAction, Box3, Group, LoopOnce, LoopRepeat, Mesh, Object3D, Quaternion, Scene, Vector3 } from "three";
 import { Script, ScriptState } from "../../types";
 
 export const getPartyMemberModelComponent = (scene: Scene, partyMemberId: number) => {
@@ -71,3 +71,4 @@ export const playAnimation = (
 
   mixer.addEventListener('finished', onFinished);
 }
+
