@@ -10,8 +10,11 @@ import useGlobalStore from './store'
 import {getInitialField} from './utils'
 import Ui from './UI/UI'
 import WorldMap from './WorldMap/WorldMap'
+import { attachKeyDownListeners } from './Field/Scripts/Script/common'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
+
+attachKeyDownListeners();
 
 useGlobalStore.setState({
   fieldId: getInitialField()

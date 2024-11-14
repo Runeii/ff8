@@ -23,6 +23,8 @@ type ScriptProps = {
 // Not implemented
 // * Pushable
 const Script = ({ doors, models, script }: ScriptProps) => {
+  const entityRef = useRef<Group>(null);
+
   const [activeMethodId, setActiveMethodId] = useState<string>();
   const [remoteExecutionKey, setRemoteExecutionKey] = useState<string>();
   useEffect(() => {
@@ -39,7 +41,7 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   }, [activeMethodId, remoteExecutionKey]);
   
 
-  const scriptState = useMethod(script, activeMethodId, setActiveMethodId);
+  const scriptState = useMethod(script, activeMethodId, setActiveMethodId, entityRef);
 
   useEffect(() => {
     if (scriptState.isUnused) {
@@ -77,12 +79,10 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   
   const activeParty = useGlobalStore(storeState => storeState.party);
 
-  const containerRef = useRef<Group>(null);
-
   const [modelQuaternion] = useState(new Quaternion());
   //const [upAxis] = useState(new Vector3(0, 1, 0)); // TODO: Can this be better? Sometimes meshes are on an angle
   useFrame(({camera}) => {
-    if (!containerRef.current || !camera.userData.initialPosition || script.type !== 'model') {
+    if (!entityRef.current || !camera.userData.initialPosition || script.type !== 'model') {
       return;
     }
 
@@ -116,7 +116,7 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     //const backwardDot = forwardVector.clone().negate().dot(targetVector); 
     //const angle = Math.acos(forwardDot);
     const angle = baseAngle - ((Math.PI * 2) / 255 * scriptState.angle.get());
-    containerRef.current.quaternion.setFromAxisAngle(camera.up, angle * 1.5);
+    entityRef.current.quaternion.setFromAxisAngle(camera.up, angle * 1.5);
   });
 
   const { forwardVector, upVector, rightVector} = getCameraDirections(useThree().camera);
@@ -138,7 +138,7 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   return (
     <animated.group
       position={scriptState.position}
-      ref={containerRef}
+      ref={entityRef}
       visible={scriptState.isVisible}
     >
     <Line points={[[0, 0, 0], camera.up]} color="white" lineWidth={5} />

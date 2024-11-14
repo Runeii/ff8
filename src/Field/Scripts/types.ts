@@ -26,18 +26,14 @@ export type ScriptState = {
   hasRemovedControl: boolean;
   isHalted: boolean;
 
-  animation: {
-    id: number;
-    isHoldingFinalFrame: boolean;
-    isLooping: boolean;
-  },
-  idleAnimationId: number;
-  ladderAnimationId: number;
+  animationProgress: SpringValue<number>;
+  animationSpeed: number;
+  currentAnimationId: number | undefined;
+  idleAnimationId: number | undefined;
+  idleAnimationRange: [number, number];
 
-  backgroundAnimationSpeed: number,
-  backgroundStartFrame: number,
-  backgroundEndFrame: number,
-  isBackgroundLooping: boolean
+  backgroundAnimationSpring: SpringValue<number>;
+  backgroundAnimationSpeed: number;
   isBackgroundVisible: boolean;
 
   isLineOn: boolean;
@@ -56,7 +52,7 @@ export type ScriptState = {
   isTalkable: boolean;
 
   angle: SpringValue<number>;
-  lookTarget?: Vector3;
+  headAngle: SpringValue<number>;
 
   position: SpringValue<number[]>;
   movementDuration: number;

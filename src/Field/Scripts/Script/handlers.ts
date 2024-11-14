@@ -6,15 +6,14 @@ import { dummiedCommand, openMessage, remoteExecute, unusedCommand, wait } from 
 import MAP_NAMES from "../../../constants/maps";
 import { MutableRefObject } from "react";
 import { Group } from "three";
-import { animateFrames } from "./Background/backgroundUtils";
-import { getPartyMemberModelComponent, playAnimation } from "./Model/modelUtils";
-import { displayMessage, fadeOutMap, turnToFacePlayer, turnWithDuration } from "./common";
+import { getPartyMemberModelComponent } from "./Model/modelUtils";
+import { displayMessage, fadeOutMap, playBaseAnimation, playAnimation, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground } from "./common";
 
 export type HandlerArgs = {
   activeMethod: ScriptMethod,
   currentOpcode: OpcodeObj,
-  opcodes: OpcodeObj[],
   currentStateRef: MutableRefObject<ScriptState>,
+  opcodes: OpcodeObj[],
   scene: Scene,
   script: Script,
   STACK: number[],
@@ -33,7 +32,7 @@ export const MESSAGE_VARS: Record<number, string> = {};
 
 let testState = {}
 
-export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = {
+export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   RET: () => {
     return 999999
   },
@@ -200,27 +199,17 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   SETPLACE: ({ STACK }) => {
     useGlobalStore.setState({ currentLocationPlaceName: STACK.pop() as number });
   },
-  // TODO: This needs to handle loops better
-  KEYON: async ({ STACK, TEMP_STACK }) => {
-    const key = STACK.pop() as number;
-
-    const keydown = (event: KeyboardEvent) => {
-      if (event.keyCode === key) {
-        TEMP_STACK[0] = 1;
-      }
-    }
-
-    const keyup = () => {
-      TEMP_STACK[0] = 0;
-    }
-
-    window.addEventListener('keydown', keydown, { once: true });
-    window.addEventListener('keyup', keyup, { once: true });
-    window.setTimeout(() => {
-      window.removeEventListener('keydown', keydown);
-      window.removeEventListener('keyup', keyup);
-    }, 1000);
-    TEMP_STACK[7] = 200;
+  KEYON: async ({ STACK }) => {
+    STACK.pop() as number; // keyflag
+    // I don't think we currently ever disable keys
+  },
+  KEYSCAN: ({ STACK, TEMP_STACK }) => {
+    const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
+    TEMP_STACK[0] = isDown ? 1 : 0;
+  },
+  KEYSCAN2: ({ STACK, TEMP_STACK }) => {
+    const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
+    TEMP_STACK[0] = isDown ? 1 : 0;
   },
   BGDRAW: ({ currentStateRef, STACK }) => {
     // I don't think this is actually used
@@ -234,6 +223,11 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const speed = STACK.pop() as number;
     currentStateRef.current.backgroundAnimationSpeed = speed;
   },
+  BGANIMESYNC: async ({ currentStateRef }) => {
+    while (currentStateRef.current.backgroundAnimationSpring.isAnimating) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+  },
   BGCLEAR: ({ STACK }) => {
     // Maybe?
     const unknown = STACK.pop() as number;
@@ -245,38 +239,47 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       }
     })
   },
-  RBGANIME: ({ STACK }) => {
-    STACK.pop() as number;
-    STACK.pop() as number
-  },
-  RBGANIMELOOP: async ({ currentStateRef, script, STACK }) => {
+  RBGANIME: ({ currentStateRef, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
     currentStateRef.current.isBackgroundVisible = true;
-    animateFrames(
-      script.backgroundParamId,
+    animateBackground(
+      currentStateRef.current.backgroundAnimationSpring,
+      currentStateRef.current.backgroundAnimationSpeed,
       start,
       end,
+      false,
+    )
+  },
+  RBGANIMELOOP: ({ currentStateRef, STACK }) => {
+    const end = STACK.pop() as number;
+    const start = STACK.pop() as number
+
+    currentStateRef.current.isBackgroundVisible = true;
+    animateBackground(
+      currentStateRef.current.backgroundAnimationSpring,
       currentStateRef.current.backgroundAnimationSpeed,
-      true
-    );
+      start,
+      end,
+      true,
+    )
   },
   BGSHADE: ({ STACK }) => {
     STACK.splice(-7); // const lastSeven = STACK.splice(-7);
   },
-  BGANIME: async ({ currentStateRef, STACK, script }) => {
+  BGANIME: async ({ currentStateRef, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
     currentStateRef.current.isBackgroundVisible = true;
-    await animateFrames(
-      script.backgroundParamId,
+    await animateBackground(
+      currentStateRef.current.backgroundAnimationSpring,
+      currentStateRef.current.backgroundAnimationSpeed,
       start,
       end,
-      currentStateRef.current.backgroundAnimationSpeed,
-      false
-    );
+      false,
+    )
   },
   RND: ({ TEMP_STACK }) => {
     TEMP_STACK[0] = Math.round(Math.random() * 255);
@@ -526,154 +529,164 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const modelId = currentOpcode.param;
     currentStateRef.current.modelId = modelId;
   },
-  BASEANIME: ({ currentStateRef, currentOpcode, scene, script, STACK }) => {
+  BASEANIME: ({ currentStateRef, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
     currentStateRef.current.idleAnimationId = animationId;
-
-    playAnimation(
-      animationId,
-      currentStateRef.current,
-      scene,
-      script,
-      false,
-      true,
-      [firstFrame, lastFrame]
-    )
+    currentStateRef.current.idleAnimationRange = [firstFrame, lastFrame];
+    playBaseAnimation(
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
+      currentStateRef.current.idleAnimationRange,
+    );
   },
-  ANIME: async ({ currentStateRef, currentOpcode, scene, script }) => {
+  ANIME: async ({ currentStateRef, currentOpcode }) => {
     const animationId = currentOpcode.param;
+    currentStateRef.current.currentAnimationId = animationId;
 
     await playAnimation(
-      animationId,
-      currentStateRef.current,
-      scene,
-      script,
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
       false,
-      false
     )
+
+    currentStateRef.current.currentAnimationId = undefined;
+    playBaseAnimation(currentStateRef.current.animationProgress, currentStateRef.current.animationSpeed);
   },
-  ANIMEKEEP: async ({ currentStateRef, currentOpcode, scene, script }) => {
+  ANIMEKEEP: async ({ currentStateRef, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
+    currentStateRef.current.currentAnimationId = animationId;
     await playAnimation(
-      animationId,
-      currentStateRef.current,
-      scene,
-      script,
-      true,
-      false
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
+      false,
     )
   },
-  CANIME: async ({ currentStateRef, currentOpcode, scene, script, STACK }) => {
+  CANIME: async ({ currentStateRef, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
+    currentStateRef.current.currentAnimationId = animationId;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
     await playAnimation(
-      animationId,
-      currentStateRef.current,
-      scene,
-      script,
-      false,
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
       false,
       [firstFrame, lastFrame]
     )
+
+    currentStateRef.current.currentAnimationId = undefined;
+    playBaseAnimation(currentStateRef.current.animationProgress, currentStateRef.current.animationSpeed);
   },
-  CANIMEKEEP: async ({ currentStateRef, currentOpcode, scene, script, STACK }) => {
+  CANIMEKEEP: async ({ currentStateRef, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
+    currentStateRef.current.currentAnimationId = animationId;
     await playAnimation(
-      animationId,
-      currentStateRef.current,
-      scene,
-      script,
-      true,
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
       false,
       [firstFrame, lastFrame]
     )
   },
-  RANIME: ({ currentStateRef, currentOpcode, scene, script }) => {
+  RANIME: ({ currentStateRef, currentOpcode }) => {
     const animationId = currentOpcode.param;
+    currentStateRef.current.currentAnimationId = animationId;
 
     playAnimation(
-      animationId,
-      currentStateRef.current,
-      scene,
-      script,
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
       false,
-      false
     )
+
+    currentStateRef.current.currentAnimationId = undefined;
+    playBaseAnimation(currentStateRef.current.animationProgress, currentStateRef.current.animationSpeed);
   },
-  RANIMEKEEP: ({ currentStateRef, currentOpcode, scene, script }) => {
+  RANIMEKEEP: ({ currentStateRef, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
+    currentStateRef.current.currentAnimationId = animationId;
     playAnimation(
-      animationId,
-      currentStateRef.current,
-      scene,
-      script,
-      true,
-      false
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
+      false,
     )
   },
-  RCANIME: ({ currentStateRef, currentOpcode, scene, script, STACK }) => {
+  RCANIME: ({ currentStateRef, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
+    currentStateRef.current.currentAnimationId = animationId;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
     playAnimation(
-      animationId,
-      currentStateRef.current,
-      scene,
-      script,
-      false,
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
       false,
       [firstFrame, lastFrame]
     )
+
+    currentStateRef.current.currentAnimationId = undefined;
+    playBaseAnimation(currentStateRef.current.animationProgress, currentStateRef.current.animationSpeed);
   },
-  RCANIMEKEEP: ({ currentStateRef, currentOpcode, scene, script, STACK }) => {
+  RCANIMEKEEP: ({ currentStateRef, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
+    currentStateRef.current.currentAnimationId = animationId;
     playAnimation(
-      animationId,
-      currentStateRef.current,
-      scene,
-      script,
-      true,
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
       false,
       [firstFrame, lastFrame]
     )
   },
-  RANIMELOOP: ({ currentStateRef, currentOpcode, scene, script }) => {
+  RANIMELOOP: ({ currentStateRef, currentOpcode, }) => {
     const animationId = currentOpcode.param;
 
+    currentStateRef.current.currentAnimationId = animationId;
     playAnimation(
-      animationId,
-      currentStateRef.current,
-      scene,
-      script,
-      false,
-      true
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
+      true,
     )
   },
   RCANIMELOOP: ({ currentStateRef, currentOpcode, STACK }) => {
+    const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
-    const animationId = currentOpcode.param;
 
-    currentStateRef.current.animation = {
-      ...currentStateRef.current.animation,
-      id: animationId,
-      isLooping: true,
+    currentStateRef.current.currentAnimationId = animationId;
+    playAnimation(
+      currentStateRef.current.animationProgress,
+      currentStateRef.current.animationSpeed,
+      true,
+      [firstFrame, lastFrame]
+    )
+  },
+  LADDERANIME: ({ currentOpcode, currentStateRef, STACK }) => {
+    currentOpcode.param // unknown
+    currentStateRef.current.currentAnimationId = STACK.pop() as number;
+    STACK.pop() as number;
+  },
+  ANIMESPEED: ({ currentStateRef, STACK }) => {
+    currentStateRef.current.animationSpeed = STACK.pop() as number;
+  },
+  ANIMESYNC: async ({ currentStateRef }) => {
+    while (currentStateRef.current.animationProgress.isAnimating) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
+  ANIMESTOP: ({ currentStateRef }) => {
+    currentStateRef.current.animationProgress.stop();
+  },
+  POPANIME: () => { },
+  PUSHANIME: () => { },
   UNUSE: ({ currentOpcode, currentStateRef }) => {
     currentOpcode.param // always 0
     currentStateRef.current.isUnused = true;
@@ -743,10 +756,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     TEMP_STACK[0] = 0; // X
     TEMP_STACK[1] = 0; // Y
   },
-  DIRA: ({ STACK }) => {
-    // const targetActorId = 
-    STACK.pop() as number;
-  },
   MSPEED: ({ currentStateRef, STACK }) => {
     const movementSpeed = STACK.pop() as number;
     currentStateRef.current.movementSpeed = movementSpeed;
@@ -780,7 +789,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
-  MOVEA: ({ currentStateRef, STACK }) => {
+  MOVEA: ({ STACK }) => {
     const distanceToStop = STACK.pop() as number;
     const actorId = STACK.pop() as number;
   },
@@ -815,72 +824,156 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
   FMOVEP: async () => { },
   JUMP3: ({ currentOpcode, STACK }) => {
-    const walkmeshTriangleId = currentOpcode.param;
-    const x = STACK.pop() as number;
-    const y = STACK.pop() as number;
-    const z = STACK.pop() as number;
-    const speed = STACK.pop() as number;
+    currentOpcode.param; //     currentOpcode.param; // 
+    STACK.pop() as number; //     STACK.pop() as number; // 
+    STACK.pop() as number; //     STACK.pop() as number; // 
+    STACK.pop() as number; //     STACK.pop() as number; // 
+    STACK.pop() as number; //     STACK.pop() as number; // 
   },
   JUMP: ({ currentOpcode, STACK }) => {
-    const walkmeshTriangleId = currentOpcode.param;
-    const x = STACK.pop() as number;
-    const y = STACK.pop() as number;
-    const speed = STACK.pop() as number;
+    currentOpcode.param; // const walkmeshTriangleId = 
+    STACK.pop() as number; // const x = 
+    STACK.pop() as number; // const y = 
+    STACK.pop() as number; // const speed = 
   },
   PJUMPA: ({ STACK }) => {
-    const distance = STACK.pop() as number;
-    const partyMemberId = STACK.pop() as number;
+    STACK.pop() as number; // const distance = 
+    STACK.pop() as number; // const partyMemberId = 
+  },
+
+  // Turn to angle
+  CTURNL: ({ currentStateRef, STACK }) => {
+    const duration = STACK.pop() as number;
+    const angle = STACK.pop() as number;
+    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+  },
+  CTURNR: ({ currentStateRef, STACK }) => {
+    const duration = STACK.pop() as number;
+    const angle = STACK.pop() as number;
+    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
   },
   DIR: ({ currentStateRef, STACK }) => {
     const angle = STACK.pop() as number;
-    currentStateRef.current.angle.set(angle);
+    turnToFaceAngle(angle, 0, currentStateRef.current.angle)
   },
-  CTURNL: turnWithDuration,
-  CTURNR: turnWithDuration,
-  UNKNOWN6: turnWithDuration,
-  UNKNOWN7: turnWithDuration,
-  UNKNOWN8: turnWithDuration,
-  UNKNOWN9: turnWithDuration,
-
-  // Entity
-  CTURN: turnWithDuration,
-
-
-
-  LTURNL: turnWithDuration,
-  LTURNR: turnWithDuration,
-  LTURN: turnWithDuration,
-
-  // TODO: fix
-  PCTURN: (args) => {
-    const { STACK } = args
-    STACK.push(0);
-    turnToFacePlayer(args);
+  UNKNOWN6: ({ currentStateRef, STACK }) => {
+    const duration = STACK.pop() as number;
+    const angle = STACK.pop() as number;
+    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+  },
+  UNKNOWN7: ({ currentStateRef, STACK }) => {
+    const duration = STACK.pop() as number;
+    const angle = STACK.pop() as number;
+    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+  },
+  UNKNOWN8: ({ currentStateRef, STACK }) => {
+    const duration = STACK.pop() as number;
+    const angle = STACK.pop() as number;
+    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+  },
+  UNKNOWN9: ({ currentStateRef, STACK }) => {
+    const duration = STACK.pop() as number;
+    const angle = STACK.pop() as number;
+    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+  },
+  LTURNL: ({ currentStateRef, STACK }) => {
+    const duration = STACK.pop() as number;
+    const angle = STACK.pop() as number;
+    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+  },
+  LTURNR: ({ currentStateRef, STACK }) => {
+    const duration = STACK.pop() as number;
+    const angle = STACK.pop() as number;
+    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+  },
+  LTURN: ({ currentStateRef, STACK }) => {
+    const duration = STACK.pop() as number;
+    const angle = STACK.pop() as number;
+    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+  },
+  PLTURN: ({ currentStateRef, STACK }) => {
+    const duration = STACK.pop() as number;
+    const angle = STACK.pop() as number;
+    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
   },
 
-  PDIRA: ({ currentStateRef, scene, STACK }) => {
-    const actorId = STACK.pop() as number;
-    turnToFacePlayer({
-      actorId,
-      currentStateRef,
-      scene,
-      STACK
-    });
+  // Turn to face entity
+  CTURN: ({ currentStateRef, scene, script, STACK }) => {
+    const duration = STACK.pop() as number;
+    const targetId = STACK.pop() as number;
+    turnToFaceEntity(script.groupId, `model--${targetId}`, duration, scene, currentStateRef.current.angle)
   },
-  DIRP: turnWithDuration,
+  DIRA: ({ currentStateRef, scene, script, STACK }) => {
+    const targetActorId = STACK.pop() as number;
+    turnToFaceEntity(script.groupId, `model--${targetActorId}`, 0, scene, currentStateRef.current.angle)
+  },
+
+  // Turn to face party member
+  // TODO: documentation is incorrect compared to usage.
+  DIRP: ({ currentStateRef, scene, script, STACK }) => {
+    const partyMemberId = STACK.pop() as number;
+    STACK.pop() as number; // unknown
+    STACK.pop() as number; // unknown
+    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, 0, scene, currentStateRef.current.angle)
+  },
+  PCTURN: ({ currentStateRef, scene, script, STACK }) => {
+    const duration = STACK.pop() as number;
+    STACK.pop() as number; // unknown
+    turnToFaceEntity(script.groupId, `party--0`, duration, scene, currentStateRef.current.angle)
+  },
+  PDIRA: ({ currentStateRef, scene, script, STACK }) => {
+    const partyMemberId = STACK.pop() as number;
+    console.log(script, partyMemberId)
+    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, 0, scene, currentStateRef.current.angle)
+  },
+
 
   // These are technically just meant to be head, but whatever
-  FACEDIR: turnToFacePlayer,
-  FACEDIRA: turnToFacePlayer,
-  FACEDIRP: turnToFacePlayer,
-  RFACEDIR: turnToFacePlayer,
-  RFACEDIRA: turnToFacePlayer,
-  RFACEDIRP: turnToFacePlayer,
-  FACEDIRI: ({ STACK }) => {
-    STACK.slice(-4);
+  FACEDIR: ({ STACK }) => {
+    STACK.splice(-4);
   },
+  FACEDIRA: ({ currentStateRef, scene, script, STACK }) => {
+    const frames = STACK.pop() as number;
+    const targetActorId = STACK.pop() as number;
+    turnToFaceEntity(script.groupId, `model--${targetActorId}`, frames, scene, currentStateRef.current.headAngle)
+  },
+  FACEDIRP: ({ currentStateRef, scene, script, STACK }) => {
+    const frames = STACK.pop() as number;
+    const partyMemberId = STACK.pop() as number;
+    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, frames, scene, currentStateRef.current.headAngle)
+  },
+  FACEDIROFF: ({ currentStateRef, STACK }) => {
+    const frames = STACK.pop() as number;
+    turnToFaceAngle(0, frames, currentStateRef.current.headAngle)
+  },
+  FACEDIRSYNC: async ({ currentStateRef }) => {
+    while (currentStateRef.current.headAngle.isAnimating) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+  },
+  RFACEDIR: ({ STACK }) => {
+    STACK.splice(-4);
+  },
+  RFACEDIRA: ({ currentStateRef, scene, script, STACK }) => {
+    const frames = STACK.pop() as number;
+    const targetActorId = STACK.pop() as number;
+    turnToFaceEntity(script.groupId, `model--${targetActorId}`, frames, scene, currentStateRef.current.headAngle)
+  },
+  RFACEDIRP: ({ currentStateRef, scene, script, STACK }) => {
+    const frames = STACK.pop() as number;
+    const partyMemberId = STACK.pop() as number;
+    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, frames, scene, currentStateRef.current.headAngle)
+  },
+  RFACEDIROFF: ({ currentStateRef, STACK }) => {
+    const frames = STACK.pop() as number;
+    turnToFaceAngle(0, frames, currentStateRef.current.headAngle)
+  },
+  FACEDIRI: ({ STACK }) => {
+    STACK.splice(-4);
+  },
+  // This sets the maximum angle allowed, likely when a model's head loops to follow another entity
   FACEDIRLIMIT: ({ STACK }) => {
-    STACK.slice(-3);
+    STACK.splice(-3);
   },
 
   ADDMAGIC: ({ STACK }) => {
@@ -984,10 +1077,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     TEMP_STACK[0] = isPlaying;
   },
   MUSICVOLFADE: ({ STACK }) => {
-    // const unknown = 
-    const startVolume = STACK.pop() as number; //maybe?
-    const frames = STACK.pop() as number; //maybe?
-    const endVolume = STACK.pop() as number;
+    STACK.pop() as number; // const startVolume =  //maybe?
+    STACK.pop() as number; // const frames =  //maybe?
+    STACK.pop() as number; // const endVolume = 
     STACK.pop() as number; // ???
   },
 
@@ -1085,14 +1177,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       await wait(100);
     }
   },
-  // Unclear which of these three does what
-  LADDERANIME: ({ currentOpcode, currentStateRef, STACK }) => {
-    currentOpcode.param // unknown
-    currentStateRef.current.ladderAnimationId = STACK.pop() as number;
-    STACK.pop() as number;
-  },
-  LADDERDOWN2: async (args) => {
-    const { currentOpcode, scene, STACK } = args;
+  LADDERDOWN2: async ({ currentOpcode, scene, STACK }) => {
     // Speed? Offset?
     currentOpcode.param;
 
@@ -1108,6 +1193,14 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playerMesh.position.copy(end);
   },
   LADDERUP2: args => OPCODE_HANDLERS?.LADDERDOWN2?.(args),
+  LADDERUP: ({ currentOpcode, STACK }) => {
+    currentOpcode.param;
+    STACK.splice(-4);
+  },
+  LADDERDOWN: ({ currentOpcode, STACK }) => {
+    currentOpcode.param;
+    STACK.splice(-4);
+  },
   MAPJUMPON: () => {
     useGlobalStore.setState({ isMapJumpEnabled: true });
   },
@@ -1134,12 +1227,14 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     TEMP_STACK[0] = currentStateRef.current.countdownTime
   },
   DISPTIMER: ({ STACK }) => {
-    const y = STACK.pop() as number;
-    const x = STACK.pop() as number;
+    // const y = 
+    STACK.pop() as number;
+    // const x = 
+    STACK.pop() as number;
   },
   SETCAMERA: ({ STACK }) => {
     useGlobalStore.setState({
-      //    activeCameraId: STACK.pop() as number
+      activeCameraId: STACK.pop() as number
     })
   },
 
@@ -1167,6 +1262,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number;
     STACK.push(1);
   },
+
 
   // SOUND
 
@@ -1197,13 +1293,20 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number;
   },
   EFFECTPLAY: ({ STACK }) => {
-    STACK.splice(-4);
+    STACK.pop() as number; //const volume = 
+    STACK.pop() as number; //const pan = 
+    STACK.pop() as number; //const channel = 
+    STACK.pop() as number; //const sfxId = 
   },
-  EFFECTPLAY2: ({ STACK }) => {
-    STACK.splice(-3);
+  EFFECTPLAY2: ({ currentOpcode, STACK }) => {
+    currentOpcode.param; // const sfxId = 
+    STACK.pop() as number; // const channel = 
+    STACK.pop() as number; // const volume = 
+    STACK.pop() as number; // const pan = 
   },
   EFFECTLOAD: ({ STACK }) => {
-    STACK.pop() as number;
+    // const loopingBackgroundEffectId = 
+    STACK.pop() as number; // note: check docs, apparently not normal
   },
   SAVEENABLE: ({ STACK }) => {
     // const isEnabled =
@@ -1260,9 +1363,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   PREMAPJUMP2: ({ STACK }) => {
     STACK.pop() as number;
   },
-  TUTO: ({ STACK }) => {
-    STACK.pop() as number;
-  },
   // Sets message box style for channel (we don't use channels atm)
   MESMODE: ({ STACK }) => {
     STACK.splice(-3);
@@ -1296,6 +1396,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number;
   },
   GETCARD: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  WHOAMI: ({ STACK }) => {
     STACK.pop() as number;
   },
   WHERECARD: ({ STACK }) => {
@@ -1442,8 +1545,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number;
     STACK.pop() as number;
   },
-  POPANIME: () => { },
-  PUSHANIME: () => { },
   // Used once in the balamb basement. I think it might clear a ladder key?
   KEY: ({ STACK }) => {
     STACK.pop() as number;
@@ -1479,7 +1580,20 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   LOFFSETS: ({ STACK }) => {
     STACK.splice(-7);
   },
+  MENUTUTO: () => { },
+  TUTO: ({ STACK }) => {
+    STACK.pop() as number;
+  },
   OFFSETSYNC: () => { },
+  UNKNOWN2: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  UNKNOWN3: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  UNKNOWN4: ({ STACK }) => {
+    STACK.pop() as number;
+  },
 
 
   UNKNOWN12: dummiedCommand,
@@ -1544,9 +1658,12 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
 }
 
+// Note: this is compiled using a custom modified version of Deling. We construct a file that records how many args and
+// stack changes each opcode does across all fields. Using this we can perform a run time check against implementation.
 import opcodeOutput from '../../../../scripts/opcodeOutput';
 
 window.setTimeout(() => {
+  return;
   const handlers = Object.entries(OPCODE_HANDLERS)
   const entries = handlers.map(([key, value]) => {
     let isParamUsed = false;
@@ -1554,6 +1671,7 @@ window.setTimeout(() => {
     const dummyState = {
       ...testState,
       currentOpcode: {
+        // @ts-expect-error Test
         ...testState.currentOpcode,
         get param() {
           isParamUsed = true;
@@ -1562,6 +1680,7 @@ window.setTimeout(() => {
       },
       STACK: new Array(100).fill(0),
     }
+    // @ts-expect-error Test
     value(dummyState);
 
 
@@ -1572,11 +1691,12 @@ window.setTimeout(() => {
       }
     };
 
+    // @ts-expect-error Test
     if (dummyState.currentStateRef.current.triggeredUnused) {
       return [];
     }
     if (!expected) {
-      return [key, 'not found'];
+      return [];
     }
 
     if (expected.arg > 0 && !isParamUsed) {
@@ -1597,14 +1717,13 @@ window.setTimeout(() => {
 
   entries.filter(entry => entry.length).forEach(([key, value]) => console.log(key, value));
 
-  Object.entries(opcodeOutput).forEach(([key, value]) => {
+  Object.entries(opcodeOutput).filter(([key]) => key !== '' && key && !['goto', 'ret', 'label'].includes(key)).forEach(([key, value]) => {
     if (!handlers.find(([entryKey]) => entryKey === key.toUpperCase())) {
       console.log(key, 'not implemented. Uses arg?', value.arg, '. Changes stack:', value.stack);
     }
   })
 
 }, 2000);
-
 
 export const executeOpcode = async (currentOpcode: Opcode, state: ScriptState, args: Partial<HandlerArgs>) => {
   OPCODE_HANDLERS[currentOpcode]?.({

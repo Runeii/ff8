@@ -1,6 +1,10 @@
 import { AnimationAction, Box3, Group, LoopOnce, LoopRepeat, Mesh, Object3D, Quaternion, Scene, Vector3 } from "three";
 import { Script, ScriptState } from "../../types";
 
+export const getScriptEntity = (scene: Scene, scriptGroupId: number) => {
+  return scene.getObjectByName(`model--${scriptGroupId}`) as Group;
+}
+
 export const getPartyMemberModelComponent = (scene: Scene, partyMemberId: number) => {
   return scene.getObjectByName(`party--${partyMemberId}`) as Mesh;
 }

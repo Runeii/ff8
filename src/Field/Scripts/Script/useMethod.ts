@@ -16,19 +16,14 @@ const useMethod = (
     hasRemovedControl: false,
     isHalted: false,
 
-    animation: {
-      id: 0,
-      isHoldingFinalFrame: false,
-      isLooping: false,
-    },
-    idleAnimationId: 0,
-    ladderAnimationId: 0,
+    animationProgress: new SpringValue(0),
+    animationSpeed: 0,
+    currentAnimationId: undefined,
+    idleAnimationId: undefined,
+    idleAnimationRange: [0, 0],
 
-    backgroundAnimationSpeed: 0,
-    backgroundStartFrame: 0,
-    backgroundEndFrame: 0,
+    backgroundAnimationSpring: new SpringValue(0),
     isBackgroundVisible: false,
-    isBackgroundLooping: false,
 
     isLineOn: true,
     linePoints: null,
@@ -46,7 +41,7 @@ const useMethod = (
     isTalkable: true,
 
     angle: new SpringValue(0),
-    lookTarget: undefined,
+    headAngle: new SpringValue(0),
 
     position: new SpringValue([0, 0, 0]),
     movementDuration: 0,
@@ -64,7 +59,9 @@ const useMethod = (
     countdownTimer: undefined,
     winSize: {}
   });
+
   const [scriptState, setScriptState] = useState<ScriptState>(currentScriptStateRef.current);
+
   useFrame(() => {
     setScriptState({ ...currentScriptStateRef.current });
   });
@@ -204,11 +201,10 @@ const useMethod = (
       const nextIndex = await handler({
         activeMethod,
         currentOpcode,
-        opcodes,
         currentStateRef: currentScriptStateRef,
+        opcodes,
         scene,
         script,
-        signal: abortController.signal,
         STACK: STACKRef.current,
         TEMP_STACK: TEMP_STACKRef.current,
       });

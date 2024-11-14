@@ -43,9 +43,9 @@ const Model = ({ models, script, state }: ModelProps) => {
   }
 
   const modelJsx = (
-    <group rotation={[Math.PI / 2,0,0]}>
+    <group rotation={[Math.PI / 2,0,0]} name={`model--${script.groupId}`}>
       <ModelComponent
-        name={partyMemberId === undefined ? `model--${script.groupId}` : `party--${partyMemberId}`}
+        name={`party--${partyMemberId ?? 'none'}`}
         scale={0.06}
         // @ts-expect-error Need to use same ref format on all models
         ref={setModelRef}
