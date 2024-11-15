@@ -10,10 +10,7 @@ import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Euler, Group, Quaternion, Vector3 } from "three";
-import { getCameraDirections, getCharacterForwardDirection } from "../../Camera/cameraUtils";
-import { Line } from "@react-three/drei";
-import { WORLD_DIRECTIONS } from "../../../utils";
+import { Group, Quaternion, Vector3 } from "three";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -42,7 +39,7 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   }, [activeMethodId, remoteExecutionKey]);
   
 
-  const scriptState = useMethod(script, activeMethodId, setActiveMethodId, entityRef);
+  const scriptState = useMethod(script, activeMethodId, setActiveMethodId);
 
   useEffect(() => {
     if (scriptState.isUnused) {
@@ -82,7 +79,6 @@ const Script = ({ doors, models, script }: ScriptProps) => {
 
   const camera = useThree().camera;
 
-  const [test, setTest] = useState(new Vector3(0, 0, 0));
   useFrame(({camera}) => {
     if (!entityRef.current) {
       return;
@@ -122,7 +118,7 @@ const Script = ({ doors, models, script }: ScriptProps) => {
 
   return (
     <animated.group
-      position={scriptState.position}
+      position={scriptState.position as unknown as Vector3}
       ref={entityRef}
       visible={scriptState.isVisible}
     >

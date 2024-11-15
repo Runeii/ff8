@@ -1,6 +1,6 @@
-import { Box, Line } from "@react-three/drei";
+import { Box } from "@react-three/drei";
 import { ScriptState } from "../../../types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimationAction, Group, Mesh, Object3D, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
 import { useFrame, useThree } from "@react-three/fiber";
@@ -61,7 +61,6 @@ const Controls = ({ actions, children, state }: ControlsProps) => {
     setHasPlacedCharacter(true);
   }, [initialFieldPosition, isTransitioningMap, scene, setHasPlacedCharacter, state.position]);
 
-  const [test, setTest] = useState(new Vector3(0,0,0));
   useFrame(({ camera, scene }, delta) => {
     const player = scene.getObjectByName("character") as Mesh;
     if (isTransitioningMap || !hasPlacedCharacter) {
