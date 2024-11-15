@@ -34,7 +34,7 @@ export default React.forwardRef(function d026(props: JSX.IntrinsicElements['grou
   const { nodes, materials } = useGraph(clone) as GLTFResult
   const { actions } = useAnimations(animations, group)
         // Expose actions to the parent via the ref
-      useImperativeHandle(ref, () => ({ actions, mesh: group }));
+      useImperativeHandle(ref, () => ({ actions, group, nodes, materials }));
         return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">

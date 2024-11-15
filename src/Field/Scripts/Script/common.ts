@@ -75,13 +75,14 @@ export const playAnimation = (
   });
 })
 
-export const animateBackground = (spring: SpringValue<number>, duration: number, startFrame: number, endFrame: number, isLooping: boolean) => new Promise<void>((resolve) => {
+export const animateBackground = (spring: SpringValue<number>, speed: number, startFrame: number, endFrame: number, isLooping: boolean) => new Promise<void>((resolve) => {
   spring.set(startFrame);
+
   spring.start(endFrame, {
     immediate: false,
     loop: isLooping,
     config: {
-      duration,
+      duration: (endFrame - startFrame) * speed * 30,
     },
     onRest: () => resolve()
   });

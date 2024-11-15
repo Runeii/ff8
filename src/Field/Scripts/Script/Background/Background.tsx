@@ -1,6 +1,7 @@
 import { Script, ScriptState } from "../../types";
 import { useEffect } from "react";
 import useGlobalStore from "../../../../store";
+import { useFrame } from "@react-three/fiber";
 
 type BackgroundProps = {
   script: Script;
@@ -26,6 +27,21 @@ const Background = ({ script, state }: BackgroundProps) => {
     }
   }, [script.backgroundParamId, state.isBackgroundVisible]);
 
+  useFrame(() => {
+    const frame = Math.floor(state.backgroundAnimationSpring.get());
+    const currentParameterStates = useGlobalStore.getState().currentParameterStates;
+
+    if (currentParameterStates[script.backgroundParamId] === frame) {
+      return;
+    }
+
+    useGlobalStore.setState({
+      currentParameterStates: {
+        ...currentParameterStates,
+        [script.backgroundParamId]: frame
+      }
+    })
+  });
   return null;
 }
 

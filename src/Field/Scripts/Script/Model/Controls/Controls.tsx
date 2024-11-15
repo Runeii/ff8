@@ -1,6 +1,6 @@
-import { Box } from "@react-three/drei";
+import { Box, Line } from "@react-three/drei";
 import { ScriptState } from "../../../types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimationAction, Group, Mesh, Object3D, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
 import { useFrame, useThree } from "@react-three/fiber";
@@ -61,6 +61,7 @@ const Controls = ({ actions, children, state }: ControlsProps) => {
     setHasPlacedCharacter(true);
   }, [initialFieldPosition, isTransitioningMap, scene, setHasPlacedCharacter, state.position]);
 
+  const [test, setTest] = useState(new Vector3(0,0,0));
   useFrame(({ camera, scene }, delta) => {
     const player = scene.getObjectByName("character") as Mesh;
     if (isTransitioningMap || !hasPlacedCharacter) {
@@ -75,24 +76,24 @@ const Controls = ({ actions, children, state }: ControlsProps) => {
 
 
     direction.copy(ZERO_VECTOR);
-    const { forwardVector, rightVector } = getCameraDirections(camera);
 
-    const {forwardVector: characterForwardsVector} = getCharacterForwardDirection(camera);
-
+    const {rightVector: meshMoveRight} = getCameraDirections(camera);
+    const {forwardVector} = getCharacterForwardDirection(camera);
+    const meshMoveDown = forwardVector.clone().negate();
     if (movementFlags.forward) {
-      direction.add(characterForwardsVector);
+      direction.sub(meshMoveDown);
     }
 
     if (movementFlags.backward) {
-      direction.sub(characterForwardsVector);
+      direction.add(meshMoveDown);
     }
 
     if (movementFlags.left) {
-      direction.sub(rightVector);
+      direction.sub(meshMoveRight);
     }
 
     if (movementFlags.right) {
-      direction.add(rightVector);
+      direction.add(meshMoveRight);
     }
 
     const isAllowedToMove = useGlobalStore.getState().isUserControllable;
@@ -128,22 +129,22 @@ const Controls = ({ actions, children, state }: ControlsProps) => {
     direction.z = 0;
     direction.normalize();
 
-    let angle = Math.atan2(direction.y, direction.x) - Math.atan2(characterForwardsVector.y, characterForwardsVector.x);
-    angle = radToDeg(angle);
-    if (angle < 0) {
-      angle += 360;
-    }
-    angle = (angle + 180) % 360;
-    angle = (360 - angle) % 360;
-
-    state.angle.set(angle / 360 * 255);
-
-  
-    player.userData.hasMoved = true;
-
     state.position.start([newPosition.x, newPosition.y, newPosition.z], {
       immediate: true,
     });
+
+    const dot = direction.dot(meshMoveDown); // Dot product for cosine
+    const cross = direction.dot(meshMoveRight); 
+  
+    let angle = Math.atan2(-cross, dot); 
+    // Convert to degrees and normalize to [0, 360)
+    angle = radToDeg(angle);
+    if (angle < 0) angle += 360;
+  
+    state.angle.set(angle / 360 * 255);
+
+    player.userData.hasMoved = true;
+
   });
 
   return (

@@ -257,6 +257,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const start = STACK.pop() as number
 
     currentStateRef.current.isBackgroundVisible = true;
+
     animateBackground(
       currentStateRef.current.backgroundAnimationSpring,
       currentStateRef.current.backgroundAnimationSpeed,

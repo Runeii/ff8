@@ -10,9 +10,10 @@ import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Group, Quaternion } from "three";
+import { Euler, Group, Quaternion, Vector3 } from "three";
 import { getCameraDirections, getCharacterForwardDirection } from "../../Camera/cameraUtils";
 import { Line } from "@react-three/drei";
+import { WORLD_DIRECTIONS } from "../../../utils";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -79,49 +80,32 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   
   const activeParty = useGlobalStore(storeState => storeState.party);
 
-  const [modelQuaternion] = useState(new Quaternion());
-  //const [upAxis] = useState(new Vector3(0, 1, 0)); // TODO: Can this be better? Sometimes meshes are on an angle
+  const camera = useThree().camera;
+
+  const [test, setTest] = useState(new Vector3(0, 0, 0));
   useFrame(({camera}) => {
-    if (!entityRef.current || !camera.userData.initialPosition || script.type !== 'model') {
+    if (!entityRef.current) {
       return;
     }
 
-    const baseAngle = Math.PI; // facing 'down';
-  
-  //  if (scriptState.lookTarget) {
-  //    const targetDirection = scriptState.lookTarget.clone().sub(containerRef.current.position).normalize();
-  //    const projectedTargetDirection = targetDirection.clone().projectOnPlane(upAxis).normalize();
-  //    
-  //    const baseForward = new Vector3(0, 0, 1).applyQuaternion(quaternion).projectOnPlane(upAxis).normalize();
-//
-  //    const angle = Math.acos(baseForward.dot(projectedTargetDirection));
-  //    const cross = new Vector3().crossVectors(baseForward, projectedTargetDirection);
-  //    
-  //    const signedAngle = cross.dot(upAxis) < 0 ? -angle : angle;
-//
-  //    const rotationQuat = new Quaternion();
-  //    rotationQuat.setFromAxisAngle(upAxis, signedAngle);
-//
-  //    const finalQuaternion = quaternion.clone().multiply(rotationQuat);
-  //    containerRef.current.quaternion.copy(finalQuaternion);
-//
-//
-  //    return;
-  //  }
+    entityRef.current.rotation.set(0, 0, 0);
+    entityRef.current.quaternion.identity();
 
-    // TODO: 0 should point down
-    const {forwardVector} = getCharacterForwardDirection(camera)
-    //const targetVector = new Vector3().subVectors(camera.position, containerRef.current.position).normalize();
-    //const forwardDot = forwardVector.dot(targetVector);
-    //const backwardDot = forwardVector.clone().negate().dot(targetVector); 
-    //const angle = Math.acos(forwardDot);
-    const angle = baseAngle - ((Math.PI * 2) / 255 * scriptState.angle.get());
-    entityRef.current.quaternion.setFromAxisAngle(camera.up, angle * 1.5);
+    const downVector = new Vector3().subVectors(camera.getWorldPosition(new Vector3()), entityRef.current.position);
+    downVector.z = 0;
+    downVector.normalize();
+
+    const meshForward = new Vector3(-1, 0, 0).applyQuaternion(entityRef.current.quaternion).normalize();
+    const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
+
+    const baseAngle = meshForward.angleTo(downVector);
+
+    const liveAngle = baseAngle - ((Math.PI * 2) / 255 * scriptState.angle.get());
+    const rotationQuaternion = new Quaternion();
+    rotationQuaternion.setFromAxisAngle(meshUp, liveAngle);
+    entityRef.current.quaternion.multiply(rotationQuaternion);
   });
 
-  const { forwardVector, upVector, rightVector} = getCameraDirections(useThree().camera);
-
-  const camera = useThree().camera;
 
   if (scriptState.isUnused) {
     return null;
@@ -135,16 +119,13 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     return;
   }
 
+
   return (
     <animated.group
       position={scriptState.position}
       ref={entityRef}
       visible={scriptState.isVisible}
     >
-    <Line points={[[0, 0, 0], camera.up]} color="white" lineWidth={5} />
-    <Line points={[[0, 0, 0], upVector]} color="yellow" lineWidth={10} />
-    <Line points={[[0, 0, 0], forwardVector]} color="red" />
-    <Line points={[[0, 0, 0], rightVector]} color="blue" />
       {scriptState.isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
           radius={scriptState.talkRadius / 4096 / 1.5}

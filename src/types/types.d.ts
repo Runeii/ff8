@@ -72,6 +72,17 @@ declare global {
     default?: number;
     cancel?: number;
   }
+
+  type GltfHandle = {
+    actions: Record<string, AnimationAction>
+    group: MutableRef<Group>
+    nodes: {
+      [key: string]: THREE.SkinnedMesh
+    }
+    materials: {
+      [key: string]: MeshStandardMaterial
+    }
+  }
 }
 
 export { };
