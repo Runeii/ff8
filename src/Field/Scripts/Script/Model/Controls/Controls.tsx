@@ -1,7 +1,7 @@
 import { Box } from "@react-three/drei";
 import { ScriptState } from "../../../types";
 import { useEffect, useState } from "react";
-import { AnimationAction, Group, Mesh, Object3D, Vector3 } from "three";
+import { Group, Mesh, Object3D, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
 import { useFrame, useThree } from "@react-three/fiber";
 import { getCameraDirections, getCharacterForwardDirection } from "../../../../Camera/cameraUtils";
@@ -10,7 +10,7 @@ import useGlobalStore from "../../../../../store";
 import { radToDeg } from "three/src/math/MathUtils.js";
 
 type ControlsProps = {
-  actions: Record<string, AnimationAction>;
+  animations: GltfHandle['animations'] | undefined;
   children: React.ReactNode;
   state: ScriptState;
 }
@@ -22,21 +22,26 @@ const WALKING_SPEED = 0.08;
 const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
-const Controls = ({ actions, children, state }: ControlsProps) => {
+const Controls = ({ animations, children, state }: ControlsProps) => {
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();
   
   const [currentActionIndex, setCurrentActionIndex] = useState<number>(1);
   useEffect(() => {
-    Object.values(actions).forEach((action, index) => {
-      if (index === currentActionIndex) {
-        action?.play?.();
-      } else {
-        action?.stop?.();
-      }
-    });
-  }, [actions, currentActionIndex]);
+    if (!animations || !animations.mixer) {
+      return;
+    }
+
+    animations.mixer.stopAllAction();
+    const clip = Object.values(animations.clips)[currentActionIndex];
+    if (!clip) {
+      return;
+    }
+    const action = animations.mixer.clipAction(clip);
+    action.play();
+    animations.mixer.time = 0;
+  }, [animations, currentActionIndex]);
 
   const scene = useThree(({ scene }) => scene);
 
@@ -61,6 +66,7 @@ const Controls = ({ actions, children, state }: ControlsProps) => {
     setHasPlacedCharacter(true);
   }, [initialFieldPosition, isTransitioningMap, scene, setHasPlacedCharacter, state.position]);
 
+
   useFrame(({ camera, scene }, delta) => {
     const player = scene.getObjectByName("character") as Mesh;
     if (isTransitioningMap || !hasPlacedCharacter) {
@@ -72,7 +78,6 @@ const Controls = ({ actions, children, state }: ControlsProps) => {
     if (!player || !walkmesh) {
       return;
     }
-
 
     direction.copy(ZERO_VECTOR);
 

@@ -33,9 +33,10 @@ export default React.forwardRef(function d069(props: JSX.IntrinsicElements['grou
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone) as GLTFResult
   const { actions } = useAnimations(animations, group)
-        // Expose actions to the parent via the ref
-      useImperativeHandle(ref, () => ({ actions, group, nodes, materials }));
-        return (
+    
+    const formattedAnimations = useAnimations(animations, group);
+    useImperativeHandle(ref, () => ({ animations: formattedAnimations, group, nodes, materials }));
+      return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
         <group name="d069_armature">

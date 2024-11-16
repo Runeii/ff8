@@ -17,12 +17,13 @@ const useMethod = (
     isHalted: false,
 
     animationProgress: new SpringValue(0),
-    animationSpeed: 0,
+    animationSpeed: 1,
     currentAnimationId: undefined,
     idleAnimationId: undefined,
     idleAnimationRange: [0, 0],
 
     backgroundAnimationSpring: new SpringValue(0),
+    backgroundAnimationSpeed: 200,
     isBackgroundVisible: false,
 
     isLineOn: true,
@@ -147,7 +148,7 @@ const useMethod = (
 
     const { methodId, opcodes } = activeMethod;
 
-    if (thisRunMethodId.current && methodId !== thisRunMethodId.current && currentOpcodeIndex > 0) {
+    if (thisRunMethodId.current && methodId !== thisRunMethodId.current && currentOpcodeIndex > 0 || scriptState.isUnused) {
       return;
     }
 
@@ -165,8 +166,8 @@ const useMethod = (
     const execute = async () => {
       const currentOpcode = opcodes[currentOpcodeIndex] ?? undefined;
 
-      if (script.groupId === 8) {
-        //        console.log(currentOpcode, activeMethodId, STACKRef.current);
+      if (script.groupId === 20) {
+        //console.log(currentOpcode, activeMethodId, STACKRef.current);
       }
       if (!currentOpcode && !hasCompletedConstructor) {
         setHasCompletedConstructor(true);

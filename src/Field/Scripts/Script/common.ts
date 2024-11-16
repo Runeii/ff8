@@ -31,7 +31,7 @@ export const turnToFaceAngle = async (angle: number, frames: number, spring: Spr
 export const turnToFaceEntity = async (thisId: number, targetName: string, duration: number, scene: Scene, spring: SpringValue<number>) => {
   const thisMesh = getScriptEntity(scene, thisId);
   const targetMesh = scene.getObjectByName(targetName) as Group;
-
+  console.log(thisMesh, targetMesh, thisId, targetName)
   const currentAngleDirection = thisMesh.rotation.y;
   const targetAngleDirection = Math.atan2(
     targetMesh.position.x - thisMesh.position.x,
@@ -57,36 +57,40 @@ export const playBaseAnimation = (spring: SpringValue<number>, speed: number, ra
   )
 
 
-export const playAnimation = (
+export const playAnimation = async (
   spring: SpringValue<number>,
   speed: number,
   isLooping: boolean,
-  range: [number, number] = [0, 1]
-) => new Promise<void>((resolve) => {
-  spring.set(range[0]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _range: [number, number] = [0, 1]
+) => {
+  spring.set(0);
 
-  spring.start(range[1], {
+  // speed 1 = 2fps
+  const duration = 2000
+
+  await spring.start(1, {
+    from: 0,
     immediate: false,
     loop: isLooping,
     config: {
-      duration: speed,
+      duration,
     },
-    onRest: () => resolve()
   });
-})
+}
 
-export const animateBackground = (spring: SpringValue<number>, speed: number, startFrame: number, endFrame: number, isLooping: boolean) => new Promise<void>((resolve) => {
+export const animateBackground = async (spring: SpringValue<number>, speed: number, startFrame: number, endFrame: number, isLooping: boolean) => {
   spring.set(startFrame);
 
-  spring.start(endFrame, {
+  await spring.start(endFrame + 1, {
+    from: startFrame,
     immediate: false,
     loop: isLooping,
     config: {
       duration: (endFrame - startFrame) * speed * 30,
-    },
-    onRest: () => resolve()
+    }
   });
-})
+}
 
 export const KEY_FLAGS = {
   16: 'Cancel',

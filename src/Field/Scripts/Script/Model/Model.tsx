@@ -1,11 +1,10 @@
 import { Script, ScriptState } from "../../types";
-import { lazy, useCallback, useEffect, useRef, useState } from "react";
-import { AnimationAction, Euler, Group, Quaternion, SkinnedMesh, Vector3 } from "three";
+import {  ComponentType, lazy, useCallback, useEffect, useMemo, useState } from "react";
+import {  Bone, Euler, Group, Quaternion } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
-import { useFrame, useThree } from "@react-three/fiber";
-import { getCameraDirections, getCharacterForwardDirection } from "../../../Camera/cameraUtils";
-import { WORLD_DIRECTIONS } from "../../../../utils";
+import { useFrame } from "@react-three/fiber";
+import { playAnimation, playBaseAnimation } from "../common";
 
 type ModelProps = {
   models: string[];
@@ -17,66 +16,100 @@ const modelFiles = import.meta.glob('./gltf/*.tsx');
 
 const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   const name = path.replace('./gltf/', '').replace('.tsx', '');
-  return [name, lazy(modelFiles[path] as () => Promise<{default: React.ComponentType<JSX.IntrinsicElements['group']>}>)];
+  return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<JSX.IntrinsicElements['group']>}>)];
 }));
 
 const Model = ({ models, script, state }: ModelProps) => {
   const modelId = state.modelId;
 
   const partyMemberId = state.partyMemberId
-  const isPlayerControlled = useGlobalStore(state => state.party[0] === partyMemberId);
+  const isPlayerControlled = useGlobalStore(state => state.party[0] === partyMemberId && state.isUserControllable);
 
-  const [actions, setActions] = useState<Record<string, AnimationAction>>({});
-  const [scene, setScene] = useState<Group>();
+  const [animations, setAnimations] = useState<GltfHandle['animations']>();
+  const [meshGroup, setMeshGroup] = useState<Group>();
+  const [head, setHead] = useState<Bone>();
 
   let modelName = models[modelId];
-  if (modelName.includes('p')) {
-    modelName = 'd010'
+  if (!modelName.includes('d')) {
+    modelName = 'd070'
   }
-  const ModelComponent = components['d001'] ?? components['fallback'];
-  modelName = 'd001';
+  const ModelComponent = components[modelName];
+
   const setModelRef = useCallback((ref: GltfHandle) => {
-    if (!ref || ref.actions === actions) {
+    if (!ref || !ref.group) {
       return;
     }
-    setActions(ref.actions);
-    setScene(ref.group.current);
-  }, [actions]);
+    setAnimations(ref.animations);
+    setMeshGroup(ref.group.current);
+    setHead(ref.nodes.head);
+  }, []);
 
   useEffect(() => {
-    if (!scene) {
+    if (!meshGroup) {
       return;
     }
 
-    scene.rotation.set(0, 0, 0);
-    scene.quaternion.identity();
+    meshGroup.rotation.set(0, 0, 0);
+    meshGroup.quaternion.identity();
   
     const eulerRotation = new Euler(Math.PI / 2, 0, 0); // Define your Euler rotation
     const quaternionFromEuler = new Quaternion();
     quaternionFromEuler.setFromEuler(eulerRotation);
-    scene.applyQuaternion(quaternionFromEuler);
-    scene.updateMatrix(); 
-    scene.updateMatrixWorld(true);
-  }, [modelName, scene, state.angle]);
+    meshGroup.applyQuaternion(quaternionFromEuler);
+    meshGroup.updateMatrix(); 
+    meshGroup.updateMatrixWorld(true);
+  }, [modelName, meshGroup, state.angle]);
+
+  const currentAction = useMemo(() => {
+    const currentAnimationId = state.currentAnimationId ?? state.idleAnimationId
+    if (!animations || !animations.mixer || currentAnimationId === undefined || isPlayerControlled) {
+      return;
+    }
+
+    const mixer = animations.mixer;
+    animations.mixer.stopAllAction();
+
+    const clip = animations.clips[currentAnimationId ?? -1]
+    if (!clip) {
+      return;
+    }
+
+    const action = mixer.clipAction(clip);
+    action.play();
+    action.paused = true;
+    action.time = 0;
+    animations.mixer.update(0);
+    return action;
+  }, [animations, isPlayerControlled, state.currentAnimationId, state.idleAnimationId]);
+
+  useFrame(() => {
+    if (!currentAction || isPlayerControlled) {
+      return;
+    }
+    currentAction.time = state.animationProgress.get() * currentAction.getClip().duration;
+  });
+
+  useFrame(() => {
+    if (!head) {
+      return;
+    }
+    head.rotation.y = state.headAngle.get();
+  })
 
   const modelJsx = (
     <group name={`model--${script.groupId}`}>
       <ModelComponent
         name={`party--${partyMemberId ?? 'none'}`}
         scale={0.06}
-        // @ts-expect-error Need to use same ref format on all models
+        // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
         ref={setModelRef}
-        userData={{
-          scriptId: script.groupId,
-          actions: actions,
-        }}
       />
     </group>
   );
 
   if (isPlayerControlled) {
     return (
-      <Controls actions={actions} state={state}>
+      <Controls animations={animations} state={state}>
         {modelJsx}
       </Controls>
     );

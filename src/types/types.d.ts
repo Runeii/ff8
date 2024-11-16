@@ -1,3 +1,5 @@
+import { useAnimations } from "@react-three/drei";
+
 declare global {
   interface ExecuteScriptEventDetail {
     scriptLabel: number;
@@ -73,8 +75,9 @@ declare global {
     cancel?: number;
   }
 
+  type useAnimationsReturn = ReturnType<typeof useAnimations>
   type GltfHandle = {
-    actions: Record<string, AnimationAction>
+    animations: useAnimationsReturn
     group: MutableRef<Group>
     nodes: {
       [key: string]: THREE.SkinnedMesh

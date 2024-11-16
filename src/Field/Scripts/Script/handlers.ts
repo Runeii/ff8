@@ -21,11 +21,18 @@ export type HandlerArgs = {
 }
 type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (number | void);
 
+
+// byte – 0,255
+// word – 0,65535
+// long – 0,4294967295
+// signed byte – -128,127
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
-  256: 8000,
-  534: 1,
-  84: 196
+  84: 0, // last area visited
+  256: 8000, // progress
+  491: 0, // touk
+  534: 1, // ?
+  720: 0, // squall model
 };
 
 export const MESSAGE_VARS: Record<number, string> = {};
@@ -479,22 +486,26 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     TEMP_STACK[0] = indexInParty;
   },
   SETPARTY: ({ STACK }) => {
-    const character1ID = STACK.pop() as number;
-    const character2ID = STACK.pop() as number;
     const character3ID = STACK.pop() as number;
+    const character2ID = STACK.pop() as number;
+    const character1ID = STACK.pop() as number;
 
+    const uniqueParty = Array.from(new Set([character1ID, character2ID, character3ID]));
+    console.trace('set', character1ID, character2ID, character3ID)
     useGlobalStore.setState({
-      party: [character1ID, character2ID, character3ID]
+      party: uniqueParty
     })
   },
   ADDPARTY: ({ STACK }) => {
     const characterID = STACK.pop() as number;
+    console.trace('add', characterID)
     useGlobalStore.setState({
       party: [...useGlobalStore.getState().party, characterID]
     });
   },
   SUBPARTY: ({ STACK }) => {
     const characterID = STACK.pop() as number;
+    console.trace('remove', characterID)
     useGlobalStore.setState({
       party: useGlobalStore.getState().party.filter(id => id !== characterID)
     });
@@ -766,11 +777,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
+
+    if (currentStateRef.current.currentAnimationId === 0 || currentStateRef.current.currentAnimationId === undefined) {
+      currentStateRef.current.currentAnimationId = currentStateRef.current.movementSpeed > 5000 ? 2 : 1;
+    }
     return new Promise((resolve) => {
       currentStateRef.current.position.start([position.x, position.y, position.z], {
         immediate: false,
         config: {
-          duration: currentStateRef.current.movementSpeed
+          duration: currentStateRef.current.movementSpeed * 3
         },
         onRest: () => {
           resolve();
@@ -902,6 +917,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   CTURN: ({ currentStateRef, scene, script, STACK }) => {
     const duration = STACK.pop() as number;
     const targetId = STACK.pop() as number;
+    console.log(script, duration, targetId)
     turnToFaceEntity(script.groupId, `model--${targetId}`, duration, scene, currentStateRef.current.angle)
   },
   DIRA: ({ currentStateRef, scene, script, STACK }) => {
@@ -924,7 +940,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   PDIRA: ({ currentStateRef, scene, script, STACK }) => {
     const partyMemberId = STACK.pop() as number;
-    console.log(script, partyMemberId)
     turnToFaceEntity(script.groupId, `party--${partyMemberId}`, 0, scene, currentStateRef.current.angle)
   },
 
