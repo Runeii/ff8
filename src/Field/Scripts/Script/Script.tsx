@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Script as ScriptType } from "../types";
 import useMethod from "./useMethod";
 import Background from "./Background/Background";
@@ -11,6 +11,7 @@ import Door from "./Door/Door";
 import { FieldData } from "../../Field";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Group, Quaternion, Vector3 } from "three";
+import createScriptState from "./state";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -39,15 +40,24 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   }, [activeMethodId, remoteExecutionKey]);
   
 
-  const scriptState = useMethod(script, activeMethodId, setActiveMethodId);
+  const useScriptStateStore =  useMemo(() => createScriptState(), []);
+
+  useMethod(script, useScriptStateStore, activeMethodId, setActiveMethodId);
+
+  const isVisible = useScriptStateStore(state => state.isVisible);
+  const isUnused = useScriptStateStore(state => state.isUnused);
+  const position = useScriptStateStore(state => state.position);
+  const isTalkable = useScriptStateStore(state => state.isTalkable);
+  const talkRadius = useScriptStateStore(state => state.talkRadius);
+  const partyMemberId = useScriptStateStore(state => state.partyMemberId);
 
   useEffect(() => {
-    if (scriptState.isUnused) {
+    if (isUnused) {
       return;
     }
 
-    const handleExecutionRequest = async ({ detail: { key, scriptLabel, partyMemberId } }: {detail: ExecuteScriptEventDetail}) => {
-      if (partyMemberId !== undefined && partyMemberId !== scriptState.partyMemberId) {
+    const handleExecutionRequest = async ({ detail: { key, scriptLabel, partyMemberId: requestedPartyMemberId } }: {detail: ExecuteScriptEventDetail}) => {
+      if (requestedPartyMemberId !== undefined && partyMemberId !== requestedPartyMemberId) {
         return;
       }
       const matchingMethod = script.methods.find((method, index) => {
@@ -70,7 +80,7 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     return () => {
       document.removeEventListener('executeScript', handleExecutionRequest);
     }
-  }, [activeMethodId, script.groupId, script.methods, scriptState.isUnused, scriptState.partyMemberId, setActiveMethodId]);
+  }, [activeMethodId, isUnused, partyMemberId, script.groupId, script.methods, setActiveMethodId]);
 
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
   const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
@@ -96,18 +106,18 @@ const Script = ({ doors, models, script }: ScriptProps) => {
 
     const baseAngle = meshForward.angleTo(downVector);
 
-    const liveAngle = baseAngle - ((Math.PI * 2) / 255 * scriptState.angle.get());
+    const liveAngle = baseAngle - ((Math.PI * 2) / 255 * useScriptStateStore.getState().angle.get());
     const rotationQuaternion = new Quaternion();
     rotationQuaternion.setFromAxisAngle(meshUp, liveAngle);
     entityRef.current.quaternion.multiply(rotationQuaternion);
   });
 
 
-  if (scriptState.isUnused) {
+  if (isUnused) {
     return null;
   }
 
-  if (scriptState.partyMemberId !== undefined && !activeParty.includes(scriptState.partyMemberId)) {
+  if (partyMemberId !== undefined && !activeParty.includes(partyMemberId)) {
     return null;
   }
 
@@ -118,21 +128,21 @@ const Script = ({ doors, models, script }: ScriptProps) => {
 
   return (
     <animated.group
-      position={scriptState.position as unknown as Vector3}
+      position={position as unknown as Vector3}
       ref={entityRef}
-      visible={scriptState.isVisible}
+      visible={isVisible}
     >
-      {scriptState.isTalkable && talkMethod && !hasActiveTalkMethod && (
+      {isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
-          radius={scriptState.talkRadius / 4096 / 1.5}
+          radius={talkRadius / 4096 / 1.5}
           setActiveMethodId={setActiveMethodId}
           talkMethod={talkMethod}
         />
       )}
-      {script.type === 'background' && <Background script={script} state={scriptState} />}
-      {script.type === 'location' && <Location script={script} state={scriptState} setActiveMethodId={setActiveMethodId} />}
-      {script.type === 'model' && <Model models={models} script={script} state={scriptState} />}
-      {script.type === 'door' && <Door doors={doors} script={script} setActiveMethodId={setActiveMethodId} state={scriptState} />}
+      {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
+      {script.type === 'location' && <Location script={script} useScriptStateStore={useScriptStateStore} setActiveMethodId={setActiveMethodId} />}
+      {script.type === 'model' && <Model models={models} script={script} useScriptStateStore={useScriptStateStore} />}
+      {script.type === 'door' && <Door doors={doors} script={script} setActiveMethodId={setActiveMethodId} useScriptStateStore={useScriptStateStore} />}
     </animated.group>
   );
 }

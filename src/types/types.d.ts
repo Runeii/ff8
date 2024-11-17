@@ -86,6 +86,11 @@ declare global {
       [key: string]: MeshStandardMaterial
     }
   }
+
+  type CongaHistory = {
+    position: Vector3;
+    angle: number;
+  }
 }
 
 export { };

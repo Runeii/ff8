@@ -9,6 +9,7 @@ export const fadeOutMap = async () => {
   if (!isMapFadeEnabled) {
     return;
   }
+  console.log('out')
   fadeSpring.opacity.start(0);
 }
 
@@ -31,7 +32,7 @@ export const turnToFaceAngle = async (angle: number, frames: number, spring: Spr
 export const turnToFaceEntity = async (thisId: number, targetName: string, duration: number, scene: Scene, spring: SpringValue<number>) => {
   const thisMesh = getScriptEntity(scene, thisId);
   const targetMesh = scene.getObjectByName(targetName) as Group;
-  console.log(thisMesh, targetMesh, thisId, targetName)
+
   const currentAngleDirection = thisMesh.rotation.y;
   const targetAngleDirection = Math.atan2(
     targetMesh.position.x - thisMesh.position.x,
@@ -67,14 +68,14 @@ export const playAnimation = async (
   spring.set(0);
 
   // speed 1 = 2fps
-  const duration = 2000
+  // const duration = 2000
 
   await spring.start(1, {
     from: 0,
     immediate: false,
     loop: isLooping,
     config: {
-      duration,
+      duration: speed * 1000,
     },
   });
 }
@@ -82,7 +83,7 @@ export const playAnimation = async (
 export const animateBackground = async (spring: SpringValue<number>, speed: number, startFrame: number, endFrame: number, isLooping: boolean) => {
   spring.set(startFrame);
 
-  await spring.start(endFrame + 1, {
+  await spring.start(endFrame, {
     from: startFrame,
     immediate: false,
     loop: isLooping,

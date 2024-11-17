@@ -1,15 +1,17 @@
-import { Script, ScriptState } from "../../types";
+import { Script } from "../../types";
 import {  ComponentType, lazy, useCallback, useEffect, useMemo, useState } from "react";
 import {  Bone, Euler, Group, Quaternion } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
-import { playAnimation, playBaseAnimation } from "../common";
+import Leader from "./Leader/Leader";
+import Follower from "./Follower/Follower";
+import { ScriptStateStore } from "../state";
 
 type ModelProps = {
   models: string[];
   script: Script;
-  state: ScriptState;
+  useScriptStateStore: ScriptStateStore
 }
 
 const modelFiles = import.meta.glob('./gltf/*.tsx');
@@ -19,10 +21,16 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<JSX.IntrinsicElements['group']>}>)];
 }));
 
-const Model = ({ models, script, state }: ModelProps) => {
-  const modelId = state.modelId;
+const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
+  const {
+    animationProgress,
+    currentAnimationId,
+    headAngle,
+    idleAnimationId,
+    modelId,
+    partyMemberId,
+  } = useScriptStateStore();
 
-  const partyMemberId = state.partyMemberId
   const isPlayerControlled = useGlobalStore(state => state.party[0] === partyMemberId && state.isUserControllable);
 
   const [animations, setAnimations] = useState<GltfHandle['animations']>();
@@ -58,18 +66,22 @@ const Model = ({ models, script, state }: ModelProps) => {
     meshGroup.applyQuaternion(quaternionFromEuler);
     meshGroup.updateMatrix(); 
     meshGroup.updateMatrixWorld(true);
-  }, [modelName, meshGroup, state.angle]);
+  }, [modelName, meshGroup]);
+
+  const playAnimationIndex = useGlobalStore(state => state.playerAnimationIndex);
+  const activeIdleAnimationId = partyMemberId !== undefined ? playAnimationIndex : idleAnimationId;
+  const activeAnimationId = currentAnimationId ?? activeIdleAnimationId
 
   const currentAction = useMemo(() => {
-    const currentAnimationId = state.currentAnimationId ?? state.idleAnimationId
-    if (!animations || !animations.mixer || currentAnimationId === undefined || isPlayerControlled) {
+  
+    if (!animations || !animations.mixer || activeAnimationId === undefined) {
       return;
     }
 
     const mixer = animations.mixer;
     animations.mixer.stopAllAction();
 
-    const clip = animations.clips[currentAnimationId ?? -1]
+    const clip = animations.clips[activeAnimationId ?? -1]
     if (!clip) {
       return;
     }
@@ -80,37 +92,52 @@ const Model = ({ models, script, state }: ModelProps) => {
     action.time = 0;
     animations.mixer.update(0);
     return action;
-  }, [animations, isPlayerControlled, state.currentAnimationId, state.idleAnimationId]);
+  }, [activeAnimationId, animations]);
 
   useFrame(() => {
-    if (!currentAction || isPlayerControlled) {
+    if (!currentAction || activeIdleAnimationId !== undefined) {
       return;
     }
-    currentAction.time = state.animationProgress.get() * currentAction.getClip().duration;
+    console.log('play nonidle')
+    currentAction.time = animationProgress.get() * currentAction.getClip().duration;
   });
+
+  useEffect(() => {
+    if (activeAnimationId !== activeIdleAnimationId || !currentAction) {
+      return;
+    }
+
+    console.log('play idle')
+    currentAction.paused = false;
+
+  }, [activeAnimationId, activeIdleAnimationId, currentAction]);
 
   useFrame(() => {
     if (!head) {
       return;
     }
-    head.rotation.y = state.headAngle.get();
+    head.rotation.y = headAngle.get();
   })
 
   const modelJsx = (
     <group name={`model--${script.groupId}`}>
-      <ModelComponent
-        name={`party--${partyMemberId ?? 'none'}`}
-        scale={0.06}
-        // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
-        ref={setModelRef}
-      />
+      <Follower partyMemberId={partyMemberId} useScriptStateStore={useScriptStateStore}>
+        <ModelComponent
+          name={`party--${partyMemberId ?? 'none'}`}
+          scale={0.06}
+          // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
+          ref={setModelRef}
+        />
+      </Follower>
     </group>
   );
 
   if (isPlayerControlled) {
     return (
-      <Controls animations={animations} state={state}>
-        {modelJsx}
+      <Controls useScriptStateStore={useScriptStateStore}>
+        <Leader>
+          {modelJsx}
+        </Leader>
       </Controls>
     );
   }

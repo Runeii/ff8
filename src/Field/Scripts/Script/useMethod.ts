@@ -1,80 +1,30 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Script, ScriptState } from "../types";
+import { Script } from "../types";
 import { OPCODE_HANDLERS } from "./handlers";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useThree } from "@react-three/fiber";
 import useGlobalStore from "../../../store";
-import { SpringValue } from "@react-spring/web";
+import { ScriptStateStore } from "./state";
 
 const useMethod = (
   script: Script,
+  useScriptStateStore: ScriptStateStore,
   activeMethodId: string | undefined,
   setActiveMethodId: (methodId?: string) => void,
 ) => {
   const scene = useThree((state) => state.scene);
 
-  const currentScriptStateRef = useRef<ScriptState>({
-    hasRemovedControl: false,
-    isHalted: false,
-
-    animationProgress: new SpringValue(0),
-    animationSpeed: 1,
-    currentAnimationId: undefined,
-    idleAnimationId: undefined,
-    idleAnimationRange: [0, 0],
-
-    backgroundAnimationSpring: new SpringValue(0),
-    backgroundAnimationSpeed: 200,
-    isBackgroundVisible: false,
-
-    isLineOn: true,
-    linePoints: null,
-
-    isVisible: true,
-    isSolid: false,
-    isUnused: false,
-
-    modelId: 0,
-    partyMemberId: undefined,
-
-    pushRadius: 0,
-    talkRadius: 200,
-    isPushable: false,
-    isTalkable: true,
-
-    angle: new SpringValue(0),
-    headAngle: new SpringValue(0),
-
-    position: new SpringValue([0, 0, 0]),
-    movementDuration: 0,
-    movementSpeed: 0,
-
-    isDoorOn: true,
-
-    backroundMusicId: 0,
-    backgroundMusicVolume: 127,
-    isPlayingBackgroundMusic: false,
-
-    spuValue: 0,
-
-    countdownTime: 0,
-    countdownTimer: undefined,
-    winSize: {}
-  });
-
-  const [scriptState, setScriptState] = useState<ScriptState>(currentScriptStateRef.current);
-
-  useFrame(() => {
-    setScriptState({ ...currentScriptStateRef.current });
-  });
-
   useEffect(() => {
     window.setTimeout(() => {
-      currentScriptStateRef.current.spuValue += 1;
+      useScriptStateStore.setState(state => ({
+        spuValue: state.spuValue + 1,
+      }));
     }, 1000);
-  }, []);
+  }, [useScriptStateStore]);
+
+  const isHalted = useScriptStateStore(state => state.isHalted)
+  const isUnused = useScriptStateStore(state => state.isUnused)
 
   const [hasCompletedConstructor, setHasCompletedConstructor] = useState(false);
-
   const [previousActiveMethodName, setPreviousActiveMethodName] = useState<string>();
 
   const activeMethod = useMemo(() => {
@@ -99,12 +49,12 @@ const useMethod = (
       return across;
     }
 
-    if (currentScriptStateRef.current.isHalted) {
+    if (isHalted) {
       return null;
     }
 
     return methods.find(method => method.methodId === 'default');
-  }, [activeMethodId, hasCompletedConstructor, previousActiveMethodName, script.methods]);
+  }, [activeMethodId, hasCompletedConstructor, isHalted, previousActiveMethodName, script.methods]);
 
   const [currentOpcodeIndex, setCurrentOpcodeIndex] = useState(0);
 
@@ -122,10 +72,6 @@ const useMethod = (
   const handleCompleteRun = useCallback(() => {
     if (!activeMethodId || !activeMethod) {
       return;
-    }
-
-    if (currentScriptStateRef.current.hasRemovedControl) {
-      useGlobalStore.setState({ isUserControllable: true });
     }
 
     // Doors behave differently and do not return to default loop
@@ -148,7 +94,7 @@ const useMethod = (
 
     const { methodId, opcodes } = activeMethod;
 
-    if (thisRunMethodId.current && methodId !== thisRunMethodId.current && currentOpcodeIndex > 0 || scriptState.isUnused) {
+    if (thisRunMethodId.current && methodId !== thisRunMethodId.current && currentOpcodeIndex > 0 || isUnused) {
       return;
     }
 
@@ -199,16 +145,19 @@ const useMethod = (
         }
       }, 50);
 
+      const state = useScriptStateStore.getState();
       const nextIndex = await handler({
         activeMethod,
         currentOpcode,
-        currentStateRef: currentScriptStateRef,
+        currentState: state,
         opcodes,
         scene,
         script,
         STACK: STACKRef.current,
         TEMP_STACK: TEMP_STACKRef.current,
       });
+
+      useScriptStateStore.setState(state);
 
       clearInterval(monitor);
 
@@ -224,9 +173,7 @@ const useMethod = (
     }
 
     execute();
-  }, [activeMethod, activeMethodId, currentOpcodeIndex, handleCompleteRun, hasCompletedConstructor, scene, script]);
-
-  return scriptState;
+  }, [activeMethod, activeMethodId, currentOpcodeIndex, handleCompleteRun, hasCompletedConstructor, isUnused, scene, script, useScriptStateStore]);
 }
 
 export default useMethod;

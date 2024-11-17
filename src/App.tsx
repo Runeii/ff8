@@ -56,7 +56,6 @@ export default function App() {
       fadeSpring: spring,
     })
   }, [spring])
-
   return (
     <>
     <animated.div className="container" style={spring}>

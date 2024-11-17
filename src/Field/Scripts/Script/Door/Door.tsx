@@ -7,15 +7,18 @@ import useTriggerEvent from "../useTriggerEvent";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Euler, Mesh, Quaternion, Vector3 } from "three";
 import useMeshIntersection from "../useMeshIntersection";
+import { ScriptStateStore } from "../state";
 
 type DoorProps = {
   doors: FieldData['doors'];
   script: Script;
   setActiveMethodId: (methodId: string) => void;
-  state: ScriptState;
+  useScriptStateStore: ScriptStateStore;
 }
 
-const Door = ({ doors, script, setActiveMethodId, state }: DoorProps) => {
+const Door = ({ doors, script, setActiveMethodId, useScriptStateStore }: DoorProps) => {
+  const isDoorOn = useScriptStateStore(state => state.isDoorOn);
+
   const [isDoorOpen, setIsDoorOpen] = useState(false);
 
   const door = useMemo(() => {
@@ -50,7 +53,7 @@ const Door = ({ doors, script, setActiveMethodId, state }: DoorProps) => {
 
   const playerHitbox = useThree(({ scene }) => scene.getObjectByName('hitbox') as Mesh);
   const hitboxRef = useRef<Mesh>(null);
-  const { isIntersecting } = useMeshIntersection(playerHitbox, hitboxRef.current!, state.isDoorOn);
+  const { isIntersecting } = useMeshIntersection(playerHitbox, hitboxRef.current!, isDoorOn);
 
   const setDoorOpenState = useCallback((isOpen: boolean) => {
     return (methodId: string) => {
@@ -75,7 +78,7 @@ const Door = ({ doors, script, setActiveMethodId, state }: DoorProps) => {
 
   const linePoints = useMemo(() => door?.line, [door]);
 
-  if (!linePoints || !state.isDoorOn || !box) {
+  if (!linePoints || !isDoorOn || !box) {
     return null;
   }
 

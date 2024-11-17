@@ -4,7 +4,6 @@ import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, ve
 import { Opcode, OpcodeObj, Script, ScriptMethod, ScriptState } from "../types";
 import { dummiedCommand, openMessage, remoteExecute, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
-import { MutableRefObject } from "react";
 import { Group } from "three";
 import { getPartyMemberModelComponent } from "./Model/modelUtils";
 import { displayMessage, fadeOutMap, playBaseAnimation, playAnimation, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground } from "./common";
@@ -12,7 +11,7 @@ import { displayMessage, fadeOutMap, playBaseAnimation, playAnimation, turnToFac
 export type HandlerArgs = {
   activeMethod: ScriptMethod,
   currentOpcode: OpcodeObj,
-  currentStateRef: MutableRefObject<ScriptState>,
+  currentState: ScriptState,
   opcodes: OpcodeObj[],
   scene: Scene,
   script: Script,
@@ -135,9 +134,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     return targetLabelIndex;
   },
   // MODIFIED JUMP LOGIC ENDS
-  SETLINE: ({ currentStateRef, STACK }) => {
+  SETLINE: ({ currentState, STACK }) => {
     const linePointsInMemory = STACK.splice(-6);
-    currentStateRef.current.linePoints = [
+    currentState.linePoints = [
       vectorToFloatingPoint(linePointsInMemory.slice(0, 3)),
       vectorToFloatingPoint(linePointsInMemory.slice(3)),
     ]
@@ -145,18 +144,18 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   UCON: () => {
     useGlobalStore.setState({ isUserControllable: true });
   },
-  UCOFF: ({ currentStateRef }) => {
+  UCOFF: ({ currentState }) => {
     const isUserControllable = useGlobalStore.getState().isUserControllable;
     if (isUserControllable) {
-      currentStateRef.current.hasRemovedControl = true;
+      currentState.hasRemovedControl = true;
     }
     useGlobalStore.setState({ isUserControllable: false });
   },
-  LINEON: ({ currentStateRef }) => {
-    currentStateRef.current.isLineOn = true;
+  LINEON: ({ currentState }) => {
+    currentState.isLineOn = true;
   },
-  LINEOFF: ({ currentStateRef }) => {
-    currentStateRef.current.isLineOn = false;
+  LINEOFF: ({ currentState }) => {
+    currentState.isLineOn = false;
   },
   MAPJUMPO: ({ STACK }) => {
     STACK.pop() as number; // const walkmeshTriangleId = STACK.pop() as number;
@@ -199,9 +198,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       //   fieldId: 'WORLD_MAP',
     });
   },
-  HALT: ({ currentOpcode, currentStateRef }) => {
+  HALT: ({ currentOpcode, currentState }) => {
     currentOpcode.param // always 0
-    currentStateRef.current.isHalted = true;
+    currentState.isHalted = true;
   },
   SETPLACE: ({ STACK }) => {
     useGlobalStore.setState({ currentLocationPlaceName: STACK.pop() as number });
@@ -218,20 +217,20 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
-  BGDRAW: ({ currentStateRef, STACK }) => {
+  BGDRAW: ({ currentState, STACK }) => {
     // I don't think this is actually used
     STACK.pop() as number;
-    currentStateRef.current.isBackgroundVisible = true;
+    currentState.isBackgroundVisible = true;
   },
-  BGOFF: ({ currentStateRef }) => {
-    currentStateRef.current.isBackgroundVisible = false;
+  BGOFF: ({ currentState }) => {
+    currentState.isBackgroundVisible = false;
   },
-  BGANIMESPEED: ({ currentStateRef, STACK }) => {
+  BGANIMESPEED: ({ currentState, STACK }) => {
     const speed = STACK.pop() as number;
-    currentStateRef.current.backgroundAnimationSpeed = speed;
+    currentState.backgroundAnimationSpeed = speed;
   },
-  BGANIMESYNC: async ({ currentStateRef }) => {
-    while (currentStateRef.current.backgroundAnimationSpring.isAnimating) {
+  BGANIMESYNC: async ({ currentState }) => {
+    while (currentState.backgroundAnimationSpring.isAnimating) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -246,28 +245,28 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       }
     })
   },
-  RBGANIME: ({ currentStateRef, STACK }) => {
+  RBGANIME: ({ currentState, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
-    currentStateRef.current.isBackgroundVisible = true;
+    currentState.isBackgroundVisible = true;
     animateBackground(
-      currentStateRef.current.backgroundAnimationSpring,
-      currentStateRef.current.backgroundAnimationSpeed,
+      currentState.backgroundAnimationSpring,
+      currentState.backgroundAnimationSpeed,
       start,
       end,
       false,
     )
   },
-  RBGANIMELOOP: ({ currentStateRef, STACK }) => {
+  RBGANIMELOOP: ({ currentState, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
-    currentStateRef.current.isBackgroundVisible = true;
+    currentState.isBackgroundVisible = true;
 
     animateBackground(
-      currentStateRef.current.backgroundAnimationSpring,
-      currentStateRef.current.backgroundAnimationSpeed,
+      currentState.backgroundAnimationSpring,
+      currentState.backgroundAnimationSpeed,
       start,
       end,
       true,
@@ -276,14 +275,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   BGSHADE: ({ STACK }) => {
     STACK.splice(-7); // const lastSeven = STACK.splice(-7);
   },
-  BGANIME: async ({ currentStateRef, STACK }) => {
+  BGANIME: async ({ currentState, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
-    currentStateRef.current.isBackgroundVisible = true;
+    currentState.isBackgroundVisible = true;
     await animateBackground(
-      currentStateRef.current.backgroundAnimationSpring,
-      currentStateRef.current.backgroundAnimationSpeed,
+      currentState.backgroundAnimationSpring,
+      currentState.backgroundAnimationSpeed,
       start,
       end,
       false,
@@ -292,14 +291,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   RND: ({ TEMP_STACK }) => {
     TEMP_STACK[0] = Math.round(Math.random() * 255);
   },
-  WINSIZE: ({ currentStateRef, STACK }) => {
+  WINSIZE: ({ currentState, STACK }) => {
     const height = STACK.pop() as number;
     const width = STACK.pop() as number;
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
     const channel = STACK.pop() as number;
 
-    currentStateRef.current.winSize[channel] = {
+    currentState.winSize[channel] = {
       x,
       y,
       width,
@@ -307,11 +306,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     }
 
   },
-  MES: async ({ currentStateRef, STACK }) => {
+  MES: async ({ currentState, STACK }) => {
     const id = STACK.pop() as number;
     const channel = STACK.pop() as number;
 
-    const { x, y } = currentStateRef.current.winSize[channel];
+    const { x, y } = currentState.winSize[channel];
     displayMessage(id, x, y, channel);
   },
   AMES: async ({ STACK }) => {
@@ -462,12 +461,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await remoteExecute(label, currentOpcode.param)
   },
   FADEIN: async () => {
+    console.log('in')
     const fadeSpring = useGlobalStore.getState().fadeSpring;
     await wait(500)
     fadeSpring.opacity.start(1);
   },
   // i believe this is the same
   FADENONE: async () => {
+    console.log('in2')
     const fadeSpring = useGlobalStore.getState().fadeSpring;
     await wait(500)
     fadeSpring.opacity.start(1);
@@ -475,6 +476,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   FADEOUT: fadeOutMap,
   FADEBLACK: fadeOutMap,
   FADESYNC: async () => {
+    console.log('insync')
     const fadeSpring = useGlobalStore.getState().fadeSpring;
     if (fadeSpring.opacity.get() !== 1) {
       await fadeSpring.opacity.start(1)
@@ -514,9 +516,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const index = STACK.pop() as number;
     TEMP_STACK[0] = useGlobalStore.getState().party[index];
   },
-  SETPC: ({ currentStateRef, STACK }) => {
+  SETPC: ({ currentState, STACK }) => {
     const partyMemberId = STACK.pop() as number;
-    currentStateRef.current.partyMemberId = partyMemberId;
+    currentState.partyMemberId = partyMemberId;
 
     if (useGlobalStore.getState().party.length < 3) {
       useGlobalStore.setState({
@@ -537,188 +539,188 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       party: useGlobalStore.getState().party.filter(id => id !== characterID),
     });
   },
-  SETMODEL: ({ currentStateRef, currentOpcode }) => {
+  SETMODEL: ({ currentState, currentOpcode }) => {
     const modelId = currentOpcode.param;
-    currentStateRef.current.modelId = modelId;
+    currentState.modelId = modelId;
   },
-  BASEANIME: ({ currentStateRef, currentOpcode, STACK }) => {
+  BASEANIME: ({ currentState, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    currentStateRef.current.idleAnimationId = animationId;
-    currentStateRef.current.idleAnimationRange = [firstFrame, lastFrame];
+    currentState.idleAnimationId = animationId;
+    currentState.idleAnimationRange = [firstFrame, lastFrame];
     playBaseAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
-      currentStateRef.current.idleAnimationRange,
+      currentState.animationProgress,
+      currentState.animationSpeed,
+      currentState.idleAnimationRange,
     );
   },
-  ANIME: async ({ currentStateRef, currentOpcode }) => {
+  ANIME: async ({ currentState, currentOpcode }) => {
     const animationId = currentOpcode.param;
-    currentStateRef.current.currentAnimationId = animationId;
+    currentState.currentAnimationId = animationId;
 
     await playAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
+      currentState.animationProgress,
+      currentState.animationSpeed,
       false,
     )
 
-    currentStateRef.current.currentAnimationId = undefined;
-    playBaseAnimation(currentStateRef.current.animationProgress, currentStateRef.current.animationSpeed);
+    currentState.currentAnimationId = undefined;
+    playBaseAnimation(currentState.animationProgress, currentState.animationSpeed);
   },
-  ANIMEKEEP: async ({ currentStateRef, currentOpcode }) => {
+  ANIMEKEEP: async ({ currentState, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
-    currentStateRef.current.currentAnimationId = animationId;
+    currentState.currentAnimationId = animationId;
     await playAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
+      currentState.animationProgress,
+      currentState.animationSpeed,
       false,
     )
   },
-  CANIME: async ({ currentStateRef, currentOpcode, STACK }) => {
+  CANIME: async ({ currentState, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
-    currentStateRef.current.currentAnimationId = animationId;
+    currentState.currentAnimationId = animationId;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
     await playAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
+      currentState.animationProgress,
+      currentState.animationSpeed,
       false,
       [firstFrame, lastFrame]
     )
 
-    currentStateRef.current.currentAnimationId = undefined;
-    playBaseAnimation(currentStateRef.current.animationProgress, currentStateRef.current.animationSpeed);
+    currentState.currentAnimationId = undefined;
+    playBaseAnimation(currentState.animationProgress, currentState.animationSpeed);
   },
-  CANIMEKEEP: async ({ currentStateRef, currentOpcode, STACK }) => {
+  CANIMEKEEP: async ({ currentState, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    currentStateRef.current.currentAnimationId = animationId;
+    currentState.currentAnimationId = animationId;
     await playAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
+      currentState.animationProgress,
+      currentState.animationSpeed,
       false,
       [firstFrame, lastFrame]
     )
   },
-  RANIME: ({ currentStateRef, currentOpcode }) => {
+  RANIME: ({ currentState, currentOpcode }) => {
     const animationId = currentOpcode.param;
-    currentStateRef.current.currentAnimationId = animationId;
+    currentState.currentAnimationId = animationId;
 
     playAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
+      currentState.animationProgress,
+      currentState.animationSpeed,
       false,
     )
 
-    currentStateRef.current.currentAnimationId = undefined;
-    playBaseAnimation(currentStateRef.current.animationProgress, currentStateRef.current.animationSpeed);
+    currentState.currentAnimationId = undefined;
+    playBaseAnimation(currentState.animationProgress, currentState.animationSpeed);
   },
-  RANIMEKEEP: ({ currentStateRef, currentOpcode }) => {
+  RANIMEKEEP: ({ currentState, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
-    currentStateRef.current.currentAnimationId = animationId;
+    currentState.currentAnimationId = animationId;
     playAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
+      currentState.animationProgress,
+      currentState.animationSpeed,
       false,
     )
   },
-  RCANIME: ({ currentStateRef, currentOpcode, STACK }) => {
+  RCANIME: ({ currentState, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
-    currentStateRef.current.currentAnimationId = animationId;
+    currentState.currentAnimationId = animationId;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
     playAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
+      currentState.animationProgress,
+      currentState.animationSpeed,
       false,
       [firstFrame, lastFrame]
     )
 
-    currentStateRef.current.currentAnimationId = undefined;
-    playBaseAnimation(currentStateRef.current.animationProgress, currentStateRef.current.animationSpeed);
+    currentState.currentAnimationId = undefined;
+    playBaseAnimation(currentState.animationProgress, currentState.animationSpeed);
   },
-  RCANIMEKEEP: ({ currentStateRef, currentOpcode, STACK }) => {
+  RCANIMEKEEP: ({ currentState, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    currentStateRef.current.currentAnimationId = animationId;
+    currentState.currentAnimationId = animationId;
     playAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
+      currentState.animationProgress,
+      currentState.animationSpeed,
       false,
       [firstFrame, lastFrame]
     )
   },
-  RANIMELOOP: ({ currentStateRef, currentOpcode, }) => {
+  RANIMELOOP: ({ currentState, currentOpcode, }) => {
     const animationId = currentOpcode.param;
 
-    currentStateRef.current.currentAnimationId = animationId;
+    currentState.currentAnimationId = animationId;
     playAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
+      currentState.animationProgress,
+      currentState.animationSpeed,
       true,
     )
   },
-  RCANIMELOOP: ({ currentStateRef, currentOpcode, STACK }) => {
+  RCANIMELOOP: ({ currentState, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    currentStateRef.current.currentAnimationId = animationId;
+    currentState.currentAnimationId = animationId;
     playAnimation(
-      currentStateRef.current.animationProgress,
-      currentStateRef.current.animationSpeed,
+      currentState.animationProgress,
+      currentState.animationSpeed,
       true,
       [firstFrame, lastFrame]
     )
   },
-  LADDERANIME: ({ currentOpcode, currentStateRef, STACK }) => {
+  LADDERANIME: ({ currentOpcode, currentState, STACK }) => {
     currentOpcode.param // unknown
-    currentStateRef.current.currentAnimationId = STACK.pop() as number;
+    currentState.currentAnimationId = STACK.pop() as number;
     STACK.pop() as number;
   },
-  ANIMESPEED: ({ currentStateRef, STACK }) => {
-    currentStateRef.current.animationSpeed = STACK.pop() as number;
+  ANIMESPEED: ({ currentState, STACK }) => {
+    currentState.animationSpeed = STACK.pop() as number;
   },
-  ANIMESYNC: async ({ currentStateRef }) => {
-    while (currentStateRef.current.animationProgress.isAnimating) {
+  ANIMESYNC: async ({ currentState }) => {
+    while (currentState.animationProgress.isAnimating) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
-  ANIMESTOP: ({ currentStateRef }) => {
-    currentStateRef.current.animationProgress.stop();
+  ANIMESTOP: ({ currentState }) => {
+    currentState.animationProgress.stop();
   },
   POPANIME: () => { },
   PUSHANIME: () => { },
-  UNUSE: ({ currentOpcode, currentStateRef }) => {
+  UNUSE: ({ currentOpcode, currentState }) => {
     currentOpcode.param // always 0
-    currentStateRef.current.isUnused = true;
+    currentState.isUnused = true;
   },
-  USE: ({ currentStateRef }) => {
-    currentStateRef.current.isUnused = false;
+  USE: ({ currentState }) => {
+    currentState.isUnused = false;
   },
-  THROUGHON: ({ currentStateRef }) => {
-    currentStateRef.current.isSolid = false;
+  THROUGHON: ({ currentState }) => {
+    currentState.isSolid = false;
   },
-  THROUGHOFF: ({ currentStateRef }) => {
-    currentStateRef.current.isSolid = true;
+  THROUGHOFF: ({ currentState }) => {
+    currentState.isSolid = true;
   },
-  HIDE: ({ currentStateRef }) => {
-    currentStateRef.current.isVisible = false;
+  HIDE: ({ currentState }) => {
+    currentState.isVisible = false;
   },
-  SHOW: ({ currentStateRef }) => {
-    currentStateRef.current.isVisible = true;
+  SHOW: ({ currentState }) => {
+    currentState.isVisible = true;
   },
-  SET: ({ currentOpcode, currentStateRef, scene, STACK }) => {
+  SET: ({ currentOpcode, currentState, scene, STACK }) => {
     currentOpcode.param // walkmesh triangle ID, unused
     const lastTwo = STACK.splice(-2);
     const walkmesh = scene.getObjectByName('walkmesh') as Group;
@@ -730,34 +732,34 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       return;
     }
 
-    currentStateRef.current.position.set([position.x, position.y, position.z]);
+    currentState.position.set([position.x, position.y, position.z]);
   },
-  SET3: async ({ currentOpcode, currentStateRef, STACK }) => {
+  SET3: async ({ currentOpcode, currentState, STACK }) => {
     currentOpcode.param // walkmesh triangle ID, unused
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    currentStateRef.current.position.set([position.x, position.y, position.z]);
+    currentState.position.set([position.x, position.y, position.z]);
   },
-  TALKRADIUS: ({ currentStateRef, STACK }) => {
+  TALKRADIUS: ({ currentState, STACK }) => {
     const radius = STACK.pop() as number;
-    currentStateRef.current.talkRadius = radius;
+    currentState.talkRadius = radius;
   },
-  PUSHRADIUS: ({ currentStateRef, STACK }) => {
+  PUSHRADIUS: ({ currentState, STACK }) => {
     const radius = STACK.pop() as number;
-    currentStateRef.current.pushRadius = radius
+    currentState.pushRadius = radius
   },
-  PUSHOFF: ({ currentStateRef }) => {
-    currentStateRef.current.isPushable = false;
+  PUSHOFF: ({ currentState }) => {
+    currentState.isPushable = false;
   },
-  PUSHON: ({ currentStateRef }) => {
-    currentStateRef.current.isPushable = true;
+  PUSHON: ({ currentState }) => {
+    currentState.isPushable = true;
   },
-  TALKOFF: ({ currentStateRef }) => {
-    currentStateRef.current.isTalkable = false;
+  TALKOFF: ({ currentState }) => {
+    currentState.isTalkable = false;
   },
-  TALKON: ({ currentStateRef }) => {
-    currentStateRef.current.isTalkable = true;
+  TALKON: ({ currentState }) => {
+    currentState.isTalkable = true;
   },
   SETGETA: ({ STACK }) => {
     // const actorId = 
@@ -768,24 +770,24 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     TEMP_STACK[0] = 0; // X
     TEMP_STACK[1] = 0; // Y
   },
-  MSPEED: ({ currentStateRef, STACK }) => {
+  MSPEED: ({ currentState, STACK }) => {
     const movementSpeed = STACK.pop() as number;
-    currentStateRef.current.movementSpeed = movementSpeed;
+    currentState.movementSpeed = movementSpeed;
   },
-  MOVE: ({ currentStateRef, STACK }) => {
+  MOVE: ({ currentState, STACK }) => {
     // const distanceToStop =
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    if (currentStateRef.current.currentAnimationId === 0 || currentStateRef.current.currentAnimationId === undefined) {
-      currentStateRef.current.currentAnimationId = currentStateRef.current.movementSpeed > 5000 ? 2 : 1;
+    if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
+      currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
     }
     return new Promise((resolve) => {
-      currentStateRef.current.position.start([position.x, position.y, position.z], {
+      currentState.position.start([position.x, position.y, position.z], {
         immediate: false,
         config: {
-          duration: currentStateRef.current.movementSpeed * 3
+          duration: currentState.movementSpeed * 3
         },
         onRest: () => {
           resolve();
@@ -793,15 +795,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       });
     })
   },
-  MOVEFLUSH: ({ currentStateRef }) => {
-    currentStateRef.current.position.stop();
+  MOVEFLUSH: ({ currentState }) => {
+    currentState.position.stop();
   },
-  MOVECANCEL: ({ currentStateRef, STACK }) => {
+  MOVECANCEL: ({ currentState, STACK }) => {
     STACK.pop() as number; // could this cancel another entity's movement?
-    currentStateRef.current.position.stop();
+    currentState.position.stop();
   },
-  MOVESYNC: async ({ currentStateRef }) => {
-    while (currentStateRef.current.position.isAnimating) {
+  MOVESYNC: async ({ currentState }) => {
+    while (currentState.position.isAnimating) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -858,89 +860,89 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
 
   // Turn to angle
-  CTURNL: ({ currentStateRef, STACK }) => {
+  CTURNL: ({ currentState, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+    turnToFaceAngle(angle, duration, currentState.angle)
   },
-  CTURNR: ({ currentStateRef, STACK }) => {
+  CTURNR: ({ currentState, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+    turnToFaceAngle(angle, duration, currentState.angle)
   },
-  DIR: ({ currentStateRef, STACK }) => {
+  DIR: ({ currentState, STACK }) => {
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, 0, currentStateRef.current.angle)
+    turnToFaceAngle(angle, 0, currentState.angle)
   },
-  UNKNOWN6: ({ currentStateRef, STACK }) => {
+  UNKNOWN6: ({ currentState, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+    turnToFaceAngle(angle, duration, currentState.angle)
   },
-  UNKNOWN7: ({ currentStateRef, STACK }) => {
+  UNKNOWN7: ({ currentState, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+    turnToFaceAngle(angle, duration, currentState.angle)
   },
-  UNKNOWN8: ({ currentStateRef, STACK }) => {
+  UNKNOWN8: ({ currentState, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+    turnToFaceAngle(angle, duration, currentState.angle)
   },
-  UNKNOWN9: ({ currentStateRef, STACK }) => {
+  UNKNOWN9: ({ currentState, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+    turnToFaceAngle(angle, duration, currentState.angle)
   },
-  LTURNL: ({ currentStateRef, STACK }) => {
+  LTURNL: ({ currentState, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+    turnToFaceAngle(angle, duration, currentState.angle)
   },
-  LTURNR: ({ currentStateRef, STACK }) => {
+  LTURNR: ({ currentState, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+    turnToFaceAngle(angle, duration, currentState.angle)
   },
-  LTURN: ({ currentStateRef, STACK }) => {
+  LTURN: ({ currentState, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+    turnToFaceAngle(angle, duration, currentState.angle)
   },
-  PLTURN: ({ currentStateRef, STACK }) => {
+  PLTURN: ({ currentState, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentStateRef.current.angle)
+    turnToFaceAngle(angle, duration, currentState.angle)
   },
 
   // Turn to face entity
-  CTURN: ({ currentStateRef, scene, script, STACK }) => {
+  CTURN: ({ currentState, scene, script, STACK }) => {
     const duration = STACK.pop() as number;
     const targetId = STACK.pop() as number;
     console.log(script, duration, targetId)
-    turnToFaceEntity(script.groupId, `model--${targetId}`, duration, scene, currentStateRef.current.angle)
+    turnToFaceEntity(script.groupId, `model--${targetId}`, duration, scene, currentState.angle)
   },
-  DIRA: ({ currentStateRef, scene, script, STACK }) => {
+  DIRA: ({ currentState, scene, script, STACK }) => {
     const targetActorId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `model--${targetActorId}`, 0, scene, currentStateRef.current.angle)
+    turnToFaceEntity(script.groupId, `model--${targetActorId}`, 0, scene, currentState.angle)
   },
 
   // Turn to face party member
   // TODO: documentation is incorrect compared to usage.
-  DIRP: ({ currentStateRef, scene, script, STACK }) => {
+  DIRP: ({ currentState, scene, script, STACK }) => {
     const partyMemberId = STACK.pop() as number;
     STACK.pop() as number; // unknown
     STACK.pop() as number; // unknown
-    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, 0, scene, currentStateRef.current.angle)
+    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, 0, scene, currentState.angle)
   },
-  PCTURN: ({ currentStateRef, scene, script, STACK }) => {
+  PCTURN: ({ currentState, scene, script, STACK }) => {
     const duration = STACK.pop() as number;
     STACK.pop() as number; // unknown
-    turnToFaceEntity(script.groupId, `party--0`, duration, scene, currentStateRef.current.angle)
+    turnToFaceEntity(script.groupId, `party--0`, duration, scene, currentState.angle)
   },
-  PDIRA: ({ currentStateRef, scene, script, STACK }) => {
+  PDIRA: ({ currentState, scene, script, STACK }) => {
     const partyMemberId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, 0, scene, currentStateRef.current.angle)
+    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, 0, scene, currentState.angle)
   },
 
 
@@ -948,41 +950,41 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   FACEDIR: ({ STACK }) => {
     STACK.splice(-4);
   },
-  FACEDIRA: ({ currentStateRef, scene, script, STACK }) => {
+  FACEDIRA: ({ currentState, scene, script, STACK }) => {
     const frames = STACK.pop() as number;
     const targetActorId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `model--${targetActorId}`, frames, scene, currentStateRef.current.headAngle)
+    turnToFaceEntity(script.groupId, `model--${targetActorId}`, frames, scene, currentState.headAngle)
   },
-  FACEDIRP: ({ currentStateRef, scene, script, STACK }) => {
+  FACEDIRP: ({ currentState, scene, script, STACK }) => {
     const frames = STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, frames, scene, currentStateRef.current.headAngle)
+    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, frames, scene, currentState.headAngle)
   },
-  FACEDIROFF: ({ currentStateRef, STACK }) => {
+  FACEDIROFF: ({ currentState, STACK }) => {
     const frames = STACK.pop() as number;
-    turnToFaceAngle(0, frames, currentStateRef.current.headAngle)
+    turnToFaceAngle(0, frames, currentState.headAngle)
   },
-  FACEDIRSYNC: async ({ currentStateRef }) => {
-    while (currentStateRef.current.headAngle.isAnimating) {
+  FACEDIRSYNC: async ({ currentState }) => {
+    while (currentState.headAngle.isAnimating) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
   RFACEDIR: ({ STACK }) => {
     STACK.splice(-4);
   },
-  RFACEDIRA: ({ currentStateRef, scene, script, STACK }) => {
+  RFACEDIRA: ({ currentState, scene, script, STACK }) => {
     const frames = STACK.pop() as number;
     const targetActorId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `model--${targetActorId}`, frames, scene, currentStateRef.current.headAngle)
+    turnToFaceEntity(script.groupId, `model--${targetActorId}`, frames, scene, currentState.headAngle)
   },
-  RFACEDIRP: ({ currentStateRef, scene, script, STACK }) => {
+  RFACEDIRP: ({ currentState, scene, script, STACK }) => {
     const frames = STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, frames, scene, currentStateRef.current.headAngle)
+    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, frames, scene, currentState.headAngle)
   },
-  RFACEDIROFF: ({ currentStateRef, STACK }) => {
+  RFACEDIROFF: ({ currentState, STACK }) => {
     const frames = STACK.pop() as number;
-    turnToFaceAngle(0, frames, currentStateRef.current.headAngle)
+    turnToFaceAngle(0, frames, currentState.headAngle)
   },
   FACEDIRI: ({ STACK }) => {
     STACK.splice(-4);
@@ -1034,11 +1036,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       currentFocusActor: actorCode
     });
   },
-  DOORLINEON: ({ currentStateRef }) => {
-    currentStateRef.current.isDoorOn = true;
+  DOORLINEON: ({ currentState }) => {
+    currentState.isDoorOn = true;
   },
-  DOORLINEOFF: ({ currentStateRef }) => {
-    currentStateRef.current.isDoorOn = false;
+  DOORLINEOFF: ({ currentState }) => {
+    currentState.isDoorOn = false;
   },
 
   // ?
@@ -1054,31 +1056,31 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   MUSICVOLSYNC: () => { },
   //PRELOADS TRACK
-  MUSICLOAD: ({ currentStateRef, STACK }) => {
-    currentStateRef.current.backroundMusicId = STACK.pop() as number;
+  MUSICLOAD: ({ currentState, STACK }) => {
+    currentState.backroundMusicId = STACK.pop() as number;
   },
   // PLAYS PRELOADED TRACK
-  MUSICCHANGE: ({ currentStateRef }) => {
-    console.log('Would play', currentStateRef.current.backroundMusicId)
+  MUSICCHANGE: ({ currentState }) => {
+    console.log('Would play', currentState.backroundMusicId)
   },
-  MUSICSTOP: ({ currentStateRef, STACK }) => {
+  MUSICSTOP: ({ currentState, STACK }) => {
     // 0 OR 1. No idea why. It's even sometimes called successively with 1 and 0
     STACK.pop() as number;
-    currentStateRef.current.backroundMusicId = undefined;
+    currentState.backroundMusicId = undefined;
   },
-  MUSICVOL: ({ currentStateRef, STACK }) => {
+  MUSICVOL: ({ currentState, STACK }) => {
     // const unknown = 
     STACK.pop() as number;
     const volume = STACK.pop() as number;
-    currentStateRef.current.backgroundMusicVolume = volume;
+    currentState.backgroundMusicVolume = volume;
   },
-  MUSICVOLTRANS: ({ currentStateRef, STACK }) => {
+  MUSICVOLTRANS: ({ currentState, STACK }) => {
     // const unknown = 
     STACK.pop() as number;
     // const duration =
     STACK.pop() as number;
     const volume = STACK.pop() as number;
-    currentStateRef.current.backgroundMusicVolume = volume;
+    currentState.backgroundMusicVolume = volume;
   },
   // This is used once. I think it restarts the track?
   MUSICREPLAY: () => {
@@ -1088,8 +1090,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
   },
   // This is an assumption
-  MUSICSTATUS: ({ currentStateRef, TEMP_STACK }) => {
-    const isPlaying = currentStateRef.current.isPlayingBackgroundMusic ? 1 : 0
+  MUSICSTATUS: ({ currentState, TEMP_STACK }) => {
+    const isPlaying = currentState.isPlayingBackgroundMusic ? 1 : 0
     TEMP_STACK[0] = isPlaying;
   },
   MUSICVOLFADE: ({ STACK }) => {
@@ -1187,9 +1189,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SPUREADY: ({ STACK }) => {
     STACK.pop() as number;
   },
-  SPUSYNC: async ({ currentStateRef, STACK }) => {
+  SPUSYNC: async ({ currentState, STACK }) => {
     const frames = STACK.pop() as number;
-    while (currentStateRef.current.spuValue < frames) {
+    while (currentState.spuValue < frames) {
       await wait(100);
     }
   },
@@ -1223,24 +1225,24 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   MAPJUMPOFF: () => {
     useGlobalStore.setState({ isMapJumpEnabled: false });
   },
-  SETTIMER: ({ currentStateRef, STACK }) => {
+  SETTIMER: ({ currentState, STACK }) => {
     const time = STACK.pop() as number;
-    currentStateRef.current.countdownTime = time;
-    currentStateRef.current.countdownTimer = window.setInterval(() => {
-      currentStateRef.current.countdownTime -= 1;
-      console.log(currentStateRef.current.countdownTime);
-      if (currentStateRef.current.countdownTime <= 0) {
-        window.clearTimeout(currentStateRef.current.countdownTimer);
-        currentStateRef.current.countdownTimer = undefined;
+    currentState.countdownTime = time;
+    currentState.countdownTimer = window.setInterval(() => {
+      currentState.countdownTime -= 1;
+      console.log(currentState.countdownTime);
+      if (currentState.countdownTime <= 0) {
+        window.clearTimeout(currentState.countdownTimer);
+        currentState.countdownTimer = undefined;
       }
     }, 1000);
   },
-  KILLTIMER: ({ currentStateRef }) => {
-    window.clearTimeout(currentStateRef.current.countdownTimer);
-    currentStateRef.current.countdownTimer = undefined;
+  KILLTIMER: ({ currentState }) => {
+    window.clearTimeout(currentState.countdownTimer);
+    currentState.countdownTimer = undefined;
   },
-  GETTIMER: ({ currentStateRef, TEMP_STACK }) => {
-    TEMP_STACK[0] = currentStateRef.current.countdownTime
+  GETTIMER: ({ currentState, TEMP_STACK }) => {
+    TEMP_STACK[0] = currentState.countdownTime
   },
   DISPTIMER: ({ STACK }) => {
     // const y = 
@@ -1708,7 +1710,7 @@ window.setTimeout(() => {
     };
 
     // @ts-expect-error Test
-    if (dummyState.currentStateRef.current.triggeredUnused) {
+    if (dummyState.currentState.triggeredUnused) {
       return [];
     }
     if (!expected) {
@@ -1751,7 +1753,7 @@ export const executeOpcode = async (currentOpcode: Opcode, state: ScriptState, a
     TEMP_STACK: {},
     STACK: [],
     ...args,
-    currentStateRef: {
+    currentState: {
       current: state,
     },
   });

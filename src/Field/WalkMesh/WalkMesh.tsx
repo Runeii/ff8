@@ -4,6 +4,7 @@ import useGlobalStore from "../../store";
 import { FieldData } from "../Field";
 import { vectorToFloatingPoint } from "../../utils";
 import { ThreeEvent } from "@react-three/fiber";
+import { Sphere } from "@react-three/drei";
 
 type WalkMeshProps = {
   setHasPlacedWalkmesh: (value: boolean) => void;
@@ -40,7 +41,10 @@ const WalkMesh = ({ setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
     });
   }
 
+  const congaWaypointHistory = useGlobalStore(state => state.congaWaypointHistory);
+
   return (
+    <>
     <group name="walkmesh">
       {walkMeshGeometry.map((geometry, index) => (
         <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={import.meta.env.DEV}>
@@ -48,6 +52,12 @@ const WalkMesh = ({ setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
         </mesh>
       ))}
     </group>
+      {congaWaypointHistory.map((position, index) => (
+        <Sphere key={index} args={[0.01, 16, 16]} position={position}>
+          <meshBasicMaterial color="blue" side={DoubleSide} />
+        </Sphere>
+      ))}
+      </>
   );
 };
 

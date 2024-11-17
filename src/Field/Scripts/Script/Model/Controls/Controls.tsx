@@ -1,5 +1,4 @@
 import { Box } from "@react-three/drei";
-import { ScriptState } from "../../../types";
 import { useEffect, useState } from "react";
 import { Group, Mesh, Object3D, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
@@ -8,46 +7,33 @@ import { getCameraDirections, getCharacterForwardDirection } from "../../../../C
 import { checkForIntersections, getPositionOnWalkmesh } from "../../../../../utils";
 import useGlobalStore from "../../../../../store";
 import { radToDeg } from "three/src/math/MathUtils.js";
+import  { ScriptStateStore } from "../../state";
 
 type ControlsProps = {
-  animations: GltfHandle['animations'] | undefined;
   children: React.ReactNode;
-  state: ScriptState;
+  useScriptStateStore: ScriptStateStore;
 }
 
 export const CHARACTER_HEIGHT = 0.08
-const RUNNING_SPEED = 0.25  ;
+const RUNNING_SPEED = 0.25;
 const WALKING_SPEED = 0.08;
 
 const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
-const Controls = ({ animations, children, state }: ControlsProps) => {
+const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();
-  
-  const [currentActionIndex, setCurrentActionIndex] = useState<number>(1);
-  useEffect(() => {
-    if (!animations || !animations.mixer) {
-      return;
-    }
-
-    animations.mixer.stopAllAction();
-    const clip = Object.values(animations.clips)[currentActionIndex];
-    if (!clip) {
-      return;
-    }
-    const action = animations.mixer.clipAction(clip);
-    action.play();
-    animations.mixer.time = 0;
-  }, [animations, currentActionIndex]);
 
   const scene = useThree(({ scene }) => scene);
 
   const [hasPlacedCharacter, setHasPlacedCharacter] = useState(false);
   const initialFieldPosition = useGlobalStore((state) => state.characterPosition);
   const isTransitioningMap = useGlobalStore((state) => state.isTransitioningMap);
+
+  const { position } = useScriptStateStore();
+
   useEffect(() => {
     const walkmesh = scene.getObjectByName("walkmesh") as Group;
 
@@ -58,13 +44,13 @@ const Controls = ({ animations, children, state }: ControlsProps) => {
     const initialPosition = new Vector3(initialFieldPosition.x, initialFieldPosition.y, initialFieldPosition.z);
     const newPosition = getPositionOnWalkmesh(initialPosition, walkmesh);
     if (newPosition) {
-      state.position.set([newPosition.x, newPosition.y, newPosition.z]);
+      position.set([newPosition.x, newPosition.y, newPosition.z]);
     } else {
       console.warn("Tried to set character position to an invalid position", initialPosition);
     }
 
     setHasPlacedCharacter(true);
-  }, [initialFieldPosition, isTransitioningMap, scene, setHasPlacedCharacter, state.position]);
+  }, [initialFieldPosition, isTransitioningMap, scene, setHasPlacedCharacter, position]);
 
 
   useFrame(({ camera, scene }, delta) => {
@@ -102,15 +88,20 @@ const Controls = ({ animations, children, state }: ControlsProps) => {
 
     const isAllowedToMove = useGlobalStore.getState().isUserControllable;
     if (direction.lengthSq() <= 0 || !isAllowedToMove) {
-      setCurrentActionIndex(0);
+      useGlobalStore.setState({
+        playerAnimationIndex: 0,
+      })
       return;
     }
     
     const isWalking = !isRunEnabled || movementFlags.isWalking;
-    direction.normalize().multiplyScalar(isWalking ? WALKING_SPEED : RUNNING_SPEED).multiplyScalar(delta);
-    setCurrentActionIndex(isWalking ? 1 : 2);
-  
-    const desiredPosition = new Vector3().fromArray(state.position.get()).add(direction);
+    const speed = isWalking ? WALKING_SPEED : RUNNING_SPEED
+    direction.normalize().multiplyScalar(speed).multiplyScalar(delta);
+    useGlobalStore.setState({
+      playerAnimationIndex: isWalking ? 1 : 2,
+    });
+
+    const desiredPosition = new Vector3().fromArray(position.get()).add(direction);
 
     const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT);
 
@@ -133,7 +124,7 @@ const Controls = ({ animations, children, state }: ControlsProps) => {
     direction.z = 0;
     direction.normalize();
 
-    state.position.start([newPosition.x, newPosition.y, newPosition.z], {
+    position.start([newPosition.x, newPosition.y, newPosition.z], {
       immediate: true,
     });
 
@@ -145,8 +136,19 @@ const Controls = ({ animations, children, state }: ControlsProps) => {
     angle = radToDeg(angle);
     if (angle < 0) angle += 360;
   
-    state.angle.set(angle / 360 * 255);
+    const scaledAngle = angle / 360 * 255;
+    useScriptStateStore.getState().angle.set(scaledAngle);
 
+    useGlobalStore.setState((storeState) => ({
+      congaWaypointHistory: [
+        {
+          position: newPosition,
+          angle: scaledAngle,
+        },
+        ...storeState.congaWaypointHistory,
+      ],
+    }))
+  
     player.userData.hasMoved = true;
 
   });
@@ -154,7 +156,7 @@ const Controls = ({ animations, children, state }: ControlsProps) => {
   return (
     <group name="character">
       {children}
-      <Box args={[0.05, CHARACTER_HEIGHT, 0.05]} position={[0,CHARACTER_HEIGHT / 2,0]} name="hitbox" visible={false} />
+      <Box args={[0.05, 0.05, CHARACTER_HEIGHT + 1]} position={[0,0,CHARACTER_HEIGHT / 2]} name="hitbox" visible={false} />
     </group>
   );
 }

@@ -36,6 +36,9 @@ interface GlobalState {
 
   availableCharacters: number[],
   party: number[],
+  congaWaypointHistory: CongaHistory[],
+  playerSpeed: number,
+  playerAnimationIndex: number,
 
   currentFocusActor?: number,
 
@@ -74,6 +77,9 @@ const useGlobalStore = create<GlobalState>()(() => ({
 
   availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   party: [],
+  congaWaypointHistory: [],
+  playerSpeed: 0,
+  playerAnimationIndex: 0,
 
   currentFocusActor: undefined,
 
