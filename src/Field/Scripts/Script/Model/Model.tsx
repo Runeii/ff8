@@ -31,7 +31,7 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
     partyMemberId,
   } = useScriptStateStore();
 
-  const isPlayerControlled = useGlobalStore(state => state.party[0] === partyMemberId && state.isUserControllable);
+  const isPlayerControlled = useGlobalStore(state => state.party[0] === partyMemberId);
 
   const [animations, setAnimations] = useState<GltfHandle['animations']>();
   const [meshGroup, setMeshGroup] = useState<Group>();
@@ -73,7 +73,6 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
   const activeAnimationId = currentAnimationId ?? activeIdleAnimationId
 
   const currentAction = useMemo(() => {
-  
     if (!animations || !animations.mixer || activeAnimationId === undefined) {
       return;
     }
@@ -98,7 +97,7 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
     if (!currentAction || activeIdleAnimationId !== undefined) {
       return;
     }
-    console.log('play nonidle')
+
     currentAction.time = animationProgress.get() * currentAction.getClip().duration;
   });
 
@@ -107,7 +106,6 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
       return;
     }
 
-    console.log('play idle')
     currentAction.paused = false;
 
   }, [activeAnimationId, activeIdleAnimationId, currentAction]);

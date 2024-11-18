@@ -10,7 +10,7 @@ type FollowerProps = {
   useScriptStateStore: ScriptStateStore
 }
 
-const DISTANCE = 6;
+const DISTANCE = 30;
 
 const Follower = ({ children, partyMemberId, useScriptStateStore}: FollowerProps) => {
   const congaWaypointHistory = useGlobalStore(state => state.congaWaypointHistory);
@@ -29,7 +29,7 @@ const Follower = ({ children, partyMemberId, useScriptStateStore}: FollowerProps
       return;
     }
   
-    const {position, angle} = history;
+    const { position, angle } = history;
 
     state.position.set([position.x, position.y, position.z]);
     state.angle.set(angle);

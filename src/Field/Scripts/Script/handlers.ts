@@ -1,7 +1,7 @@
 import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
-import { Opcode, OpcodeObj, Script, ScriptMethod, ScriptState } from "../types";
+import { Opcode, OpcodeObj, Script, ScriptMethod } from "../types";
 import { dummiedCommand, openMessage, remoteExecute, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
@@ -28,7 +28,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 8000, // progress
+  256: 4890, // progress
   491: 0, // touk
   534: 1, // ?
   720: 0, // squall model
@@ -218,9 +218,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
   BGDRAW: ({ currentState, STACK }) => {
-    // I don't think this is actually used
-    STACK.pop() as number;
-    currentState.isBackgroundVisible = true;
+    const isDrawn = STACK.pop() as number;
+    currentState.isBackgroundVisible = isDrawn === 1;
   },
   BGOFF: ({ currentState }) => {
     currentState.isBackgroundVisible = false;
@@ -461,14 +460,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await remoteExecute(label, currentOpcode.param)
   },
   FADEIN: async () => {
-    console.log('in')
     const fadeSpring = useGlobalStore.getState().fadeSpring;
     await wait(500)
     fadeSpring.opacity.start(1);
   },
   // i believe this is the same
   FADENONE: async () => {
-    console.log('in2')
     const fadeSpring = useGlobalStore.getState().fadeSpring;
     await wait(500)
     fadeSpring.opacity.start(1);
@@ -476,7 +473,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   FADEOUT: fadeOutMap,
   FADEBLACK: fadeOutMap,
   FADESYNC: async () => {
-    console.log('insync')
     const fadeSpring = useGlobalStore.getState().fadeSpring;
     if (fadeSpring.opacity.get() !== 1) {
       await fadeSpring.opacity.start(1)
@@ -1679,6 +1675,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 // Note: this is compiled using a custom modified version of Deling. We construct a file that records how many args and
 // stack changes each opcode does across all fields. Using this we can perform a run time check against implementation.
 import opcodeOutput from '../../../../scripts/opcodeOutput';
+import { ScriptState } from "./state";
 
 window.setTimeout(() => {
   return;

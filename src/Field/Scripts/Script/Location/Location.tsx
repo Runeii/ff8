@@ -17,7 +17,8 @@ type LocationProps = {
 const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationProps) => {
   const player = useThree(({ scene }) => scene.getObjectByName("character") as Group);
 
-  const { isLineOn, linePoints } = useScriptStateStore();
+  const isLineOn = useScriptStateStore(state => state.isLineOn);
+  const linePoints = useScriptStateStore(state => state.linePoints);
 
   const { isIntersecting, wasIntersecting } = useLineIntersection(linePoints ?? undefined, player, isLineOn);
 

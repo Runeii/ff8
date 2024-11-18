@@ -1,4 +1,4 @@
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { Line } from "@react-three/drei";
 import { checkForIntersection } from "../gatewayUtils";
 import { useMemo, useState } from "react";

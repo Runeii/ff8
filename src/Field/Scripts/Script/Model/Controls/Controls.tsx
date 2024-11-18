@@ -31,11 +31,11 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
   const [hasPlacedCharacter, setHasPlacedCharacter] = useState(false);
   const initialFieldPosition = useGlobalStore((state) => state.characterPosition);
   const isTransitioningMap = useGlobalStore((state) => state.isTransitioningMap);
+  const walkmesh = scene.getObjectByName("walkmesh") as Group;
 
-  const { position } = useScriptStateStore();
+  const position = useScriptStateStore(state => state.position);
 
   useEffect(() => {
-    const walkmesh = scene.getObjectByName("walkmesh") as Group;
 
     if (!walkmesh || !initialFieldPosition || isTransitioningMap) {
       return;
@@ -50,7 +50,7 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
     }
 
     setHasPlacedCharacter(true);
-  }, [initialFieldPosition, isTransitioningMap, scene, setHasPlacedCharacter, position]);
+  }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, position, walkmesh]);
 
 
   useFrame(({ camera, scene }, delta) => {

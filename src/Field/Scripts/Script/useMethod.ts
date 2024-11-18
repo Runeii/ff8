@@ -16,6 +16,7 @@ const useMethod = (
   useEffect(() => {
     window.setTimeout(() => {
       useScriptStateStore.setState(state => ({
+        ...state,
         spuValue: state.spuValue + 1,
       }));
     }, 1000);
@@ -74,6 +75,11 @@ const useMethod = (
       return;
     }
 
+
+    if (useScriptStateStore.getState().hasRemovedControl) {
+      useScriptStateStore.setState({ hasRemovedControl: false });
+      useGlobalStore.setState({ isUserControllable: true });
+    }
     // Doors behave differently and do not return to default loop
     const isDoorOpenOrCloseState = script.type === 'door' && (activeMethodId === 'open' || activeMethodId === 'close');
 
@@ -84,7 +90,7 @@ const useMethod = (
     useGlobalStore.setState({ hasActiveTalkMethod: false });
     setPreviousActiveMethodName(activeMethod.methodId);
     setActiveMethodId(undefined);
-  }, [activeMethod, activeMethodId, script.type, setActiveMethodId]);
+  }, [activeMethod, activeMethodId, script.type, setActiveMethodId, useScriptStateStore]);
 
   const thisRunMethodId = useRef<string>();
   useEffect(() => {
@@ -112,8 +118,8 @@ const useMethod = (
     const execute = async () => {
       const currentOpcode = opcodes[currentOpcodeIndex] ?? undefined;
 
-      if (script.groupId === 20) {
-        //console.log(currentOpcode, activeMethodId, STACKRef.current);
+      if (script.groupId === 7) {
+        //  console.log(script, currentOpcode, activeMethodId);
       }
       if (!currentOpcode && !hasCompletedConstructor) {
         setHasCompletedConstructor(true);

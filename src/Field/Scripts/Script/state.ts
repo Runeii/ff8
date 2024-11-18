@@ -92,6 +92,7 @@ export const createScriptState = () => {
     angle: new SpringValue(0),
     headAngle: new SpringValue(0),
 
+    // @ts-expect-error Weird spring value issue with arrays
     position: new SpringValue([0, 0, 0]),
     movementDuration: 0,
     movementSpeed: 0,

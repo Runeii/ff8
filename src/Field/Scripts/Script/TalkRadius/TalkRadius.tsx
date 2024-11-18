@@ -60,11 +60,11 @@ const TalkRadius = ({ radius, setActiveMethodId, talkMethod }: TalkRadiusProps) 
   return (
     <Sphere
       args={[radius]}
-      position={[0, (CHARACTER_HEIGHT / 2), 0]}
+      position={[0, 0, (CHARACTER_HEIGHT / 2)]}
       ref={talkSphereRef}
       visible={false}
     >
-      <meshBasicMaterial color={`white`} side={DoubleSide} opacity={0.1} transparent />
+      <meshBasicMaterial color={`white`} side={DoubleSide} opacity={1} transparent />
     </Sphere>
   );
 }
