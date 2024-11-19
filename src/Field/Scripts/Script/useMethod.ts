@@ -180,6 +180,8 @@ const useMethod = (
 
     execute();
   }, [activeMethod, activeMethodId, currentOpcodeIndex, handleCompleteRun, hasCompletedConstructor, isUnused, scene, script, useScriptStateStore]);
+
+  return hasCompletedConstructor;
 }
 
 export default useMethod;

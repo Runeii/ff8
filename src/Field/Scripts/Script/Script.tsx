@@ -17,11 +17,12 @@ type ScriptProps = {
   doors: FieldData['doors'],
   models: string[];
   script: ScriptType;
+  onSetupCompleted: () => void;
 }
 
 // Not implemented
 // * Pushable
-const Script = ({ doors, models, script }: ScriptProps) => {
+const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
   const entityRef = useRef<Group>(null);
 
   const [activeMethodId, setActiveMethodId] = useState<string>();
@@ -40,9 +41,17 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   }, [activeMethodId, remoteExecutionKey]);
   
 
-  const useScriptStateStore =  useMemo(() => createScriptState(), []);
+  const useScriptStateStore = useMemo(() => createScriptState(), []);
 
-  useMethod(script, useScriptStateStore, activeMethodId, setActiveMethodId);
+  const hasCompletedConstructor = useMethod(script, useScriptStateStore, activeMethodId, setActiveMethodId);
+
+  useEffect(() => {
+    if (!hasCompletedConstructor) {
+      return;
+    }
+
+    onSetupCompleted();
+  }, [hasCompletedConstructor, onSetupCompleted]);
 
   const isVisible = useScriptStateStore(state => state.isVisible);
   const isUnused = useScriptStateStore(state => state.isUnused);
@@ -56,7 +65,7 @@ const Script = ({ doors, models, script }: ScriptProps) => {
       return;
     }
 
-    const handleExecutionRequest = async ({ detail: { key, scriptLabel, partyMemberId: requestedPartyMemberId } }: {detail: ExecuteScriptEventDetail}) => {
+    const handleExecutionRequest = async ({ detail: { key, scriptLabel, partyMemberId: requestedPartyMemberId, source } }: {detail: ExecuteScriptEventDetail}) => {
       if (requestedPartyMemberId !== undefined && partyMemberId !== requestedPartyMemberId) {
         return;
       }
@@ -71,6 +80,9 @@ const Script = ({ doors, models, script }: ScriptProps) => {
         return;
       }
 
+      if (script.groupId === 5) {
+        //console.log('Remote execution', script.groupId, source);
+      }
       setActiveMethodId(matchingMethod?.methodId);
       setRemoteExecutionKey(key);
     }
@@ -112,7 +124,6 @@ const Script = ({ doors, models, script }: ScriptProps) => {
     entityRef.current.quaternion.multiply(rotationQuaternion);
   });
 
-
   if (isUnused) {
     return null;
   }
@@ -124,7 +135,6 @@ const Script = ({ doors, models, script }: ScriptProps) => {
   if (!camera.userData.initialLookAt) {
     return;
   }
-
 
   return (
     <animated.group

@@ -11,6 +11,7 @@ export type ScriptState = {
   currentAnimationId: number | undefined;
   idleAnimationId: number | undefined;
   idleAnimationRange: [number, number];
+  ladderAnimationId: number | undefined;
 
   backgroundAnimationSpring: SpringValue<number>;
   backgroundAnimationSpeed: number;

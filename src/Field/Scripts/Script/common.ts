@@ -33,6 +33,10 @@ export const turnToFaceEntity = async (thisId: number, targetName: string, durat
   const thisMesh = getScriptEntity(scene, thisId);
   const targetMesh = scene.getObjectByName(targetName) as Group;
 
+  if (!thisMesh || !targetMesh) {
+    console.warn('Error turning to face entity:', thisMesh, targetMesh);
+    return;
+  }
   const currentAngleDirection = thisMesh.rotation.y;
   const targetAngleDirection = Math.atan2(
     targetMesh.position.x - thisMesh.position.x,

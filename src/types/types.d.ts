@@ -5,6 +5,7 @@ declare global {
     scriptLabel: number;
     partyMemberId?: number;
     key: string
+    source: string
   }
 
   // Extend the existing DocumentEventMap interface

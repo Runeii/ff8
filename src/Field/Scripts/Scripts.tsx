@@ -1,3 +1,4 @@
+import { act, useCallback, useState } from "react";
 import { FieldData } from "../Field";
 import Script from "./Script/Script";
 import { Script as ScriptType } from "./types";
@@ -10,7 +11,19 @@ export type ScriptsProps = {
 
 
 const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
-  return scripts.map(script => <Script doors={doors} key={script.exec} models={models} script={script} />)
+  const [activeScripts, setActiveScripts] = useState<ScriptType[]>([scripts[0]]);
+
+  const handleScriptSetupCompleted = useCallback(() => {
+    const currentScriptIdx = scripts.findIndex(script => script === activeScripts[activeScripts.length - 1]);
+
+    if (currentScriptIdx === scripts.length - 1) {
+      return;
+    }
+
+    setActiveScripts([...activeScripts, scripts[currentScriptIdx + 1]]);
+  }, [activeScripts, scripts]);
+
+  return activeScripts.map(script => <Script doors={doors} key={script.exec} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} />)
 }
 
 export default Scripts;

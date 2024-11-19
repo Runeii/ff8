@@ -426,38 +426,44 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await wait(psxGameFrames / 30 * 1000);
   },
   // All scripts have a unique label, not sure why other IDs are required in game...
-  REQ: ({ currentOpcode, STACK }) => {
+  REQ: ({ currentOpcode, STACK, script }) => {
     currentOpcode.param; // entity ID
     const label = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
-    remoteExecute(label)
+    const source = `${script.groupId}--${currentOpcode.name}`
+    remoteExecute(label, source)
   },
-  REQSW: ({ currentOpcode, STACK }) => {
+  REQSW: ({ currentOpcode, STACK, script }) => {
     currentOpcode.param; // entity ID
     const label = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
-    remoteExecute(label)
+    const source = `${script.groupId}--${currentOpcode.name}`
+    remoteExecute(label, source)
   },
-  REQEW: async ({ currentOpcode, STACK }) => {
+  REQEW: async ({ currentOpcode, STACK, script }) => {
     currentOpcode.param; // entity ID
     const label = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
-    await remoteExecute(label)
+    const source = `${script.groupId}--${currentOpcode.name}`
+    await remoteExecute(label, source)
   },
-  PREQ: ({ currentOpcode, STACK }) => {
+  PREQ: ({ currentOpcode, STACK, script }) => {
     const label = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
-    remoteExecute(label, currentOpcode.param)
+    const source = `${script.groupId}--${currentOpcode.name}`
+    remoteExecute(label, source, currentOpcode.param)
   },
-  PREQSW: ({ currentOpcode, STACK }) => {
+  PREQSW: ({ currentOpcode, STACK, script }) => {
     const label = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
-    remoteExecute(label, currentOpcode.param)
+    const source = `${script.groupId}--${currentOpcode.name}`
+    remoteExecute(label, source, currentOpcode.param)
   },
-  PREQEW: async ({ currentOpcode, STACK }) => {
+  PREQEW: async ({ currentOpcode, STACK, script }) => {
     const label = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
-    await remoteExecute(label, currentOpcode.param)
+    const source = `${script.groupId}--${currentOpcode.name}`
+    await remoteExecute(label, source, currentOpcode.param)
   },
   FADEIN: async () => {
     const fadeSpring = useGlobalStore.getState().fadeSpring;
@@ -496,14 +502,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   ADDPARTY: ({ STACK }) => {
     const characterID = STACK.pop() as number;
-    console.trace('add', characterID)
     useGlobalStore.setState({
       party: [...useGlobalStore.getState().party, characterID]
     });
   },
   SUBPARTY: ({ STACK }) => {
     const characterID = STACK.pop() as number;
-    console.trace('remove', characterID)
     useGlobalStore.setState({
       party: useGlobalStore.getState().party.filter(id => id !== characterID)
     });
@@ -681,7 +685,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   LADDERANIME: ({ currentOpcode, currentState, STACK }) => {
     currentOpcode.param // unknown
-    currentState.currentAnimationId = STACK.pop() as number;
+    currentState.ladderAnimationId = STACK.pop() as number;
     STACK.pop() as number;
   },
   ANIMESPEED: ({ currentState, STACK }) => {
@@ -915,7 +919,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   CTURN: ({ currentState, scene, script, STACK }) => {
     const duration = STACK.pop() as number;
     const targetId = STACK.pop() as number;
-    console.log(script, duration, targetId)
+
     turnToFaceEntity(script.groupId, `model--${targetId}`, duration, scene, currentState.angle)
   },
   DIRA: ({ currentState, scene, script, STACK }) => {
@@ -1149,12 +1153,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SCROLLSYNC2: ({ STACK }) => {
     STACK.pop() as number;
   },
-  PGETINFO: ({ scene, STACK, TEMP_STACK }) => {
+  PGETINFO: ({ scene, script, STACK, TEMP_STACK }) => {
     const partyMemberId = STACK.pop() as number;
     const mesh = getPartyMemberModelComponent(scene, partyMemberId);
 
     if (!mesh) {
-      console.warn('No mesh found for actor ID', partyMemberId);
+      console.warn(script, 'No mesh found for actor ID', partyMemberId);
       return;
     }
 

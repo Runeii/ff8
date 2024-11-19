@@ -44,7 +44,7 @@ export function asyncSetSpring<T extends object>(setSpring: SpringRef<T>, state:
   });
 }
 
-export const remoteExecute = (scriptLabel: number, partyMemberId?: number) => new Promise<void>((resolve) => {
+export const remoteExecute = (scriptLabel: number, source: string, partyMemberId?: number) => new Promise<void>((resolve) => {
   const key = Math.random().toString(36).substring(7);
   document.addEventListener('scriptFinished', ({ detail }) => {
     if (detail.key !== key) {
@@ -59,7 +59,8 @@ export const remoteExecute = (scriptLabel: number, partyMemberId?: number) => ne
       key,
       scriptLabel,
       partyMemberId,
-    }
+      source,
+    } as ExecuteScriptEventDetail
   }));
 })
 

@@ -32,7 +32,6 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
   } = useScriptStateStore();
 
   const isPlayerControlled = useGlobalStore(state => state.party[0] === partyMemberId);
-
   const [animations, setAnimations] = useState<GltfHandle['animations']>();
   const [meshGroup, setMeshGroup] = useState<Group>();
   const [head, setHead] = useState<Bone>();
@@ -41,6 +40,7 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
   if (!modelName.includes('d')) {
     modelName = 'd070'
   }
+
   const ModelComponent = components[modelName];
 
   const setModelRef = useCallback((ref: GltfHandle) => {
