@@ -87,13 +87,15 @@ export const playAnimation = async (
 export const animateBackground = async (spring: SpringValue<number>, speed: number, startFrame: number, endFrame: number, isLooping: boolean) => {
   spring.set(startFrame);
 
+  const duration = (Math.max(endFrame, startFrame) - Math.min(endFrame, startFrame)) * speed * 30 + 10;
+
   await spring.start(endFrame, {
     from: startFrame,
     immediate: false,
     loop: isLooping,
     config: {
-      duration: (endFrame - startFrame) * speed * 30,
-    }
+      duration,
+    },
   });
 }
 

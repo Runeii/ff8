@@ -28,7 +28,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 4890, // progress
+  256: 6000, // progress
   491: 0, // touk
   534: 1, // ?
   720: 0, // squall model
@@ -445,6 +445,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const label = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
     const source = `${script.groupId}--${currentOpcode.name}`
+    console.log('reqew', label, source)
     await remoteExecute(label, source)
   },
   PREQ: ({ currentOpcode, STACK, script }) => {
@@ -520,7 +521,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const partyMemberId = STACK.pop() as number;
     currentState.partyMemberId = partyMemberId;
 
-    if (useGlobalStore.getState().party.length < 3) {
+    if (useGlobalStore.getState().party.length < 1) {
       useGlobalStore.setState({
         party: [...useGlobalStore.getState().party, partyMemberId]
       });
@@ -573,11 +574,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const animationId = currentOpcode.param;
 
     currentState.currentAnimationId = animationId;
+    console.log('start')
     await playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
       false,
     )
+    console.log('end')
   },
   CANIME: async ({ currentState, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
@@ -739,6 +742,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
+    console.log(lastThree)
     currentState.position.set([position.x, position.y, position.z]);
   },
   TALKRADIUS: ({ currentState, STACK }) => {

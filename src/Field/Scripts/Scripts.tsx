@@ -1,4 +1,4 @@
-import { act, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { FieldData } from "../Field";
 import Script from "./Script/Script";
 import { Script as ScriptType } from "./types";

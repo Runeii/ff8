@@ -99,10 +99,14 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
     <group position={[0, 0, tiles[0].Z]} ref={layerRef}>
       {tiles.map(({ X, Y, index, parameter, state, texture, isBlended, blendType }) => {
         let isVisible = true;
-        if (currentParameterStates[parameter] && currentParameterStates[parameter] !== state) {
+        if (currentParameterStates[parameter] !== undefined && currentParameterStates[parameter] !== state) {
           isVisible = false;
         } else if (currentParameterVisibility[parameter] === false) {
           isVisible = false;
+        }
+
+        if (currentParameterStates[parameter] === state) {
+          isVisible = true;
         }
 
         return (
@@ -111,7 +115,7 @@ const Layer = ({ backgroundPanRef, playerDepthRef, tiles }: LayerProps) => {
             position={[X + TILE_SIZE / 2, -Y - TILE_SIZE / 2, 0]}
             scale={[TILE_SIZE, TILE_SIZE, TILE_SIZE]}
             layers={layer}
-            renderOrder={state}
+            renderOrder={parameter === 255 ? 0 : state + 1}
             visible={isVisible}
             >
             <spriteMaterial

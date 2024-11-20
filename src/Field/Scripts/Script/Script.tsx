@@ -10,8 +10,11 @@ import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Group, Quaternion, Vector3 } from "three";
+import { DoubleSide, Group, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import createScriptState from "./state";
+import { Line, Sphere } from "@react-three/drei";
+import { getCharacterForwardDirection } from "../../Camera/cameraUtils";
+import { computeSignedAngleTo, getDirectionToCamera, getLocalViewportDirections, getLocalViewportForward, getViewportDirections } from "../../../utils";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -67,22 +70,24 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
 
     const handleExecutionRequest = async ({ detail: { key, scriptLabel, partyMemberId: requestedPartyMemberId, source } }: {detail: ExecuteScriptEventDetail}) => {
       if (requestedPartyMemberId !== undefined && partyMemberId !== requestedPartyMemberId) {
+        console.warn('Party member mismatch', requestedPartyMemberId, partyMemberId);
         return;
       }
       const matchingMethod = script.methods.find((method, index) => {
-        if (partyMemberId !== undefined) {
-          return index === scriptLabel;
-        }
+       // if (requestedPartyMemberId !== undefined) {
+       //   console.log('Was checking partymember?', partyMemberId)
+       //   return index === scriptLabel; // this seems broken?
+       // }
+      //  console.log(scriptLabel, method.scriptLabel, method.scriptLabel === scriptLabel);
         return method.scriptLabel === scriptLabel
       });
 
       if (!matchingMethod) {
+       // console.warn('No matching method found', scriptLabel, script);
         return;
       }
 
-      if (script.groupId === 5) {
-        //console.log('Remote execution', script.groupId, source);
-      }
+   //   console.log('Remote execution', script.groupId, source);
       setActiveMethodId(matchingMethod?.methodId);
       setRemoteExecutionKey(key);
     }
@@ -99,8 +104,6 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
   
   const activeParty = useGlobalStore(storeState => storeState.party);
 
-  const camera = useThree().camera;
-
   useFrame(({camera}) => {
     if (!entityRef.current) {
       return;
@@ -108,15 +111,15 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
 
     entityRef.current.rotation.set(0, 0, 0);
     entityRef.current.quaternion.identity();
+    const toCamera = getDirectionToCamera(entityRef.current, camera);
+    toCamera.z = 0;
 
-    const downVector = new Vector3().subVectors(camera.getWorldPosition(new Vector3()), entityRef.current.position);
-    downVector.z = 0;
-    downVector.normalize();
-
-    const meshForward = new Vector3(-1, 0, 0).applyQuaternion(entityRef.current.quaternion).normalize();
+    const meshForward = new Vector3(-1,0,0).applyQuaternion(entityRef.current.quaternion).normalize();
+    meshForward.z = 0;
+    
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
-
-    const baseAngle = meshForward.angleTo(downVector);
+    
+    const baseAngle = computeSignedAngleTo(meshForward, toCamera, meshUp);
 
     const liveAngle = baseAngle - ((Math.PI * 2) / 255 * useScriptStateStore.getState().angle.get());
     const rotationQuaternion = new Quaternion();
@@ -130,10 +133,6 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
 
   if (partyMemberId !== undefined && !activeParty.includes(partyMemberId)) {
     return null;
-  }
-
-  if (!camera.userData.initialLookAt) {
-    return;
   }
 
   return (

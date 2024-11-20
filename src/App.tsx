@@ -32,7 +32,7 @@ export default function App() {
 
   const isMapFadeEnabled = useGlobalStore(state => state.isMapFadeEnabled);
   const [spring, setSpring] = useSpring(() => ({
-    opacity: 0,
+    opacity: 1,
     config: {
       duration: 1000,
     },

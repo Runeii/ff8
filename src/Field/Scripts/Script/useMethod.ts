@@ -75,7 +75,6 @@ const useMethod = (
       return;
     }
 
-
     if (useScriptStateStore.getState().hasRemovedControl) {
       useScriptStateStore.setState({ hasRemovedControl: false });
       useGlobalStore.setState({ isUserControllable: true });
@@ -100,7 +99,14 @@ const useMethod = (
 
     const { methodId, opcodes } = activeMethod;
 
-    if (thisRunMethodId.current && methodId !== thisRunMethodId.current && currentOpcodeIndex > 0 || isUnused) {
+    // If the script is unused, we can skip the constructor
+    if (isUnused) {
+      setHasCompletedConstructor(true);
+      handleCompleteRun();
+      return;
+    }
+
+    if (thisRunMethodId.current && methodId !== thisRunMethodId.current && currentOpcodeIndex > 0) {
       return;
     }
 
@@ -118,8 +124,8 @@ const useMethod = (
     const execute = async () => {
       const currentOpcode = opcodes[currentOpcodeIndex] ?? undefined;
 
-      if (script.groupId === 7) {
-        //  console.log(script, currentOpcode, activeMethodId);
+      if (script.groupId === 10 || script.groupId === 17) {
+        //console.log(activeMethod, currentOpcodeIndex, currentOpcode);
       }
       if (!currentOpcode && !hasCompletedConstructor) {
         setHasCompletedConstructor(true);

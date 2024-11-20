@@ -6,13 +6,12 @@ import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
 import { useFrame, useThree } from '@react-three/fiber';
-import Character from '../Character/Character';
 import Scripts from './Scripts/Scripts';
 import { renderSceneWithLayers } from './fieldUtils';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
 import { getInitialEntrance } from '../utils';
-import { MEMORY, OPCODE_HANDLERS } from './Scripts/Script/handlers';
+import { MEMORY } from './Scripts/Script/handlers';
 import MAP_NAMES from '../constants/maps';
 
 export type FieldData = typeof data;
@@ -42,7 +41,12 @@ const Field = ({ data }: FieldProps) => {
         setHasPlacedWalkmesh={setHasPlacedWalkmesh}
         walkmesh={data.walkmesh}
       />
-      {hasPlacedWalkmesh && (
+      <Camera
+        backgroundPanRef={backgroundPanRef}
+        data={data}
+        setHasPlacedCamera={setHasPlacedCamera}
+      />
+      {hasPlacedWalkmesh && hasPlacedCamera && (
         <>
           <Gateways
             fieldId={data.id}
@@ -52,15 +56,8 @@ const Field = ({ data }: FieldProps) => {
             models={data.models}
             scripts={data.scripts}
           />
-            <Camera
-              backgroundPanRef={backgroundPanRef}
-              data={data}
-              setHasPlacedCamera={setHasPlacedCamera}
-            />
+          <Background backgroundPanRef={backgroundPanRef} data={data} />
         </>
-      )}
-      {hasPlacedCamera && (
-        <Background backgroundPanRef={backgroundPanRef} data={data} />
       )}
       <ambientLight intensity={0.5} />
     </group>
@@ -92,8 +89,8 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
     const handleTransition = async () => {
       const {isMapFadeEnabled} = useGlobalStore.getState();
 
-      if (isMapFadeEnabled) {
-        await setSpring(0);
+      if (isMapFadeEnabled && fieldId !== 'start0') {
+     //   await setSpring(0);
       }
 
       setData(null);
