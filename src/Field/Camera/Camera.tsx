@@ -1,9 +1,9 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import {  PerspectiveCamera, Quaternion, Vector3 } from 'three';
-import { getLocalViewportRight, getLocalViewportTop, vectorToFloatingPoint, WORLD_DIRECTIONS } from "../../utils";
+import { PerspectiveCamera, Quaternion, Vector3 } from 'three';
+import { vectorToFloatingPoint, WORLD_DIRECTIONS } from "../../utils";
 import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useMemo, useState } from "react";
-import { calculateAngleForParallax, calculateParallax, getBoundaries, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
+import { calculateAngleForParallax, calculateParallax, getBoundaries, getCameraDirections, getCharacterForwardDirection, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
 import { clamp, radToDeg } from "three/src/math/MathUtils.js";
 import { SCREEN_HEIGHT } from "../../constants/constants";
 import useGlobalStore from "../../store";
@@ -73,7 +73,7 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
       return
     }
     const player = scene.getObjectByName("character");
-return
+
     if (!initialCameraTargetPosition || !player) {
       return
     }
@@ -82,13 +82,12 @@ return
     const initialCameraRotation = camera.rotation.clone();
     const initialCameraQuaternion = new Quaternion().setFromEuler(initialCameraRotation);
 
-    const { yawAxis, pitchAxis } = getReliableRotationAxes(camera);
-
     const position = player.position.clone();
     player.getWorldPosition(position);
     camera.lookAt(position);
     const currentCameraQuaternion = new Quaternion().setFromEuler(camera.rotation);
-
+    
+    const { yawAxis, pitchAxis } = getReliableRotationAxes(camera);
     const yawAngle = getRotationAngleAroundAxis(
       initialCameraQuaternion,
       currentCameraQuaternion,
@@ -121,7 +120,7 @@ return
     const yawRotation = new Quaternion().setFromAxisAngle(UP, calculateAngleForParallax(finalPanX, cameraZoom));
     camera.quaternion.multiply(yawRotation);
     
-    const pitchRotation = new Quaternion().setFromAxisAngle(UP, -calculateAngleForParallax(finalPanY, cameraZoom));
+    const pitchRotation = new Quaternion().setFromAxisAngle(RIGHT, -calculateAngleForParallax(finalPanY, cameraZoom));
     camera.quaternion.multiply(pitchRotation);
 
     backgroundPanRef.current.yaw = yawAngle;
