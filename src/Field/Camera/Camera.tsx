@@ -55,6 +55,9 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
   
     camera.userData = {
       initialDirection: direction,
+      initialQuaternion: camera.quaternion.clone(),
+      initialPosition: camera.position.clone(),
+      initialTargetPosition: lookAtTarget.clone(),
     }
 
     setInitialCameraTargetPosition(lookAtTarget.clone());
@@ -116,15 +119,16 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
     const finalPanY = clamp(panY, boundaries.top, boundaries.bottom);
 
     const { UP, RIGHT } = WORLD_DIRECTIONS;
-    
+  
+
     const yawRotation = new Quaternion().setFromAxisAngle(UP, calculateAngleForParallax(finalPanX, cameraZoom));
     camera.quaternion.multiply(yawRotation);
     
     const pitchRotation = new Quaternion().setFromAxisAngle(RIGHT, -calculateAngleForParallax(finalPanY, cameraZoom));
     camera.quaternion.multiply(pitchRotation);
 
-    backgroundPanRef.current.yaw = yawAngle;
-    backgroundPanRef.current.pitch = pitchAngle;
+    backgroundPanRef.current.panX = finalPanX;
+    backgroundPanRef.current.panY = finalPanY;
     backgroundPanRef.current.cameraZoom = cameraZoom;
     backgroundPanRef.current.boundaries = boundaries;
   });

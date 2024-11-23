@@ -1,6 +1,6 @@
 import { Script } from "../../types";
 import {  ComponentType, lazy, useCallback, useEffect, useMemo, useState } from "react";
-import {  Bone, Euler, Group, Quaternion } from "three";
+import {  Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
@@ -43,14 +43,28 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
 
   const ModelComponent = components[modelName];
 
+  const convertMaterialsToBasic = useCallback((group: Group) => {
+    group.traverse((child) => {
+      if (child instanceof Mesh && child.material instanceof MeshStandardMaterial) {
+        const meshBasicMaterial = new MeshBasicMaterial();
+        meshBasicMaterial.color = child.material.color;
+        meshBasicMaterial.map = child.material.map;
+
+        child.material = meshBasicMaterial;
+      }
+    });
+  }, []);
+
   const setModelRef = useCallback((ref: GltfHandle) => {
     if (!ref || !ref.group) {
       return;
     }
+
     setAnimations(ref.animations);
     setMeshGroup(ref.group.current);
     setHead(ref.nodes.head);
-  }, []);
+    convertMaterialsToBasic(ref.group.current);
+  }, [convertMaterialsToBasic]);
 
   useEffect(() => {
     if (!meshGroup) {

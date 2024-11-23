@@ -7,7 +7,6 @@ import Camera from './Camera/Camera';
 import Background from './Background/Background';
 import { useFrame, useThree } from '@react-three/fiber';
 import Scripts from './Scripts/Scripts';
-import { renderSceneWithLayers } from './fieldUtils';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
 import { getInitialEntrance } from '../utils';
@@ -23,8 +22,6 @@ type FieldProps = {
 }
 
 const Field = ({ data }: FieldProps) => {
-  useFrame(({ camera, gl, scene }) => renderSceneWithLayers(scene, camera, gl), 1);
-
   const backgroundPanRef = useRef<CameraPanAngle>({
     yaw: 0,
     pitch: 0,
@@ -59,7 +56,6 @@ const Field = ({ data }: FieldProps) => {
           <Background backgroundPanRef={backgroundPanRef} data={data} />
         </>
       )}
-      <ambientLight intensity={0.5} />
     </group>
   );
 }

@@ -11,6 +11,7 @@ import {getInitialField} from './utils'
 import Ui from './UI/UI'
 import WorldMap from './WorldMap/WorldMap'
 import { attachKeyDownListeners } from './Field/Scripts/Script/common'
+import { Perf } from 'r3f-perf'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
@@ -61,10 +62,10 @@ export default function App() {
     <animated.div className="container" style={spring}>
       <Canvas camera={{
         aspect: ASPECT_RATIO,
-        near: 0.001,
-        far: 40,
+        near: 0.0001,
+        far: 5,
       }} className="canvas">
-        <ambientLight />
+      <Perf />
         <Suspense>
           {fieldId === 'WORLD_MAP' ? <WorldMap /> : <Field setSpring={asyncSetSpring} />}
         </Suspense>

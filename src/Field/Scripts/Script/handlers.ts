@@ -574,13 +574,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const animationId = currentOpcode.param;
 
     currentState.currentAnimationId = animationId;
-    console.log('start')
     await playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
       false,
     )
-    console.log('end')
   },
   CANIME: async ({ currentState, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
@@ -742,7 +740,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    console.log(lastThree)
     currentState.position.set([position.x, position.y, position.z]);
   },
   TALKRADIUS: ({ currentState, STACK }) => {

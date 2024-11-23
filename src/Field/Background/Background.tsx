@@ -1,12 +1,12 @@
 
 import type { FieldData } from "../Field";
-import { OrthographicCamera } from "@react-three/drei";
-import { MutableRefObject, useMemo } from "react";
+import { MutableRefObject, useMemo, useRef, useState } from "react";
 import Layer from "./Layer/Layer";
 import useCalculatePlayerDepth from "../../hooks/useCalculatePlayerDepth";
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants";
 import useTilesTexture from "../../hooks/useTilesTexture";
-import { NearestFilter, Texture } from "three";
+import { CanvasTexture, Group, NearestFilter, Texture, Vector3 } from "three";
+import { useFrame, useThree } from "@react-three/fiber";
+import { Line, OrbitControls, Plane } from "@react-three/drei";
 
 type BackgroundProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
@@ -23,10 +23,6 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
   const { backgroundDetails, tiles } = data;
 
   const tilesTexture = useTilesTexture(backgroundDetails);
-  const playerDepthRef = useCalculatePlayerDepth();
-
-  const textureWidthInTiles = tilesTexture.image.width / (TILE_SIZE + TILE_PADDING);
-  const textureHeightInTiles = TILES_PER_COLUMN;
 
   const groupedTiles = useMemo<TileWithTexture[][]>(() => {
     // Initialize a map to group tiles by their Z value
@@ -40,62 +36,62 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
         groupedTiles[layerId] = [];
       }
   
-      // Calculate the texture for the tile
-      const texture = tilesTexture.clone();
+  
+    // Calculate the column and row based on the tile's index
+    const column = Math.floor(tile.index / TILES_PER_COLUMN);
+    const row = tile.index % TILES_PER_COLUMN;
+
+    // Calculate the source position in the texture atlas
+    const sourceX = column * (TILE_SIZE + TILE_PADDING);
+    const sourceY = row * (TILE_SIZE + TILE_PADDING);
+
+    // Create a canvas to extract the tile image
+    const canvas = document.createElement('canvas');
+    canvas.width = TILE_SIZE;
+    canvas.height = TILE_SIZE;
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+      console.error('Could not get 2D context from canvas');
+      return;
+    }
+
+      context.imageSmoothingEnabled = false;
+
+      // Draw the specific tile from the texture atlas onto the canvas
+      context.drawImage(
+        tilesTexture.image as HTMLImageElement,
+        sourceX,
+        sourceY,
+        TILE_SIZE,
+        TILE_SIZE,
+        0,
+        0,
+        TILE_SIZE,
+        TILE_SIZE
+      );
+
+      // Create a texture from the canvas
+      const texture = new CanvasTexture(canvas);
       texture.magFilter = NearestFilter;
       texture.minFilter = NearestFilter;
-  
-      // Calculate the column and row based on index, accounting for the padding
-      const column = Math.floor(tile.index / TILES_PER_COLUMN);
-      const row = tile.index % TILES_PER_COLUMN;
-  
-      // Adjust for the padding in the offset calculation
-      const xOffset = (column * (TILE_SIZE + TILE_PADDING)) / tilesTexture.image.width;
-      const yOffset = (row * (TILE_SIZE + TILE_PADDING)) / tilesTexture.image.height;
-  
-      texture.offset.set(
-        xOffset,
-        1 - yOffset - TILE_SIZE / tilesTexture.image.height
-      );
-  
-      // Adjust repeat to account for the actual tile size inside the padded space
-      texture.repeat.set(
-        TILE_SIZE / (TILE_SIZE + TILE_PADDING) / textureWidthInTiles,
-        TILE_SIZE / (TILE_SIZE + TILE_PADDING) / textureHeightInTiles
-      );
-  
+      texture.generateMipmaps = false; 
+    
       groupedTiles[layerId].push({
         ...tile,
         texture,
       });
     });
-  
+
     // Return the grouped tiles by Z value
-    return Object.values(groupedTiles);
-  }, [textureHeightInTiles, textureWidthInTiles, tiles, tilesTexture]);
+    return Object.values(groupedTiles).sort((a, b) => b[0].Z - a[0].Z);
+  }, [tiles, tilesTexture]);
 
   return (
     <>
-      <OrthographicCamera
-        name="orthoCamera"
-        position={[0, 0, 0]}
-        zoom={1}
-        left={-SCREEN_WIDTH / 2}
-        right={SCREEN_WIDTH / 2}
-        top={SCREEN_HEIGHT / 2}
-        bottom={-SCREEN_HEIGHT / 2}
-        near={0}
-        far={4096}
-      />
-      {groupedTiles.map((tiles) => (
-        <Layer
-          backgroundPanRef={backgroundPanRef}
-          cameraZoom={data.cameras[0].camera_zoom}
-          key={`${tiles[0].layerID}-${tiles[0].Z}`}
-          playerDepthRef={playerDepthRef}
-          tiles={tiles}
-        />
-      ))}
+      {groupedTiles.map((tiles) =>
+        <Layer backgroundPanRef={backgroundPanRef} backgroundDetails={backgroundDetails} key={tiles[0].Z} tiles={tiles} tilesTexture={tilesTexture} /> 
+      )}
     </>
   );
 }
