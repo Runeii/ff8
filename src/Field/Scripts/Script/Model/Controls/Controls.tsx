@@ -108,14 +108,17 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
     if (!newPosition) {
       return
     }
-    const closedDoors: Object3D[] = [];
+    const blockages: Object3D[] = [];
     scene.traverse((object) => {
+      if (object.name === "blockage") {
+        blockages.push(object);
+      }
       if (object.name === "door-closed") {
-        closedDoors.push(object);
+        blockages.push(object);
       }
     });
     
-    const isPermitted = checkForIntersections(player, newPosition, closedDoors);
+    const isPermitted = checkForIntersections(player, newPosition, blockages, camera);
     
     if (!isPermitted) {
       return;

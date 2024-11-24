@@ -54,6 +54,7 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
     onSetupCompleted();
   }, [hasCompletedConstructor, onSetupCompleted]);
 
+  const isSolid = useScriptStateStore(state => state.isSolid);
   const isVisible = useScriptStateStore(state => state.isVisible);
   const isUnused = useScriptStateStore(state => state.isUnused);
   const position = useScriptStateStore(state => state.position);
@@ -141,6 +142,7 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
     <animated.group
       position={position as unknown as Vector3}
       ref={entityRef}
+      name={isSolid ? 'blockage' : 'script'}
       visible={isVisible}
     >
       {isTalkable && talkMethod && !hasActiveTalkMethod && (

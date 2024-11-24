@@ -83,14 +83,15 @@ export const getPositionOnWalkmesh = (desiredPosition: Vector3, walkmesh: Object
 }
 
 const intersectionRaycaster = new Raycaster();
-export const checkForIntersections = (object: Object3D, target: Vector3, doors: Object3D[]) => {
+export const checkForIntersections = (object: Object3D, target: Vector3, blockages: Object3D[], camera: Camera) => {
   const needlePosition = new Vector3();
   object.getWorldPosition(needlePosition);
   const direction = new Vector3().subVectors(target, needlePosition).normalize();
   intersectionRaycaster.set(needlePosition, direction);
   intersectionRaycaster.far = needlePosition.distanceTo(target);
   intersectionRaycaster.near = 0;
-  const intersects = intersectionRaycaster.intersectObjects(doors);
+  intersectionRaycaster.camera = camera;
+  const intersects = intersectionRaycaster.intersectObjects(blockages);
 
   return intersects.length === 0;
 }

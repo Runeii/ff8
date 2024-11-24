@@ -70,6 +70,7 @@ export const createScriptState = () => {
     currentAnimationId: undefined,
     idleAnimationId: undefined,
     idleAnimationRange: [0, 0],
+    ladderAnimationId: undefined,
 
     backgroundAnimationSpring: new SpringValue(0),
     backgroundAnimationSpeed: 200,
@@ -79,7 +80,7 @@ export const createScriptState = () => {
     linePoints: null,
 
     isVisible: true,
-    isSolid: false,
+    isSolid: true,
     isUnused: false,
 
     modelId: 0,
