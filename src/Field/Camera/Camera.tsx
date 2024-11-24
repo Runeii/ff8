@@ -91,11 +91,13 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
     const currentCameraQuaternion = new Quaternion().setFromEuler(camera.rotation);
     
     const { yawAxis, pitchAxis } = getReliableRotationAxes(camera);
+
     const yawAngle = getRotationAngleAroundAxis(
       initialCameraQuaternion,
       currentCameraQuaternion,
       yawAxis
     );
+
     const pitchAngle = getRotationAngleAroundAxis(
       initialCameraQuaternion,
       currentCameraQuaternion,

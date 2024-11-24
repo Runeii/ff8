@@ -161,7 +161,6 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
     const panY = Math.round(backgroundPanRef.current.panY);
     tiles.forEach(({ X, Y, parameter, state, texture }) => {
       let isVisible = true;
-  
       if (currentParameterStates[parameter] !== undefined && currentParameterStates[parameter] !== state) {
         isVisible = false;
       } else if (currentParameterVisibility[parameter] === false) {

@@ -3,18 +3,14 @@ import { FieldData } from "../Field";
 import { WORLD_DIRECTIONS } from "../../utils";
 
 export const getRotationAngleAroundAxis = (initialRotation: Quaternion, currentRotation: Quaternion, axis: Vector3) => {
-  // Ensure the axis is normalized
+  // Normalize the axis
   axis = axis.clone().normalize();
 
   // Calculate the relative rotation quaternion
   const qRelative = currentRotation.clone().multiply(initialRotation.clone().invert());
 
-  // Choose a vector orthogonal to the axis
-  const tempVector = new Vector3(1, 0, 0);
-  if (Math.abs(axis.dot(tempVector)) > 0.99) {
-    tempVector.set(0, 1, 0);
-  }
-  const orthogonalVector = new Vector3().crossVectors(axis, tempVector).normalize();
+  // Choose a robust orthogonal vector to the axis
+  const orthogonalVector = getSmoothOrthogonalVector(axis);
 
   // Rotate the orthogonal vector using the relative quaternion
   const vInitial = orthogonalVector.clone();
@@ -30,9 +26,23 @@ export const getRotationAngleAroundAxis = (initialRotation: Quaternion, currentR
     vInitialProj.dot(vRotatedProj)
   );
 
-  return angle; // Angle in radians
-}
+  return angle;
+};
 
+const getSmoothOrthogonalVector = (axis: Vector3): Vector3 => {
+  // Normalize the input axis to ensure consistent calculations
+  axis = axis.clone().normalize();
+
+  // Generate a guaranteed non-collinear vector
+  const arbitrary = Math.abs(axis.x) > Math.abs(axis.z)
+    ? new Vector3(-axis.y, axis.x, 0) // Perturb X and Y
+    : new Vector3(0, -axis.z, axis.y); // Perturb Y and Z
+
+  // Compute the orthogonal vector using the cross product
+  const orthogonal = new Vector3().crossVectors(axis, arbitrary).normalize();
+
+  return orthogonal;
+};
 
 export const calculateParallax = (angle: number, depth: number): number => {
   // Ensure depth is valid
@@ -104,31 +114,36 @@ export const getCharacterForwardDirection = (camera: Camera) => {
   };
 }
 
-
 export const getReliableRotationAxes = (camera: Camera) => {
   // Step 1: Get the camera's forward direction (world direction)
   const forward = new Vector3();
   camera.getWorldDirection(forward);
 
-  // Step 2: Define the up direction based on world space (or adjust if needed)
+  // Step 2: Define the up direction based on world space
   const worldUp = WORLD_DIRECTIONS.UP.clone();
 
   // Step 3: Compute the camera's right vector in world space
   const right = new Vector3().crossVectors(forward, camera.up).normalize();
 
-  // Step 4: Determine which axes to use
-  // If the forward vector is nearly aligned with the world up, choose alternative axis to avoid gimbal lock.
+  // Step 4: Compute the alignment with the world up vector
+  const alignment = Math.abs(forward.dot(worldUp));
+
+  // Step 5: Set blending factor (you can tweak this threshold for smoothness)
+  //const blendThreshold = 0.99;
+  //const blendFactor = Math.max(0, (alignment - blendThreshold) / (1 - blendThreshold)); // Smooth blend as alignment nears 1
+
+  // Step 6: Interpolate axes to avoid sudden swaps
   let yawAxis = camera.up.clone().normalize();
   let pitchAxis = right;
-  const alignment = Math.abs(forward.dot(worldUp));
-  if (alignment > 0.99) {
-    // Near gimbal lock, swap to ensure stability
-    yawAxis = right;
-    pitchAxis = worldUp;
-  }
+
+  // if (alignment > blendThreshold) {
+  //   // Blend yawAxis and pitchAxis smoothly between up/right and right/up
+  //   yawAxis.lerp(right, blendFactor).normalize();
+  //   pitchAxis.lerp(worldUp, blendFactor).normalize();
+  // }
 
   return { yawAxis, pitchAxis };
-}
+};
 
 export const getBoundaries = (limits: FieldData['limits']) => ({
   left: limits.cameraRange.left + limits.screenRange.right / 2,
