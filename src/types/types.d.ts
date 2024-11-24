@@ -24,15 +24,8 @@ declare global {
 
 
   type CameraPanAngle = {
-    yaw: number,
-    pitch: number
-    cameraZoom: number
-    boundaries: {
-      left: number,
-      right: number,
-      top: number,
-      bottom: number
-    } | null
+    panX: number,
+    panY: number
   }
 
   type VectorLike = {

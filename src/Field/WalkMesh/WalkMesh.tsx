@@ -22,7 +22,7 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
 
       geometry.setAttribute('position', new BufferAttribute(vertices, 3));      
       geometry.computeVertexNormals();
-      
+
       return geometry;
     });
 

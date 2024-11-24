@@ -115,32 +115,13 @@ export const getCharacterForwardDirection = (camera: Camera) => {
 }
 
 export const getReliableRotationAxes = (camera: Camera) => {
-  // Step 1: Get the camera's forward direction (world direction)
   const forward = new Vector3();
   camera.getWorldDirection(forward);
 
-  // Step 2: Define the up direction based on world space
-  const worldUp = WORLD_DIRECTIONS.UP.clone();
-
-  // Step 3: Compute the camera's right vector in world space
   const right = new Vector3().crossVectors(forward, camera.up).normalize();
 
-  // Step 4: Compute the alignment with the world up vector
-  const alignment = Math.abs(forward.dot(worldUp));
-
-  // Step 5: Set blending factor (you can tweak this threshold for smoothness)
-  //const blendThreshold = 0.99;
-  //const blendFactor = Math.max(0, (alignment - blendThreshold) / (1 - blendThreshold)); // Smooth blend as alignment nears 1
-
-  // Step 6: Interpolate axes to avoid sudden swaps
-  let yawAxis = camera.up.clone().normalize();
-  let pitchAxis = right;
-
-  // if (alignment > blendThreshold) {
-  //   // Blend yawAxis and pitchAxis smoothly between up/right and right/up
-  //   yawAxis.lerp(right, blendFactor).normalize();
-  //   pitchAxis.lerp(worldUp, blendFactor).normalize();
-  // }
+  const yawAxis = camera.up.clone().normalize();
+  const pitchAxis = right;
 
   return { yawAxis, pitchAxis };
 };

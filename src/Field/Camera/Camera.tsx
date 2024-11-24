@@ -53,8 +53,6 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     direction.applyQuaternion(new Quaternion().setFromEuler(camera.rotation));
   
     camera.userData = {
-      initialDirection: direction,
-      initialQuaternion: camera.quaternion.clone(),
       initialPosition: camera.position.clone(),
       initialTargetPosition: lookAtTarget.clone(),
     }
@@ -129,8 +127,6 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
 
     backgroundPanRef.current.panX = finalPanX;
     backgroundPanRef.current.panY = finalPanY;
-    backgroundPanRef.current.cameraZoom = cameraZoom;
-    backgroundPanRef.current.boundaries = boundaries;
   });
 
   return null;

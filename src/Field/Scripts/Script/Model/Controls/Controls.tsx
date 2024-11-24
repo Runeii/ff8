@@ -137,6 +137,7 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
     if (angle < 0) angle += 360;
   
     const scaledAngle = angle / 360 * 255;
+
     useScriptStateStore.getState().angle.set(scaledAngle);
 
     useGlobalStore.setState((storeState) => ({
