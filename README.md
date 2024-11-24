@@ -13,5 +13,3 @@ https://docs.google.com/spreadsheets/d/1A19nUPFqvhmwBfkm0oJiAowiaPbEgGUX4jCSOSel
 * Parse NPC chara.one files
 * Finish implementation of remaining opcodes
 * Add animated rotations/look to NPC characters
-* Player character "conga line"
-* Improved depth (currently only works for PC, NPCs can clip layers)
