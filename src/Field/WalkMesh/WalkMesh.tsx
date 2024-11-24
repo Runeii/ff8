@@ -6,11 +6,10 @@ import { vectorToFloatingPoint } from "../../utils";
 import { ThreeEvent } from "@react-three/fiber";
 
 type WalkMeshProps = {
-  setHasPlacedWalkmesh: (value: boolean) => void;
   walkmesh: FieldData['walkmesh'];
 };
 
-const WalkMesh = ({ setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
+const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
   const walkMeshGeometry = useMemo(() => {
     const geometries = walkmesh.map(triangle => {
       const geometry = new BufferGeometry();
@@ -29,10 +28,6 @@ const WalkMesh = ({ setHasPlacedWalkmesh, walkmesh }: WalkMeshProps) => {
 
     return geometries;
   }, [walkmesh]);
-
-  useEffect(() => {
-    setHasPlacedWalkmesh(true);
-  }, [setHasPlacedWalkmesh]);
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     useGlobalStore.setState({

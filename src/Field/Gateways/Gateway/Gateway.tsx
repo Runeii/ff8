@@ -1,10 +1,9 @@
-import { useFrame } from "@react-three/fiber";
 import { Line } from "@react-three/drei";
-import { checkForIntersection } from "../gatewayUtils";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { vectorToFloatingPoint } from "../../../utils";
 import { FieldData } from "../../Field";
 import useGlobalStore from "../../../store";
+import useLineIntersection from "../../Scripts/Script/useLineIntersection";
 
 const Gateway = ({
   color,
@@ -23,29 +22,17 @@ const Gateway = ({
     }
   }, [gateway]);
 
-  const [hasExited, setHasExited] = useState(false);
   const isMapJumpEnabled = useGlobalStore((state) => state.isMapJumpEnabled);
-  useFrame(({ scene }) => {
-    const player = scene.getObjectByName("character");
 
-    if (!player || !player.userData.hasMoved || !isMapJumpEnabled) {
+  const {hasEverExited,isIntersecting, wasIntersecting} = useLineIntersection(formattedGateway.sourceLine, isMapJumpEnabled);
+
+  useEffect(() => {
+    if (!isIntersecting || !hasEverExited) {
       return;
     }
-  
-    const isIntersecting = checkForIntersection(player, formattedGateway.sourceLine);
 
-    if (!isIntersecting) {
-      setHasExited(true);
-    }
-  
-    if (isIntersecting && !hasExited) {
-      return;
-    }
-  
-    if (isIntersecting) {
-      onIntersect(formattedGateway)
-    }
-  });
+    onIntersect(formattedGateway)
+  }, [formattedGateway, hasEverExited, isIntersecting, onIntersect, wasIntersecting])
 
   return (
     <>
@@ -54,7 +41,7 @@ const Gateway = ({
         color={color}
         lineWidth={5}
         transparent
-        opacity={import.meta.env.DEV ? 1 : 0}
+        opacity={1}
       />
     </>
   )

@@ -11,10 +11,9 @@ import useGlobalStore from "../../store";
 type CameraProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
   data: FieldData,
-  setHasPlacedCamera: (value: boolean) => void,
 }
 
-const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => {
+const Camera = ({ backgroundPanRef, data }: CameraProps) => {
   const { cameras, limits } = data;
 
   const [initialCameraTargetPosition, setInitialCameraTargetPosition] = useState(new Vector3());
@@ -61,8 +60,7 @@ const Camera = ({ backgroundPanRef, data, setHasPlacedCamera }: CameraProps) => 
     }
 
     setInitialCameraTargetPosition(lookAtTarget.clone());
-    setHasPlacedCamera(true);
-  }, [activeCameraId, camera, cameras, data, setHasPlacedCamera]);
+  }, [activeCameraId, camera, cameras, data]);
 
   // Precompute boundaries
   const boundaries = useMemo(

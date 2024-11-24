@@ -5,13 +5,14 @@ import type data from '../../public/output/escouse2.json';
 import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
-import { useFrame, useThree } from '@react-three/fiber';
+import {  useFrame, useThree } from '@react-three/fiber';
 import Scripts from './Scripts/Scripts';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
 import { getInitialEntrance } from '../utils';
 import { MEMORY } from './Scripts/Script/handlers';
 import MAP_NAMES from '../constants/maps';
+import { PerspectiveCamera } from 'three';
 
 export type FieldData = typeof data;
 
@@ -29,33 +30,22 @@ const Field = ({ data }: FieldProps) => {
     boundaries: null
   });
 
-  const [hasPlacedWalkmesh, setHasPlacedWalkmesh] = useState(false);
-  const [hasPlacedCamera, setHasPlacedCamera] = useState(false);
-
   return (
     <group>
       <WalkMesh
-        setHasPlacedWalkmesh={setHasPlacedWalkmesh}
         walkmesh={data.walkmesh}
       />
       <Camera
         backgroundPanRef={backgroundPanRef}
         data={data}
-        setHasPlacedCamera={setHasPlacedCamera}
       />
-      {hasPlacedWalkmesh && hasPlacedCamera && (
-        <>
-          <Gateways
-            fieldId={data.id}
-          />
-          <Scripts
-            doors={data.doors}
-            models={data.models}
-            scripts={data.scripts}
-          />
-          <Background backgroundPanRef={backgroundPanRef} data={data} />
-        </>
-      )}
+      <Scripts
+        doors={data.doors}
+        models={data.models}
+        scripts={data.scripts}
+      />
+      <Background backgroundPanRef={backgroundPanRef} data={data} />
+      <Gateways fieldId={data.id} />
     </group>
   );
 }
