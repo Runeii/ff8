@@ -9,12 +9,10 @@ import useGlobalStore from "../../../store";
 import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
-import { useFrame, useThree } from "@react-three/fiber";
-import { DoubleSide, Group, PerspectiveCamera, Quaternion, Vector3 } from "three";
+import { useFrame } from "@react-three/fiber";
+import {  Group, Quaternion, Vector3 } from "three";
 import createScriptState from "./state";
-import { Line, Sphere } from "@react-three/drei";
-import { getCharacterForwardDirection } from "../../Camera/cameraUtils";
-import { computeSignedAngleTo, getDirectionToCamera, getLocalViewportDirections, getLocalViewportForward, getViewportDirections } from "../../../utils";
+import { computeSignedAngleTo, getDirectionToCamera, getLocalViewportTop } from "../../../utils";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -111,7 +109,11 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
 
     entityRef.current.rotation.set(0, 0, 0);
     entityRef.current.quaternion.identity();
-    const toCamera = getDirectionToCamera(entityRef.current, camera);
+    let toCamera = getDirectionToCamera(entityRef.current, camera);
+
+    if (toCamera.z > 0.9) {
+      toCamera = getLocalViewportTop(entityRef.current, camera).negate();
+    }
     toCamera.z = 0;
 
     const meshForward = new Vector3(-1,0,0).applyQuaternion(entityRef.current.quaternion).normalize();
@@ -122,8 +124,8 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
     const baseAngle = computeSignedAngleTo(meshForward, toCamera, meshUp);
 
     const liveAngle = baseAngle - ((Math.PI * 2) / 255 * useScriptStateStore.getState().angle.get());
-    const rotationQuaternion = new Quaternion();
-    rotationQuaternion.setFromAxisAngle(meshUp, liveAngle);
+    const rotationQuaternion = new Quaternion().setFromAxisAngle(meshUp, liveAngle);
+
     entityRef.current.quaternion.multiply(rotationQuaternion);
   });
 
