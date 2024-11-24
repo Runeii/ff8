@@ -9,10 +9,14 @@ import useGlobalStore from "../../../store";
 import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import {  Group, Quaternion, Vector3 } from "three";
 import createScriptState from "./state";
 import { computeSignedAngleTo, getDirectionToCamera, getLocalViewportTop } from "../../../utils";
+import { getCameraDirections, getCharacterForwardDirection } from "../../Camera/cameraUtils";
+import { MathUtils, radToDeg } from "three/src/math/MathUtils.js";
+import { Line } from "@react-three/drei";
+import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "./utils";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -61,6 +65,7 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
   const isTalkable = useScriptStateStore(state => state.isTalkable);
   const talkRadius = useScriptStateStore(state => state.talkRadius);
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
+  const movementTarget = useScriptStateStore(state => state.movementTarget);
 
   useEffect(() => {
     if (isUnused) {
@@ -103,6 +108,43 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
   
   const activeParty = useGlobalStore(storeState => storeState.party);
 
+  const camera = useThree(({ camera }) => camera);
+  const [dvector, setDVector] = useState(new Vector3());
+
+  useEffect(() => {
+    if (!movementTarget || !entityRef.current) {
+      return;
+    }
+
+    entityRef.current.rotation.set(0, 0, 0);
+    entityRef.current.quaternion.identity();
+  
+    // Get direction to camera
+    let toCamera = getDirectionToCamera(entityRef.current, camera);
+    if (toCamera.z > 0.9) {
+      toCamera = getLocalViewportTop(entityRef.current, camera).negate();
+    }
+    toCamera.z = 0;
+
+    // Current forward
+    const meshForward = new Vector3(-1,0,0).applyQuaternion(entityRef.current.quaternion).normalize();
+    meshForward.z = 0;
+    
+    // Get up axis
+    const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
+
+    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, toCamera, meshUp);
+
+    const targetDirection = movementTarget.clone().sub(entityRef.current.position).normalize();
+    const targetAngle = getRotationAngleToDirection(meshForward, targetDirection, meshUp);
+
+    let rotation = (faceDownBaseAngle + targetAngle) % (Math.PI * 2);
+    if (rotation < 0) {
+      rotation += Math.PI * 2; // Ensure the angle is in the range [0, 2π)
+    }
+
+    useScriptStateStore.getState().angle.set(convertRadiansTo255(rotation));
+  }, [camera, movementTarget, useScriptStateStore]);
   useFrame(({camera}) => {
     if (!entityRef.current) {
       return;
@@ -110,24 +152,26 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
 
     entityRef.current.rotation.set(0, 0, 0);
     entityRef.current.quaternion.identity();
-    let toCamera = getDirectionToCamera(entityRef.current, camera);
+  
+    // Current forward
+    const meshForward = new Vector3(-1,0,0).applyQuaternion(entityRef.current.quaternion).normalize();
+    meshForward.z = 0;
 
+    // Get direction to camera
+    let toCamera = getDirectionToCamera(entityRef.current, camera);
     if (toCamera.z > 0.9) {
       toCamera = getLocalViewportTop(entityRef.current, camera).negate();
     }
     toCamera.z = 0;
-
-    const meshForward = new Vector3(-1,0,0).applyQuaternion(entityRef.current.quaternion).normalize();
-    meshForward.z = 0;
     
+    // Get up axis
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
-    
-    const baseAngle = computeSignedAngleTo(meshForward, toCamera, meshUp);
+  
+    // Calculate initial angle to face down
+    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, toCamera, meshUp);
 
-    const liveAngle = baseAngle - ((Math.PI * 2) / 255 * useScriptStateStore.getState().angle.get());
-    const rotationQuaternion = new Quaternion().setFromAxisAngle(meshUp, liveAngle);
-
-    entityRef.current.quaternion.multiply(rotationQuaternion);
+    const currentRotation = convert255ToRadians(useScriptStateStore.getState().angle.get());
+    entityRef.current.quaternion.setFromAxisAngle(meshUp, faceDownBaseAngle - currentRotation);
   });
 
   if (isUnused) {
@@ -145,6 +189,7 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
       name={isSolid ? 'blockage' : 'script'}
       visible={isVisible}
     >
+      <Line points={[new Vector3(), dvector]} color="blue" />
       {isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
           radius={talkRadius / 4096 / 1.5}

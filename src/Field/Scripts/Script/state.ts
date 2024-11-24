@@ -36,6 +36,7 @@ export type ScriptState = {
   headAngle: SpringValue<number>;
 
   position: SpringValue<number[]>;
+  movementTarget: Vector3 | undefined;
   movementDuration: number;
   movementSpeed: number;
 
@@ -98,6 +99,7 @@ export const createScriptState = () => {
     position: new SpringValue([0, 0, 0]),
     movementDuration: 0,
     movementSpeed: 0,
+    movementTarget: undefined,
 
     isDoorOn: true,
 

@@ -1,12 +1,9 @@
 
 import type { FieldData } from "../Field";
-import { MutableRefObject, useMemo, useRef, useState } from "react";
+import { MutableRefObject, useMemo } from "react";
 import Layer from "./Layer/Layer";
-import useCalculatePlayerDepth from "../../hooks/useCalculatePlayerDepth";
 import useTilesTexture from "../../hooks/useTilesTexture";
-import { CanvasTexture, Group, NearestFilter, Texture, Vector3 } from "three";
-import { useFrame, useThree } from "@react-three/fiber";
-import { Line, OrbitControls, Plane } from "@react-three/drei";
+import { CanvasTexture, NearestFilter, Texture } from "three";
 
 type BackgroundProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
@@ -24,37 +21,37 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
 
   const tilesTexture = useTilesTexture(backgroundDetails);
 
-  const groupedTiles = useMemo<TileWithTexture[][]>(() => {
-    // Initialize a map to group tiles by their Z value
-    const groupedTiles: Record<string, TileWithTexture[]> = {};
+  const tileGroupEntries = useMemo<[string, TileWithTexture[]]>(() => {
+    const groupedTiles: {
+      [key: string]: TileWithTexture[];
+    } = {};
   
-    // Iterate over the tiles
     tiles.forEach((tile) => {
-      const layerId = `${tile.layerID}-${tile.Z}`;
+      const layerId = `${tile.layerID}-${tile.Z}-${tile.blendType}-${tile.parameter}-${tile.state}`;
+    
       // Initialize the Z group if it doesn't exist
       if (!groupedTiles[layerId]) {
         groupedTiles[layerId] = [];
       }
   
-  
-    // Calculate the column and row based on the tile's index
-    const column = Math.floor(tile.index / TILES_PER_COLUMN);
-    const row = tile.index % TILES_PER_COLUMN;
+      // Calculate the column and row based on the tile's index
+      const column = Math.floor(tile.index / TILES_PER_COLUMN);
+      const row = tile.index % TILES_PER_COLUMN;
 
-    // Calculate the source position in the texture atlas
-    const sourceX = column * (TILE_SIZE + TILE_PADDING);
-    const sourceY = row * (TILE_SIZE + TILE_PADDING);
+      // Calculate the source position in the texture atlas
+      const sourceX = column * (TILE_SIZE + TILE_PADDING);
+      const sourceY = row * (TILE_SIZE + TILE_PADDING);
 
-    // Create a canvas to extract the tile image
-    const canvas = document.createElement('canvas');
-    canvas.width = TILE_SIZE;
-    canvas.height = TILE_SIZE;
-    const context = canvas.getContext('2d');
+      // Create a canvas to extract the tile image
+      const canvas = document.createElement('canvas');
+      canvas.width = TILE_SIZE;
+      canvas.height = TILE_SIZE;
+      const context = canvas.getContext('2d');
 
-    if (!context) {
-      console.error('Could not get 2D context from canvas');
-      return;
-    }
+      if (!context) {
+        console.error('Could not get 2D context from canvas');
+        return;
+      }
 
       context.imageSmoothingEnabled = false;
 
@@ -84,13 +81,13 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
     });
 
     // Return the grouped tiles by Z value
-    return Object.values(groupedTiles).sort((a, b) => b[0].Z - a[0].Z);
+    return Object.entries(groupedTiles).sort((entry1, entry2) => entry2[1][0].Z - entry1[1][0].Z);
   }, [tiles, tilesTexture]);
 
   return (
     <>
-      {groupedTiles.map((tiles) =>
-        <Layer backgroundPanRef={backgroundPanRef} backgroundDetails={backgroundDetails} key={tiles[0].Z} tiles={tiles} tilesTexture={tilesTexture} /> 
+      {tileGroupEntries.map(([key, tiles]) =>
+        <Layer backgroundPanRef={backgroundPanRef} backgroundDetails={backgroundDetails} key={key} tiles={tiles} tilesTexture={tilesTexture} /> 
       )}
     </>
   );

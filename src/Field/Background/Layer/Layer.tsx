@@ -100,6 +100,10 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
       initialPosition: Vector3,
       initialTargetPosition: Vector3,
     }
+
+    if (!initialPosition || !initialTargetPosition) {
+      return;
+    }
   
     line.start.copy(initialPosition);
     line.end.copy(initialTargetPosition);
@@ -118,18 +122,33 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
     const scale = getPlaneScaleToFillFrustum(layerRef.current, camera as PerspectiveCamera);
     layerRef.current.scale.set(scale.x * 1.05, scale.y * 1.05, 1)
    })
+   
+   const isLayerVisible = useGlobalStore((storeState) => {
+    const {layerID, parameter, state} = tiles[0];
+    
+    const { backgroundLayerVisibility, currentParameterStates, currentParameterVisibility} = storeState;
 
+    if (backgroundLayerVisibility[layerID] === false) {
+      return false;
+    }
 
-   const isLayerVisible = useGlobalStore((state) => state.backgroundLayerVisibility[tiles[0].layerID] !== false);
-   const currentParameterStates = useGlobalStore((state) => state.currentParameterStates);
-   const currentParameterVisibility = useGlobalStore((state) => state.currentParameterVisibility);
+    if (currentParameterVisibility[parameter] === false) {
+      return false;
+    }
+
+    if (currentParameterStates[parameter] !== undefined && currentParameterStates[parameter] !== state) {
+      return false;
+    }
+
+    return true;
+  });
 
   const canvasTexture = useMemo(() => {
     const canvas = document.createElement("canvas");
     canvas.width = layerWidth;
     canvas.height = layerHeight;
     canvas.style.imageRendering = "pixelated";
-    const context = canvas.getContext("2d");
+    const context = canvas.getContext("2d", { alpha: true });
 
     if (!context) {
       return null;
@@ -142,12 +161,13 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
     texture.minFilter = NearestFilter;
     texture.wrapS = ClampToEdgeWrapping;
     texture.wrapT = ClampToEdgeWrapping;
-    
+    texture.premultiplyAlpha = false
+  
     return texture;
   }, [layerHeight, layerWidth]);
 
   useFrame(() => {
-    if (!canvasTexture) {
+    if (!canvasTexture || !isLayerVisible) {
       return;
     }
     const canvas = canvasTexture.image as HTMLCanvasElement;
@@ -157,24 +177,12 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
     }
 
     context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = 'rgba(0, 0, 0, 0)';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  
     const panX = Math.round(backgroundPanRef.current.panX);
     const panY = Math.round(backgroundPanRef.current.panY);
     tiles.forEach(({ X, Y, parameter, state, texture }) => {
-      let isVisible = true;
-      if (currentParameterStates[parameter] !== undefined && currentParameterStates[parameter] !== state) {
-        isVisible = false;
-      } else if (currentParameterVisibility[parameter] === false) {
-        isVisible = false;
-      }
-
-      if (currentParameterStates[parameter] === state) {
-        isVisible = true;
-      }
-    
-      if (!isVisible) {
-        return;
-      }
-
       context.drawImage(texture.image, X + (layerWidth / 2) + panX, Y + (layerHeight / 2) - panY);
     })
     canvasTexture.needsUpdate = true;
@@ -186,14 +194,14 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
     return null;
   }
 
+
   return (
     <Plane args={[layerWidth, layerHeight]} position={[0,0,tiles[0].Z / 1000]} ref={layerRef} >
       <meshBasicMaterial
         blending={isBlended ? BLENDS[blendType as keyof typeof BLENDS] : NormalBlending}
         map={canvasTexture}
-        opacity={blendType === 3 ? 0.25 : 1}
         side={DoubleSide}
-        transparent 
+        transparent
       />
     </Plane>
   )

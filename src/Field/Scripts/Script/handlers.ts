@@ -733,14 +733,19 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       return;
     }
 
-    currentState.position.set([position.x, position.y, position.z]);
+    currentState.position.start([position.x, position.y, position.z], {
+      immediate: true,
+    });
   },
   SET3: async ({ currentOpcode, currentState, STACK }) => {
     currentOpcode.param // walkmesh triangle ID, unused
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    currentState.position.set([position.x, position.y, position.z]);
+    console.log('set')
+    currentState.position.start([position.x, position.y, position.z], {
+      immediate: true,
+    });
   },
   TALKRADIUS: ({ currentState, STACK }) => {
     const radius = STACK.pop() as number;
@@ -773,6 +778,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   MSPEED: ({ currentState, STACK }) => {
     const movementSpeed = STACK.pop() as number;
+    console.log('speed', movementSpeed)
     currentState.movementSpeed = movementSpeed;
   },
   MOVE: ({ currentState, STACK }) => {
@@ -784,23 +790,28 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
       currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
     }
+
     return new Promise((resolve) => {
+      currentState.movementTarget = position;
       currentState.position.start([position.x, position.y, position.z], {
         immediate: false,
         config: {
           duration: currentState.movementSpeed * 3
         },
         onRest: () => {
+          currentState.movementTarget = undefined;
           resolve();
         }
       });
     })
   },
   MOVEFLUSH: ({ currentState }) => {
+    currentState.movementTarget = undefined;
     currentState.position.stop();
   },
   MOVECANCEL: ({ currentState, STACK }) => {
     STACK.pop() as number; // could this cancel another entity's movement?
+    currentState.movementTarget = undefined;
     currentState.position.stop();
   },
   MOVESYNC: async ({ currentState }) => {
