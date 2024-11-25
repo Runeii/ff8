@@ -8,6 +8,7 @@ export type ScriptState = {
 
   animationProgress: SpringValue<number>;
   animationSpeed: number;
+  animationDurations: number[];
   currentAnimationId: number | undefined;
   idleAnimationId: number | undefined;
   idleAnimationRange: [number, number];
@@ -68,6 +69,7 @@ export const createScriptState = () => {
 
     animationProgress: new SpringValue(0),
     animationSpeed: 1,
+    animationDurations: [],
     currentAnimationId: undefined,
     idleAnimationId: undefined,
     idleAnimationRange: [0, 0],

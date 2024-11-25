@@ -1,4 +1,4 @@
-import { Box, Plane } from "@react-three/drei";
+import { Plane } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
 import {
@@ -6,7 +6,6 @@ import {
   CanvasTexture,
   ClampToEdgeWrapping,
   DoubleSide,
-  Group,
   Line3,
   Material,
   MathUtils,
@@ -14,23 +13,14 @@ import {
   NearestFilter,
   NoBlending,
   NormalBlending,
-  Object3D,
   PerspectiveCamera,
   PlaneGeometry,
-  Quaternion,
   SubtractiveBlending,
   Vector3,
 } from "three";
 import { TILE_SIZE, TileWithTexture } from "../Background";
 import useGlobalStore from "../../../store";
 import { FieldData } from "../../Field";
-
-type LayerProps = {
-  backgroundDetails: FieldData['backgroundDetails']
-  backgroundPanRef: React.MutableRefObject<CameraPanAngle>;
-  cameraZoom: number;
-  tiles: TileWithTexture[];
-};
 
 const BLENDS = {
   1: AdditiveBlending,
@@ -44,8 +34,6 @@ const BLENDS = {
 function getPlaneScaleToFillFrustum(
   plane: Mesh<PlaneGeometry, Material | Material[]>,
   camera: PerspectiveCamera,
-  planeWidth: number = 320,
-  planeHeight: number = 240
 ): { x: number; y: number } {
   // Get the world positions of the camera and the plane
   const cameraWorldPosition = new Vector3();
@@ -72,7 +60,14 @@ function getPlaneScaleToFillFrustum(
   const frustumHeight = 2 * distance * Math.tan(fovInRadians / 2);
   const frustumWidth = frustumHeight * camera.aspect;
 
-  // Calculate the scale factors needed to match the frustum dimensions
+  let planeWidth = 1;
+  let planeHeight = 1;
+  if (plane.geometry instanceof PlaneGeometry) {
+    planeWidth = plane.geometry.parameters.width;
+    planeHeight = plane.geometry.parameters.height;
+  }
+
+  // Calculate the scale factors
   const scaleX = frustumWidth / planeWidth;
   const scaleY = frustumHeight / planeHeight;
 
@@ -80,8 +75,16 @@ function getPlaneScaleToFillFrustum(
   return { x: scaleX, y: scaleY };
 }
 
+
+type LayerProps = {
+  backgroundDetails: FieldData['backgroundDetails']
+  backgroundPanRef: React.MutableRefObject<CameraPanAngle>;
+  cameraZoom: number;
+  tiles: TileWithTexture[];
+};
+
 const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
-  const layerRef = useRef<Mesh<PlaneGeometry>>();
+  const layerRef = useRef<Mesh<PlaneGeometry>>(null);
 
   const {layerWidth, layerHeight} = useMemo(() => {
     const roundedWidth = Math.round(backgroundDetails.width / TILE_SIZE) * TILE_SIZE;
@@ -120,7 +123,7 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
 
     layerRef.current.rotation.setFromQuaternion(camera.quaternion);
     const scale = getPlaneScaleToFillFrustum(layerRef.current, camera as PerspectiveCamera);
-    layerRef.current.scale.set(scale.x * 1.05, scale.y * 1.05, 1)
+    layerRef.current.scale.set(scale.x, scale.y, 1)
    })
    
    const isLayerVisible = useGlobalStore((storeState) => {
@@ -182,7 +185,7 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
   
     const panX = Math.round(backgroundPanRef.current.panX);
     const panY = Math.round(backgroundPanRef.current.panY);
-    tiles.forEach(({ X, Y, parameter, state, texture }) => {
+    tiles.forEach(({ X, Y, texture }) => {
       context.drawImage(texture.image, X + (layerWidth / 2) + panX, Y + (layerHeight / 2) - panY);
     })
     canvasTexture.needsUpdate = true;

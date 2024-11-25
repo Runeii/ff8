@@ -11,6 +11,7 @@ import  { ScriptStateStore } from "../../state";
 
 type ControlsProps = {
   children: React.ReactNode;
+  modelName: string;
   useScriptStateStore: ScriptStateStore;
 }
 
@@ -21,7 +22,7 @@ const WALKING_SPEED = 0.08;
 const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
-const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
+const Controls = ({ children, modelName, useScriptStateStore }: ControlsProps) => {
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();
@@ -30,13 +31,12 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
 
   const [hasPlacedCharacter, setHasPlacedCharacter] = useState(false);
   const initialFieldPosition = useGlobalStore((state) => state.characterPosition);
-  const isTransitioningMap = useGlobalStore((state) => state.isTransitioningMap);
+  const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
   const walkmesh = scene.getObjectByName("walkmesh") as Group;
 
   const position = useScriptStateStore(state => state.position);
 
   useEffect(() => {
-
     if (!walkmesh || !initialFieldPosition || isTransitioningMap) {
       return;
     }
@@ -97,8 +97,11 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
     const isWalking = !isRunEnabled || movementFlags.isWalking;
     const speed = isWalking ? WALKING_SPEED : RUNNING_SPEED
     direction.normalize().multiplyScalar(speed).multiplyScalar(delta);
+
+    const runAnimationIndex = modelName === 'd044' ? 12 : 2;
+    const walkAnimationIndex = modelName === 'd044' ? 12 : 1;
     useGlobalStore.setState({
-      playerAnimationIndex: isWalking ? 1 : 2,
+      playerAnimationIndex: isWalking ? walkAnimationIndex : runAnimationIndex,
     });
 
     const desiredPosition = new Vector3().fromArray(position.get()).add(direction);

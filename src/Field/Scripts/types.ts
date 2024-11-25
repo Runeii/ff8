@@ -1,7 +1,5 @@
-import { Vector3 } from "three";
 import { FieldData } from "../Field";
 import { OPCODES } from "./constants";
-import { SpringValue } from "@react-spring/web";
 
 export type ScriptType = 'location' | 'model' | 'background' | 'unknown' | 'door';
 

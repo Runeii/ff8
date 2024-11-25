@@ -3,7 +3,7 @@ import { PerspectiveCamera, Quaternion, Vector3 } from 'three';
 import { vectorToFloatingPoint, WORLD_DIRECTIONS } from "../../utils";
 import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useMemo, useState } from "react";
-import { calculateAngleForParallax, calculateParallax, getBoundaries, getCameraDirections, getCharacterForwardDirection, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
+import { calculateAngleForParallax, calculateParallax, getBoundaries, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
 import { clamp, radToDeg } from "three/src/math/MathUtils.js";
 import { SCREEN_HEIGHT } from "../../constants/constants";
 import useGlobalStore from "../../store";

@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { checkForIntersection } from "../../Gateways/gatewayUtils";
 import { Object3D, Vector3 } from "three";
 

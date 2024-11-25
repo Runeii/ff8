@@ -37,6 +37,7 @@ const Leader = ({children}: LeaderProps) => {
     
     if (nowActiveWalkmeshTriangles.join() !== activeWalkmeshTrianglesRef.current.join()) {
       useGlobalStore.setState(state => ({
+        ...state,
         congaWaypointHistory: [
           player.getWorldPosition(blankVector).clone(),
           ...state.congaWaypointHistory,

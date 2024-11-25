@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { Script, ScriptState } from "../../types";
+import { Script } from "../../types";
 import { FieldData } from "../../../Field";
 import { Box } from "@react-three/drei";
 import { vectorToFloatingPoint } from "../../../../utils";

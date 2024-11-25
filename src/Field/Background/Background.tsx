@@ -21,7 +21,7 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
 
   const tilesTexture = useTilesTexture(backgroundDetails);
 
-  const tileGroupEntries = useMemo<[string, TileWithTexture[]]>(() => {
+  const tileGroupEntries = useMemo(() => {
     const groupedTiles: {
       [key: string]: TileWithTexture[];
     } = {};
@@ -81,13 +81,13 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
     });
 
     // Return the grouped tiles by Z value
-    return Object.entries(groupedTiles).sort((entry1, entry2) => entry2[1][0].Z - entry1[1][0].Z);
+    return Object.entries(groupedTiles).sort((entry1, entry2) => entry2[1][0].Z - entry1[1][0].Z) as unknown as [string, TileWithTexture[]][];
   }, [tiles, tilesTexture]);
 
   return (
     <>
       {tileGroupEntries.map(([key, tiles]) =>
-        <Layer backgroundPanRef={backgroundPanRef} backgroundDetails={backgroundDetails} key={key} tiles={tiles} tilesTexture={tilesTexture} /> 
+        <Layer backgroundPanRef={backgroundPanRef} backgroundDetails={backgroundDetails} key={key} tiles={tiles} /> 
       )}
     </>
   );

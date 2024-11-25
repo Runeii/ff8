@@ -9,7 +9,7 @@ export type GatewaysProps = {
 }
 
 const Gateways = ({ fieldId }: GatewaysProps) => {
-  const isTransitioningMap = useGlobalStore(state => state.isTransitioningMap);
+  const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
 
   const handleTransition = useCallback((gateway: FormattedGateway) => {
     if (isTransitioningMap) {
@@ -18,16 +18,14 @@ const Gateways = ({ fieldId }: GatewaysProps) => {
 
     if (gateway.target.startsWith('wm')) {
       useGlobalStore.setState({
-        fieldId: 'WORLD_MAP',
-        isTransitioningMap: true,
+        pendingFieldId: 'WORLD_MAP',
       });
       return
     }
 
     console.log('Transitioning to', gateway.target, 'via gateway', gateway, 'at', gateway.destination);
     useGlobalStore.setState({
-      fieldId: gateway.target as typeof MAP_NAMES[number],
-      isTransitioningMap: true,
+      pendingFieldId: gateway.target as typeof MAP_NAMES[number],
       pendingCharacterPosition: gateway.destination
     });
   }, [isTransitioningMap]);

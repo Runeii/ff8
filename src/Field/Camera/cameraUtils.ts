@@ -1,6 +1,5 @@
 import { Camera, Quaternion, Vector3 } from "three";
 import { FieldData } from "../Field";
-import { WORLD_DIRECTIONS } from "../../utils";
 
 export const getRotationAngleAroundAxis = (initialRotation: Quaternion, currentRotation: Quaternion, axis: Vector3) => {
   // Normalize the axis

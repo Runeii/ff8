@@ -1,5 +1,5 @@
 import './index.css'
-import { Suspense, useCallback, useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Field from './Field/Field'
 
@@ -18,7 +18,7 @@ const hasNamedField = new URLSearchParams(window.location.search).get('field');
 attachKeyDownListeners();
 
 useGlobalStore.setState({
-  fieldId: getInitialField()
+  pendingFieldId: getInitialField()
 });
 
 export default function App() {
@@ -32,7 +32,8 @@ export default function App() {
   }, [fieldId])
 
   const isMapFadeEnabled = useGlobalStore(state => state.isMapFadeEnabled);
-  const [spring, setSpring] = useSpring(() => ({
+
+  const [{opacity}] = useSpring(() => ({
     opacity: 1,
     config: {
       duration: 1000,
@@ -40,26 +41,15 @@ export default function App() {
     immediate: isMapFadeEnabled,
   }), [isMapFadeEnabled]);
 
-  const asyncSetSpring = useCallback(async (opacity: number) => {
-    if (spring.opacity.get() === opacity) {
-      return;
-    }
-    return new Promise((resolve) => {
-      setSpring({
-        opacity,
-        onRest: resolve
-      })
-    })
-  }, [setSpring, spring.opacity]);
-
   useEffect(() => {
     useGlobalStore.setState({
-      fadeSpring: spring,
+      canvasOpacitySpring: opacity,
     })
-  }, [spring])
+  }, [opacity])
+
   return (
     <>
-    <animated.div className="container" style={spring}>
+    <animated.div className="container" style={{opacity}}>
       <Canvas camera={{
         aspect: ASPECT_RATIO,
         near: 0.0001,
@@ -67,7 +57,7 @@ export default function App() {
       }} className="canvas">
       <Perf />
         <Suspense>
-          {fieldId === 'WORLD_MAP' ? <WorldMap /> : <Field setSpring={asyncSetSpring} />}
+          {fieldId === 'WORLD_MAP' ? <WorldMap /> : <Field opacitySpring={opacity} />}
         </Suspense>
         <Ui />
       </Canvas>

@@ -5,14 +5,14 @@ import type data from '../../public/output/escouse2.json';
 import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
-import {  useFrame, useThree } from '@react-three/fiber';
+import { useThree } from '@react-three/fiber';
 import Scripts from './Scripts/Scripts';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
 import { getInitialEntrance } from '../utils';
 import { MEMORY } from './Scripts/Script/handlers';
 import MAP_NAMES from '../constants/maps';
-import { PerspectiveCamera } from 'three';
+import { SpringValue } from '@react-spring/web';
 
 export type FieldData = typeof data;
 
@@ -24,10 +24,8 @@ type FieldProps = {
 
 const Field = ({ data }: FieldProps) => {
   const backgroundPanRef = useRef<CameraPanAngle>({
-    yaw: 0,
-    pitch: 0,
-    cameraZoom: 0,
-    boundaries: null
+    panX: 0,
+    panY: 0,
   });
 
   return (
@@ -51,10 +49,11 @@ const Field = ({ data }: FieldProps) => {
 }
 
 type FieldLoaderProps = Omit<FieldProps, 'data'> & {
-  setSpring: (opacity: number) => Promise<unknown>
+  opacitySpring: SpringValue<number>,
 }
 
-const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
+const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
+  const pendingFieldId = useGlobalStore(state => state.pendingFieldId);
   const fieldId = useGlobalStore(state => state.fieldId);
   
   const currentFieldIdRef = useRef(fieldId);
@@ -75,17 +74,18 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
     const handleTransition = async () => {
       const {isMapFadeEnabled} = useGlobalStore.getState();
 
-      if (isMapFadeEnabled && fieldId !== 'start0') {
-     //   await setSpring(0);
+      if (isMapFadeEnabled && pendingFieldId !== 'start0') {
+        await opacitySpring.start(0);
       }
 
       setData(null);
       gl.clear();
 
-      if (fieldId === 'WORLD_MAP') {
+      if (pendingFieldId === 'WORLD_MAP') {
         return;
       }
-      const response = await fetch(`/output/${fieldId}.json`);
+    console.log('Loading field', pendingFieldId);
+      const response = await fetch(`/output/${pendingFieldId}.json`);
       const data = await response.json() as FieldProps['data'];
       setData(data);
 
@@ -93,7 +93,7 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
       useGlobalStore.setState({
         characterPosition: pendingCharacterPosition ?? getInitialEntrance(data),
         pendingCharacterPosition: undefined,
-        fieldTimestamp: Date.now(),
+
         isUserControllable: true,
         isRunEnabled: true,
 
@@ -103,16 +103,21 @@ const FieldLoader = ({ setSpring, ...props }: FieldLoaderProps) => {
         currentMessages: [],
 
         availableMessages: data.text,
-        isTransitioningMap: false,
 
         hasActiveTalkMethod: false,
         lockedTriangles: [],
 
         activeCameraId: 0,
+        pendingFieldId: undefined,
+        fieldId: pendingFieldId,
       });
     }
+
+    if (!pendingFieldId) {
+      return;
+    }
     handleTransition();
-  }, [gl, fieldId, setSpring]);
+  }, [gl, pendingFieldId, opacitySpring]);
 
   if (!data) {
     return null;

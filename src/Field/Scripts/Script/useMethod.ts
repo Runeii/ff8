@@ -158,6 +158,7 @@ const useMethod = (
       }, 50);
 
       const state = useScriptStateStore.getState();
+
       const nextIndex = await handler({
         activeMethod,
         currentOpcode,

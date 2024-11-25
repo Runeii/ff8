@@ -1,7 +1,6 @@
 import { Line } from "@react-three/drei";
 import { Script } from "../../types";
-import { useThree } from "@react-three/fiber";
-import { Group, Vector3 } from "three";
+import { Vector3 } from "three";
 import useTriggerEvent from "../useTriggerEvent";
 import useLineIntersection from "../useLineIntersection";
 import { useMemo } from "react";
@@ -15,12 +14,10 @@ type LocationProps = {
 }
 
 const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationProps) => {
-  const player = useThree(({ scene }) => scene.getObjectByName("character") as Group);
-
   const isLineOn = useScriptStateStore(state => state.isLineOn);
   const linePoints = useScriptStateStore(state => state.linePoints);
 
-  const { isIntersecting, wasIntersecting } = useLineIntersection(linePoints ?? undefined, player, isLineOn);
+  const { isIntersecting, wasIntersecting } = useLineIntersection(linePoints ?? undefined, isLineOn);
 
   useTriggerEvent('touchon',  script, setActiveMethodId, isIntersecting);
   useTriggerEvent('touchoff', script, setActiveMethodId, !isIntersecting && wasIntersecting);

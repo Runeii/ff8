@@ -18,8 +18,8 @@ export type HandlerArgs = {
   STACK: number[],
   TEMP_STACK: Record<number, number>
 }
-type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (number | void);
 
+type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (number | void);
 
 // byte – 0,255
 // word – 0,65535
@@ -28,7 +28,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 6000, // progress
+  256: 4000, // progress
   491: 0, // touk
   534: 1, // ?
   720: 0, // squall model
@@ -162,8 +162,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const fieldId = STACK.pop() as number;
 
     useGlobalStore.setState({
-      fieldId: MAP_NAMES[fieldId],
-      isTransitioningMap: true,
+      pendingFieldId: MAP_NAMES[fieldId],
     });
   },
   MAPJUMP: ({ currentOpcode, STACK }) => {
@@ -171,8 +170,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const mapJumpDetailsInMemory = STACK.splice(-4);
 
     useGlobalStore.setState({
-      fieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
-      isTransitioningMap: true,
+      pendingFieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
       pendingCharacterPosition: vectorToFloatingPoint(mapJumpDetailsInMemory.slice(1, 4) as unknown as [number, number, number]),
     });
   },
@@ -181,9 +179,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const mapJumpDetailsInMemory = STACK.splice(-5);
 
     useGlobalStore.setState({
-      fieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
+      pendingFieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
       initialAngle: mapJumpDetailsInMemory[4],
-      isTransitioningMap: true,
       pendingCharacterPosition: vectorToFloatingPoint(mapJumpDetailsInMemory.slice(1, 4) as unknown as [number, number, number]),
     });
   },
@@ -467,22 +464,22 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await remoteExecute(label, source, currentOpcode.param)
   },
   FADEIN: async () => {
-    const fadeSpring = useGlobalStore.getState().fadeSpring;
+    const { canvasOpacitySpring } = useGlobalStore.getState();
     await wait(500)
-    fadeSpring.opacity.start(1);
+    canvasOpacitySpring.start(1);
   },
   // i believe this is the same
   FADENONE: async () => {
-    const fadeSpring = useGlobalStore.getState().fadeSpring;
+    const { canvasOpacitySpring } = useGlobalStore.getState();
     await wait(500)
-    fadeSpring.opacity.start(1);
+    canvasOpacitySpring.start(1);
   },
   FADEOUT: fadeOutMap,
   FADEBLACK: fadeOutMap,
   FADESYNC: async () => {
-    const fadeSpring = useGlobalStore.getState().fadeSpring;
-    if (fadeSpring.opacity.get() !== 1) {
-      await fadeSpring.opacity.start(1)
+    const { canvasOpacitySpring } = useGlobalStore.getState();
+    if (canvasOpacitySpring.get() !== 1) {
+      await canvasOpacitySpring.start(1)
     }
   },
   ISPARTY: ({ STACK, TEMP_STACK }) => {
@@ -551,9 +548,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     currentState.idleAnimationId = animationId;
     currentState.idleAnimationRange = [firstFrame, lastFrame];
+
     playBaseAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       currentState.idleAnimationRange,
     );
   },
@@ -564,11 +563,16 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       false,
     )
 
     currentState.currentAnimationId = undefined;
-    playBaseAnimation(currentState.animationProgress, currentState.animationSpeed);
+    playBaseAnimation(
+      currentState.animationProgress,
+      currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1]
+    );
   },
   ANIMEKEEP: async ({ currentState, currentOpcode }) => {
     const animationId = currentOpcode.param;
@@ -577,6 +581,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       false,
     )
   },
@@ -586,15 +591,21 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
+
     await playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       false,
       [firstFrame, lastFrame]
     )
 
     currentState.currentAnimationId = undefined;
-    playBaseAnimation(currentState.animationProgress, currentState.animationSpeed);
+    playBaseAnimation(
+      currentState.animationProgress,
+      currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1]
+    );
   },
   CANIMEKEEP: async ({ currentState, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
@@ -602,9 +613,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const lastFrame = STACK.pop() as number;
 
     currentState.currentAnimationId = animationId;
+
+
     await playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       false,
       [firstFrame, lastFrame]
     )
@@ -613,22 +627,30 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const animationId = currentOpcode.param;
     currentState.currentAnimationId = animationId;
 
+
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       false,
     )
 
     currentState.currentAnimationId = undefined;
-    playBaseAnimation(currentState.animationProgress, currentState.animationSpeed);
+    playBaseAnimation(
+      currentState.animationProgress,
+      currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1]
+    );
   },
   RANIMEKEEP: ({ currentState, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
     currentState.currentAnimationId = animationId;
+
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       false,
     )
   },
@@ -641,12 +663,17 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       false,
       [firstFrame, lastFrame]
     )
 
     currentState.currentAnimationId = undefined;
-    playBaseAnimation(currentState.animationProgress, currentState.animationSpeed);
+    playBaseAnimation(
+      currentState.animationProgress,
+      currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1]
+    );
   },
   RCANIMEKEEP: ({ currentState, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
@@ -654,9 +681,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const lastFrame = STACK.pop() as number;
 
     currentState.currentAnimationId = animationId;
+
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       false,
       [firstFrame, lastFrame]
     )
@@ -665,9 +694,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const animationId = currentOpcode.param;
 
     currentState.currentAnimationId = animationId;
+
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       true,
     )
   },
@@ -677,9 +708,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const lastFrame = STACK.pop() as number;
 
     currentState.currentAnimationId = animationId;
+
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
+      currentState.animationDurations[animationId - 1],
       true,
       [firstFrame, lastFrame]
     )
@@ -819,9 +852,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
+
+  //TODO: implement
   MOVEA: ({ STACK }) => {
-    const distanceToStop = STACK.pop() as number;
-    const actorId = STACK.pop() as number;
+    // const distanceToStop =
+    STACK.pop() as number;
+    // const actorId =
+    STACK.pop() as number;
   },
   // This should keep animation and face direction
   CMOVE: async (...args) => {

@@ -1,6 +1,6 @@
 import { Script } from "../../types";
 import {  ComponentType, lazy, useCallback, useEffect, useMemo, useState } from "react";
-import {  Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
+import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
@@ -67,6 +67,17 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
   }, [convertMaterialsToBasic]);
 
   useEffect(() => {
+    if (!animations) {
+      return;
+    }
+    const durations = animations.clips.map((clip) => clip.duration);
+    useScriptStateStore.setState({
+      animationDurations: durations
+    });
+  }, [animations, modelName, useScriptStateStore]);
+
+
+  useEffect(() => {
     if (!meshGroup) {
       return;
     }
@@ -90,7 +101,6 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
     if (!animations || !animations.mixer || activeAnimationId === undefined) {
       return;
     }
-
     const mixer = animations.mixer;
     animations.mixer.stopAllAction();
 
@@ -98,31 +108,38 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
     if (!clip) {
       return;
     }
-
+    
     const action = mixer.clipAction(clip);
     action.play();
     action.paused = true;
     action.time = 0;
     animations.mixer.update(0);
+    useScriptStateStore.getState().animationProgress.set(0);
+  
     return action;
-  }, [activeAnimationId, animations]);
+  }, [activeAnimationId, animations, useScriptStateStore]);
 
+
+  const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
   useFrame(() => {
-    if (!currentAction || activeIdleAnimationId !== undefined) {
+    if (!currentAction || activeAnimationId !== activeIdleAnimationId) {
       return;
     }
-
-    currentAction.time = animationProgress.get() * currentAction.getClip().duration;
+    
+    if (isTransitioningMap) {
+      currentAction.paused = true;
+      return;
+    }
+    currentAction.paused = false;
   });
 
-  useEffect(() => {
-    if (activeAnimationId !== activeIdleAnimationId || !currentAction) {
+  useFrame(() => {
+    if (!currentAction || activeAnimationId === activeIdleAnimationId || isTransitioningMap) {
       return;
     }
-
-    currentAction.paused = false;
-
-  }, [activeAnimationId, activeIdleAnimationId, currentAction]);
+    
+    currentAction.time = animationProgress.get() * currentAction.getClip().duration;
+  });
 
   useFrame(() => {
     if (!head) {
@@ -146,7 +163,7 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
 
   if (isPlayerControlled) {
     return (
-      <Controls useScriptStateStore={useScriptStateStore}>
+      <Controls modelName={modelName} useScriptStateStore={useScriptStateStore}>
         <Leader>
           {modelJsx}
         </Leader>

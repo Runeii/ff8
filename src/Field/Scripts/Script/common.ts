@@ -5,15 +5,15 @@ import { openMessage } from "./utils";
 import { Group, Scene } from "three";
 
 export const fadeOutMap = async () => {
-  const { fadeSpring, isMapFadeEnabled } = useGlobalStore.getState()
+  const { canvasOpacitySpring, isMapFadeEnabled } = useGlobalStore.getState()
   if (!isMapFadeEnabled) {
     return;
   }
-  console.log('out')
-  fadeSpring.opacity.start(0);
+
+  canvasOpacitySpring.start(0);
 }
 
-export const displayMessage = async (id: number, x: number, y: number, channel: number) => {
+export const displayMessage = async (id: number, x: number, y: number) => {
   const { availableMessages } = useGlobalStore.getState();
 
   const uniqueId = `${id}--${Date.now()}`;
@@ -53,10 +53,11 @@ export const turnToFaceEntity = async (thisId: number, targetName: string, durat
   turnToFaceAngle(adjustedScaleValue, duration, spring);
 }
 
-export const playBaseAnimation = (spring: SpringValue<number>, speed: number, range?: [number, number]) =>
+export const playBaseAnimation = (spring: SpringValue<number>, speed: number, duration: number, range?: [number, number]) =>
   playAnimation(
     spring,
     speed,
+    duration,
     true,
     range,
   )
@@ -65,21 +66,34 @@ export const playBaseAnimation = (spring: SpringValue<number>, speed: number, ra
 export const playAnimation = async (
   spring: SpringValue<number>,
   speed: number,
+  duration: number,
   isLooping: boolean,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _range: [number, number] = [0, 1]
+
+  range: [number, number] | undefined = undefined
 ) => {
   spring.set(0);
 
-  // speed 1 = 2fps
-  // const duration = 2000
+  const FPS = 30;
+  const startOffset = range ? (1 / duration) * range[0] : 0;
+  const endOffset = range ? (1 / duration) * range[1] : 1;
 
-  await spring.start(1, {
-    from: 0,
+  const effectiveFps = FPS * speed;
+
+  // Total frames in the original duration
+  const totalFrames = duration * FPS;
+
+  // Adjusted duration in seconds
+  const adjustedDurationInSeconds = totalFrames / effectiveFps;
+
+  // Convert to milliseconds
+  const adjustedDurationInMs = adjustedDurationInSeconds * 1000;
+
+  await spring.start(endOffset, {
+    from: startOffset,
     immediate: false,
     loop: isLooping,
     config: {
-      duration: speed * 1000,
+      duration: adjustedDurationInMs,
     },
   });
 }

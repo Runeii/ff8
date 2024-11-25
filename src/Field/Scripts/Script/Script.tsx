@@ -10,12 +10,9 @@ import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
 import { useFrame, useThree } from "@react-three/fiber";
-import {  Group, Quaternion, Vector3 } from "three";
+import {  Group, Vector3 } from "three";
 import createScriptState from "./state";
-import { computeSignedAngleTo, getDirectionToCamera, getLocalViewportTop } from "../../../utils";
-import { getCameraDirections, getCharacterForwardDirection } from "../../Camera/cameraUtils";
-import { MathUtils, radToDeg } from "three/src/math/MathUtils.js";
-import { Line } from "@react-three/drei";
+import { getDirectionToCamera, getLocalViewportTop } from "../../../utils";
 import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "./utils";
 
 type ScriptProps = {
@@ -72,26 +69,17 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
       return;
     }
 
-    const handleExecutionRequest = async ({ detail: { key, scriptLabel, partyMemberId: requestedPartyMemberId, source } }: {detail: ExecuteScriptEventDetail}) => {
+    const handleExecutionRequest = async ({ detail: { key, scriptLabel, partyMemberId: requestedPartyMemberId } }: {detail: ExecuteScriptEventDetail}) => {
       if (requestedPartyMemberId !== undefined && partyMemberId !== requestedPartyMemberId) {
         console.warn('Party member mismatch', requestedPartyMemberId, partyMemberId);
         return;
       }
-      const matchingMethod = script.methods.find((method, index) => {
-       // if (requestedPartyMemberId !== undefined) {
-       //   console.log('Was checking partymember?', partyMemberId)
-       //   return index === scriptLabel; // this seems broken?
-       // }
-      //  console.log(scriptLabel, method.scriptLabel, method.scriptLabel === scriptLabel);
-        return method.scriptLabel === scriptLabel
-      });
+      const matchingMethod = script.methods.find((method) => method.scriptLabel === scriptLabel);
 
       if (!matchingMethod) {
-       // console.warn('No matching method found', scriptLabel, script);
         return;
       }
 
-   //   console.log('Remote execution', script.groupId, source);
       setActiveMethodId(matchingMethod?.methodId);
       setRemoteExecutionKey(key);
     }
@@ -102,14 +90,27 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
       document.removeEventListener('executeScript', handleExecutionRequest);
     }
   }, [activeMethodId, isUnused, partyMemberId, script.groupId, script.methods, setActiveMethodId]);
+  
+  const activeParty = useGlobalStore(storeState => storeState.party);
 
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
   const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
   
-  const activeParty = useGlobalStore(storeState => storeState.party);
+  const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
+  useEffect(() => {
+    if (!isTransitioningMap) {
+      return;
+    }
+    const { animationProgress, backgroundAnimationSpring, position, headAngle, angle} = useScriptStateStore.getState();
+    animationProgress.pause();
+    position.pause();
+    headAngle.pause();
+    angle.pause();
+    backgroundAnimationSpring.pause();
+  }, [isTransitioningMap, useScriptStateStore]);
+
 
   const camera = useThree(({ camera }) => camera);
-  const [dvector, setDVector] = useState(new Vector3());
 
   useEffect(() => {
     if (!movementTarget || !entityRef.current) {
@@ -145,6 +146,7 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
 
     useScriptStateStore.getState().angle.set(convertRadiansTo255(rotation));
   }, [camera, movementTarget, useScriptStateStore]);
+
   useFrame(({camera}) => {
     if (!entityRef.current) {
       return;
@@ -174,6 +176,13 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
     entityRef.current.quaternion.setFromAxisAngle(meshUp, faceDownBaseAngle - currentRotation);
   });
 
+  useFrame(() => {
+    if (script.groupId !== 0) {
+      return;
+    }
+   // console.log(position.get())
+  });
+
   if (isUnused) {
     return null;
   }
@@ -189,7 +198,6 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
       name={isSolid ? 'blockage' : 'script'}
       visible={isVisible}
     >
-      <Line points={[new Vector3(), dvector]} color="blue" />
       {isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
           radius={talkRadius / 4096 / 1.5}

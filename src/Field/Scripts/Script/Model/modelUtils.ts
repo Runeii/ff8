@@ -1,5 +1,6 @@
-import { AnimationAction, Box3, Group, LoopOnce, LoopRepeat, Mesh, Object3D, Quaternion, Scene, Vector3 } from "three";
-import { Script, ScriptState } from "../../types";
+import { AnimationAction, Group, LoopOnce, LoopRepeat, Mesh, Scene } from "three";
+import { Script } from "../../types";
+import { ScriptState } from "../state";
 
 export const getScriptEntity = (scene: Scene, scriptGroupId: number) => {
   return scene.getObjectByName(`model--${scriptGroupId}`) as Group;
