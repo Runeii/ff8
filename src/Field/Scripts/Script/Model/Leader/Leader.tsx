@@ -2,18 +2,19 @@ import { useFrame } from "@react-three/fiber";
 import { ReactNode, useRef } from "react";
 import { Box3, Group, Mesh, Vector3 } from "three";
 import useGlobalStore from "../../../../../store";
+import { ScriptStateStore } from "../../state";
 
 type LeaderProps = {
   children: ReactNode;
+  useScriptStateStore: ScriptStateStore
 }
 
 const blankVector = new Vector3();
 
-const Leader = ({children}: LeaderProps) => {
+const Leader = ({ children, useScriptStateStore }: LeaderProps) => {
   const activeWalkmeshTrianglesRef = useRef<number[]>([]);
+
   useFrame(({scene}) => {
-    return;
-    
     const player = scene.getObjectByName('character') as Group;
     const walkmesh = scene.getObjectByName('walkmesh') as Group; 
     if (!player || !walkmesh) {
@@ -39,7 +40,10 @@ const Leader = ({children}: LeaderProps) => {
       useGlobalStore.setState(state => ({
         ...state,
         congaWaypointHistory: [
-          player.getWorldPosition(blankVector).clone(),
+          {
+            position: player.getWorldPosition(blankVector).clone(),
+            angle: useScriptStateStore.getState().angle.get(),
+          },
           ...state.congaWaypointHistory,
         ]
       }));

@@ -42,7 +42,7 @@ export const processTagsInString = (input: string) => {
   const segments = textWithLineBreaks.split(/(\{[^}]+\})/g);
 
   const result = segments.reduce(
-    ({ output, openColor }, segment) => {
+    ({ output, openColor }, segment: string) => {
       const { text, newColor } = processSegment(segment, openColor);
 
       return {

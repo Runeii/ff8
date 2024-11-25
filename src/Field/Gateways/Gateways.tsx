@@ -18,7 +18,7 @@ const Gateways = ({ fieldId }: GatewaysProps) => {
 
     if (gateway.target.startsWith('wm')) {
       useGlobalStore.setState({
-        pendingFieldId: 'WORLD_MAP',
+        pendingFieldId: 'wm00',
       });
       return
     }

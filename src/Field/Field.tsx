@@ -81,7 +81,7 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
       setData(null);
       gl.clear();
 
-      if (pendingFieldId === 'WORLD_MAP') {
+      if (pendingFieldId === 'wm00') {
         return;
       }
     console.log('Loading field', pendingFieldId);

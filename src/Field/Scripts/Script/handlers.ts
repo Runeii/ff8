@@ -38,7 +38,7 @@ export const MESSAGE_VARS: Record<number, string> = {};
 
 let testState = {}
 
-export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
+export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = {
   RET: () => {
     return 999999
   },
@@ -192,7 +192,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
     STACK.pop() as number;
     useGlobalStore.setState({
-      //   fieldId: 'WORLD_MAP',
+      pendingFieldId: 'wm00',
     });
   },
   HALT: ({ currentOpcode, currentState }) => {
@@ -1803,8 +1803,6 @@ export const executeOpcode = async (currentOpcode: Opcode, state: ScriptState, a
     TEMP_STACK: {},
     STACK: [],
     ...args,
-    currentState: {
-      current: state,
-    },
+    currentState: state
   });
 }

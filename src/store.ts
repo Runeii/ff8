@@ -11,8 +11,8 @@ interface GlobalState {
   backgroundLayerVisibility: Record<number, boolean>,
   currentParameterStates: Record<number, number>,
   currentParameterVisibility: Record<number, boolean>,
-  fieldId: typeof MAP_NAMES[number] | 'WORLD_MAP',
-  pendingFieldId: typeof MAP_NAMES[number] | 'WORLD_MAP',
+  fieldId: typeof MAP_NAMES[number],
+  pendingFieldId: typeof MAP_NAMES[number],
 
   initialAngle: number,
   isUserControllable: boolean,

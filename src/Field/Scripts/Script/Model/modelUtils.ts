@@ -21,7 +21,7 @@ export const playAnimation = (
   frames?: number[]
 ) => {
   const actionId = 1;
-  const idleId = currentState.idleAnimationId;
+  const idleId = currentState.idleAnimationId!;
 
   const modelName =
     currentState.partyMemberId === undefined

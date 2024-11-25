@@ -13,9 +13,10 @@ export const fadeOutMap = async () => {
   canvasOpacitySpring.start(0);
 }
 
-export const displayMessage = async (id: number, x: number, y: number) => {
+export const displayMessage = async (id: number, x: number, y: number, channel: number) => {
   const { availableMessages } = useGlobalStore.getState();
 
+  console.log('Channel not implemented:', channel)
   const uniqueId = `${id}--${Date.now()}`;
   await openMessage(uniqueId, availableMessages[id], x, y);
 }

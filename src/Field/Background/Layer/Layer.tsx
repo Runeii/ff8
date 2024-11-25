@@ -79,7 +79,6 @@ function getPlaneScaleToFillFrustum(
 type LayerProps = {
   backgroundDetails: FieldData['backgroundDetails']
   backgroundPanRef: React.MutableRefObject<CameraPanAngle>;
-  cameraZoom: number;
   tiles: TileWithTexture[];
 };
 

@@ -30,7 +30,7 @@ export const WORLD_DIRECTIONS = {
 }
 
 export const getInitialField = () => {
-  const initialField = new URLSearchParams(window.location.search).get('field') || 'WORLD_MAP'
+  const initialField = new URLSearchParams(window.location.search).get('field')
 
   return initialField;
 }

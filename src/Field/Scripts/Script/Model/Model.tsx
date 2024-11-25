@@ -164,7 +164,7 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
   if (isPlayerControlled) {
     return (
       <Controls modelName={modelName} useScriptStateStore={useScriptStateStore}>
-        <Leader>
+        <Leader useScriptStateStore={useScriptStateStore}>
           {modelJsx}
         </Leader>
       </Controls>

@@ -12,13 +12,14 @@ import Ui from './UI/UI'
 import WorldMap from './WorldMap/WorldMap'
 import { attachKeyDownListeners } from './Field/Scripts/Script/common'
 import { Perf } from 'r3f-perf'
+import MAP_NAMES from './constants/maps'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
 attachKeyDownListeners();
 
 useGlobalStore.setState({
-  pendingFieldId: getInitialField()
+  pendingFieldId: (getInitialField() ?? 'wm00') as typeof MAP_NAMES[number], 
 });
 
 export default function App() {
@@ -57,7 +58,7 @@ export default function App() {
       }} className="canvas">
       <Perf />
         <Suspense>
-          {fieldId === 'WORLD_MAP' ? <WorldMap /> : <Field opacitySpring={opacity} />}
+          {fieldId === 'wm00' ? <WorldMap /> : <Field opacitySpring={opacity} />}
         </Suspense>
         <Ui />
       </Canvas>
