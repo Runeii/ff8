@@ -13,19 +13,13 @@ export type ScriptsProps = {
 
 const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
   const fieldId = useGlobalStore(state => state.fieldId);
-  const [activeScripts, setActiveScripts] = useState<ScriptType[]>([scripts[0]]);
+  const [activeExec, setActiveExec] = useState<number>(0);
 
   const handleScriptSetupCompleted = useCallback(() => {
-    const currentScriptIdx = scripts.findIndex(script => script === activeScripts[activeScripts.length - 1]);
+    setActiveExec((prev) => prev + 1);
+  }, []);
 
-    if (currentScriptIdx === scripts.length - 1) {
-      return;
-    }
-
-    setActiveScripts([...activeScripts, scripts[currentScriptIdx + 1]]);
-  }, [activeScripts, scripts]);
-
-  return activeScripts.map(script => <Script doors={doors} key={`${fieldId}--${script.exec}`} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} />  )
+  return scripts.map(script => <Script doors={doors} key={`${fieldId}--${script.exec}`} isActive={script.exec <= activeExec} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} />  )
 }
 
 export default Scripts;

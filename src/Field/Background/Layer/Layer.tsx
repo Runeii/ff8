@@ -1,12 +1,11 @@
-import { Box, OrbitControls, Plane } from "@react-three/drei";
+import { Plane } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { isValidElement, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   AdditiveBlending,
   CanvasTexture,
   ClampToEdgeWrapping,
   DoubleSide,
-  Group,
   Line3,
   Material,
   MathUtils,
@@ -140,6 +139,7 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
 
     return true;
   });
+
   const canvasTexture = useMemo(() => {
     const canvas = document.createElement("canvas");
     canvas.width = layerWidth;

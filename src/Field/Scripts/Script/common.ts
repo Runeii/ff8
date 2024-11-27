@@ -2,7 +2,16 @@ import { SpringValue } from "@react-spring/web";
 import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
 import { openMessage } from "./utils";
-import { Box3, Group, Scene, Vector3 } from "three";
+import { Group, Scene, Vector3 } from "three";
+
+export const fadeInMap = async () => {
+  const { canvasOpacitySpring, isMapFadeEnabled } = useGlobalStore.getState()
+  if (!isMapFadeEnabled) {
+    return;
+  }
+
+  await canvasOpacitySpring.start(1);
+}
 
 export const fadeOutMap = async () => {
   const { canvasOpacitySpring, isMapFadeEnabled } = useGlobalStore.getState()
@@ -71,8 +80,6 @@ export const isTouching = (thisId: number, targetName: string, scene: Scene) => 
 
   const thisPosition = thisMesh.getWorldPosition(new Vector3());
   const targetPosition = targetMesh.getWorldPosition(new Vector3());
-
-  console.log(thisPosition.distanceTo(targetPosition));
 
   return thisPosition.distanceTo(targetPosition) < 0.25;
 }

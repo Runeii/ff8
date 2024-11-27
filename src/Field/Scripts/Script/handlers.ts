@@ -261,8 +261,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
   BGDRAW: ({ currentState, STACK }) => {
-    const isDrawn = STACK.pop() as number;
-    currentState.isBackgroundVisible = isDrawn === 1;
+    const frame = STACK.pop() as number;
+    currentState.isBackgroundVisible = true;
+    currentState.backgroundAnimationSpring.set(frame);
   },
   BGOFF: ({ currentState }) => {
     currentState.isBackgroundVisible = false;
@@ -439,7 +440,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   ISTOUCH: ({ scene, script, STACK, TEMP_STACK }) => {
     const actorId = STACK.pop() as number;
     const isTouch = isTouching(script.groupId, `model--${actorId}`, scene)
-    console.log('isTouching', isTouch)
 
     TEMP_STACK[0] = isTouch ? 1 : 0;
   },

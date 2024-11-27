@@ -66,7 +66,7 @@ declare global {
     y: number;
     width?: number;
     height?: number;
-    channel: number;
+    channel?: number;
   }
 
   type AskOptions = {

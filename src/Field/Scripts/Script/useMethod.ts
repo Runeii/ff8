@@ -10,6 +10,7 @@ const useMethod = (
   useScriptStateStore: ScriptStateStore,
   activeMethodId: string | undefined,
   setActiveMethodId: (methodId?: string) => void,
+  isActive: boolean
 ) => {
   const scene = useThree((state) => state.scene);
 
@@ -39,6 +40,10 @@ const useMethod = (
       return methods.find(method => method.methodId === activeMethodId);
     }
 
+    if (!isActive) {
+      return null;
+    }
+
     const touch = methods.find(method => method.methodId === 'touch');
     if (previousActiveMethodName === 'touchon' && touch) {
       return touch;
@@ -55,7 +60,7 @@ const useMethod = (
     }
 
     return methods.find(method => method.methodId === 'default');
-  }, [activeMethodId, hasCompletedConstructor, isHalted, previousActiveMethodName, script.methods]);
+  }, [activeMethodId, hasCompletedConstructor, isActive, isHalted, previousActiveMethodName, script.methods]);
 
   const [currentOpcodeIndex, setCurrentOpcodeIndex] = useState(0);
 
@@ -136,6 +141,9 @@ const useMethod = (
       if (currentOpcode.name.startsWith('LABEL')) {
         goToNextOpcode();
         return;
+      }
+      if (script.groupId === 0) {
+        console.log('Executing opcode:', currentOpcode);
       }
 
       const handler = OPCODE_HANDLERS[currentOpcode.name];

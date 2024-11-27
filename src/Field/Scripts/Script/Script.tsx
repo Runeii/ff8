@@ -17,6 +17,7 @@ import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection }
 
 type ScriptProps = {
   doors: FieldData['doors'],
+  isActive: boolean;
   models: string[];
   script: ScriptType;
   onSetupCompleted: () => void;
@@ -24,7 +25,7 @@ type ScriptProps = {
 
 // Not implemented
 // * Pushable
-const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
+const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptProps) => {
   const entityRef = useRef<Group>(null);
 
   const [activeMethodId, setActiveMethodId] = useState<string>();
@@ -42,10 +43,9 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
     setRemoteExecutionKey(undefined);
   }, [activeMethodId, remoteExecutionKey]);
   
-
   const useScriptStateStore = useMemo(() => createScriptState(), []);
 
-  const hasCompletedConstructor = useMethod(script, useScriptStateStore, activeMethodId, setActiveMethodId);
+  const hasCompletedConstructor = useMethod(script, useScriptStateStore, activeMethodId, setActiveMethodId, isActive);
 
   useEffect(() => {
     if (!hasCompletedConstructor) {
@@ -78,7 +78,7 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
       if (!matchingMethod) {
         return;
       }
-
+console.log('request accepted', matchingMethod, scriptLabel, requestedPartyMemberId)
       setActiveMethodId(matchingMethod?.methodId);
       setRemoteExecutionKey(key);
     }
