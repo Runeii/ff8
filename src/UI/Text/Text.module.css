@@ -1,22 +1,27 @@
 .container {
-  position: fixed;
-  inset: 10%;
-  left: 0;
-  top: 0;
-  width: 100cqw;
-  height: 100cqh;
+  position: absolute;
+  inset: 0;
 }
 .text {
-  position: absolute;
-  left: calc(var(--x) * 1cqw);
-  top: calc(var(--y) * 1cqh);
+  position: relative;
+  left: calc(var(--x) * (100% / 320));
+  top: calc(var(--y) * (100% / 224));
+  width: max-content;
+  height: max-content;
+  translate: 0 0;
   font-size: 3cqw;
 
   transform-origin: center center;
   padding: 8px;
+  pointer-events: none;
 
-  color: white;
+  &.hasWidth {
+    width: calc(var(--width) * (100% / 320));
+    height: calc(var(--height) * (100% / 224));
+  }
+}
 
+.text {
   line-height: 1.2;
 
   text-align: left;
@@ -33,7 +38,6 @@
   background-image: url("./menu-fond.png");
 
   white-space: nowrap;
-
   color: rgb(231, 231, 231);
 
   :global(.darkgrey) {

@@ -9,26 +9,12 @@ import { useFrame } from '@react-three/fiber';
 
 const MARGIN = 8;
 
-const Text = ({ id, text, x, y, askOptions }: Message) => {
+const Text = ({ id, text, placement, askOptions }: Message) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [currentIndex, setCurrentIndex] = useState((askOptions?.default ?? 0) - (askOptions?.first ?? 0));
-  const [xPos, setXPos] = useState(0);
-  const [yPos, setYPos] = useState(0);
-
-  const [spring] = useSpring({
-    '--x': xPos,
-    '--y': yPos,
-    scale: xPos > 0 && yPos > 0 ? 1 : 0,
-    immediate(key) {
-      return key !== 'scale';
-    },
-    config: {
-      duration: 100,
-    }
-  }, [xPos, yPos]);
 
   const [formattedText, options] = useMemo(() => {
     const formattedText = processTagsInString(text[currentPage]);
@@ -65,7 +51,7 @@ const Text = ({ id, text, x, y, askOptions }: Message) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [options, text, x, y]);
+  }, [options, text]);
 
   useEffect(() => {
     if (currentPage < text.length) {
@@ -88,28 +74,14 @@ const Text = ({ id, text, x, y, askOptions }: Message) => {
     }));
   }, [currentIndex, currentPage, id, text.length]);
 
-  useFrame(() => {
-    const container = containerRef.current;
-    const text = textRef.current;
-    if (!container || !text || xPos > 0 || yPos > 0) {
-      return;
-    }
-
-    const width = ((textRef.current?.clientWidth ?? 1) / (containerRef.current?.clientWidth ?? 1)) * SCREEN_WIDTH;
-    const safeX = Math.min(Math.max(x, MARGIN), SCREEN_WIDTH - MARGIN - width);
-    setXPos(safeX / SCREEN_WIDTH * 100);
-
-    const height = ((textRef.current?.clientHeight ?? 1) / (containerRef.current?.clientHeight ?? 1)) * SCREEN_HEIGHT;
-    const safeY = Math.min(Math.max(y, MARGIN), SCREEN_HEIGHT - MARGIN - height);
-    setYPos(safeY / SCREEN_HEIGHT *  100);
-  });
-
   return (
-    <Html transform={false} calculatePosition={() => {
-      return [0,0,0]
-    }}>
       <div className={styles.container} ref={containerRef}>
-        <animated.div className={styles.text} ref={textRef} style={spring}>
+        <div className={`${styles.text} ${placement.width && styles.hasWidth}`} ref={textRef} style={{
+          '--x': placement.x,
+          '--y': placement.y,
+          '--width': placement.width,
+          '--height': placement.height,
+        }}>
           <span dangerouslySetInnerHTML={{__html: formattedText}}></span>
           {options && (
             <div className={styles.options}>
@@ -118,9 +90,8 @@ const Text = ({ id, text, x, y, askOptions }: Message) => {
               ))}
             </div>
           )}
-        </animated.div>
+        </div>
       </div>
-    </Html>
   );
 }
 

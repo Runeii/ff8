@@ -71,7 +71,6 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
 
     const handleExecutionRequest = async ({ detail: { key, scriptLabel, partyMemberId: requestedPartyMemberId } }: {detail: ExecuteScriptEventDetail}) => {
       if (requestedPartyMemberId !== undefined && partyMemberId !== requestedPartyMemberId) {
-        console.warn('Party member mismatch', requestedPartyMemberId, partyMemberId);
         return;
       }
       const matchingMethod = script.methods.find((method) => method.scriptLabel === scriptLabel);
@@ -174,13 +173,6 @@ const Script = ({ doors, models, script, onSetupCompleted }: ScriptProps) => {
 
     const currentRotation = convert255ToRadians(useScriptStateStore.getState().angle.get());
     entityRef.current.quaternion.setFromAxisAngle(meshUp, faceDownBaseAngle - currentRotation);
-  });
-
-  useFrame(() => {
-    if (script.groupId !== 0) {
-      return;
-    }
-   // console.log(position.get())
   });
 
   if (isUnused) {

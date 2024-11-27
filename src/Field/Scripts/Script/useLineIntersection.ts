@@ -17,21 +17,23 @@ const useLineIntersection = (points: Vector3[] | undefined, isActive = true) => 
 
     const isIntersecting = checkForIntersection(mesh, points);
 
-    setIsIntersecting(isIntersecting);
+    if (isIntersecting) {
+      setIsIntersecting(isIntersecting);
+      setWasIntersecting(true);
+      return;
+    }
 
     if (!isIntersecting) {
       setHasEverExited(true);
     }
 
-    if (!isIntersecting && wasIntersecting) {
-      setWasIntersecting(false);
-    }
-
-    if (isIntersecting && !wasIntersecting) {
-      setWasIntersecting(true);
+    if (wasIntersecting) {
+      setIsIntersecting(false);
+      window.requestAnimationFrame(() => {
+        setWasIntersecting(false);
+      });
     }
   });
-
 
   return useMemo(() => ({
     hasEverExited,

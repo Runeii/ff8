@@ -5,7 +5,7 @@ import type data from '../../public/output/escouse2.json';
 import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
-import { useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import Scripts from './Scripts/Scripts';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
@@ -53,9 +53,10 @@ type FieldLoaderProps = Omit<FieldProps, 'data'> & {
 }
 
 const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
+
   const pendingFieldId = useGlobalStore(state => state.pendingFieldId);
   const fieldId = useGlobalStore(state => state.fieldId);
-  
+
   const currentFieldIdRef = useRef(fieldId);
   const [data, setData] = useState<FieldProps['data'] | null>(null);
   
@@ -80,11 +81,16 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
 
       setData(null);
       gl.clear();
-
+console.log('New field', pendingFieldId);
       if (pendingFieldId === 'wm00') {
+        useGlobalStore.setState({
+          fieldId: 'wm00',
+          pendingFieldId: undefined,
+        });
+
         return;
       }
-    console.log('Loading field', pendingFieldId);
+
       const response = await fetch(`/output/${pendingFieldId}.json`);
       const data = await response.json() as FieldProps['data'];
       setData(data);
@@ -110,6 +116,8 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
         activeCameraId: 0,
         pendingFieldId: undefined,
         fieldId: pendingFieldId,
+
+        congaWaypointHistory: [],
       });
     }
 

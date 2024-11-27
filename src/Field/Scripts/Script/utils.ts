@@ -66,7 +66,7 @@ export const remoteExecute = (scriptLabel: number, source: string, partyMemberId
   }));
 })
 
-export const openMessage = (id: string, text: string[], x: number, y: number, askOptions?: AskOptions) => new Promise<number>((resolve) => {
+export const openMessage = (id: string, text: string[], placement: MessagePlacement, askOptions?: AskOptions) => new Promise<number>((resolve) => {
   const { currentMessages } = useGlobalStore.getState();
 
   document.addEventListener('messageClosed', ({ detail }) => {
@@ -83,8 +83,7 @@ export const openMessage = (id: string, text: string[], x: number, y: number, as
       {
         id,
         text,
-        x,
-        y,
+        placement,
         askOptions,
       }
     ]

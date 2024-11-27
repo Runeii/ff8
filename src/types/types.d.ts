@@ -57,9 +57,16 @@ declare global {
   type Message = {
     id: string;
     text: string[];
+    placement: MessagePlacement;
+    askOptions?: AskOptions
+  }
+
+  type MessagePlacement = {
     x: number;
     y: number;
-    askOptions?: AskOptions
+    width?: number;
+    height?: number;
+    channel: number;
   }
 
   type AskOptions = {
@@ -85,6 +92,8 @@ declare global {
     position: Vector3;
     angle: number;
   }
+
+
 }
 
 export { };

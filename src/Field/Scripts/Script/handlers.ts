@@ -6,11 +6,12 @@ import { dummiedCommand, openMessage, remoteExecute, unusedCommand, wait } from 
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent } from "./Model/modelUtils";
-import { displayMessage, fadeOutMap, playBaseAnimation, playAnimation, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground } from "./common";
+import { displayMessage, fadeOutMap, playBaseAnimation, playAnimation, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching } from "./common";
 
 export type HandlerArgs = {
   activeMethod: ScriptMethod,
   currentOpcode: OpcodeObj,
+  currentOpcodeIndex: number,
   currentState: ScriptState,
   opcodes: OpcodeObj[],
   scene: Scene,
@@ -28,7 +29,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 4000, // progress
+  256: 3000, // progress
   491: 0, // touk
   534: 1, // ?
   720: 0, // squall model
@@ -52,21 +53,63 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.push(currentOpcode.param);
   },
   PSHM_B: ({ currentOpcode, STACK }) => {
+    window.dispatchEvent(
+      new CustomEvent(
+        'memory-read',
+        {
+          detail: MEMORY[currentOpcode.param]
+        }
+      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   PSHM_W: ({ currentOpcode, STACK }) => {
+    window.dispatchEvent(
+      new CustomEvent(
+        'memory-read',
+        {
+          detail: MEMORY[currentOpcode.param]
+        }
+      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   PSHM_L: ({ currentOpcode, STACK }) => {
+    window.dispatchEvent(
+      new CustomEvent(
+        'memory-read',
+        {
+          detail: MEMORY[currentOpcode.param]
+        }
+      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   PSHSM_B: ({ currentOpcode, STACK }) => {
+    window.dispatchEvent(
+      new CustomEvent(
+        'memory-read',
+        {
+          detail: MEMORY[currentOpcode.param]
+        }
+      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   PSHSM_W: ({ currentOpcode, STACK }) => {
+    window.dispatchEvent(
+      new CustomEvent(
+        'memory-read',
+        {
+          detail: MEMORY[currentOpcode.param]
+        }
+      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   PSHSM_L: ({ currentOpcode, STACK }) => {
+    window.dispatchEvent(
+      new CustomEvent(
+        'memory-read',
+        {
+          detail: MEMORY[currentOpcode.param]
+        }
+      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   POPM_L: ({ currentOpcode, STACK }) => {
@@ -184,8 +227,8 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       pendingCharacterPosition: vectorToFloatingPoint(mapJumpDetailsInMemory.slice(1, 4) as unknown as [number, number, number]),
     });
   },
-  DISCJUMP: (...args) => {
-    OPCODE_HANDLERS?.['MAPJUMP3']?.(...args);
+  DISCJUMP: (args) => {
+    OPCODE_HANDLERS?.['MAPJUMP3']?.(args);
   },
   WORLDMAPJUMP: ({ STACK }) => {
     STACK.pop() as number;
@@ -202,9 +245,12 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   SETPLACE: ({ STACK }) => {
     useGlobalStore.setState({ currentLocationPlaceName: STACK.pop() as number });
   },
-  KEYON: async ({ STACK }) => {
-    STACK.pop() as number; // keyflag
-    // I don't think we currently ever disable keys
+  KEYON: async ({ currentOpcodeIndex, STACK }) => {
+    const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
+
+    if (isDown) {
+      return currentOpcodeIndex + 2;
+    }
   },
   KEYSCAN: ({ STACK, TEMP_STACK }) => {
     const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
@@ -288,6 +334,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     TEMP_STACK[0] = Math.round(Math.random() * 255);
   },
   WINSIZE: ({ currentState, STACK }) => {
+    console.log(STACK)
     const height = STACK.pop() as number;
     const width = STACK.pop() as number;
     const y = STACK.pop() as number;
@@ -300,14 +347,14 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
       width,
       height,
     }
-
   },
   MES: async ({ currentState, STACK }) => {
     const id = STACK.pop() as number;
     const channel = STACK.pop() as number;
 
-    const { x, y } = currentState.winSize[channel];
-    displayMessage(id, x, y, channel);
+    const { x, y, width, height } = currentState.winSize[channel];
+
+    displayMessage(id, x, y, channel, width, height);
   },
   AMES: async ({ STACK }) => {
     const y = STACK.pop() as number;
@@ -346,14 +393,14 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const first = STACK.pop() as number;
 
     const id = STACK.pop() as number;
-    STACK.pop() as number; // const channel = STACK.pop() as number;
+    const channel = STACK.pop() as number;
 
     const { availableMessages } = useGlobalStore.getState();
 
     const uniqueId = `${id}--${Date.now()}`;
 
     useGlobalStore.setState({ isUserControllable: false });
-    const result = await openMessage(uniqueId, availableMessages[id], x, y, {
+    const result = await openMessage(uniqueId, availableMessages[id], { x, y, channel }, {
       first,
       last,
       default: defaultOpt,
@@ -362,13 +409,13 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     TEMP_STACK[0] = result;
     useGlobalStore.setState({ isUserControllable: true });
   },
-  ASK: (...args) => {
+  ASK: (args) => {
     const { STACK } = args[0];
     // We cannot set x,y with ask, so we spoof it here to reuse AASK
     STACK.push(5);
     STACK.push(5);
 
-    OPCODE_HANDLERS?.AASK?.(...args);
+    OPCODE_HANDLERS?.AASK?.(args);
   },
   MESSYNC: ({ STACK }) => {
     STACK.pop() as number; // const channel
@@ -389,10 +436,12 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     });
     useGlobalStore.setState({ isUserControllable: true });
   },
-  ISTOUCH: ({ STACK, TEMP_STACK }) => {
-    //const actorId = 
-    STACK.pop() as number;
-    TEMP_STACK[0] = 0; // TODO: 1 if actor is in touching distance of this entity
+  ISTOUCH: ({ scene, script, STACK, TEMP_STACK }) => {
+    const actorId = STACK.pop() as number;
+    const isTouch = isTouching(script.groupId, `model--${actorId}`, scene)
+    console.log('isTouching', isTouch)
+
+    TEMP_STACK[0] = isTouch ? 1 : 0;
   },
 
   SCROLLMODE2: ({ STACK }) => {
@@ -775,7 +824,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    console.log('set')
     currentState.position.start([position.x, position.y, position.z], {
       immediate: true,
     });
@@ -861,33 +909,35 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     STACK.pop() as number;
   },
   // This should keep animation and face direction
-  CMOVE: async (...args) => {
-    await OPCODE_HANDLERS.MOVE?.(...args);
+  CMOVE: async (args) => {
+    await OPCODE_HANDLERS.MOVE?.(args);
   },
   // This should keep face direction
-  FMOVE: async (...args) => {
-    await OPCODE_HANDLERS.MOVE?.(...args);
+  FMOVE: async (args) => {
+    const { currentState, scene, script } = args;
+    turnToFaceEntity(script.groupId, `party--0`, 20, scene, currentState.headAngle)
+    await OPCODE_HANDLERS.MOVE?.(args);
   },
-  FMOVEA: (...args) => {
-    OPCODE_HANDLERS.MOVEA?.(...args);
+  FMOVEA: (args) => {
+    OPCODE_HANDLERS.MOVEA?.(args);
   },
-  RMOVE: async (...args) => {
-    await OPCODE_HANDLERS.MOVE?.(...args);
+  RMOVE: async (args) => {
+    await OPCODE_HANDLERS.MOVE?.(args);
   },
-  RFMOVE: async (...args) => {
-    await OPCODE_HANDLERS.MOVE?.(...args);
+  RFMOVE: async (args) => {
+    await OPCODE_HANDLERS.MOVE?.(args);
   },
-  RCMOVE: async (...args) => {
-    await OPCODE_HANDLERS.MOVE?.(...args);
+  RCMOVE: async (args) => {
+    await OPCODE_HANDLERS.MOVE?.(args);
   },
-  RMOVEA: async (...args) => {
-    await OPCODE_HANDLERS.MOVEA?.(...args);
+  RMOVEA: async (args) => {
+    await OPCODE_HANDLERS.MOVEA?.(args);
   },
-  RPMOVEA: async (...args) => {
-    await OPCODE_HANDLERS.MOVEA?.(...args);
+  RPMOVEA: async (args) => {
+    await OPCODE_HANDLERS.MOVEA?.(args);
   },
-  PMOVEA: async (...args) => {
-    await OPCODE_HANDLERS.MOVEA?.(...args);
+  PMOVEA: async (args) => {
+    await OPCODE_HANDLERS.MOVEA?.(args);
   },
   FMOVEP: async () => { },
   JUMP3: ({ currentOpcode, STACK }) => {
@@ -1802,7 +1852,7 @@ export const executeOpcode = async (currentOpcode: Opcode, state: ScriptState, a
     script: {} as Script,
     TEMP_STACK: {},
     STACK: [],
-    ...args,
+    args,
     currentState: state
   });
 }

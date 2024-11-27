@@ -1,3 +1,6 @@
+* {
+  box-sizing: border-box;
+}
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -117,4 +120,13 @@ body,
   width: 80px;
   border-radius: 10px;
   user-select: none;
+}
+
+.memory {
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  padding: 0.5rem;
+  color: lightgreen;
 }

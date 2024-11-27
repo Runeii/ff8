@@ -2,7 +2,7 @@ import { SpringValue } from "@react-spring/web";
 import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
 import { openMessage } from "./utils";
-import { Group, Scene } from "three";
+import { Box3, Group, Scene, Vector3 } from "three";
 
 export const fadeOutMap = async () => {
   const { canvasOpacitySpring, isMapFadeEnabled } = useGlobalStore.getState()
@@ -13,15 +13,21 @@ export const fadeOutMap = async () => {
   canvasOpacitySpring.start(0);
 }
 
-export const displayMessage = async (id: number, x: number, y: number, channel: number) => {
+export const displayMessage = async (id: number, x: number, y: number, channel: number, width?: number, height?: number) => {
   const { availableMessages } = useGlobalStore.getState();
 
-  console.log('Channel not implemented:', channel)
   const uniqueId = `${id}--${Date.now()}`;
-  await openMessage(uniqueId, availableMessages[id], x, y);
+  await openMessage(uniqueId, availableMessages[id], {
+    x,
+    y,
+    channel,
+    width,
+    height
+  });
 }
 
 export const turnToFaceAngle = async (angle: number, frames: number, spring: SpringValue<number>) => {
+  console.log('Turning to face angle:', angle, frames);
   spring.start(angle, {
     immediate: frames === 0,
     config: {
@@ -54,6 +60,22 @@ export const turnToFaceEntity = async (thisId: number, targetName: string, durat
   turnToFaceAngle(adjustedScaleValue, duration, spring);
 }
 
+export const isTouching = (thisId: number, targetName: string, scene: Scene) => {
+  const thisMesh = getScriptEntity(scene, thisId) as Group;
+  const targetMesh = scene.getObjectByName(targetName) as Group;
+
+  if (!thisMesh || !targetMesh) {
+    console.warn('Error checking if touching:', thisMesh, targetMesh);
+    return false;
+  }
+
+  const thisPosition = thisMesh.getWorldPosition(new Vector3());
+  const targetPosition = targetMesh.getWorldPosition(new Vector3());
+
+  console.log(thisPosition.distanceTo(targetPosition));
+
+  return thisPosition.distanceTo(targetPosition) < 0.25;
+}
 export const playBaseAnimation = (spring: SpringValue<number>, speed: number, duration: number, range?: [number, number]) =>
   playAnimation(
     spring,
@@ -115,10 +137,13 @@ export const animateBackground = async (spring: SpringValue<number>, speed: numb
 }
 
 export const KEY_FLAGS = {
-  16: 'Cancel',
-  32: 'Menu',
-  64: 'OK/Accept',
-  128: 'Card game button',
+  16: '', // 'Cancel'
+  32: '', // 'Menu'
+  64: ' ', // 'OK/Accept'
+  128: '', //'Card game button'
+
+  // Used by KEYON
+  192: ' ' // 'OK/Accept',
 } as const;
 
 let DOWN: string[] = [];
@@ -127,6 +152,10 @@ export const isKeyDown = (keyFlag: keyof typeof KEY_FLAGS) => {
 }
 
 const keydownListener = (event: KeyboardEvent) => {
+  const { currentMessages } = useGlobalStore.getState();
+  if (currentMessages.length > 0) {
+    return;
+  }
   DOWN.push(event.key);
 }
 

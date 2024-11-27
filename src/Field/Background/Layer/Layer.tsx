@@ -1,11 +1,12 @@
-import { Plane } from "@react-three/drei";
+import { Box, OrbitControls, Plane } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef, useState } from "react";
+import { isValidElement, useMemo, useRef, useState } from "react";
 import {
   AdditiveBlending,
   CanvasTexture,
   ClampToEdgeWrapping,
   DoubleSide,
+  Group,
   Line3,
   Material,
   MathUtils,
@@ -14,7 +15,7 @@ import {
   NoBlending,
   NormalBlending,
   PerspectiveCamera,
-  PlaneGeometry,
+  PlaneGeometry, 
   SubtractiveBlending,
   Vector3,
 } from "three";
@@ -34,6 +35,8 @@ const BLENDS = {
 function getPlaneScaleToFillFrustum(
   plane: Mesh<PlaneGeometry, Material | Material[]>,
   camera: PerspectiveCamera,
+  planeWidth: number = 320,
+  planeHeight: number = 224
 ): { x: number; y: number } {
   // Get the world positions of the camera and the plane
   const cameraWorldPosition = new Vector3();
@@ -60,14 +63,7 @@ function getPlaneScaleToFillFrustum(
   const frustumHeight = 2 * distance * Math.tan(fovInRadians / 2);
   const frustumWidth = frustumHeight * camera.aspect;
 
-  let planeWidth = 1;
-  let planeHeight = 1;
-  if (plane.geometry instanceof PlaneGeometry) {
-    planeWidth = plane.geometry.parameters.width;
-    planeHeight = plane.geometry.parameters.height;
-  }
-
-  // Calculate the scale factors
+  // Calculate the scale factors needed to match the frustum dimensions
   const scaleX = frustumWidth / planeWidth;
   const scaleY = frustumHeight / planeHeight;
 
@@ -91,6 +87,8 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
     return {layerWidth: roundedWidth, layerHeight: roundedHeight};
   }, [backgroundDetails.height, backgroundDetails.width]);
 
+  const { isBlended, blendType, layerID } = tiles[0];
+
   const [line] = useState<Line3>(new Line3(new Vector3(), new Vector3()));
   const [point] = useState<Vector3>(new Vector3());
   useFrame(({camera}) => {
@@ -102,11 +100,9 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
       initialPosition: Vector3,
       initialTargetPosition: Vector3,
     }
-
     if (!initialPosition || !initialTargetPosition) {
       return;
     }
-  
     line.start.copy(initialPosition);
     line.end.copy(initialTargetPosition);
     const length = line.distance();
@@ -116,13 +112,13 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
     line.end.copy(line.start).add(direction.multiplyScalar(length));
     layerRef.current.quaternion.copy(camera.quaternion);
 
-    line.at(tiles[0].Z / 1000, point);
+    line.at(parseInt(`${layerID}${tiles[0].Z}`) / 1000, point);
 
     layerRef.current.position.copy(point);
 
     layerRef.current.rotation.setFromQuaternion(camera.quaternion);
     const scale = getPlaneScaleToFillFrustum(layerRef.current, camera as PerspectiveCamera);
-    layerRef.current.scale.set(scale.x, scale.y, 1)
+    layerRef.current.scale.set(scale.x * 1.05, scale.y * 1.15, 1)
    })
    
    const isLayerVisible = useGlobalStore((storeState) => {
@@ -144,7 +140,6 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
 
     return true;
   });
-
   const canvasTexture = useMemo(() => {
     const canvas = document.createElement("canvas");
     canvas.width = layerWidth;
@@ -163,8 +158,8 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
     texture.minFilter = NearestFilter;
     texture.wrapS = ClampToEdgeWrapping;
     texture.wrapT = ClampToEdgeWrapping;
-    texture.premultiplyAlpha = false
-  
+    texture.premultiplyAlpha = false;
+    
     return texture;
   }, [layerHeight, layerWidth]);
 
@@ -181,30 +176,28 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = 'rgba(0, 0, 0, 0)';
     context.fillRect(0, 0, canvas.width, canvas.height);
-  
+
     const panX = Math.round(backgroundPanRef.current.panX);
     const panY = Math.round(backgroundPanRef.current.panY);
     tiles.forEach(({ X, Y, texture }) => {
       context.drawImage(texture.image, X + (layerWidth / 2) + panX, Y + (layerHeight / 2) - panY);
     })
+
     canvasTexture.needsUpdate = true;
   });
-
-  const { isBlended, blendType } = tiles[0];
 
   if (!isLayerVisible) {
     return null;
   }
 
-
   return (
-    <Plane args={[layerWidth, layerHeight]} position={[0,0,tiles[0].Z / 1000]} ref={layerRef} >
+    <Plane args={[layerWidth, layerHeight]} ref={layerRef}>
       <meshBasicMaterial
         blending={isBlended ? BLENDS[blendType as keyof typeof BLENDS] : NormalBlending}
         map={canvasTexture}
         side={DoubleSide}
         transparent
-      />
+        />
     </Plane>
   )
 }

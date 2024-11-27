@@ -10,7 +10,10 @@ const WorldMap = () => {
   useEffect(() => {
     // @ts-expect-error - FadeIn doesn't require a stack
     OPCODE_HANDLERS.FADEIN?.();
-    openMessage('worldMap', [text], 0, 0, {
+    openMessage('worldMap', [text], {
+      x: 0, 
+      y: 0
+    }, {
       first: 1,
       default: 1,
       cancel: undefined
@@ -65,7 +68,8 @@ const WorldMap = () => {
     }
 
     useGlobalStore.setState({
-      fieldId: selectedFieldId,
+      fieldId: undefined,
+      pendingFieldId: selectedFieldId,
     })
   }, [selectedFieldId]);
   return null;

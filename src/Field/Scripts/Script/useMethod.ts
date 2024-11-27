@@ -85,11 +85,12 @@ const useMethod = (
     if (isDoorOpenOrCloseState) {
       return;
     }
-
     useGlobalStore.setState({ hasActiveTalkMethod: false });
     setPreviousActiveMethodName(activeMethod.methodId);
     setActiveMethodId(undefined);
   }, [activeMethod, activeMethodId, script.type, setActiveMethodId, useScriptStateStore]);
+
+  const isLooping = useMemo(() => activeMethod?.methodId === 'default' || activeMethod?.methodId === 'touch', [activeMethod]);
 
   const thisRunMethodId = useRef<string>();
   useEffect(() => {
@@ -113,7 +114,6 @@ const useMethod = (
     thisRunMethodId.current = methodId;
 
     const goToNextOpcode = () => {
-      const isLooping = methodId === 'default' || methodId === 'touch';
       if (isLooping) {
         setCurrentOpcodeIndex((currentOpcodeIndex + 1) % opcodes.length);
         return;
@@ -124,9 +124,6 @@ const useMethod = (
     const execute = async () => {
       const currentOpcode = opcodes[currentOpcodeIndex] ?? undefined;
 
-      if (script.groupId === 10 || script.groupId === 17) {
-        //console.log(activeMethod, currentOpcodeIndex, currentOpcode);
-      }
       if (!currentOpcode && !hasCompletedConstructor) {
         setHasCompletedConstructor(true);
       }
@@ -163,6 +160,7 @@ const useMethod = (
         activeMethod,
         currentOpcode,
         currentState: state,
+        currentOpcodeIndex,
         opcodes,
         scene,
         script,
@@ -178,6 +176,10 @@ const useMethod = (
         return;
       }
 
+      if (nextIndex && nextIndex > 9000 && isLooping) {
+        goToNextOpcode();
+        return;
+      }
       if (nextIndex) {
         setCurrentOpcodeIndex(nextIndex);
       } else {
@@ -186,7 +188,7 @@ const useMethod = (
     }
 
     execute();
-  }, [activeMethod, activeMethodId, currentOpcodeIndex, handleCompleteRun, hasCompletedConstructor, isUnused, scene, script, useScriptStateStore]);
+  }, [activeMethod, activeMethodId, currentOpcodeIndex, handleCompleteRun, hasCompletedConstructor, isLooping, isUnused, scene, script, useScriptStateStore]);
 
   return hasCompletedConstructor;
 }

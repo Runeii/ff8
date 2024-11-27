@@ -145,6 +145,7 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
     if (!head) {
       return;
     }
+
     head.rotation.y = headAngle.get();
   })
 
@@ -164,9 +165,7 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
   if (isPlayerControlled) {
     return (
       <Controls modelName={modelName} useScriptStateStore={useScriptStateStore}>
-        <Leader useScriptStateStore={useScriptStateStore}>
-          {modelJsx}
-        </Leader>
+        {modelJsx}
       </Controls>
     );
   }

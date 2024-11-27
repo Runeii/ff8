@@ -10,10 +10,9 @@ type FollowerProps = {
   useScriptStateStore: ScriptStateStore
 }
 
-const DISTANCE = 30;
+const DISTANCE = 20;
 
 const Follower = ({ children, partyMemberId, useScriptStateStore}: FollowerProps) => {
-  const congaWaypointHistory = useGlobalStore(state => state.congaWaypointHistory);
   const offset = useGlobalStore(state => state.party.findIndex(id => id === partyMemberId));
   const isLastPartyMember = useGlobalStore(state => state.party.length - 1 === offset);
 
@@ -24,23 +23,36 @@ const Follower = ({ children, partyMemberId, useScriptStateStore}: FollowerProps
       if (!partyMemberId) {
       return;
     }
-    const history = congaWaypointHistory[offset * DISTANCE];
+
+    const history = useGlobalStore.getState().congaWaypointHistory[offset * DISTANCE];
+    if (groupRef.current) {
+      groupRef.current.visible = !!history;
+    }
+    
     if (!history) {
       return;
     }
   
     const { position, angle } = history;
 
-    state.position.set([position.x, position.y, position.z]);
-    state.angle.set(angle);
+    if (!groupRef.current!.userData.hasPlaced) {
+      state.position.set([position.x, position.y, position.z]);
+      state.angle.set(angle);
+      groupRef.current!.userData.hasPlaced = true;
+    } else { 
+      state.position.start([position.x, position.y, position.z]);
+      state.angle.start(angle);
+    }
+  
     useScriptStateStore.setState({
       idleAnimationId: useGlobalStore.getState().playerAnimationIndex
     });
 
     if (isLastPartyMember) {
-      useGlobalStore.setState({
-        congaWaypointHistory: congaWaypointHistory.slice(0, offset * DISTANCE)
-      })
+      useGlobalStore.setState(state => ({
+        ...state,
+        congaWaypointHistory: state.congaWaypointHistory.slice(0, DISTANCE * 2)
+      }))
     }
   });
 

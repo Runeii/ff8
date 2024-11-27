@@ -83,7 +83,7 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
     // Return the grouped tiles by Z value
     return Object.entries(groupedTiles).sort((entry1, entry2) => entry2[1][0].Z - entry1[1][0].Z) as unknown as [string, TileWithTexture[]][];
   }, [tiles, tilesTexture]);
-
+console.log(tileGroupEntries)
   return (
     <>
       {tileGroupEntries.map(([key, tiles]) =>

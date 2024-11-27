@@ -13,6 +13,7 @@ import WorldMap from './WorldMap/WorldMap'
 import { attachKeyDownListeners } from './Field/Scripts/Script/common'
 import { Perf } from 'r3f-perf'
 import MAP_NAMES from './constants/maps'
+import Memory from './Memory/Memory'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
@@ -56,12 +57,13 @@ export default function App() {
         near: 0.0001,
         far: 5,
       }} className="canvas">
-      <Perf />
+        <Perf />
         <Suspense>
           {fieldId === 'wm00' ? <WorldMap /> : <Field opacitySpring={opacity} />}
         </Suspense>
-        <Ui />
       </Canvas>
+      <Ui />
+      <Memory />
       </animated.div>
     <Controller />
     </>
