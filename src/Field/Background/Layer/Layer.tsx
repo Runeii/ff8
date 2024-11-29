@@ -117,7 +117,7 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
 
     layerRef.current.rotation.setFromQuaternion(camera.quaternion);
     const scale = getPlaneScaleToFillFrustum(layerRef.current, camera as PerspectiveCamera);
-    layerRef.current.scale.set(scale.x * 1.05, scale.y * 1.15, 1)
+    layerRef.current.scale.set(scale.x * 1, scale.y * 1, 1)
    })
    
    const isLayerVisible = useGlobalStore((storeState) => {

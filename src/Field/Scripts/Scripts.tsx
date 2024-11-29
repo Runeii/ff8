@@ -19,7 +19,7 @@ const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
     setActiveExec((prev) => prev + 1);
   }, []);
 
-  return scripts.map(script => <Script doors={doors} key={`${fieldId}--${script.exec}`} isActive={script.exec <= activeExec} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} />  )
+  return scripts.map(script =>  <Script doors={doors} key={`${fieldId}--${script.exec}`} isActive={script.exec <= activeExec} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} />  )
 }
 
 export default Scripts;

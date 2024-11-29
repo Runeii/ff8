@@ -142,8 +142,8 @@ const useMethod = (
         goToNextOpcode();
         return;
       }
-      if (script.groupId === 0) {
-        console.log('Executing opcode:', currentOpcode);
+      if (script.groupId === 23) {
+        console.log('next:', currentOpcodeIndex, currentOpcode);
       }
 
       const handler = OPCODE_HANDLERS[currentOpcode.name];

@@ -55,14 +55,40 @@ export const remoteExecute = (scriptLabel: number, source: string, partyMemberId
 
     resolve();
   });
-
+  console.log('Dispatching request from', source, 'to', scriptLabel, partyMemberId)
+  const { party } = useGlobalStore.getState();
   document.dispatchEvent(new CustomEvent('executeScript', {
     detail: {
       key,
       scriptLabel,
-      partyMemberId,
+      partyMemberId: partyMemberId ? party[partyMemberId] : undefined,
       source,
     } as ExecuteScriptEventDetail
+  }));
+})
+
+export const remoteExecuteOnPartyEntity = (partyMemberId: number, methodIndex: number, source: string) => new Promise<void>((resolve) => {
+  const key = Math.random().toString(36).substring(7);
+
+  document.addEventListener('scriptFinished', ({ detail }) => {
+    if (detail.key !== key) {
+      return;
+    }
+
+    resolve();
+  });
+
+  console.log('Dispatching request from', source, 'to', methodIndex, 'on', partyMemberId)
+
+  const { party } = useGlobalStore.getState();
+
+  document.dispatchEvent(new CustomEvent('executeScriptOnPartyEntity', {
+    detail: {
+      key,
+      methodIndex,
+      partyMemberId: party[partyMemberId],
+      source,
+    } as ExecutePartyEntityScriptEventDetail
   }));
 })
 

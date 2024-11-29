@@ -69,24 +69,37 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
       return;
     }
 
-    const handleExecutionRequest = async ({ detail: { key, scriptLabel, partyMemberId: requestedPartyMemberId } }: {detail: ExecuteScriptEventDetail}) => {
-      if (requestedPartyMemberId !== undefined && partyMemberId !== requestedPartyMemberId) {
-        return;
-      }
+    const handleExecutionRequest = async ({ detail: { key, scriptLabel } }: {detail: ExecuteScriptEventDetail}) => {
       const matchingMethod = script.methods.find((method) => method.scriptLabel === scriptLabel);
-
       if (!matchingMethod) {
         return;
       }
-console.log('request accepted', matchingMethod, scriptLabel, requestedPartyMemberId)
+      
+      console.log('request accepted', matchingMethod, scriptLabel)
       setActiveMethodId(matchingMethod?.methodId);
       setRemoteExecutionKey(key);
     }
 
+    const handlePartyEntityExecutionRequest = async ({ detail: { key, methodIndex, partyMemberId: requestedPartyMemberId } }: {detail: ExecutePartyEntityScriptEventDetail}) => {
+      if (requestedPartyMemberId !== undefined && partyMemberId !== requestedPartyMemberId) {
+        return;
+      }
+      const matchingMethod = script.methods[methodIndex];
+      if (!matchingMethod) {
+        return;
+      }
+      
+      console.log('request accepted on entity', matchingMethod, requestedPartyMemberId)
+      setActiveMethodId(matchingMethod?.methodId);
+      setRemoteExecutionKey(key);
+    }
+  
     document.addEventListener('executeScript', handleExecutionRequest);
+    document.addEventListener('executeScriptOnPartyEntity', handlePartyEntityExecutionRequest);
 
     return () => {
       document.removeEventListener('executeScript', handleExecutionRequest);
+      document.removeEventListener('executeScriptOnPartyEntity', handlePartyEntityExecutionRequest);
     }
   }, [activeMethodId, isUnused, partyMemberId, script.groupId, script.methods, setActiveMethodId]);
   

@@ -150,7 +150,10 @@ export const KEY_FLAGS = {
   128: '', //'Card game button'
 
   // Used by KEYON
-  192: ' ' // 'OK/Accept',
+  192: ' ', // 'OK/Accept',
+
+  4096: 'ArrowUp',
+  16384: 'ArrowDown',
 } as const;
 
 let DOWN: string[] = [];

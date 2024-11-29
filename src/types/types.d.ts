@@ -3,7 +3,13 @@ import { useAnimations } from "@react-three/drei";
 declare global {
   interface ExecuteScriptEventDetail {
     scriptLabel: number;
-    partyMemberId?: number;
+    key: string
+    source: string
+  }
+
+  interface ExecutePartyEntityScriptEventDetail {
+    methodIndex: number;
+    partyMemberId: number;
     key: string
     source: string
   }
@@ -11,6 +17,8 @@ declare global {
   // Extend the existing DocumentEventMap interface
   interface DocumentEventMap {
     'executeScript': CustomEvent<ExecuteScriptEventDetail>;
+    'executeScriptOnPartyEntity': CustomEvent<ExecutePartyEntityScriptEventDetail>;
+    handlePartyEntityExecutionRequest
     'scriptFinished': CustomEvent<{ key: string }>;
     'messageClosed': CustomEvent<{ id: string, selectedOption: number }>;
   }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { openMessage } from "../Field/Scripts/Script/utils";
 import MAP_NAMES from "../constants/maps";
 import useGlobalStore from "../store";
@@ -7,17 +7,17 @@ import { fadeInMap } from "../Field/Scripts/Script/common";
 const points: Record<string, typeof MAP_NAMES[number]> = {
   "Balamb Garden": 'bghall_1',
   "Balamb": 'bcgate_1',
-  "Trabia Garden": 'tgcourt2',
-  "Esthar": 'ecpview1',
-  "Deling City": 'glform1',
-  "Timber": 'titown3',
-  "Dollet Town": 'dogate_2',
-  "Deep Sea Research Centre": 'sdisle1',
-  "Lab": 'edview1b',
-  "Tear's Point": 'eeview1',
-  "Winhill": 'gflain1a',
+  "Dollet Town": 'dosea_1',
+  "Timber": 'tigate1',
+  "Deling City": 'glsta1',
   "Fisherman's Horizon": 'fhwisef2',
+  "Esthar": 'ecpview1',
+  "Winhill": 'gflain1a',
+  "Trabia Garden": 'tgfront1',
+  "Deep Sea Research Centre": 'sdisle1',
+  "Tear's Point": 'eeview1',
   "Shumi Village": 'tmdome1',
+  "Lab": 'edview1b',
 }
 
 const WorldMap = () => {

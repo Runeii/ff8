@@ -2,7 +2,7 @@ import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script, ScriptMethod } from "../types";
-import { dummiedCommand, openMessage, remoteExecute, unusedCommand, wait } from "./utils";
+import { dummiedCommand, openMessage, remoteExecute, remoteExecuteOnPartyEntity, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent } from "./Model/modelUtils";
@@ -31,8 +31,12 @@ export const MEMORY: Record<number, number> = {
   84: 0, // last area visited
   256: 3000, // progress
   491: 0, // touk
+  641: 96,
   534: 1, // ?
   720: 0, // squall model
+  721: 0, // zell model
+  722: 0, // selphie model
+  723: 0, // quistis model
 };
 
 export const MESSAGE_VARS: Record<number, string> = {};
@@ -253,7 +257,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     }
   },
   KEYSCAN: ({ STACK, TEMP_STACK }) => {
-    const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
+    const key = STACK.pop() as keyof typeof KEY_FLAGS
+    const isDown = isKeyDown(key);
+    console.log('keyscan', key, isDown)
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
   KEYSCAN2: ({ STACK, TEMP_STACK }) => {
@@ -491,26 +497,25 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const label = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
     const source = `${script.groupId}--${currentOpcode.name}`
-    console.log('reqew', label, source)
     await remoteExecute(label, source)
   },
   PREQ: ({ currentOpcode, STACK, script }) => {
-    const label = STACK.pop() as number;
+    const methodIndex = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
     const source = `${script.groupId}--${currentOpcode.name}`
-    remoteExecute(label, source, currentOpcode.param)
+    remoteExecuteOnPartyEntity(currentOpcode.param, methodIndex, source)
   },
   PREQSW: ({ currentOpcode, STACK, script }) => {
-    const label = STACK.pop() as number;
+    const methodIndex = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
     const source = `${script.groupId}--${currentOpcode.name}`
-    remoteExecute(label, source, currentOpcode.param)
+    remoteExecuteOnPartyEntity(currentOpcode.param, methodIndex, source)
   },
   PREQEW: async ({ currentOpcode, STACK, script }) => {
-    const label = STACK.pop() as number;
+    const methodIndex = STACK.pop() as number;
     STACK.pop(); // priority, we don't use it
     const source = `${script.groupId}--${currentOpcode.name}`
-    await remoteExecute(label, source, currentOpcode.param)
+    await remoteExecuteOnPartyEntity(currentOpcode.param, methodIndex, source)
   },
   FADEIN: async () => {
     const { canvasOpacitySpring } = useGlobalStore.getState();
