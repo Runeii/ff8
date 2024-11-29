@@ -4,7 +4,6 @@ import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quat
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
-import Leader from "./Leader/Leader";
 import Follower from "./Follower/Follower";
 import { ScriptStateStore } from "../state";
 

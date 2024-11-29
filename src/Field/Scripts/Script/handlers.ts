@@ -417,7 +417,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     useGlobalStore.setState({ isUserControllable: true });
   },
   ASK: (args) => {
-    const { STACK } = args[0];
+    const { STACK } = args;
     // We cannot set x,y with ask, so we spoof it here to reuse AASK
     STACK.push(5);
     STACK.push(5);
@@ -1857,7 +1857,8 @@ export const executeOpcode = async (currentOpcode: Opcode, state: ScriptState, a
     script: {} as Script,
     TEMP_STACK: {},
     STACK: [],
-    args,
+    currentOpcodeIndex: 0,
+    ...args,
     currentState: state
   });
 }

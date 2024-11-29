@@ -1,13 +1,7 @@
-import { KeyboardEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { CSSProperties, KeyboardEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import styles from './Text.module.css';
 import useGlobalStore from '../../store';
 import { processTagsInString } from './textUtils';
-import { Html } from '@react-three/drei';
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../../constants/constants';
-import { animated, useSpring } from '@react-spring/web';
-import { useFrame } from '@react-three/fiber';
-
-const MARGIN = 8;
 
 const Text = ({ id, text, placement, askOptions }: Message) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -81,7 +75,7 @@ const Text = ({ id, text, placement, askOptions }: Message) => {
           '--y': placement.y,
           '--width': placement.width,
           '--height': placement.height,
-        }}>
+        } as CSSProperties}>
           <span dangerouslySetInnerHTML={{__html: formattedText}}></span>
           {options && (
             <div className={styles.options}>
