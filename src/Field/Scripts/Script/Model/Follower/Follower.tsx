@@ -20,11 +20,11 @@ const Follower = ({ children, partyMemberId, useScriptStateStore}: FollowerProps
 
   const groupRef = useRef<Group>(null);
   useFrame(() => {
-      if (!partyMemberId) {
+    if (!partyMemberId) {
       return;
     }
 
-    const history = useGlobalStore.getState().congaWaypointHistory[offset * DISTANCE];
+    const history = useGlobalStore.getState().congaWaypointHistory[offset * DISTANCE - 1];
     if (groupRef.current) {
       groupRef.current.visible = !!history;
     }

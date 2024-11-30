@@ -73,8 +73,6 @@ export const moveToPoint = async (spring: SpringValue<number[]>, targetPoint: Ve
   const start = spring.get();
   const distance = targetPoint.distanceTo(new Vector3(...start));
 
-  console.log('Moving for', movementSpeed, distance, distance / movementSpeed * 100000)
-
   await spring.start(targetPoint.toArray(), {
     immediate: false,
     config: {

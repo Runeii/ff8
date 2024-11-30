@@ -149,15 +149,22 @@ const Controls = ({ children, modelName, useScriptStateStore }: ControlsProps) =
 
     useScriptStateStore.getState().angle.set(scaledAngle);
 
-    useGlobalStore.setState((storeState) => ({
-      congaWaypointHistory: [
-        {
-          position: newPosition,
-          angle: scaledAngle,
-        },
-        ...storeState.congaWaypointHistory,
-      ],
-    }))
+    useGlobalStore.setState((storeState) => {
+      const latestCongaWaypoint = storeState.congaWaypointHistory[0];
+      if (latestCongaWaypoint && latestCongaWaypoint.position.distanceTo(newPosition) < 0.003) {
+        return storeState;
+      }
+      return {
+        ...storeState,
+        congaWaypointHistory: [
+          {
+            position: newPosition,
+            angle: scaledAngle,
+          },
+          ...storeState.congaWaypointHistory,
+        ],
+      }
+    });
   
     player.userData.hasMoved = true;
 

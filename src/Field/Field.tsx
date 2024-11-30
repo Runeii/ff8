@@ -32,9 +32,6 @@ const Field = ({ data }: FieldProps) => {
 
   return (
     <group>
-      <Sphere args={[0.01,10,10]} position={[-0.034423828125,0.18408203125,0]}>
-        <meshBasicMaterial color="blue" side={DoubleSide} />
-      </Sphere>
       <WalkMesh
         walkmesh={data.walkmesh}
       />

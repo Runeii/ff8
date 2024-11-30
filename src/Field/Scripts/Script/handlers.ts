@@ -259,7 +259,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   KEYSCAN: ({ STACK, TEMP_STACK }) => {
     const key = STACK.pop() as keyof typeof KEY_FLAGS
     const isDown = isKeyDown(key);
-    console.log('keyscan', key, isDown)
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
   KEYSCAN2: ({ STACK, TEMP_STACK }) => {
@@ -341,7 +340,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     TEMP_STACK[0] = Math.round(Math.random() * 255);
   },
   WINSIZE: ({ currentState, STACK }) => {
-    console.log(STACK)
     const height = STACK.pop() as number;
     const width = STACK.pop() as number;
     const y = STACK.pop() as number;
@@ -828,7 +826,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     currentOpcode.param // walkmesh triangle ID, unused
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
-    console.log(position, lastThree)
     currentState.position.start([position.x, position.y, position.z], {
       immediate: true,
     });
@@ -864,7 +861,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
   MSPEED: ({ currentState, STACK }) => {
     const movementSpeed = STACK.pop() as number;
-    console.log('speed', movementSpeed)
     currentState.movementSpeed = movementSpeed;
   },
   MOVEFLUSH: ({ currentState }) => {

@@ -144,7 +144,7 @@ const useMethod = (
         return;
       }
       if (script.groupId === 23) {
-        console.log('next:', currentOpcodeIndex, currentOpcode);
+        //  console.log('next:', currentOpcodeIndex, currentOpcode);
       }
 
       const handler = OPCODE_HANDLERS[currentOpcode.name];
