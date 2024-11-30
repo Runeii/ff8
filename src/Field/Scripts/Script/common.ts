@@ -69,6 +69,20 @@ export const turnToFaceEntity = async (thisId: number, targetName: string, durat
   turnToFaceAngle(adjustedScaleValue, duration, spring);
 }
 
+export const moveToPoint = async (spring: SpringValue<number[]>, targetPoint: Vector3, movementSpeed: number) => {
+  const start = spring.get();
+  const distance = targetPoint.distanceTo(new Vector3(...start));
+
+  console.log('Moving for', movementSpeed, distance, distance / movementSpeed * 100000)
+
+  await spring.start(targetPoint.toArray(), {
+    immediate: false,
+    config: {
+      duration: distance / movementSpeed * 3 * 10000000,
+    }
+  })
+}
+
 export const isTouching = (thisId: number, targetName: string, scene: Scene) => {
   const thisMesh = getScriptEntity(scene, thisId) as Group;
   const targetMesh = scene.getObjectByName(targetName) as Group;
@@ -83,6 +97,7 @@ export const isTouching = (thisId: number, targetName: string, scene: Scene) => 
 
   return thisPosition.distanceTo(targetPosition) < 0.25;
 }
+
 export const playBaseAnimation = (spring: SpringValue<number>, speed: number, duration: number, range?: [number, number]) =>
   playAnimation(
     spring,

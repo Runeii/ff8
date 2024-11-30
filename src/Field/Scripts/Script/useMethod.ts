@@ -84,6 +84,7 @@ const useMethod = (
       useScriptStateStore.setState({ hasRemovedControl: false });
       useGlobalStore.setState({ isUserControllable: true });
     }
+
     // Doors behave differently and do not return to default loop
     const isDoorOpenOrCloseState = script.type === 'door' && (activeMethodId === 'open' || activeMethodId === 'close');
 
@@ -162,6 +163,10 @@ const useMethod = (
         }
       }, 50);
 
+      const slowRunMonitor = setTimeout(() => {
+        console.warn(`Slow run: ${currentOpcode.name}. Param: ${currentOpcode.param}`, `Method: ${opcodes[0].param}.`);
+      }, 2000);
+
       const state = useScriptStateStore.getState();
 
       const nextIndex = await handler({
@@ -179,7 +184,7 @@ const useMethod = (
       useScriptStateStore.setState(state);
 
       clearInterval(monitor);
-
+      clearTimeout(slowRunMonitor);
       if (methodId !== thisRunMethodId.current) {
         return;
       }

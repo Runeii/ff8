@@ -55,7 +55,7 @@ export default function App() {
       <Canvas camera={{
         aspect: ASPECT_RATIO,
         near: 0.0001,
-        far: 5,
+        far: 100,
       }} className="canvas">
         <Perf />
         <Suspense>

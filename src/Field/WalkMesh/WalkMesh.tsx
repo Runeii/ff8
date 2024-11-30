@@ -39,7 +39,7 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
   return (
     <group name="walkmesh">
       {walkMeshGeometry.map((geometry, index) => (
-        <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={import.meta.env.DEV}>
+        <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={false}>
           <meshBasicMaterial color={"red"} transparent opacity={1} side={DoubleSide} />
         </mesh>
       ))}

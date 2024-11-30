@@ -21,14 +21,12 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
 }));
 
 const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
-  const {
-    animationProgress,
-    currentAnimationId,
-    headAngle,
-    idleAnimationId,
-    modelId,
-    partyMemberId,
-  } = useScriptStateStore();
+  const animationProgress = useScriptStateStore(state => state.animationProgress);
+  const currentAnimationId = useScriptStateStore(state => state.currentAnimationId);
+  const headAngle = useScriptStateStore(state => state.headAngle);
+  const idleAnimationId = useScriptStateStore(state => state.idleAnimationId);
+  const modelId = useScriptStateStore(state => state.modelId);
+  const partyMemberId = useScriptStateStore(state => state.partyMemberId);
 
   const isPlayerControlled = useGlobalStore(state => state.party[0] === partyMemberId);
   const [animations, setAnimations] = useState<GltfHandle['animations']>();
@@ -36,6 +34,10 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
   const [head, setHead] = useState<Bone>();
 
   let modelName = models[modelId];
+
+  if (modelName === 'd001') {
+    modelName = 'd000'
+  }
   if (!modelName.includes('d')) {
     modelName = 'd070'
   }

@@ -5,7 +5,7 @@ import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useMemo, useState } from "react";
 import { calculateAngleForParallax, calculateParallax, getBoundaries, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
 import { clamp, radToDeg } from "three/src/math/MathUtils.js";
-import { SCREEN_HEIGHT } from "../../constants/constants";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants";
 import useGlobalStore from "../../store";
 
 type CameraProps = {
@@ -23,8 +23,8 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
 
   useEffect(() => {
     const {camera_axis,camera_position,camera_zoom} = cameras[activeCameraId];
-    camera.far = camera_zoom;
-    camera.near = 0.00001;
+    camera.far = 100;
+    camera.near = 0.000001;
     const camAxisX = vectorToFloatingPoint(camera_axis[0])
     const camAxisY = vectorToFloatingPoint(camera_axis[1]).negate();
     const camAxisZ = vectorToFloatingPoint(camera_axis[2])
@@ -71,6 +71,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     if (activeCameraId !== 0) {
       return
     }
+
     const player = scene.getObjectByName("character");
 
     if (!initialCameraTargetPosition || !player) {
@@ -125,8 +126,8 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     const pitchRotation = new Quaternion().setFromAxisAngle(RIGHT, -calculateAngleForParallax(finalPanY, cameraZoom));
     camera.quaternion.multiply(pitchRotation);
 
-    backgroundPanRef.current.panX = finalPanX;
-    backgroundPanRef.current.panY = finalPanY;
+    backgroundPanRef.current.panX = finalPanX + boundaries.left;
+    backgroundPanRef.current.panY = -finalPanY + boundaries.top;
   });
 
   return null;

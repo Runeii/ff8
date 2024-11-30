@@ -54,6 +54,9 @@ const Controls = ({ children, modelName, useScriptStateStore }: ControlsProps) =
 
 
   useFrame(({ camera, scene }, delta) => {
+    if (position.isAnimating) {
+      return;
+    }
     const player = scene.getObjectByName("character") as Mesh;
     if (isTransitioningMap || !hasPlacedCharacter) {
       return

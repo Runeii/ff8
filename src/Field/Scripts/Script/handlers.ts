@@ -6,7 +6,7 @@ import { dummiedCommand, openMessage, remoteExecute, remoteExecuteOnPartyEntity,
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent } from "./Model/modelUtils";
-import { displayMessage, fadeOutMap, playBaseAnimation, playAnimation, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching } from "./common";
+import { displayMessage, fadeOutMap, playBaseAnimation, playAnimation, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint } from "./common";
 
 export type HandlerArgs = {
   activeMethod: ScriptMethod,
@@ -546,8 +546,8 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const character2ID = STACK.pop() as number;
     const character1ID = STACK.pop() as number;
 
-    const uniqueParty = Array.from(new Set([character1ID, character2ID, character3ID]));
-    console.trace('set', character1ID, character2ID, character3ID)
+    const uniqueParty = Array.from(new Set([character1ID, character2ID, character3ID])).filter(id => id !== 255);
+
     useGlobalStore.setState({
       party: uniqueParty
     })
@@ -828,7 +828,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     currentOpcode.param // walkmesh triangle ID, unused
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
-
+    console.log(position, lastThree)
     currentState.position.start([position.x, position.y, position.z], {
       immediate: true,
     });
@@ -867,30 +867,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     console.log('speed', movementSpeed)
     currentState.movementSpeed = movementSpeed;
   },
-  MOVE: ({ currentState, STACK }) => {
-    // const distanceToStop =
-    STACK.pop() as number;
-    const lastThree = STACK.splice(-3);
-    const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
-
-    if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
-      currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
-    }
-
-    return new Promise((resolve) => {
-      currentState.movementTarget = position;
-      currentState.position.start([position.x, position.y, position.z], {
-        immediate: false,
-        config: {
-          duration: currentState.movementSpeed * 3
-        },
-        onRest: () => {
-          currentState.movementTarget = undefined;
-          resolve();
-        }
-      });
-    })
-  },
   MOVEFLUSH: ({ currentState }) => {
     currentState.movementTarget = undefined;
     currentState.position.stop();
@@ -906,45 +882,138 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     }
   },
 
-  //TODO: implement
-  MOVEA: ({ STACK }) => {
+
+  MOVE: async ({ currentState, STACK }) => {
     // const distanceToStop =
     STACK.pop() as number;
-    // const actorId =
+    const lastThree = STACK.splice(-3);
+    const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
+
+    const { movementSpeed, position: positionSpring } = currentState;
+
+    if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
+      currentState.currentAnimationId = movementSpeed > 5000 ? 2 : 1;
+    }
+
+    currentState.movementTarget = target;
+    await moveToPoint(positionSpring, target, movementSpeed);
+    currentState.movementTarget = undefined;
+  },
+
+  // MOVEA: move to actor
+  MOVEA: async ({ currentState, scene, STACK }) => {
+    // const distanceToStop =
     STACK.pop() as number;
+    const actorId = STACK.pop() as number;
+
+    const targetActor = scene.getObjectByName(`model--${actorId}`) as Group;
+    if (!targetActor) {
+      console.warn('Target actor not found', actorId);
+      return;
+    }
+
+    const target = targetActor.getWorldPosition(new Vector3());
+
+    if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
+      currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
+    }
+
+    currentState.movementTarget = target;
+    await moveToPoint(currentState.position, target, currentState.movementSpeed);
+    currentState.movementTarget = undefined;
   },
-  // This should keep animation and face direction
-  CMOVE: async (args) => {
-    await OPCODE_HANDLERS.MOVE?.(args);
+
+  // PMOVEA: move to party member
+  PMOVEA: async ({ currentState, scene, STACK }) => {
+    // const distanceToStop =
+    STACK.pop() as number;
+    const partyMemberId = STACK.pop() as number;
+
+    const targetActor = scene.getObjectByName(`party--${partyMemberId}`) as Group;
+    if (!targetActor) {
+      console.warn('Target actor not found', partyMemberId);
+      return;
+    }
+    const target = targetActor.getWorldPosition(new Vector3());
+
+    if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
+      currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
+    }
+
+    currentState.movementTarget = target;
+    await moveToPoint(currentState.position, target, currentState.movementSpeed);
+    currentState.movementTarget = undefined;
   },
-  // This should keep face direction
-  FMOVE: async (args) => {
-    const { currentState, scene, script } = args;
-    turnToFaceEntity(script.groupId, `party--0`, 20, scene, currentState.headAngle)
-    await OPCODE_HANDLERS.MOVE?.(args);
+
+
+  // CMOVE: no turn, no animation
+  CMOVE: async ({ currentState, STACK }) => {
+    // const distanceToStop =
+    STACK.pop() as number;
+    const lastThree = STACK.splice(-3);
+    const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
+
+    const { movementSpeed, position: positionSpring } = currentState;
+
+    await moveToPoint(positionSpring, target, movementSpeed);
   },
-  FMOVEA: (args) => {
-    OPCODE_HANDLERS.MOVEA?.(args);
+
+  // FMOVE: turn, no animation
+  FMOVE: async ({ currentState, STACK }) => {
+    // const distanceToStop =
+    STACK.pop() as number;
+    const lastThree = STACK.splice(-3);
+    const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
+
+    const { movementSpeed, position: positionSpring } = currentState;
+
+    currentState.movementTarget = target;
+    await moveToPoint(positionSpring, target, movementSpeed);
+    currentState.movementTarget = undefined;
   },
-  RMOVE: async (args) => {
-    await OPCODE_HANDLERS.MOVE?.(args);
+  FMOVEA: async ({ currentState, STACK, scene }) => {
+    // const distanceToStop =
+    STACK.pop() as number;
+    const partyMemberId = STACK.pop() as number;
+
+    const targetActor = scene.getObjectByName(`party--${partyMemberId}`) as Group;
+
+    const target = targetActor.getWorldPosition(new Vector3());
+    currentState.movementTarget = target;
+    await moveToPoint(currentState.position, target, currentState.movementSpeed);
+    currentState.movementTarget = undefined;
+  },
+  FMOVEP: async ({ currentState, scene, STACK }) => {
+    // const distanceToStop =
+    STACK.pop() as number;
+    const partyMemberId = STACK.pop() as number;
+
+    const targetActor = scene.getObjectByName(`party--${partyMemberId}`) as Group;
+    const target = targetActor.getWorldPosition(new Vector3());
+
+    currentState.movementTarget = target;
+    await moveToPoint(currentState.position, target, currentState.movementSpeed);
+    currentState.movementTarget = undefined;
+  },
+
+  // R SET: do not await
+  RMOVE: (args) => {
+    OPCODE_HANDLERS?.MOVE?.(args);
   },
   RFMOVE: async (args) => {
-    await OPCODE_HANDLERS.MOVE?.(args);
+    OPCODE_HANDLERS?.FMOVE?.(args);
   },
   RCMOVE: async (args) => {
-    await OPCODE_HANDLERS.MOVE?.(args);
+    OPCODE_HANDLERS?.CMOVE?.(args);
   },
   RMOVEA: async (args) => {
-    await OPCODE_HANDLERS.MOVEA?.(args);
+    OPCODE_HANDLERS?.MOVEA?.(args);
   },
   RPMOVEA: async (args) => {
-    await OPCODE_HANDLERS.MOVEA?.(args);
+    OPCODE_HANDLERS?.PMOVEA?.(args);
   },
-  PMOVEA: async (args) => {
-    await OPCODE_HANDLERS.MOVEA?.(args);
-  },
-  FMOVEP: async () => { },
+
+
   JUMP3: ({ currentOpcode, STACK }) => {
     currentOpcode.param; //     currentOpcode.param; // 
     STACK.pop() as number; //     STACK.pop() as number; // 
@@ -1369,10 +1438,10 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   // Memory 80 is used to track frames. This is used to fake a movie
   MOVIE: () => {
     MEMORY['80'] = 0;
-    setInterval(() => {
+    const interval = setInterval(() => {
       MEMORY['80'] += 100;
-      if (MEMORY['80'] === 3000) {
-        clearInterval(this);
+      if (MEMORY['80'] > 3000) {
+        clearInterval(interval);
       }
     }, 1000 / 30);
   },

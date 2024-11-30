@@ -10,6 +10,7 @@ import {
   Material,
   MathUtils,
   Mesh,
+  MeshBasicMaterial,
   NearestFilter,
   NoBlending,
   NormalBlending,
@@ -18,9 +19,10 @@ import {
   SubtractiveBlending,
   Vector3,
 } from "three";
-import { TILE_SIZE, TileWithTexture } from "../Background";
+import { TileWithTexture } from "../Background";
 import useGlobalStore from "../../../store";
 import { FieldData } from "../../Field";
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
 
 const BLENDS = {
   1: AdditiveBlending,
@@ -34,8 +36,8 @@ const BLENDS = {
 function getPlaneScaleToFillFrustum(
   plane: Mesh<PlaneGeometry, Material | Material[]>,
   camera: PerspectiveCamera,
-  planeWidth: number = 320,
-  planeHeight: number = 224
+  planeWidth: number = SCREEN_WIDTH,
+  planeHeight: number = SCREEN_HEIGHT
 ): { x: number; y: number } {
   // Get the world positions of the camera and the plane
   const cameraWorldPosition = new Vector3();
@@ -74,19 +76,13 @@ function getPlaneScaleToFillFrustum(
 type LayerProps = {
   backgroundDetails: FieldData['backgroundDetails']
   backgroundPanRef: React.MutableRefObject<CameraPanAngle>;
-  tiles: TileWithTexture[];
+  tile: TileWithTexture;
 };
 
-const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
+const Layer = ({ backgroundPanRef, tile }: LayerProps) => {
   const layerRef = useRef<Mesh<PlaneGeometry>>(null);
 
-  const {layerWidth, layerHeight} = useMemo(() => {
-    const roundedWidth = Math.round(backgroundDetails.width / TILE_SIZE) * TILE_SIZE;
-    const roundedHeight = Math.round(backgroundDetails.height / TILE_SIZE) * TILE_SIZE;
-    return {layerWidth: roundedWidth, layerHeight: roundedHeight};
-  }, [backgroundDetails.height, backgroundDetails.width]);
-
-  const { isBlended, blendType, layerID } = tiles[0];
+  const { canvas, parameter, state, isBlended, blendType, layerID } = tile;
 
   const [line] = useState<Line3>(new Line3(new Vector3(), new Vector3()));
   const [point] = useState<Vector3>(new Vector3());
@@ -108,11 +104,11 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
 
     const direction = camera.getWorldDirection(new Vector3());
     line.start.copy(camera.getWorldPosition(new Vector3()));
-    line.end.copy(line.start).add(direction.multiplyScalar(length));
+    line.end.copy(line.start).add(direction.clone().multiplyScalar(length));
     layerRef.current.quaternion.copy(camera.quaternion);
 
-    line.at(parseInt(`${layerID}${tiles[0].Z}`) / 1000, point);
-
+    line.at(tile.Z / 1000, point);
+  
     layerRef.current.position.copy(point);
 
     layerRef.current.rotation.setFromQuaternion(camera.quaternion);
@@ -121,7 +117,7 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
    })
    
    const isLayerVisible = useGlobalStore((storeState) => {
-    const {layerID, parameter, state} = tiles[0];
+
     
     const { backgroundLayerVisibility, currentParameterStates, currentParameterVisibility} = storeState;
 
@@ -140,62 +136,61 @@ const Layer = ({ backgroundPanRef, backgroundDetails, tiles }: LayerProps) => {
     return true;
   });
 
-  const canvasTexture = useMemo(() => {
-    const canvas = document.createElement("canvas");
-    canvas.width = layerWidth;
-    canvas.height = layerHeight;
-    canvas.style.imageRendering = "pixelated";
-    const context = canvas.getContext("2d", { alpha: true });
-
-    if (!context) {
-      return null;
-    }
-
-    context.imageSmoothingEnabled = false;
-
-    const texture = new CanvasTexture(canvas);
-    texture.magFilter = NearestFilter;
-    texture.minFilter = NearestFilter;
+  const [pannedCanvas] = useState(document.createElement('canvas'));
+  const pannedTexture = useMemo(() => {
+    const texture = new CanvasTexture(pannedCanvas);
     texture.wrapS = ClampToEdgeWrapping;
     texture.wrapT = ClampToEdgeWrapping;
-    texture.premultiplyAlpha = false;
-    
+    texture.minFilter = NearestFilter;
+    texture.magFilter = NearestFilter;
     return texture;
-  }, [layerHeight, layerWidth]);
+  }, [pannedCanvas]);
 
   useFrame(() => {
-    if (!canvasTexture || !isLayerVisible) {
+    if (!layerRef.current) {
       return;
     }
-    const canvas = canvasTexture.image as HTMLCanvasElement;
-    const context = canvas.getContext("2d", { alpha: true });
+  
+    pannedCanvas.width = SCREEN_WIDTH;
+    pannedCanvas.height = SCREEN_HEIGHT;
+
+    const context = pannedCanvas.getContext('2d');
     if (!context) {
+      console.error('Could not get 2D context from canvas');
       return;
     }
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = 'rgba(0, 0, 0, 0)';
-    context.fillRect(0, 0, canvas.width, canvas.height);
 
     const panX = Math.round(backgroundPanRef.current.panX);
     const panY = Math.round(backgroundPanRef.current.panY);
-    tiles.forEach(({ X, Y, texture }) => {
-      context.drawImage(texture.image, X + (layerWidth / 2) + panX, Y + (layerHeight / 2) - panY);
-    })
 
-    canvasTexture.needsUpdate = true;
-  });
+    context.imageSmoothingEnabled = false;
+    context.drawImage(
+      canvas,
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+      panX,
+      panY,
+      canvas.width,
+      canvas.height
+    );
+
+    pannedTexture.needsUpdate = true;
+  })
 
   if (!isLayerVisible) {
     return null;
   }
 
   return (
-    <Plane args={[layerWidth, layerHeight]} ref={layerRef}>
+    <Plane args={[SCREEN_WIDTH, SCREEN_HEIGHT]} ref={layerRef} renderOrder={16 - layerID}>
       <meshBasicMaterial
         blending={isBlended ? BLENDS[blendType as keyof typeof BLENDS] : NormalBlending}
-        map={canvasTexture}
+        map={pannedTexture}
         side={DoubleSide}
+        alphaTest={0.5}
         transparent
         />
     </Plane>

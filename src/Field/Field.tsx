@@ -13,6 +13,8 @@ import { getInitialEntrance } from '../utils';
 import { MEMORY } from './Scripts/Script/handlers';
 import MAP_NAMES from '../constants/maps';
 import { SpringValue } from '@react-spring/web';
+import { Sphere } from '@react-three/drei';
+import { DoubleSide } from 'three';
 
 export type FieldData = typeof data;
 
@@ -30,6 +32,9 @@ const Field = ({ data }: FieldProps) => {
 
   return (
     <group>
+      <Sphere args={[0.01,10,10]} position={[-0.034423828125,0.18408203125,0]}>
+        <meshBasicMaterial color="blue" side={DoubleSide} />
+      </Sphere>
       <WalkMesh
         walkmesh={data.walkmesh}
       />
