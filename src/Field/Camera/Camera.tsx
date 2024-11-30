@@ -5,7 +5,7 @@ import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useMemo, useState } from "react";
 import { calculateAngleForParallax, calculateParallax, getBoundaries, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
 import { clamp, radToDeg } from "three/src/math/MathUtils.js";
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants";
+import { SCREEN_HEIGHT } from "../../constants/constants";
 import useGlobalStore from "../../store";
 
 type CameraProps = {

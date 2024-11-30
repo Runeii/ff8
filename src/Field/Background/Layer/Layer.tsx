@@ -10,7 +10,6 @@ import {
   Material,
   MathUtils,
   Mesh,
-  MeshBasicMaterial,
   NearestFilter,
   NoBlending,
   NormalBlending,

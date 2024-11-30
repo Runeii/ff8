@@ -1,9 +1,9 @@
 
 import type { FieldData } from "../Field";
-import { MutableRefObject, useMemo, useState } from "react";
+import { MutableRefObject, useMemo } from "react";
 import Layer from "./Layer/Layer";
 import useTilesTexture from "../../hooks/useTilesTexture";
-import { CanvasTexture, ClampToEdgeWrapping, NearestFilter, RepeatWrapping, Texture } from "three";
+import { CanvasTexture, NearestFilter, RepeatWrapping } from "three";
 
 type BackgroundProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
