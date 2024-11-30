@@ -13,8 +13,6 @@ import { getInitialEntrance } from '../utils';
 import { MEMORY } from './Scripts/Script/handlers';
 import MAP_NAMES from '../constants/maps';
 import { SpringValue } from '@react-spring/web';
-import { Sphere } from '@react-three/drei';
-import { DoubleSide } from 'three';
 
 export type FieldData = typeof data;
 
