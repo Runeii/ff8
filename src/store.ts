@@ -4,6 +4,8 @@ import { SpringValue } from '@react-spring/web';
 import MAP_NAMES from './constants/maps';
 
 interface GlobalState {
+  isDebugMode: boolean,
+
   characterPosition?: Vector3,
   pendingCharacterPosition?: Vector3, // Ensures we can mark user start position before transitioning map
 
@@ -49,6 +51,8 @@ interface GlobalState {
 }
 
 const useGlobalStore = create<GlobalState>()(() => ({
+  isDebugMode: false,
+
   availableMessages: [],
   characterPosition: undefined as unknown as Vector3,
   pendingCharacterPosition: undefined as unknown as Vector3,

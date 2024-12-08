@@ -49,6 +49,22 @@ export default function App() {
     })
   }, [opacity])
 
+  const isDebugMode = useGlobalStore(state => state.isDebugMode);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        useGlobalStore.setState({
+          isDebugMode: !useGlobalStore.getState().isDebugMode,
+        })
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [])
+
   return (
     <>
     <animated.div className="container" style={{opacity}}>
@@ -57,13 +73,13 @@ export default function App() {
         near: 0.0001,
         far: 100,
       }} className="canvas">
-        <Perf />
+        {isDebugMode && <Perf />}
         <Suspense>
           {fieldId === 'wm00' ? <WorldMap /> : <Field opacitySpring={opacity} />}
         </Suspense>
       </Canvas>
       <Ui />
-      <Memory />
+      {isDebugMode && <Memory />}
       </animated.div>
     <Controller />
     </>
