@@ -101,7 +101,7 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
       }];
     }) as unknown as [string, TileWithTexture][];
   }, [limits, tiles, tilesTexture.image]);
-console.log(tileGroupEntries)
+
   return (
     <>
       {tileGroupEntries.map(([key, tiles]) =>

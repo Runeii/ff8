@@ -38,6 +38,7 @@ const Field = ({ data }: FieldProps) => {
         data={data}
       />
       <Scripts
+        controlDirection={data.controlDirection}
         doors={data.doors}
         models={data.models}
         scripts={data.scripts}
@@ -75,13 +76,13 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
     const handleTransition = async () => {
       const {isMapFadeEnabled} = useGlobalStore.getState();
 
-      if (isMapFadeEnabled && pendingFieldId !== 'start0') {
-        await opacitySpring.start(0);
-      }
+      //if (isMapFadeEnabled && pendingFieldId !== 'start0') {
+      //  await opacitySpring.start(0);
+      //}
 
       setData(null);
       gl.clear();
-console.log('New field', pendingFieldId);
+
       if (pendingFieldId === 'wm00') {
         useGlobalStore.setState({
           fieldId: 'wm00',

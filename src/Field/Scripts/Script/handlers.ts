@@ -29,7 +29,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 3000, // progress
+  256: 0, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -604,7 +604,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playBaseAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       currentState.idleAnimationRange,
     );
   },
@@ -615,7 +615,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     await playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       false,
     )
 
@@ -623,7 +623,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playBaseAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1]
+      currentState.animationDurations[animationId]
     );
   },
   ANIMEKEEP: async ({ currentState, currentOpcode }) => {
@@ -633,7 +633,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     await playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       false,
     )
   },
@@ -647,7 +647,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     await playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       false,
       [firstFrame, lastFrame]
     )
@@ -656,7 +656,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playBaseAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1]
+      currentState.animationDurations[animationId]
     );
   },
   CANIMEKEEP: async ({ currentState, currentOpcode, STACK }) => {
@@ -666,11 +666,10 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
 
     currentState.currentAnimationId = animationId;
 
-
     await playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       false,
       [firstFrame, lastFrame]
     )
@@ -683,7 +682,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       false,
     )
 
@@ -691,7 +690,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playBaseAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1]
+      currentState.animationDurations[animationId]
     );
   },
   RANIMEKEEP: ({ currentState, currentOpcode }) => {
@@ -702,7 +701,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       false,
     )
   },
@@ -715,7 +714,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       false,
       [firstFrame, lastFrame]
     )
@@ -724,10 +723,10 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playBaseAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1]
+      currentState.animationDurations[animationId]
     );
   },
-  RCANIMEKEEP: ({ currentState, currentOpcode, STACK }) => {
+  RCANIMEKEEP: ({ currentState, currentOpcode, STACK, script }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
@@ -737,7 +736,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       false,
       [firstFrame, lastFrame]
     )
@@ -750,7 +749,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       true,
     )
   },
@@ -764,7 +763,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     playAnimation(
       currentState.animationProgress,
       currentState.animationSpeed,
-      currentState.animationDurations[animationId - 1],
+      currentState.animationDurations[animationId],
       true,
       [firstFrame, lastFrame]
     )

@@ -106,35 +106,64 @@ export const playBaseAnimation = (spring: SpringValue<number>, speed: number, du
   )
 
 
-export const playAnimation = async (
+export async function playAnimation(
   spring: SpringValue<number>,
   speed: number,
   duration: number,
   isLooping: boolean,
-
-  range: [number, number] | undefined = undefined
-) => {
-  spring.set(0);
-
+  range?: [number, number],
+) {
   const FPS = 30;
-  const startOffset = range ? (1 / duration) * range[0] : 0;
-  const endOffset = range ? (1 / duration) * range[1] : 1;
 
-  const effectiveFps = FPS * speed;
-
-  // Total frames in the original duration
+  // Total number of frames in the full animation
   const totalFrames = duration * FPS;
 
-  // Adjusted duration in seconds
-  const adjustedDurationInSeconds = totalFrames / effectiveFps;
+  // Determine start and end offsets
+  // If no range is given, we animate the entire sequence from 0 to 1
+  let startOffset = 0;
+  let endOffset = 1;
 
-  // Convert to milliseconds
-  const adjustedDurationInMs = adjustedDurationInSeconds * 1000;
+  if (range && range.filter(Boolean).length === 2) {
+    const [startFrame, endFrame] = range;
 
-  await spring.start(endOffset, {
+    // Ensure the frames are within valid bounds
+    if (startFrame < 0 || endFrame > totalFrames) {
+      console.warn(`Range [${startFrame}, ${endFrame}] is out of bounds for ${totalFrames} total frames.`);
+    }
+
+    startOffset = startFrame / totalFrames;
+    endOffset = endFrame / totalFrames;
+
+    console.log('At FPS', FPS, 'with duration', duration, 'total frames:', totalFrames, 'start:', startFrame, 'end:', endFrame);
+  }
+
+  // The portion of the animation we are going to play (normalized)
+  const portion = endOffset - startOffset;
+
+  // The portion of the full animation duration that corresponds to the selected range
+  const portionDurationInSeconds = duration * portion;
+
+  // Adjust for speed:
+  // If speed = 2, it means we cover the same portion in half the time
+  const adjustedDurationInMs = (portionDurationInSeconds * 1000) / speed;
+
+  console.log(
+    `Playing animation from ${startOffset.toFixed(3)} to ${endOffset.toFixed(3)} ` +
+    `(${(portion * 100).toFixed(1)}% of the full animation) in ${adjustedDurationInMs} ms at speed ${speed}, looping: ${isLooping}`
+  );
+
+  if (startOffset === endOffset) {
+    spring.set(startOffset);
+    return;
+  }
+
+
+  // Start the spring animation
+  await spring.start({
     from: startOffset,
-    immediate: false,
+    to: endOffset,
     loop: isLooping,
+    immediate: false,
     config: {
       duration: adjustedDurationInMs,
     },

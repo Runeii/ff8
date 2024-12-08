@@ -12,10 +12,11 @@ import { FieldData } from "../../Field";
 import { useFrame, useThree } from "@react-three/fiber";
 import {  Group, Vector3 } from "three";
 import createScriptState from "./state";
-import { getDirectionToCamera, getLocalViewportTop } from "../../../utils";
+import { getDirectionToCamera, getLocalViewportTop, WORLD_DIRECTIONS } from "../../../utils";
 import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "./utils";
 
 type ScriptProps = {
+  controlDirection: FieldData['controlDirection'],
   doors: FieldData['doors'],
   isActive: boolean;
   models: string[];
@@ -25,7 +26,7 @@ type ScriptProps = {
 
 // Not implemented
 // * Pushable
-const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptProps) => {
+const Script = ({ controlDirection, doors, isActive, models, script, onSetupCompleted }: ScriptProps) => {
   const entityRef = useRef<Group>(null);
 
   const [activeMethodId, setActiveMethodId] = useState<string>();
@@ -70,12 +71,13 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     }
 
     const handleExecutionRequest = async ({ detail: { key, scriptLabel } }: {detail: ExecuteScriptEventDetail}) => {
+    //  console.log('request received', scriptLabel, script.groupId, script.methods)
       const matchingMethod = script.methods.find((method) => method.scriptLabel === scriptLabel);
       if (!matchingMethod) {
         return;
       }
       
-      console.log('request accepted', matchingMethod, scriptLabel)
+    //  console.log('request accepted', matchingMethod, scriptLabel, useScriptStateStore.getState())
       setActiveMethodId(matchingMethod?.methodId);
       setRemoteExecutionKey(key);
     }
@@ -89,7 +91,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
         return;
       }
       
-      console.log('request accepted on entity', matchingMethod, requestedPartyMemberId)
+    //  console.log('request accepted on entity', matchingMethod, requestedPartyMemberId)
       setActiveMethodId(matchingMethod?.methodId);
       setRemoteExecutionKey(key);
     }
@@ -101,7 +103,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
       document.removeEventListener('executeScript', handleExecutionRequest);
       document.removeEventListener('executeScriptOnPartyEntity', handlePartyEntityExecutionRequest);
     }
-  }, [activeMethodId, isUnused, partyMemberId, script.groupId, script.methods, setActiveMethodId]);
+  }, [activeMethodId, isUnused, partyMemberId, script.groupId, script.methods, setActiveMethodId, useScriptStateStore]);
   
   const activeParty = useGlobalStore(storeState => storeState.party);
 
@@ -146,7 +148,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     // Get up axis
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
 
-    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, toCamera, meshUp);
+    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, WORLD_DIRECTIONS.FORWARD.negate(), meshUp);
 
     const targetDirection = movementTarget.clone().sub(entityRef.current.position).normalize();
     const targetAngle = getRotationAngleToDirection(meshForward, targetDirection, meshUp);
