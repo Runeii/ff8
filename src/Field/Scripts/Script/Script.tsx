@@ -10,11 +10,12 @@ import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
 import { useFrame, useThree } from "@react-three/fiber";
-import {  Group, Vector3 } from "three";
+import {  Group, Line3, Vector3 } from "three";
 import createScriptState from "./state";
 import { getDirectionToCamera, getLocalViewportTop, WORLD_DIRECTIONS } from "../../../utils";
 import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "./utils";
 import { createAnimationController } from "./AnimationController";
+import { Line } from "@react-three/drei";
 
 type ScriptProps = {
   controlDirection: FieldData['controlDirection'],
@@ -124,8 +125,6 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     backgroundAnimationSpring.pause();
   }, [animationController, isTransitioningMap, useScriptStateStore]);
 
-  const camera = useThree(({ camera }) => camera);
-
   useEffect(() => {
     if (!movementTarget || !entityRef.current) {
       return;
@@ -133,35 +132,31 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
 
     entityRef.current.rotation.set(0, 0, 0);
     entityRef.current.quaternion.identity();
-  
-    // Get direction to camera
-    let toCamera = getDirectionToCamera(entityRef.current, camera);
-    if (toCamera.z > 0.9) {
-      toCamera = getLocalViewportTop(entityRef.current, camera).negate();
-    }
-    toCamera.z = 0;
-
+    
     // Current forward
     const meshForward = new Vector3(-1,0,0).applyQuaternion(entityRef.current.quaternion).normalize();
     meshForward.z = 0;
-    
+
     // Get up axis
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
-
-    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, WORLD_DIRECTIONS.FORWARD.negate(), meshUp);
+  
+    // Calculate initial angle to face down
+    const base = convert255ToRadians(controlDirection);
+    const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
+    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
 
     const targetDirection = movementTarget.clone().sub(entityRef.current.position).normalize();
     const targetAngle = getRotationAngleToDirection(meshForward, targetDirection, meshUp);
-
-    let rotation = (faceDownBaseAngle + targetAngle) % (Math.PI * 2);
-    if (rotation < 0) {
-      rotation += Math.PI * 2; // Ensure the angle is in the range [0, 2π)
+    
+    let radian = (targetAngle - faceDownBaseAngle) % (Math.PI * 2);
+    if (radian < 0) {
+      radian += Math.PI * 2; // Ensure the angle is in the range [0, 2π)
     }
+  
+    useScriptStateStore.getState().angle.set(convertRadiansTo255(radian));
+  }, [controlDirection, movementTarget, useScriptStateStore]);
 
-    useScriptStateStore.getState().angle.set(convertRadiansTo255(rotation));
-  }, [camera, movementTarget, useScriptStateStore]);
-
-  useFrame(({camera}) => {
+  useFrame(() => {
     if (!entityRef.current) {
       return;
     }
@@ -173,21 +168,16 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     const meshForward = new Vector3(-1,0,0).applyQuaternion(entityRef.current.quaternion).normalize();
     meshForward.z = 0;
 
-    // Get direction to camera
-    let toCamera = getDirectionToCamera(entityRef.current, camera);
-    if (toCamera.z > 0.9) {
-      toCamera = getLocalViewportTop(entityRef.current, camera).negate();
-    }
-    toCamera.z = 0;
-    
     // Get up axis
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
   
     // Calculate initial angle to face down
-    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, toCamera, meshUp);
+    const base = convert255ToRadians(controlDirection);
+    const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
+    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
 
     const currentRotation = convert255ToRadians(useScriptStateStore.getState().angle.get());
-    entityRef.current.quaternion.setFromAxisAngle(meshUp, faceDownBaseAngle - currentRotation);
+    entityRef.current.quaternion.setFromAxisAngle(meshUp, faceDownBaseAngle + currentRotation);
   });
 
   if (isUnused) {
