@@ -4,13 +4,15 @@ import { OPCODE_HANDLERS } from "./handlers";
 import { useThree } from "@react-three/fiber";
 import useGlobalStore from "../../../store";
 import { ScriptStateStore } from "./state";
+import { createAnimationController } from "./AnimationController";
 
 const useMethod = (
   script: Script,
   useScriptStateStore: ScriptStateStore,
   activeMethodId: string | undefined,
   setActiveMethodId: (methodId?: string) => void,
-  isActive: boolean
+  isActive: boolean,
+  animationController: ReturnType<typeof createAnimationController>,
 ) => {
   const scene = useThree((state) => state.scene);
 
@@ -171,6 +173,7 @@ const useMethod = (
 
       const nextIndex = await handler({
         activeMethod,
+        animationController,
         currentOpcode,
         currentState: state,
         currentOpcodeIndex,

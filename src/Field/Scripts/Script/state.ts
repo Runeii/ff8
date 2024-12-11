@@ -6,12 +6,6 @@ export type ScriptState = {
   hasRemovedControl: boolean;
   isHalted: boolean;
 
-  animationProgress: SpringValue<number>;
-  animationSpeed: number;
-  animationDurations: number[];
-  currentAnimationId: number | undefined;
-  idleAnimationId: number | undefined;
-  idleAnimationRange: [number, number];
   ladderAnimationId: number | undefined;
 
   backgroundAnimationSpring: SpringValue<number>;
@@ -67,12 +61,8 @@ export const createScriptState = () => {
     hasRemovedControl: false,
     isHalted: false,
 
-    animationProgress: new SpringValue(0),
     animationSpeed: 1,
-    animationDurations: [],
     currentAnimationId: undefined,
-    idleAnimationId: undefined,
-    idleAnimationRange: [0, 0],
     ladderAnimationId: undefined,
 
     backgroundAnimationSpring: new SpringValue(0),

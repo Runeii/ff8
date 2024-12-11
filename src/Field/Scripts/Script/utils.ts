@@ -55,7 +55,7 @@ export const remoteExecute = (scriptLabel: number, source: string, partyMemberId
 
     resolve();
   });
-  console.log('Dispatching request from', source, 'to', scriptLabel, partyMemberId)
+  //console.log('Dispatching request from', source, 'to', scriptLabel, partyMemberId)
   const { party } = useGlobalStore.getState();
   document.dispatchEvent(new CustomEvent('executeScript', {
     detail: {
@@ -78,7 +78,7 @@ export const remoteExecuteOnPartyEntity = (partyMemberId: number, methodIndex: n
     resolve();
   });
 
-  console.log('Dispatching request from', source, 'to', methodIndex, 'on', partyMemberId)
+  // console.log('Dispatching request from', source, 'to', methodIndex, 'on', partyMemberId)
 
   const { party } = useGlobalStore.getState();
 
@@ -148,7 +148,7 @@ export const convert255ToRadians = (value: number) => {
   if (value < 0 || value > 255) {
     throw new Error("Value must be in the range 0-255.");
   }
-  return value * (2 * Math.PI / 255);
+  return (value - 112) * (2 * Math.PI / 255);
 }
 
 export const convertRadiansTo255 = (radians: number) => {

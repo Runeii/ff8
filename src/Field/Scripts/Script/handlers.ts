@@ -1,4 +1,4 @@
-import { Scene, Vector3 } from "three";
+import { LoopOnce, Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script, ScriptMethod } from "../types";
@@ -6,9 +6,10 @@ import { dummiedCommand, openMessage, remoteExecute, remoteExecuteOnPartyEntity,
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent } from "./Model/modelUtils";
-import { displayMessage, fadeOutMap, playBaseAnimation, playAnimation, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint } from "./common";
+import { displayMessage, fadeOutMap, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint } from "./common";
 
 export type HandlerArgs = {
+  animationController: ReturnType<typeof createAnimationController>,
   activeMethod: ScriptMethod,
   currentOpcode: OpcodeObj,
   currentOpcodeIndex: number,
@@ -593,196 +594,133 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     const modelId = currentOpcode.param;
     currentState.modelId = modelId;
   },
-  BASEANIME: ({ currentState, currentOpcode, STACK }) => {
+  BASEANIME: ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    currentState.idleAnimationId = animationId;
-    currentState.idleAnimationRange = [firstFrame, lastFrame];
-
-    playBaseAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      currentState.idleAnimationRange,
-    );
+    animationController.setIdleAnimation(animationId, firstFrame, lastFrame);
+    animationController.playIdleAnimation();
   },
-  ANIME: async ({ currentState, currentOpcode }) => {
-    const animationId = currentOpcode.param;
-    currentState.currentAnimationId = animationId;
-
-    await playAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      false,
-    )
-
-    currentState.currentAnimationId = undefined;
-    playBaseAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId]
-    );
-  },
-  ANIMEKEEP: async ({ currentState, currentOpcode }) => {
+  ANIME: async ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
-    currentState.currentAnimationId = animationId;
-    await playAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      false,
-    )
+    await animationController.playAnimation({
+      animationId,
+    });
+
+    animationController.playIdleAnimation();
   },
-  CANIME: async ({ currentState, currentOpcode, STACK }) => {
+  ANIMEKEEP: async ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
-    currentState.currentAnimationId = animationId;
-    const firstFrame = STACK.pop() as number;
-    const lastFrame = STACK.pop() as number;
 
-
-    await playAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      false,
-      [firstFrame, lastFrame]
-    )
-
-    currentState.currentAnimationId = undefined;
-    playBaseAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId]
-    );
+    console.log('ANIMEKEEP', animationId)
+    await animationController.playAnimation({
+      animationId,
+    });
   },
-  CANIMEKEEP: async ({ currentState, currentOpcode, STACK }) => {
+  CANIME: async ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    currentState.currentAnimationId = animationId;
+    await animationController.playAnimation({
+      animationId,
+      startFrame: firstFrame,
+      endFrame: lastFrame,
+    });
 
-    await playAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      false,
-      [firstFrame, lastFrame]
-    )
+    animationController.playIdleAnimation();
   },
-  RANIME: ({ currentState, currentOpcode }) => {
-    const animationId = currentOpcode.param;
-    currentState.currentAnimationId = animationId;
-
-
-    playAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      false,
-    )
-
-    currentState.currentAnimationId = undefined;
-    playBaseAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId]
-    );
-  },
-  RANIMEKEEP: ({ currentState, currentOpcode }) => {
-    const animationId = currentOpcode.param;
-
-    currentState.currentAnimationId = animationId;
-
-    playAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      false,
-    )
-  },
-  RCANIME: ({ currentState, currentOpcode, STACK }) => {
-    const animationId = currentOpcode.param;
-    currentState.currentAnimationId = animationId;
-    const firstFrame = STACK.pop() as number;
-    const lastFrame = STACK.pop() as number;
-
-    playAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      false,
-      [firstFrame, lastFrame]
-    )
-
-    currentState.currentAnimationId = undefined;
-    playBaseAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId]
-    );
-  },
-  RCANIMEKEEP: ({ currentState, currentOpcode, STACK, script }) => {
+  CANIMEKEEP: async ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    currentState.currentAnimationId = animationId;
-
-    playAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      false,
-      [firstFrame, lastFrame]
-    )
+    await animationController.playAnimation({
+      animationId: animationId,
+      startFrame: firstFrame,
+      endFrame: lastFrame,
+    });
   },
-  RANIMELOOP: ({ currentState, currentOpcode, }) => {
+  RANIME: ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
-    currentState.currentAnimationId = animationId;
-
-    playAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      true,
-    )
+    animationController.playAnimation({
+      animationId,
+    }).then(() => {
+      animationController.playIdleAnimation();
+    });
   },
-  RCANIMELOOP: ({ currentState, currentOpcode, STACK }) => {
+  RANIMEKEEP: ({ animationController, currentOpcode }) => {
+    const animationId = currentOpcode.param;
+
+    animationController.playAnimation({
+      animationId,
+    });
+  },
+  RCANIME: ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    currentState.currentAnimationId = animationId;
+    animationController.playAnimation({
+      animationId,
+      startFrame: firstFrame,
+      endFrame: lastFrame,
+    }).then(() => {
+      animationController.playIdleAnimation();
+    });
 
-    playAnimation(
-      currentState.animationProgress,
-      currentState.animationSpeed,
-      currentState.animationDurations[animationId],
-      true,
-      [firstFrame, lastFrame]
-    )
+  },
+  RCANIMEKEEP: ({ animationController, currentOpcode, STACK }) => {
+    const animationId = currentOpcode.param;
+    const firstFrame = STACK.pop() as number;
+    const lastFrame = STACK.pop() as number;
+
+    animationController.playAnimation({
+      animationId,
+      startFrame: firstFrame,
+      endFrame: lastFrame,
+    })
+  },
+  RANIMELOOP: ({ animationController, currentOpcode, }) => {
+    const animationId = currentOpcode.param;
+
+    animationController.playAnimation({
+      animationId,
+      isRepeating: true,
+    })
+  },
+  RCANIMELOOP: ({ animationController, currentOpcode, STACK }) => {
+    const animationId = currentOpcode.param;
+    const firstFrame = STACK.pop() as number;
+    const lastFrame = STACK.pop() as number;
+
+    animationController.playAnimation({
+      animationId,
+      startFrame: firstFrame,
+      endFrame: lastFrame,
+      isRepeating: true,
+    })
   },
   LADDERANIME: ({ currentOpcode, currentState, STACK }) => {
     currentOpcode.param // unknown
     currentState.ladderAnimationId = STACK.pop() as number;
     STACK.pop() as number;
   },
-  ANIMESPEED: ({ currentState, STACK }) => {
-    currentState.animationSpeed = STACK.pop() as number;
+  ANIMESPEED: ({ animationController, STACK }) => {
+    animationController.setAnimationSpeed(STACK.pop() as number)
   },
-  ANIMESYNC: async ({ currentState }) => {
-    while (currentState.animationProgress.isAnimating) {
+  ANIMESYNC: async ({ animationController }) => {
+    console.log('ANIMESYNC')
+    while (animationController.getIsPlaying()) {
+      console.log(animationController.getIsPlaying())
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
-  ANIMESTOP: ({ currentState }) => {
-    currentState.animationProgress.stop();
+  ANIMESTOP: ({ animationController }) => {
+    animationController.stopAnimations();
   },
   POPANIME: () => { },
   PUSHANIME: () => { },
@@ -886,9 +824,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
 
     const { movementSpeed, position: positionSpring } = currentState;
 
-    if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
-      currentState.currentAnimationId = movementSpeed > 5000 ? 2 : 1;
-    }
+    // if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
+    //   currentState.currentAnimationId = movementSpeed > 5000 ? 2 : 1;
+    // }
 
     currentState.movementTarget = target;
     await moveToPoint(positionSpring, target, movementSpeed);
@@ -909,9 +847,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
 
     const target = targetActor.getWorldPosition(new Vector3());
 
-    if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
-      currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
-    }
+    //  if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
+    //    currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
+    //  }
 
     currentState.movementTarget = target;
     await moveToPoint(currentState.position, target, currentState.movementSpeed);
@@ -931,9 +869,9 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     }
     const target = targetActor.getWorldPosition(new Vector3());
 
-    if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
-      currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
-    }
+    // if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
+    //   currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
+    // }
 
     currentState.movementTarget = target;
     await moveToPoint(currentState.position, target, currentState.movementSpeed);
@@ -1229,7 +1167,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
   // PLAYS PRELOADED TRACK
   MUSICCHANGE: ({ currentState }) => {
-    console.log('Would play', currentState.backroundMusicId)
+    // console.log('Would play', currentState.backroundMusicId)
   },
   MUSICSTOP: ({ currentState, STACK }) => {
     // 0 OR 1. No idea why. It's even sometimes called successively with 1 and 0
@@ -1848,6 +1786,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
 // stack changes each opcode does across all fields. Using this we can perform a run time check against implementation.
 import opcodeOutput from '../../../../scripts/opcodeOutput';
 import { ScriptState } from "./state";
+import { createAnimationController } from "./AnimationController";
 
 window.setTimeout(() => {
   return;

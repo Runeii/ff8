@@ -14,6 +14,7 @@ import {  Group, Vector3 } from "three";
 import createScriptState from "./state";
 import { getDirectionToCamera, getLocalViewportTop, WORLD_DIRECTIONS } from "../../../utils";
 import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "./utils";
+import { createAnimationController } from "./AnimationController";
 
 type ScriptProps = {
   controlDirection: FieldData['controlDirection'],
@@ -45,8 +46,8 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
   }, [activeMethodId, remoteExecutionKey]);
   
   const useScriptStateStore = useMemo(() => createScriptState(), []);
-
-  const hasCompletedConstructor = useMethod(script, useScriptStateStore, activeMethodId, setActiveMethodId, isActive);
+  const animationController = useMemo(() => createAnimationController(), []);
+  const hasCompletedConstructor = useMethod(script, useScriptStateStore, activeMethodId, setActiveMethodId, isActive, animationController);
 
   useEffect(() => {
     if (!hasCompletedConstructor) {
@@ -115,14 +116,13 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     if (!isTransitioningMap) {
       return;
     }
-    const { animationProgress, backgroundAnimationSpring, position, headAngle, angle} = useScriptStateStore.getState();
-    animationProgress.pause();
+    const { backgroundAnimationSpring, position, headAngle, angle} = useScriptStateStore.getState();
+    animationController.stopAnimations();
     position.pause();
     headAngle.pause();
     angle.pause();
     backgroundAnimationSpring.pause();
-  }, [isTransitioningMap, useScriptStateStore]);
-
+  }, [animationController, isTransitioningMap, useScriptStateStore]);
 
   const camera = useThree(({ camera }) => camera);
 
@@ -214,7 +214,7 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
       )}
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location script={script} useScriptStateStore={useScriptStateStore} setActiveMethodId={setActiveMethodId} />}
-      {script.type === 'model' && <Model models={models} script={script} useScriptStateStore={useScriptStateStore} />}
+      {script.type === 'model' && <Model models={models} script={script} useScriptStateStore={useScriptStateStore} setupAnimations={animationController.initialize} />}
       {script.type === 'door' && <Door doors={doors} script={script} setActiveMethodId={setActiveMethodId} useScriptStateStore={useScriptStateStore} />}
     </animated.group>
   );

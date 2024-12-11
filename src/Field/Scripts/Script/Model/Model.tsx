@@ -1,6 +1,6 @@
 import { Script } from "../../types";
 import {  ComponentType, lazy, useCallback, useEffect, useMemo, useState } from "react";
-import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
+import { AnimationClip, AnimationMixer, Bone, Euler, Group, LoopOnce, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
@@ -10,7 +10,8 @@ import { ScriptStateStore } from "../state";
 type ModelProps = {
   models: string[];
   script: Script;
-  useScriptStateStore: ScriptStateStore
+  useScriptStateStore: ScriptStateStore,
+  setupAnimations: (mixerInstance: AnimationMixer, animationClips: AnimationClip[]) => void;
 }
 
 const modelFiles = import.meta.glob('./gltf/*.tsx');
@@ -20,16 +21,12 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<JSX.IntrinsicElements['group']>}>)];
 }));
 
-const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
-  const animationProgress = useScriptStateStore(state => state.animationProgress);
-  const currentAnimationId = useScriptStateStore(state => state.currentAnimationId);
+const Model = ({ models, script, useScriptStateStore, setupAnimations }: ModelProps) => {
   const headAngle = useScriptStateStore(state => state.headAngle);
-  const idleAnimationId = useScriptStateStore(state => state.idleAnimationId);
   const modelId = useScriptStateStore(state => state.modelId);
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
 
   const isPlayerControlled = useGlobalStore(state => state.party[0] === partyMemberId);
-  const [animations, setAnimations] = useState<GltfHandle['animations']>();
   const [meshGroup, setMeshGroup] = useState<Group>();
   const [head, setHead] = useState<Bone>();
 
@@ -60,22 +57,12 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
     if (!ref || !ref.group) {
       return;
     }
-
-    setAnimations(ref.animations);
+  
+    setupAnimations(ref.animations.mixer, ref.animations.clips);
     setMeshGroup(ref.group.current);
     setHead(ref.nodes.head);
     convertMaterialsToBasic(ref.group.current);
-  }, [convertMaterialsToBasic]);
-
-  useEffect(() => {
-    if (!animations) {
-      return;
-    }
-    const durations = animations.clips.map((clip) => clip.duration);
-    useScriptStateStore.setState({
-      animationDurations: durations
-    });
-  }, [animations, modelName, useScriptStateStore]);
+  }, [convertMaterialsToBasic, setupAnimations]);
 
 
   useEffect(() => {
@@ -93,54 +80,6 @@ const Model = ({ models, script, useScriptStateStore }: ModelProps) => {
     meshGroup.updateMatrix(); 
     meshGroup.updateMatrixWorld(true);
   }, [modelName, meshGroup]);
-
-  const playAnimationIndex = useGlobalStore(state => state.playerAnimationIndex);
-  const activeIdleAnimationId = partyMemberId !== undefined ? playAnimationIndex : idleAnimationId;
-  const activeAnimationId = currentAnimationId ?? activeIdleAnimationId
-
-  const currentAction = useMemo(() => {
-    if (!animations || !animations.mixer || activeAnimationId === undefined) {
-      return;
-    }
-    const mixer = animations.mixer;
-    animations.mixer.stopAllAction();
-
-    const clip = animations.clips[activeAnimationId ?? -1]
-    if (!clip) {
-      return;
-    }
-    
-    const action = mixer.clipAction(clip);
-    action.play();
-    action.paused = true;
-    action.time = 0;
-    animations.mixer.update(0);
-    useScriptStateStore.getState().animationProgress.set(0);
-  
-    return action;
-  }, [activeAnimationId, animations, useScriptStateStore]);
-
-
-  const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
-  useFrame(() => {
-    if (!currentAction || activeAnimationId !== activeIdleAnimationId) {
-      return;
-    }
-    
-    if (isTransitioningMap) {
-      currentAction.paused = true;
-      return;
-    }
-    currentAction.paused = false;
-  });
-
-  useFrame(() => {
-    if (!currentAction || activeAnimationId === activeIdleAnimationId || isTransitioningMap) {
-      return;
-    }
-    
-    currentAction.time = animationProgress.get() * currentAction.getClip().duration;
-  });
 
   useFrame(() => {
     if (!head) {

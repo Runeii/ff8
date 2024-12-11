@@ -3,6 +3,7 @@ import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
 import { openMessage } from "./utils";
 import { Group, Scene, Vector3 } from "three";
+import { createAnimationController } from "./AnimationController";
 
 export const fadeInMap = async () => {
   const { canvasOpacitySpring, isMapFadeEnabled } = useGlobalStore.getState()
@@ -36,7 +37,7 @@ export const displayMessage = async (id: number, x: number, y: number, channel: 
 }
 
 export const turnToFaceAngle = async (angle: number, frames: number, spring: SpringValue<number>) => {
-  console.log('Turning to face angle:', angle, frames);
+  // console.log('Turning to face angle:', angle, frames);
   spring.start(angle, {
     immediate: frames === 0,
     config: {
@@ -96,79 +97,6 @@ export const isTouching = (thisId: number, targetName: string, scene: Scene) => 
   return thisPosition.distanceTo(targetPosition) < 0.25;
 }
 
-export const playBaseAnimation = (spring: SpringValue<number>, speed: number, duration: number, range?: [number, number]) =>
-  playAnimation(
-    spring,
-    speed,
-    duration,
-    true,
-    range,
-  )
-
-
-export async function playAnimation(
-  spring: SpringValue<number>,
-  speed: number,
-  duration: number,
-  isLooping: boolean,
-  range?: [number, number],
-) {
-  const FPS = 30;
-
-  // Total number of frames in the full animation
-  const totalFrames = duration * FPS;
-
-  // Determine start and end offsets
-  // If no range is given, we animate the entire sequence from 0 to 1
-  let startOffset = 0;
-  let endOffset = 1;
-
-  if (range && range.filter(Boolean).length === 2) {
-    const [startFrame, endFrame] = range;
-
-    // Ensure the frames are within valid bounds
-    if (startFrame < 0 || endFrame > totalFrames) {
-      console.warn(`Range [${startFrame}, ${endFrame}] is out of bounds for ${totalFrames} total frames.`);
-    }
-
-    startOffset = startFrame / totalFrames;
-    endOffset = endFrame / totalFrames;
-
-    console.log('At FPS', FPS, 'with duration', duration, 'total frames:', totalFrames, 'start:', startFrame, 'end:', endFrame);
-  }
-
-  // The portion of the animation we are going to play (normalized)
-  const portion = endOffset - startOffset;
-
-  // The portion of the full animation duration that corresponds to the selected range
-  const portionDurationInSeconds = duration * portion;
-
-  // Adjust for speed:
-  // If speed = 2, it means we cover the same portion in half the time
-  const adjustedDurationInMs = (portionDurationInSeconds * 1000) / speed;
-
-  console.log(
-    `Playing animation from ${startOffset.toFixed(3)} to ${endOffset.toFixed(3)} ` +
-    `(${(portion * 100).toFixed(1)}% of the full animation) in ${adjustedDurationInMs} ms at speed ${speed}, looping: ${isLooping}`
-  );
-
-  if (startOffset === endOffset) {
-    spring.set(startOffset);
-    return;
-  }
-
-
-  // Start the spring animation
-  await spring.start({
-    from: startOffset,
-    to: endOffset,
-    loop: isLooping,
-    immediate: false,
-    config: {
-      duration: adjustedDurationInMs,
-    },
-  });
-}
 
 export const animateBackground = async (spring: SpringValue<number>, speed: number, startFrame: number, endFrame: number, isLooping: boolean) => {
   spring.set(startFrame);
