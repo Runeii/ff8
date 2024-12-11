@@ -50,6 +50,9 @@ export function createAnimationController() {
     });
   };
 
+  // TODO:
+  // Support looping properly (eg: idle)
+  // Do we need to allow starting during repeat phase?
   const playAnimation = async ({
     animationId,
     startFrame,
