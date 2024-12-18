@@ -614,7 +614,6 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   ANIMEKEEP: async ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
-    console.log('ANIMEKEEP', animationId)
     await animationController.playAnimation({
       animationId,
     });

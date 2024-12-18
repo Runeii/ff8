@@ -3,8 +3,10 @@ import useGlobalStore from "../../../../../store";
 import { useFrame } from "@react-three/fiber";
 import { Group } from "three";
 import { ScriptStateStore } from "../../state";
+import { createAnimationController } from "../../AnimationController";
 
 type FollowerProps = {
+  animationController: ReturnType<typeof createAnimationController>;
   children: ReactNode;
   partyMemberId?: number;
   useScriptStateStore: ScriptStateStore
@@ -12,7 +14,7 @@ type FollowerProps = {
 
 const DISTANCE = 20;
 
-const Follower = ({ children, partyMemberId, useScriptStateStore}: FollowerProps) => {
+const Follower = ({ animationController, children, partyMemberId, useScriptStateStore}: FollowerProps) => {
   const offset = useGlobalStore(state => state.party.findIndex(id => id === partyMemberId));
   const isLastPartyMember = useGlobalStore(state => state.party.length - 1 === offset);
 
@@ -44,9 +46,8 @@ const Follower = ({ children, partyMemberId, useScriptStateStore}: FollowerProps
       state.angle.start(angle);
     }
   
-    useScriptStateStore.setState({
-      idleAnimationId: useGlobalStore.getState().playerAnimationIndex
-    });
+    animationController.setIdleAnimation(useGlobalStore.getState().playerAnimationIndex);
+    animationController.playIdleAnimation();
 
     if (isLastPartyMember) {
       useGlobalStore.setState(state => ({

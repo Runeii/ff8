@@ -120,20 +120,20 @@ export function createAnimationController() {
   }
 
   let idleAnimationId: number;
-  let idleStartOffset: number;
-  let idleLastFrame: number;
-  const setIdleAnimation = (animationId: number, startOffset: number, lastFrame: number) => {
+  let idleStartFrame: number;
+  let idleEndFrame: number;
+  const setIdleAnimation = (animationId: number, startFrame: number, endFrame: number) => {
     idleAnimationId = animationId;
-    idleStartOffset = startOffset;
-    idleLastFrame = lastFrame;
+    idleStartFrame = startFrame;
+    idleEndFrame = endFrame;
   }
 
   const playIdleAnimation = () => {
     if (idleAnimationId) {
       return playAnimation({
         animationId: idleAnimationId,
-        startFrame: idleStartOffset,
-        endFrame: idleLastFrame,
+        startFrame: idleStartFrame,
+        endFrame: idleEndFrame,
         isRepeating: true,
       });
     }

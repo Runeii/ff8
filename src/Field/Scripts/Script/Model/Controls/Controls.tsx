@@ -1,16 +1,18 @@
-import { Box } from "@react-three/drei";
+import { Box, Line } from "@react-three/drei";
 import { useEffect, useState } from "react";
 import { Group, Mesh, Object3D, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
 import { useFrame, useThree } from "@react-three/fiber";
 import { getCameraDirections, getCharacterForwardDirection } from "../../../../Camera/cameraUtils";
-import { checkForIntersections, getPositionOnWalkmesh } from "../../../../../utils";
+import { checkForIntersections, getPositionOnWalkmesh, WORLD_DIRECTIONS } from "../../../../../utils";
 import useGlobalStore from "../../../../../store";
 import { radToDeg } from "three/src/math/MathUtils.js";
 import  { ScriptStateStore } from "../../state";
+import { convert255ToRadians } from "../../utils";
 
 type ControlsProps = {
   children: React.ReactNode;
+  controlDirection: number;
   modelName: string;
   useScriptStateStore: ScriptStateStore;
 }
@@ -22,7 +24,7 @@ const WALKING_SPEED = 0.08;
 const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
-const Controls = ({ children, modelName, useScriptStateStore }: ControlsProps) => {
+const Controls = ({ children,controlDirection, modelName, useScriptStateStore }: ControlsProps) => {
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();
@@ -52,6 +54,9 @@ const Controls = ({ children, modelName, useScriptStateStore }: ControlsProps) =
     setHasPlacedCharacter(true);
   }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, position, walkmesh]);
 
+  const [vector, setVector] = useState(new Vector3(0, 0, 0));
+  const [vector2, setVector2] = useState(new Vector3(0, 0, 0));
+  const [vector3, setVector3] = useState(new Vector3(0, 0, 0));
 
   useFrame(({ camera, scene }, delta) => {
     if (position.isAnimating) {
@@ -140,8 +145,7 @@ const Controls = ({ children, modelName, useScriptStateStore }: ControlsProps) =
     const dot = direction.dot(meshMoveDown); // Dot product for cosine
     const cross = direction.dot(meshMoveRight); 
   
-    let angle = Math.atan2(-cross, dot); 
-    // Convert to degrees and normalize to [0, 360)
+    let angle = Math.atan2(cross, dot); 
     angle = radToDeg(angle);
     if (angle < 0) angle += 360;
   
@@ -171,10 +175,15 @@ const Controls = ({ children, modelName, useScriptStateStore }: ControlsProps) =
   });
 
   return (
+    <>
+      <Line points={[new Vector3(0, 0, 0), vector]} color="red" linewidth={5} />
+      <Line points={[new Vector3(0, 0, 0), vector2]} color="blue" linewidth={5} />
+      <Line points={[new Vector3(0, 0, 0), vector3]} color="yellow" linewidth={5} />
     <group name="character">
       {children}
       <Box args={[0.05, 0.05, CHARACTER_HEIGHT + 1]} position={[0,0,CHARACTER_HEIGHT / 2]} name="hitbox" visible={false} />
     </group>
+    </>
   );
 }
 

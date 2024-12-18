@@ -6,12 +6,14 @@ import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
 import Follower from "./Follower/Follower";
 import { ScriptStateStore } from "../state";
+import { createAnimationController } from "../AnimationController";
 
 type ModelProps = {
+  animationController: ReturnType<typeof createAnimationController>;
+  controlDirection: number;
   models: string[];
   script: Script;
   useScriptStateStore: ScriptStateStore,
-  setupAnimations: (mixerInstance: AnimationMixer, animationClips: AnimationClip[]) => void;
 }
 
 const modelFiles = import.meta.glob('./gltf/*.tsx');
@@ -21,7 +23,7 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<JSX.IntrinsicElements['group']>}>)];
 }));
 
-const Model = ({ models, script, useScriptStateStore, setupAnimations }: ModelProps) => {
+const Model = ({ animationController, controlDirection, models, script, useScriptStateStore }: ModelProps) => {
   const headAngle = useScriptStateStore(state => state.headAngle);
   const modelId = useScriptStateStore(state => state.modelId);
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
@@ -58,11 +60,11 @@ const Model = ({ models, script, useScriptStateStore, setupAnimations }: ModelPr
       return;
     }
   
-    setupAnimations(ref.animations.mixer, ref.animations.clips);
+    animationController.initialize(ref.animations.mixer, ref.animations.clips);
     setMeshGroup(ref.group.current);
     setHead(ref.nodes.head);
     convertMaterialsToBasic(ref.group.current);
-  }, [convertMaterialsToBasic, setupAnimations]);
+  }, [convertMaterialsToBasic, animationController]);
 
 
   useEffect(() => {
@@ -91,7 +93,7 @@ const Model = ({ models, script, useScriptStateStore, setupAnimations }: ModelPr
 
   const modelJsx = (
     <group name={`model--${script.groupId}`}>
-      <Follower partyMemberId={partyMemberId} useScriptStateStore={useScriptStateStore}>
+      <Follower animationController={animationController} partyMemberId={partyMemberId} useScriptStateStore={useScriptStateStore}>
         <ModelComponent
           name={`party--${partyMemberId ?? 'none'}`}
           scale={0.06}
@@ -104,7 +106,7 @@ const Model = ({ models, script, useScriptStateStore, setupAnimations }: ModelPr
 
   if (isPlayerControlled) {
     return (
-      <Controls modelName={modelName} useScriptStateStore={useScriptStateStore}>
+      <Controls controlDirection={controlDirection} modelName={modelName} useScriptStateStore={useScriptStateStore}>
         {modelJsx}
       </Controls>
     );

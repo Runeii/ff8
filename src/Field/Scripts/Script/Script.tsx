@@ -204,7 +204,7 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
       )}
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location script={script} useScriptStateStore={useScriptStateStore} setActiveMethodId={setActiveMethodId} />}
-      {script.type === 'model' && <Model models={models} script={script} useScriptStateStore={useScriptStateStore} setupAnimations={animationController.initialize} />}
+      {script.type === 'model' && <Model controlDirection={controlDirection} animationController={animationController} models={models} script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'door' && <Door doors={doors} script={script} setActiveMethodId={setActiveMethodId} useScriptStateStore={useScriptStateStore} />}
     </animated.group>
   );
