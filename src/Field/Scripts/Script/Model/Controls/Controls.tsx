@@ -24,7 +24,7 @@ const WALKING_SPEED = 0.08;
 const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
-const Controls = ({ children,controlDirection, modelName, useScriptStateStore }: ControlsProps) => {
+const Controls = ({ animationController, children,controlDirection, modelName, useScriptStateStore }: ControlsProps) => {
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();

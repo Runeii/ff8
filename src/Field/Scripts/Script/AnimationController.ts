@@ -1,4 +1,4 @@
-import { AnimationAction, AnimationClip, AnimationMixer, LoopPingPong } from "three";
+import { AnimationAction, AnimationClip, AnimationMixer, LoopPingPong, LoopRepeat } from "three";
 
 export function createAnimationController() {
   let mixer: AnimationMixer | undefined;
@@ -92,7 +92,7 @@ export function createAnimationController() {
     const timeScale = speed / FPS; // Calculate time scale based on FPS
     activeAction.setEffectiveTimeScale(timeScale);
 
-    activeAction.setLoop(LoopPingPong, Infinity);
+    activeAction.setLoop(isRepeating ? LoopRepeat : LoopPingPong, Infinity);
     activeAction.clampWhenFinished = true;
 
     const duration = activeAction.getClip().duration;
@@ -104,6 +104,10 @@ export function createAnimationController() {
     activeAction.play();
 
     isPlaying = true;
+
+    if (isRepeating) {
+      return
+    }
 
     return animationCompletePromise(endTime);
   };
@@ -119,24 +123,26 @@ export function createAnimationController() {
     speed = newSpeed;
   }
 
-  let idleAnimationId: number;
-  let idleStartFrame: number;
-  let idleEndFrame: number;
-  const setIdleAnimation = (animationId: number, startFrame: number, endFrame: number) => {
+  let idleAnimationId: number | undefined = undefined;
+  let idleStartFrame: number | undefined = undefined;
+  let idleEndFrame: number | undefined = undefined;
+  const setIdleAnimation = (animationId: number, startFrame?: number, endFrame?: number) => {
     idleAnimationId = animationId;
     idleStartFrame = startFrame;
     idleEndFrame = endFrame;
   }
 
   const playIdleAnimation = () => {
-    if (idleAnimationId) {
-      return playAnimation({
-        animationId: idleAnimationId,
-        startFrame: idleStartFrame,
-        endFrame: idleEndFrame,
-        isRepeating: true,
-      });
+    if (idleAnimationId === undefined) {
+      console.warn("No idle animation set. Call setIdleAnimation first.");
+      return;
     }
+    return playAnimation({
+      animationId: idleAnimationId,
+      startFrame: idleStartFrame,
+      endFrame: idleEndFrame,
+      isRepeating: true,
+    });
   }
 
   const getIsPlaying = () => isPlaying;

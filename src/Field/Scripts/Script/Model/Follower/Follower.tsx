@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import useGlobalStore from "../../../../../store";
 import { useFrame } from "@react-three/fiber";
 import { Group } from "three";
@@ -19,6 +19,13 @@ const Follower = ({ animationController, children, partyMemberId, useScriptState
   const isLastPartyMember = useGlobalStore(state => state.party.length - 1 === offset);
 
   const state = useScriptStateStore();
+
+  const playerAnimationIndex = useGlobalStore(state => state.playerAnimationIndex);
+  useEffect(() => {
+    console.log("Setting idle animation", playerAnimationIndex);
+    animationController.setIdleAnimation(playerAnimationIndex);
+    animationController.playIdleAnimation();
+  }, [animationController, playerAnimationIndex]);
 
   const groupRef = useRef<Group>(null);
   useFrame(() => {
@@ -45,9 +52,6 @@ const Follower = ({ animationController, children, partyMemberId, useScriptState
       state.position.start([position.x, position.y, position.z]);
       state.angle.start(angle);
     }
-  
-    animationController.setIdleAnimation(useGlobalStore.getState().playerAnimationIndex);
-    animationController.playIdleAnimation();
 
     if (isLastPartyMember) {
       useGlobalStore.setState(state => ({

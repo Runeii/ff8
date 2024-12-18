@@ -106,7 +106,7 @@ const Model = ({ animationController, controlDirection, models, script, useScrip
 
   if (isPlayerControlled) {
     return (
-      <Controls controlDirection={controlDirection} modelName={modelName} useScriptStateStore={useScriptStateStore}>
+      <Controls animationController={animationController} controlDirection={controlDirection} modelName={modelName} useScriptStateStore={useScriptStateStore}>
         {modelJsx}
       </Controls>
     );
