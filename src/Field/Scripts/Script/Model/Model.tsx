@@ -1,17 +1,21 @@
 import { Script } from "../../types";
-import {  ComponentType, lazy, useCallback, useEffect, useState } from "react";
-import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
+import {  ComponentType, lazy, useCallback, useEffect, useRef, useState } from "react";
+import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
 import Follower from "./Follower/Follower";
 import { ScriptStateStore } from "../state";
 import { createAnimationController } from "../AnimationController";
+import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "../utils";
+import { WORLD_DIRECTIONS } from "../../../../utils";
+import TalkRadius from "../TalkRadius/TalkRadius";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
   controlDirection: number;
   models: string[];
+  setActiveMethodId: (methodId?: string) => void;
   script: Script;
   useScriptStateStore: ScriptStateStore,
 }
@@ -23,7 +27,7 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<JSX.IntrinsicElements['group']>}>)];
 }));
 
-const Model = ({ animationController, controlDirection, models, script, useScriptStateStore }: ModelProps) => {
+const Model = ({ animationController, controlDirection, models, script,setActiveMethodId, useScriptStateStore }: ModelProps) => {
   const headAngle = useScriptStateStore(state => state.headAngle);
   const modelId = useScriptStateStore(state => state.modelId);
 
@@ -89,13 +93,81 @@ const Model = ({ animationController, controlDirection, models, script, useScrip
     head.rotation.y = headAngle.get();
   })
 
+  const modelRef = useRef<Group>(null);
+  const movementTarget = useScriptStateStore(state => state.movementTarget);
+  useEffect(() => {
+    if (!movementTarget || !modelRef.current) {
+      return;
+    }
+
+    modelRef.current.rotation.set(0, 0, 0);
+    modelRef.current.quaternion.identity();
+    
+    // Current forward
+    const meshForward = new Vector3(-1,0,0).applyQuaternion(modelRef.current.quaternion).normalize();
+    meshForward.z = 0;
+
+    // Get up axis
+    const meshUp = new Vector3(0, 0, 1).applyQuaternion(modelRef.current.quaternion).normalize();
+  
+    // Calculate initial angle to face down
+    const base = convert255ToRadians(controlDirection);
+    const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
+    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
+
+    const targetDirection = movementTarget.clone().sub(modelRef.current.position).normalize();
+    const targetAngle = getRotationAngleToDirection(meshForward, targetDirection, meshUp);
+    
+    let radian = (targetAngle - faceDownBaseAngle) % (Math.PI * 2);
+    if (radian < 0) {
+      radian += Math.PI * 2; // Ensure the angle is in the range [0, 2π)
+    }
+  
+    useScriptStateStore.getState().angle.set(convertRadiansTo255(radian));
+  }, [controlDirection, movementTarget, useScriptStateStore]);
+
+  useFrame(() => {
+    if (!modelRef.current || script.type !== 'model') {
+      return;
+    }
+
+    modelRef.current.rotation.set(0, 0, 0);
+    modelRef.current.quaternion.identity();
+  
+    // Current forward
+    const meshForward = new Vector3(-1,0,0).applyQuaternion(modelRef.current.quaternion).normalize();
+    meshForward.z = 0;
+
+    // Get up axis
+    const meshUp = new Vector3(0, 0, 1).applyQuaternion(modelRef.current.quaternion).normalize();
+  
+    // Calculate initial angle to face down
+    const base = convert255ToRadians(controlDirection);
+    const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
+    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
+
+    const currentRotation = convert255ToRadians(useScriptStateStore.getState().angle.get());
+    modelRef.current.quaternion.setFromAxisAngle(meshUp, faceDownBaseAngle + currentRotation);
+  });
 
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
   const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && !isLeadCharacter);
 
+  const isTalkable = useScriptStateStore(state => state.isTalkable);
+  const talkRadius = useScriptStateStore(state => state.talkRadius);
+  const talkMethod = script.methods.find(method => method.methodId === 'talk');
+  const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
+
   const modelJsx = (
-    <group name={`model--${script.groupId}`}>
+    <group name={`model--${script.groupId}`} ref={modelRef}>
+      {isTalkable && talkMethod && !hasActiveTalkMethod && (
+        <TalkRadius
+          radius={talkRadius / 4096 / 1.5}
+          setActiveMethodId={setActiveMethodId}
+          talkMethod={talkMethod}
+        />
+      )}
       <ModelComponent
         name={`party--${partyMemberId ?? 'none'}`}
         scale={0.06}
