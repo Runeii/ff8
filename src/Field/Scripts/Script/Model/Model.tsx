@@ -7,8 +7,6 @@ import { useFrame } from "@react-three/fiber";
 import Follower from "./Follower/Follower";
 import { ScriptStateStore } from "../state";
 import { createAnimationController } from "../AnimationController";
-import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "../utils";
-import { WORLD_DIRECTIONS } from "../../../../utils";
 import TalkRadius from "../TalkRadius/TalkRadius";
 
 type ModelProps = {
@@ -93,63 +91,6 @@ const Model = ({ animationController, controlDirection, models, script,setActive
     head.rotation.y = headAngle.get();
   })
 
-  const modelRef = useRef<Group>(null);
-  const movementTarget = useScriptStateStore(state => state.movementTarget);
-  useEffect(() => {
-    if (!movementTarget || !modelRef.current) {
-      return;
-    }
-
-    modelRef.current.rotation.set(0, 0, 0);
-    modelRef.current.quaternion.identity();
-    
-    // Current forward
-    const meshForward = new Vector3(-1,0,0).applyQuaternion(modelRef.current.quaternion).normalize();
-    meshForward.z = 0;
-
-    // Get up axis
-    const meshUp = new Vector3(0, 0, 1).applyQuaternion(modelRef.current.quaternion).normalize();
-  
-    // Calculate initial angle to face down
-    const base = convert255ToRadians(controlDirection);
-    const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
-    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
-
-    const targetDirection = movementTarget.clone().sub(modelRef.current.position).normalize();
-    const targetAngle = getRotationAngleToDirection(meshForward, targetDirection, meshUp);
-    
-    let radian = (targetAngle - faceDownBaseAngle) % (Math.PI * 2);
-    if (radian < 0) {
-      radian += Math.PI * 2; // Ensure the angle is in the range [0, 2π)
-    }
-  
-    useScriptStateStore.getState().angle.set(convertRadiansTo255(radian));
-  }, [controlDirection, movementTarget, useScriptStateStore]);
-
-  useFrame(() => {
-    if (!modelRef.current || script.type !== 'model') {
-      return;
-    }
-
-    modelRef.current.rotation.set(0, 0, 0);
-    modelRef.current.quaternion.identity();
-  
-    // Current forward
-    const meshForward = new Vector3(-1,0,0).applyQuaternion(modelRef.current.quaternion).normalize();
-    meshForward.z = 0;
-
-    // Get up axis
-    const meshUp = new Vector3(0, 0, 1).applyQuaternion(modelRef.current.quaternion).normalize();
-  
-    // Calculate initial angle to face down
-    const base = convert255ToRadians(controlDirection);
-    const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
-    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
-
-    const currentRotation = convert255ToRadians(useScriptStateStore.getState().angle.get());
-    modelRef.current.quaternion.setFromAxisAngle(meshUp, faceDownBaseAngle + currentRotation);
-  });
-
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
   const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && !isLeadCharacter);
@@ -160,7 +101,7 @@ const Model = ({ animationController, controlDirection, models, script,setActive
   const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
 
   const modelJsx = (
-    <group name={`model--${script.groupId}`} ref={modelRef}>
+    <group name={`model--${script.groupId}`}>
       {isTalkable && talkMethod && !hasActiveTalkMethod && (
         <TalkRadius
           radius={talkRadius / 4096 / 1.5}
