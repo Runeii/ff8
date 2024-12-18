@@ -3,19 +3,17 @@ import { Script as ScriptType } from "../types";
 import useMethod from "./useMethod";
 import Background from "./Background/Background";
 import Location from "./Location/Location";
-import TalkRadius from "./TalkRadius/TalkRadius";
 import Model from "./Model/Model";
 import useGlobalStore from "../../../store";
 import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { FieldData } from "../../Field";
-import { useFrame, useThree } from "@react-three/fiber";
-import {  Group, Line3, Vector3 } from "three";
+import { useFrame } from "@react-three/fiber";
+import { Group, Vector3 } from "three";
 import createScriptState from "./state";
-import { getDirectionToCamera, getLocalViewportTop, WORLD_DIRECTIONS } from "../../../utils";
+import { WORLD_DIRECTIONS } from "../../../utils";
 import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "./utils";
 import { createAnimationController } from "./AnimationController";
-import { Line } from "@react-three/drei";
 
 type ScriptProps = {
   controlDirection: FieldData['controlDirection'],

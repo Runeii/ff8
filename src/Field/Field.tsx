@@ -76,9 +76,9 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
     const handleTransition = async () => {
       const {isMapFadeEnabled} = useGlobalStore.getState();
 
-      //if (isMapFadeEnabled && pendingFieldId !== 'start0') {
-      //  await opacitySpring.start(0);
-      //}
+      if (isMapFadeEnabled) {
+        await opacitySpring.start(0);
+      }
 
       setData(null);
       gl.clear();

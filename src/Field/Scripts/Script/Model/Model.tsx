@@ -1,6 +1,6 @@
 import { Script } from "../../types";
-import {  ComponentType, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion, Vector3 } from "three";
+import {  ComponentType, lazy, useCallback, useEffect, useState } from "react";
+import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";

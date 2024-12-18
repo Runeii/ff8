@@ -3,7 +3,6 @@ import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
 import { openMessage } from "./utils";
 import { Group, Scene, Vector3 } from "three";
-import { createAnimationController } from "./AnimationController";
 
 export const fadeInMap = async () => {
   const { canvasOpacitySpring, isMapFadeEnabled } = useGlobalStore.getState()

@@ -1,4 +1,4 @@
-import { LoopOnce, Scene, Vector3 } from "three";
+import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script, ScriptMethod } from "../types";
@@ -7,6 +7,8 @@ import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent } from "./Model/modelUtils";
 import { displayMessage, fadeOutMap, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint } from "./common";
+import { ScriptState } from "./state";
+import { createAnimationController } from "./AnimationController";
 
 export type HandlerArgs = {
   animationController: ReturnType<typeof createAnimationController>,
@@ -41,8 +43,6 @@ export const MEMORY: Record<number, number> = {
 };
 
 export const MESSAGE_VARS: Record<number, string> = {};
-
-let testState = {}
 
 export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = {
   RET: () => {
@@ -1166,7 +1166,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
   // PLAYS PRELOADED TRACK
   MUSICCHANGE: ({ currentState }) => {
-    // console.log('Would play', currentState.backroundMusicId)
+    console.log('Would play', currentState.backroundMusicId)
   },
   MUSICSTOP: ({ currentState, STACK }) => {
     // 0 OR 1. No idea why. It's even sometimes called successively with 1 and 0
@@ -1776,91 +1776,5 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   BLINKEYES: unusedCommand,
   SETPARTY2: unusedCommand,
 
-  LBL: state => {
-    testState = state;
-  },
-}
-
-// Note: this is compiled using a custom modified version of Deling. We construct a file that records how many args and
-// stack changes each opcode does across all fields. Using this we can perform a run time check against implementation.
-import opcodeOutput from '../../../../scripts/opcodeOutput';
-import { ScriptState } from "./state";
-import { createAnimationController } from "./AnimationController";
-
-window.setTimeout(() => {
-  return;
-  const handlers = Object.entries(OPCODE_HANDLERS)
-  const entries = handlers.map(([key, value]) => {
-    let isParamUsed = false;
-
-    const dummyState = {
-      ...testState,
-      currentOpcode: {
-        // @ts-expect-error Test
-        ...testState.currentOpcode,
-        get param() {
-          isParamUsed = true;
-          return 1;
-        },
-      },
-      STACK: new Array(100).fill(0),
-    }
-    // @ts-expect-error Test
-    value(dummyState);
-
-
-    const expected = opcodeOutput[key.toLowerCase() as keyof typeof opcodeOutput] as {
-      arg: number,
-      stack: {
-        [key: number]: number,
-      }
-    };
-
-    // @ts-expect-error Test
-    if (dummyState.currentState.triggeredUnused) {
-      return [];
-    }
-    if (!expected) {
-      return [];
-    }
-
-    if (expected.arg > 0 && !isParamUsed) {
-      return [key, `arg error: not accessed, expected ${expected.arg}`];
-    }
-    const newStack = 100 - dummyState.STACK.length
-
-    if (!expected.stack[newStack]) {
-      return [key, `stack error: adjusted ${newStack}, expected ${JSON.stringify(expected.stack)}`];
-    }
-
-    if (Object.values(expected.stack).length > 1) {
-      //   return [key, `stack warning: adjusted ${newStack}, expected range ${JSON.stringify(expected.stack)}`];
-    }
-
-    return []
-  });
-
-  entries.filter(entry => entry.length).forEach(([key, value]) => console.log(key, value));
-
-  Object.entries(opcodeOutput).filter(([key]) => key !== '' && key && !['goto', 'ret', 'label'].includes(key)).forEach(([key, value]) => {
-    if (!handlers.find(([entryKey]) => entryKey === key.toUpperCase())) {
-      console.log(key, 'not implemented. Uses arg?', value.arg, '. Changes stack:', value.stack);
-    }
-  })
-
-}, 2000);
-
-export const executeOpcode = async (currentOpcode: Opcode, state: ScriptState, args: Partial<HandlerArgs>) => {
-  OPCODE_HANDLERS[currentOpcode]?.({
-    activeMethod: {} as ScriptMethod,
-    currentOpcode: {} as OpcodeObj,
-    opcodes: [],
-    scene: new Scene(),
-    script: {} as Script,
-    TEMP_STACK: {},
-    STACK: [],
-    currentOpcodeIndex: 0,
-    ...args,
-    currentState: state
-  });
+  LBL: unusedCommand,
 }
