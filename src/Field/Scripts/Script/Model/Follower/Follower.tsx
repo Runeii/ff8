@@ -22,7 +22,6 @@ const Follower = ({ animationController, children, partyMemberId, useScriptState
 
   const playerAnimationIndex = useGlobalStore(state => state.playerAnimationIndex);
   useEffect(() => {
-    console.log("Setting idle animation", playerAnimationIndex);
     animationController.setIdleAnimation(playerAnimationIndex);
     animationController.playIdleAnimation();
   }, [animationController, playerAnimationIndex]);

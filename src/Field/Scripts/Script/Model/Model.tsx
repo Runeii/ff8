@@ -1,6 +1,6 @@
 import { Script } from "../../types";
-import {  ComponentType, lazy, useCallback, useEffect, useMemo, useState } from "react";
-import { AnimationClip, AnimationMixer, Bone, Euler, Group, LoopOnce, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
+import {  ComponentType, lazy, useCallback, useEffect, useState } from "react";
+import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
@@ -26,9 +26,7 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
 const Model = ({ animationController, controlDirection, models, script, useScriptStateStore }: ModelProps) => {
   const headAngle = useScriptStateStore(state => state.headAngle);
   const modelId = useScriptStateStore(state => state.modelId);
-  const partyMemberId = useScriptStateStore(state => state.partyMemberId);
 
-  const isPlayerControlled = useGlobalStore(state => state.party[0] === partyMemberId);
   const [meshGroup, setMeshGroup] = useState<Group>();
   const [head, setHead] = useState<Bone>();
 
@@ -91,28 +89,37 @@ const Model = ({ animationController, controlDirection, models, script, useScrip
     head.rotation.y = headAngle.get();
   })
 
+
+  const partyMemberId = useScriptStateStore(state => state.partyMemberId);
+  const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
+  const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && !isLeadCharacter);
+
   const modelJsx = (
     <group name={`model--${script.groupId}`}>
-      <Follower animationController={animationController} partyMemberId={partyMemberId} useScriptStateStore={useScriptStateStore}>
-        <ModelComponent
-          name={`party--${partyMemberId ?? 'none'}`}
-          scale={0.06}
-          // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
-          ref={setModelRef}
-        />
-      </Follower>
+      <ModelComponent
+        name={`party--${partyMemberId ?? 'none'}`}
+        scale={0.06}
+        // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
+        ref={setModelRef}
+      />
     </group>
   );
 
-  if (isPlayerControlled) {
+  if (isLeadCharacter) {
     return (
       <Controls animationController={animationController} controlDirection={controlDirection} modelName={modelName} useScriptStateStore={useScriptStateStore}>
         {modelJsx}
       </Controls>
     );
+  } else if (isFollower) {
+    return (
+      <Follower animationController={animationController} partyMemberId={partyMemberId} useScriptStateStore={useScriptStateStore}>
+        {modelJsx}
+      </Follower>
+    )
+  } else {
+    return modelJsx;
   }
-
-  return modelJsx;
 };
 
 export default Model;

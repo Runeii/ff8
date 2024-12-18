@@ -1,4 +1,4 @@
-import { Box, Line } from "@react-three/drei";
+import { Box } from "@react-three/drei";
 import { useEffect, useState } from "react";
 import { Group, Mesh, Object3D, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
@@ -6,11 +6,12 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { getCameraDirections, getCharacterForwardDirection } from "../../../../Camera/cameraUtils";
 import { checkForIntersections, getPositionOnWalkmesh, WORLD_DIRECTIONS } from "../../../../../utils";
 import useGlobalStore from "../../../../../store";
-import { radToDeg } from "three/src/math/MathUtils.js";
 import  { ScriptStateStore } from "../../state";
-import { convert255ToRadians } from "../../utils";
+import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "../../utils";
+import { createAnimationController } from "../../AnimationController";
 
 type ControlsProps = {
+  animationController: ReturnType<typeof createAnimationController>,
   children: React.ReactNode;
   controlDirection: number;
   modelName: string;
@@ -54,9 +55,11 @@ const Controls = ({ animationController, children,controlDirection, modelName, u
     setHasPlacedCharacter(true);
   }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, position, walkmesh]);
 
-  const [vector, setVector] = useState(new Vector3(0, 0, 0));
-  const [vector2, setVector2] = useState(new Vector3(0, 0, 0));
-  const [vector3, setVector3] = useState(new Vector3(0, 0, 0));
+  const playerAnimationIndex = useGlobalStore(state => state.playerAnimationIndex);
+  useEffect(() => {
+    animationController.setIdleAnimation(playerAnimationIndex);
+    animationController.playIdleAnimation();
+  }, [animationController, playerAnimationIndex]);
 
   useFrame(({ camera, scene }, delta) => {
     if (position.isAnimating) {
@@ -142,16 +145,27 @@ const Controls = ({ animationController, children,controlDirection, modelName, u
       immediate: true,
     });
 
-    const dot = direction.dot(meshMoveDown); // Dot product for cosine
-    const cross = direction.dot(meshMoveRight); 
-  
-    let angle = Math.atan2(cross, dot); 
-    angle = radToDeg(angle);
-    if (angle < 0) angle += 360;
-  
-    const scaledAngle = angle / 360 * 255;
+    // Current forward
+    const meshForward = new Vector3(-1,0,0).applyQuaternion(player.quaternion).normalize();
+    meshForward.z = 0;
 
-    useScriptStateStore.getState().angle.set(scaledAngle);
+    // Get up axis
+    const meshUp = new Vector3(0, 0, 1).applyQuaternion(player.quaternion).normalize();
+  
+    // Calculate initial angle to face down
+    const base = convert255ToRadians(controlDirection);
+    const baseDirection = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
+    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, baseDirection, meshUp);
+
+    const targetAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
+    
+    let radian = (targetAngle - faceDownBaseAngle) % (Math.PI * 2);
+    if (radian < 0) {
+      radian += Math.PI * 2; // Ensure the angle is in the range [0, 2π)
+    }
+
+    const newAngle = convertRadiansTo255(radian);
+    useScriptStateStore.getState().angle.set(newAngle);
 
     useGlobalStore.setState((storeState) => {
       const latestCongaWaypoint = storeState.congaWaypointHistory[0];
@@ -163,7 +177,7 @@ const Controls = ({ animationController, children,controlDirection, modelName, u
         congaWaypointHistory: [
           {
             position: newPosition,
-            angle: scaledAngle,
+            angle: newAngle,
           },
           ...storeState.congaWaypointHistory,
         ],
@@ -175,15 +189,10 @@ const Controls = ({ animationController, children,controlDirection, modelName, u
   });
 
   return (
-    <>
-      <Line points={[new Vector3(0, 0, 0), vector]} color="red" linewidth={5} />
-      <Line points={[new Vector3(0, 0, 0), vector2]} color="blue" linewidth={5} />
-      <Line points={[new Vector3(0, 0, 0), vector3]} color="yellow" linewidth={5} />
     <group name="character">
       {children}
       <Box args={[0.05, 0.05, CHARACTER_HEIGHT + 1]} position={[0,0,CHARACTER_HEIGHT / 2]} name="hitbox" visible={false} />
     </group>
-    </>
   );
 }
 
