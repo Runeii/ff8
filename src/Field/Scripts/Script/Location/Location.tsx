@@ -6,6 +6,7 @@ import useLineIntersection from "../useLineIntersection";
 import { useMemo } from "react";
 import TalkRadius from "../TalkRadius/TalkRadius";
 import { ScriptStateStore } from "../state";
+import useGlobalStore from "../../../../store";
 
 type LocationProps = {
   script: Script;
@@ -29,6 +30,8 @@ const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationPr
     return new Vector3().addVectors(linePoints?.[0], linePoints?.[1]).divideScalar(2);
   }, [linePoints]);
 
+  const isDebugMode = useGlobalStore(state => state.isDebugMode);
+
   if (!linePoints || !isLineOn) {
     return null;
   }
@@ -38,8 +41,8 @@ const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationPr
       <Line
         points={linePoints}
         lineWidth={5}
-        color="red"
-        visible={import.meta.env.DEV}
+        color="blue"
+        visible={isDebugMode}
       />
       <group position={talkPosition}>
         <TalkRadius
