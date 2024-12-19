@@ -57,12 +57,14 @@ const TalkRadius = ({ radius, setActiveMethodId, talkMethod }: TalkRadiusProps) 
     }
   }, [isIntersecting, talkMethod, setActiveMethodId]);
 
+  const isDebugMode = useGlobalStore(state => state.isDebugMode);
+
   return (
     <Sphere
       args={[radius]}
       position={[0, 0, (CHARACTER_HEIGHT / 2)]}
       ref={talkSphereRef}
-      visible={false}
+      visible={isDebugMode}
     >
       <meshBasicMaterial color={`white`} side={DoubleSide} opacity={1} transparent />
     </Sphere>
