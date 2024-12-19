@@ -34,6 +34,8 @@ const Gateway = ({
     onIntersect(formattedGateway)
   }, [formattedGateway, hasEverExited, isIntersecting, onIntersect, wasIntersecting])
 
+  const isDebugMode = useGlobalStore(state => state.isDebugMode);
+
   return (
     <>
       <Line
@@ -42,6 +44,7 @@ const Gateway = ({
         lineWidth={5}
         transparent
         opacity={1}
+        visible={isDebugMode}
       />
     </>
   )
