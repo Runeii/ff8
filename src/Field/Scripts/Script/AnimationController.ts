@@ -119,6 +119,13 @@ export function createAnimationController() {
     isPlaying = false;
   };
 
+  const stopAnimations = () => {
+    if (mixer) {
+      mixer.stopAllAction();
+      isPlaying = false;
+    }
+  };
+
   const setAnimationSpeed = (newSpeed: number) => {
     speed = newSpeed;
   }
@@ -151,6 +158,7 @@ export function createAnimationController() {
     initialize,
     playAnimation,
     pauseAnimations,
+    stopAnimations,
     getIsPlaying,
     setAnimationSpeed,
     setIdleAnimation,
