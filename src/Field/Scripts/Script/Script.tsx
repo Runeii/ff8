@@ -110,7 +110,7 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
       return;
     }
     const { backgroundAnimationSpring, position, headAngle, angle} = useScriptStateStore.getState();
-    animationController.stopAnimations();
+    animationController.pauseAnimations();
     position.pause();
     headAngle.pause();
     angle.pause();

@@ -112,11 +112,11 @@ export function createAnimationController() {
     return animationCompletePromise(endTime);
   };
 
-  const stopAnimations = () => {
-    if (mixer) {
-      mixer.stopAllAction();
-      isPlaying = false;
+  const pauseAnimations = () => {
+    if (activeAction) {
+      activeAction.paused = true;
     }
+    isPlaying = false;
   };
 
   const setAnimationSpeed = (newSpeed: number) => {
@@ -150,7 +150,7 @@ export function createAnimationController() {
   return {
     initialize,
     playAnimation,
-    stopAnimations,
+    pauseAnimations,
     getIsPlaying,
     setAnimationSpeed,
     setIdleAnimation,
