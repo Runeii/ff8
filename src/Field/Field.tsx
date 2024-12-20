@@ -62,7 +62,7 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
   const [data, setData] = useState<FieldProps['data'] | null>(null);
   
   const gl = useThree(({ gl }) => gl);
-  
+
   useEffect(() => {
     if (fieldId === currentFieldIdRef.current) {
       return;
