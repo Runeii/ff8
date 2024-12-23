@@ -1,11 +1,11 @@
 import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Mesh, MeshBasicMaterial, NearestFilter, PlaneGeometry, RGBFormat, WebGLRenderTarget } from 'three';
-import { OrthographicCamera } from 'three';
+import { OrthographicCamera } from '@react-three/drei';
 
 const PSXRenderer = () => {
-  const WIDTH = 320;
-  const HEIGHT = 240;
+  const WIDTH = 640;
+  const HEIGHT = 480;
 
   const { gl, scene, camera } = useThree();
   const renderTarget = useRef(new WebGLRenderTarget(WIDTH, HEIGHT, {
@@ -23,12 +23,12 @@ const PSXRenderer = () => {
 
   const fullscreenQuad = useRef(mesh);
 
-  const orthoCamera = useRef(
-      new OrthographicCamera(-WIDTH / 2, WIDTH / 2, HEIGHT / 2, -HEIGHT / 2, 0.1, 10)
-  );
-  orthoCamera.current.position.z = 1; // Place the camera at z=1
+  const orthoCameraRef = useRef(null);
 
   useFrame(() => {
+    if (!orthoCameraRef.current) {
+      return;
+    }
     gl.clear()
     gl.autoClear = false;
 
@@ -40,10 +40,10 @@ const PSXRenderer = () => {
     mesh.setRotationFromQuaternion(camera.quaternion);
     gl.setRenderTarget(null);
     gl.clear();
-    gl.render(fullscreenQuad.current, orthoCamera.current);
+    gl.render(fullscreenQuad.current, orthoCameraRef.current);
   }, 1);
 
-  return null;
+  return <OrthographicCamera args={[-WIDTH / 2, WIDTH / 2, HEIGHT / 2, -HEIGHT / 2]} near={0.1} far={10} ref={orthoCameraRef} position={[0,0,1]} />;
 }
 
 export default PSXRenderer
