@@ -1,27 +1,49 @@
+import { useEffect } from "react";
 import { AnimationAction, AnimationClip, AnimationMixer, LoopPingPong, LoopRepeat } from "three";
+import { create } from "zustand";
 
-export function createAnimationController() {
-  let mixer: AnimationMixer | undefined;
-  let clips: AnimationClip[] = [];
-  let activeAction: AnimationAction;
-  let isPlaying = false;
+type AnimationControllerState = {
+  mixer: AnimationMixer | undefined;
+  clips: AnimationClip[];
+  activeAction: AnimationAction | undefined;
+  isPlaying: boolean;
+  speed: number;
+  idleAnimationId: number | undefined;
+  idleStartFrame: number | undefined;
+  idleEndFrame: number | undefined;
+}
 
-  let speed = 30;
+export function createAnimationController(isDebug = false) {
+  const state = create<AnimationControllerState>()(() => ({
+    mixer: undefined,
+    clips: [],
+    activeAction: undefined,
+    isPlaying: false,
+    speed: 30,
+
+    idleAnimationId: undefined,
+    idleStartFrame: undefined,
+    idleEndFrame: undefined,
+  }));
+
+  let raf: number;
 
   const initialize = (mixerInstance: AnimationMixer, animationClips: AnimationClip[]) => {
-    mixer = mixerInstance;
-    clips = animationClips;
+    state.setState({
+      mixer: mixerInstance,
+      clips: animationClips,
+    });
   };
 
   const animationCompletePromise = (endTime: number): Promise<void> => {
+    const { isPlaying, mixer, activeAction } = state.getState();
+
     return new Promise((resolve) => {
       if (!mixer || !activeAction) {
         console.warn("No mixer or active action set. Ensure the GLTF is mounted.");
         resolve(); // Resolve immediately since monitoring can't proceed
         return;
       }
-
-      let raf: number;
 
       let loopCount = 0;
       const handleLoop = () => {
@@ -33,7 +55,7 @@ export function createAnimationController() {
         mixer?.removeEventListener("loop", handleLoop);
         cancelAnimationFrame(raf);
         activeAction.paused = true;
-        isPlaying = false;
+        state.setState({ isPlaying: false });
         resolve()
       }
 
@@ -65,6 +87,8 @@ export function createAnimationController() {
     endFrame?: number;
     isRepeating?: boolean;
   }) => {
+    const { mixer, clips, speed } = state.getState();
+  
     if (!mixer) {
       console.warn("No mixer set. Ensure the GLTF is mounted.");
       return;
@@ -76,7 +100,7 @@ export function createAnimationController() {
       return;
     }
 
-    activeAction = mixer.clipAction(clip);
+    const activeAction = mixer.clipAction(clip);
 
     if (!activeAction) {
       console.warn("No active action set. Ensure activeAnimationId is valid.");
@@ -103,7 +127,10 @@ export function createAnimationController() {
     activeAction.time = startTime; // Set start time directly
     activeAction.play();
 
-    isPlaying = true;
+    state.setState({
+      activeAction,
+      isPlaying: true
+    });
 
     if (isRepeating) {
       return
@@ -113,33 +140,37 @@ export function createAnimationController() {
   };
 
   const pauseAnimations = () => {
+    const { activeAction } = state.getState();
     if (activeAction) {
       activeAction.paused = true;
     }
-    isPlaying = false;
+    state.setState({ isPlaying: false });
   };
 
   const stopAnimations = () => {
+    const { mixer } = state.getState();
     if (mixer) {
       mixer.stopAllAction();
-      isPlaying = false;
+      state.setState({ isPlaying: false });
+      window.cancelAnimationFrame(raf);
     }
   };
 
   const setAnimationSpeed = (newSpeed: number) => {
-    speed = newSpeed;
+    state.setState({ speed: newSpeed });
   }
 
-  let idleAnimationId: number | undefined = undefined;
-  let idleStartFrame: number | undefined = undefined;
-  let idleEndFrame: number | undefined = undefined;
   const setIdleAnimation = (animationId: number, startFrame?: number, endFrame?: number) => {
-    idleAnimationId = animationId;
-    idleStartFrame = startFrame;
-    idleEndFrame = endFrame;
+    state.setState({
+      idleAnimationId: animationId,
+      idleStartFrame: startFrame,
+      idleEndFrame: endFrame,
+    });
   }
 
   const playIdleAnimation = () => {
+    const { idleAnimationId, idleStartFrame, idleEndFrame } = state.getState();
+
     if (idleAnimationId === undefined) {
       console.warn("No idle animation set. Call setIdleAnimation first.");
       return;
@@ -152,14 +183,13 @@ export function createAnimationController() {
     });
   }
 
-  const getIsPlaying = () => isPlaying;
-
   return {
     initialize,
     playAnimation,
     pauseAnimations,
     stopAnimations,
-    getIsPlaying,
+    subscribe: state.subscribe,
+    getIsPlaying: () => state.getState().isPlaying,
     setAnimationSpeed,
     setIdleAnimation,
     playIdleAnimation,

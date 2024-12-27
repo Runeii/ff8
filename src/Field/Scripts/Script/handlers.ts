@@ -712,11 +712,17 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     animationController.setAnimationSpeed(STACK.pop() as number)
   },
   ANIMESYNC: async ({ animationController }) => {
-    console.log('ANIMESYNC')
-    while (animationController.getIsPlaying()) {
-      console.log(animationController.getIsPlaying())
-      await new Promise((resolve) => requestAnimationFrame(resolve));
-    }
+    return new Promise((resolve) => {
+      if (animationController.getIsPlaying() === false) {
+        resolve();
+      }
+
+      animationController.subscribe(state => {
+        if (!state.isPlaying) {
+          resolve()
+        }
+      })
+    });
   },
   ANIMESTOP: ({ animationController }) => {
     animationController.stopAnimations();

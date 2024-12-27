@@ -82,7 +82,7 @@ export const createScriptState = () => {
     pushRadius: 0,
     talkRadius: 200,
     isPushable: false,
-    isTalkable: true,
+    isTalkable: false,
 
     angle: new SpringValue(0),
     headAngle: new SpringValue(0),
