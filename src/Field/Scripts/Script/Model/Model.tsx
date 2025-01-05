@@ -11,7 +11,6 @@ import TalkRadius from "../TalkRadius/TalkRadius";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
-  controlDirection: number;
   models: string[];
   setActiveMethodId: (methodId?: string) => void;
   script: Script;
@@ -25,7 +24,7 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<JSX.IntrinsicElements['group']>}>)];
 }));
 
-const Model = ({activeMethodId, animationController, controlDirection, models, script,setActiveMethodId, useScriptStateStore }: ModelProps) => {
+const Model = ({animationController, models, script,setActiveMethodId, useScriptStateStore }: ModelProps) => {
   const headAngle = useScriptStateStore(state => state.headAngle);
   const modelId = useScriptStateStore(state => state.modelId);
 
@@ -98,7 +97,7 @@ const Model = ({activeMethodId, animationController, controlDirection, models, s
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
 
   const modelJsx = (
-    <group name={`model--${script.groupId}`}>
+    <group>
       {talkMethod && !isLeadCharacter && !isFollower && (
         <TalkRadius
           setActiveMethodId={setActiveMethodId}
@@ -117,7 +116,7 @@ const Model = ({activeMethodId, animationController, controlDirection, models, s
 
   if (isLeadCharacter) {
     return (
-      <Controls animationController={animationController} controlDirection={controlDirection} modelName={modelName} useScriptStateStore={useScriptStateStore}>
+      <Controls animationController={animationController} modelName={modelName} useScriptStateStore={useScriptStateStore}>
         {modelJsx}
       </Controls>
     );

@@ -16,7 +16,6 @@ import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection }
 import { createAnimationController } from "./AnimationController";
 
 type ScriptProps = {
-  controlDirection: FieldData['controlDirection'],
   doors: FieldData['doors'],
   isActive: boolean;
   models: string[];
@@ -26,7 +25,7 @@ type ScriptProps = {
 
 // Not implemented
 // * Pushable
-const Script = ({ controlDirection, doors, isActive, models, script, onSetupCompleted }: ScriptProps) => {
+const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptProps) => {
   const entityRef = useRef<Group>(null);
 
   const [activeMethodId, setActiveMethodId] = useState<string>();
@@ -62,7 +61,6 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     script,
     useScriptStateStore,
     animationController,
-    isDebugging: script.groupId === 18
   });
 
   // Adhoc method handler
@@ -161,6 +159,7 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     backgroundAnimationSpring.pause();
   }, [activeMethodId, animationController, isTransitioningMap, useScriptStateStore]);
 
+  const fieldDirection = useGlobalStore(state => state.fieldDirection);
   const movementTarget = useScriptStateStore(state => state.movementTarget);
   useEffect(() => {
     if (!movementTarget || !entityRef.current) {
@@ -178,7 +177,7 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
   
     // Calculate initial angle to face down
-    const base = convert255ToRadians(controlDirection);
+    const base = convert255ToRadians(fieldDirection);
     const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
     const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
 
@@ -191,7 +190,7 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     }
   
     useScriptStateStore.getState().angle.set(convertRadiansTo255(radian));
-  }, [controlDirection, movementTarget, useScriptStateStore]);
+  }, [fieldDirection, movementTarget, useScriptStateStore]);
 
   useFrame(() => {
     if (!entityRef.current || script.type !== 'model') {
@@ -209,7 +208,7 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
   
     // Calculate initial angle to face down
-    const base = convert255ToRadians(controlDirection);
+    const base = convert255ToRadians(fieldDirection);
     const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
     const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
 
@@ -229,12 +228,13 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     <animated.group
       position={position as unknown as Vector3}
       ref={entityRef}
-      name={isSolid ? 'blockage' : 'script'}
+      name={`entity--${script.groupId}`}
+      //name={isSolid ? 'entity-blockage' : 'entity-passable'}
       visible={isVisible}
     >
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location script={script} useScriptStateStore={useScriptStateStore} setActiveMethodId={setActiveMethodId} />}
-      {script.type === 'model' && <Model activeMethodId={activeMethodId} controlDirection={controlDirection} animationController={animationController} models={models} setActiveMethodId={setActiveMethodId} script={script} useScriptStateStore={useScriptStateStore} />}
+      {script.type === 'model' && <Model animationController={animationController} models={models} setActiveMethodId={setActiveMethodId} script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'door' && <Door doors={doors} script={script} setActiveMethodId={setActiveMethodId} useScriptStateStore={useScriptStateStore} />}
     </animated.group>
   );

@@ -1,7 +1,7 @@
 import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
-import { Opcode, OpcodeObj, Script, ScriptMethod } from "../types";
+import { Opcode, OpcodeObj, Script } from "../types";
 import { dummiedCommand, openMessage, remoteExecute, remoteExecuteOnPartyEntity, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
@@ -829,10 +829,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     const { movementSpeed, position: positionSpring } = currentState;
 
-    // if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
-    //   currentState.currentAnimationId = movementSpeed > 5000 ? 2 : 1;
-    // }
-
     currentState.movementTarget = target;
     await moveToPoint(positionSpring, target, movementSpeed, isDebugging);
     currentState.movementTarget = undefined;
@@ -852,10 +848,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     const target = targetActor.getWorldPosition(new Vector3());
 
-    //  if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
-    //    currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
-    //  }
-
     currentState.movementTarget = target;
     await moveToPoint(currentState.position, target, currentState.movementSpeed);
     currentState.movementTarget = undefined;
@@ -873,10 +865,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       return;
     }
     const target = targetActor.getWorldPosition(new Vector3());
-
-    // if (currentState.currentAnimationId === 0 || currentState.currentAnimationId === undefined) {
-    //   currentState.currentAnimationId = currentState.movementSpeed > 5000 ? 2 : 1;
-    // }
 
     currentState.movementTarget = target;
     await moveToPoint(currentState.position, target, currentState.movementSpeed);
@@ -1057,7 +1045,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
 
 
-  // These are technically just meant to be head, but whatever
   FACEDIR: ({ STACK }) => {
     STACK.splice(-4);
   },

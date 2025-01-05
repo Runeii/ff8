@@ -1,8 +1,9 @@
 import { SpringValue } from "@react-spring/web";
 import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
-import { openMessage } from "./utils";
+import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection, openMessage } from "./utils";
 import { Group, Scene, Vector3 } from "three";
+import { WORLD_DIRECTIONS } from "../../../utils";
 
 export const fadeInMap = async () => {
   const { canvasOpacitySpring, isMapFadeEnabled } = useGlobalStore.getState()
@@ -53,23 +54,32 @@ export const turnToFaceEntity = async (thisId: number, targetName: string, durat
     console.warn('Error turning to face entity:', thisMesh, targetMesh);
     return;
   }
-  const currentAngleDirection = thisMesh.rotation.y;
-  const targetAngleDirection = Math.atan2(
-    targetMesh.position.x - thisMesh.position.x,
-    targetMesh.position.z - thisMesh.position.z
-  );
 
-  const angleDifference = targetAngleDirection - currentAngleDirection;
-  const normalizedAngleDifference = ((angleDifference + Math.PI) % (2 * Math.PI)) - Math.PI;
-  const scaledAngleDifference = Math.round((normalizedAngleDifference + Math.PI) * (255 / (2 * Math.PI)));
+  // Current forward
+  const meshForward = new Vector3(-1,0,0).applyQuaternion(thisMesh.quaternion).normalize();
+  meshForward.z = 0;
 
-  const currentScaledAngle = spring.get();
-  const adjustedScaleValue = (currentScaledAngle + scaledAngleDifference) % 255;
+  const meshUp = new Vector3(0, 0, 1).applyQuaternion(thisMesh.quaternion).normalize();
 
-  turnToFaceAngle(adjustedScaleValue, duration, spring);
+  const fieldDirection = useGlobalStore.getState().fieldDirection;
+  // Calculate initial angle to face down
+  const base = convert255ToRadians(fieldDirection);
+  const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
+  const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
+
+  const targetDirection = targetMesh.position.clone().sub(thisMesh.position).normalize();
+  const targetAngle = getRotationAngleToDirection(meshForward, targetDirection, meshUp);
+  
+  let radian = (targetAngle - faceDownBaseAngle) % (Math.PI * 2);
+  if (radian < 0) {
+    radian += Math.PI * 2; // Ensure the angle is in the range [0, 2π)
+  }
+
+  const angle255 = convertRadiansTo255(radian);
+  turnToFaceAngle(angle255, duration, spring);
 }
 
-export const moveToPoint = async (spring: SpringValue<number[]>, targetPoint: Vector3, movementSpeed: number, isDebugging: boolean) => {
+export const moveToPoint = async (spring: SpringValue<number[]>, targetPoint: Vector3, movementSpeed: number, isDebugging?: boolean) => {
   const start = spring.get();
   const distance = targetPoint.distanceTo(new Vector3(...start));
   if (isDebugging) {

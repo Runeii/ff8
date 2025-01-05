@@ -6,6 +6,8 @@ import MAP_NAMES from './constants/maps';
 interface GlobalState {
   isDebugMode: boolean,
 
+  fieldDirection: number,
+
   characterPosition?: Vector3,
   pendingCharacterPosition?: Vector3, // Ensures we can mark user start position before transitioning map
 
@@ -52,6 +54,8 @@ interface GlobalState {
 
 const useGlobalStore = create<GlobalState>()(() => ({
   isDebugMode: false,
+
+  fieldDirection: 0,
 
   availableMessages: [],
   characterPosition: undefined as unknown as Vector3,

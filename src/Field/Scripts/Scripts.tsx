@@ -5,14 +5,13 @@ import { Script as ScriptType } from "./types";
 import useGlobalStore from "../../store";
 
 export type ScriptsProps = {
-  controlDirection: FieldData['controlDirection'],
   doors: FieldData['doors'],
   models: string[],
   scripts: ScriptType[]
 };
 
 
-const Scripts = ({ controlDirection, doors, models, scripts }: ScriptsProps) => {
+const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
   const fieldId = useGlobalStore(state => state.fieldId);
   const [activeExec, setActiveExec] = useState<number>(0);
 
@@ -20,7 +19,7 @@ const Scripts = ({ controlDirection, doors, models, scripts }: ScriptsProps) => 
     setActiveExec((prev) => prev + 1);
   }, []);
 
-  return scripts.map(script => <Script controlDirection={controlDirection} doors={doors} key={`${fieldId}--${script.exec}`} isActive={script.exec <= activeExec} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} />  )
+  return scripts.map(script => <Script doors={doors} key={`${fieldId}--${script.exec}`} isActive={script.exec <= activeExec} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} />  )
 }
 
 export default Scripts;

@@ -73,6 +73,15 @@ const useMethod = ({
     
     const state = useScriptStateStore.getState();
     state.position.stop();
+    const currentAngle = state.angle.get();
+    const currentHeadAngle = state.headAngle.get();
+    state.angle.stop();
+    state.headAngle.stop();
+
+    return () => {
+      state.angle.start(currentAngle);
+      state.headAngle.start(currentHeadAngle);
+    }
   }, [currentOpcodeIndex, isDebugging, isPaused, methodId, useScriptStateStore]);
 
   // We use this to ensure we discard the results if state changes while we're executing

@@ -38,7 +38,6 @@ const Field = ({ data }: FieldProps) => {
         data={data}
       />
       <Scripts
-        controlDirection={data.controlDirection}
         doors={data.doors}
         models={data.models}
         scripts={data.scripts}
@@ -98,6 +97,8 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
 
       const pendingCharacterPosition = useGlobalStore.getState().pendingCharacterPosition;
       useGlobalStore.setState({
+        fieldDirection: data.controlDirection,
+
         characterPosition: pendingCharacterPosition ?? getInitialEntrance(data),
         pendingCharacterPosition: undefined,
 

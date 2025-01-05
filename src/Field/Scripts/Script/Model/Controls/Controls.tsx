@@ -13,7 +13,6 @@ import { createAnimationController } from "../../AnimationController";
 type ControlsProps = {
   animationController: ReturnType<typeof createAnimationController>,
   children: React.ReactNode;
-  controlDirection: number;
   modelName: string;
   useScriptStateStore: ScriptStateStore;
 }
@@ -25,7 +24,7 @@ const WALKING_SPEED = 0.08;
 const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
-const Controls = ({ animationController, children,controlDirection, modelName, useScriptStateStore }: ControlsProps) => {
+const Controls = ({ animationController, children, modelName, useScriptStateStore }: ControlsProps) => {
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();
@@ -61,6 +60,7 @@ const Controls = ({ animationController, children,controlDirection, modelName, u
     animationController.playIdleAnimation();
   }, [animationController, playerAnimationIndex]);
 
+  const fieldDirection = useGlobalStore(state => state.fieldDirection);
   useFrame(({ camera, scene }, delta) => {
     if (position.isAnimating) {
       return;
@@ -124,7 +124,7 @@ const Controls = ({ animationController, children,controlDirection, modelName, u
     }
     const blockages: Object3D[] = [];
     scene.traverse((object) => {
-      if (object.name === "blockage") {
+      if (object.name === "entity-blockage") {
         blockages.push(object);
       }
       if (object.name === "door-closed") {
@@ -153,7 +153,7 @@ const Controls = ({ animationController, children,controlDirection, modelName, u
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(player.quaternion).normalize();
   
     // Calculate initial angle to face down
-    const base = convert255ToRadians(controlDirection);
+    const base = convert255ToRadians(fieldDirection);
     const baseDirection = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
     const faceDownBaseAngle = getRotationAngleToDirection(meshForward, baseDirection, meshUp);
 
