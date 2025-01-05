@@ -69,10 +69,12 @@ export const turnToFaceEntity = async (thisId: number, targetName: string, durat
   turnToFaceAngle(adjustedScaleValue, duration, spring);
 }
 
-export const moveToPoint = async (spring: SpringValue<number[]>, targetPoint: Vector3, movementSpeed: number) => {
+export const moveToPoint = async (spring: SpringValue<number[]>, targetPoint: Vector3, movementSpeed: number, isDebugging: boolean) => {
   const start = spring.get();
   const distance = targetPoint.distanceTo(new Vector3(...start));
-
+  if (isDebugging) {
+    console.log('Moving to point:', targetPoint.toArray(), distance, movementSpeed);
+  }
   await spring.start(targetPoint.toArray(), {
     immediate: false,
     config: {

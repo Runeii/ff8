@@ -53,10 +53,6 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     },
   });
 
-  if (script.groupId === 6) {
-  //  console.log('Script::', 'hasCompletedConstructor –', hasCompletedConstructor, activeMethodId, 'is active');
-  }
-
   // Default method (loop)
   useMethod({
     methodId: 'default',
@@ -78,7 +74,6 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     script,
     useScriptStateStore,
     animationController,
-    isDebugging: script.groupId === 18 && !!activeMethodId,
     onComplete: () => {
       useGlobalStore.setState({ hasActiveTalkMethod: false });
       setActiveMethodId(undefined);
@@ -239,7 +234,7 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     >
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location script={script} useScriptStateStore={useScriptStateStore} setActiveMethodId={setActiveMethodId} />}
-      {script.type === 'model' && <Model controlDirection={controlDirection} animationController={animationController} models={models} setActiveMethodId={setActiveMethodId} script={script} useScriptStateStore={useScriptStateStore} />}
+      {script.type === 'model' && <Model activeMethodId={activeMethodId} controlDirection={controlDirection} animationController={animationController} models={models} setActiveMethodId={setActiveMethodId} script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'door' && <Door doors={doors} script={script} setActiveMethodId={setActiveMethodId} useScriptStateStore={useScriptStateStore} />}
     </animated.group>
   );

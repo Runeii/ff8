@@ -1,18 +1,19 @@
 import { Sphere } from "@react-three/drei"
 import { Box3, DoubleSide, Group, Mesh } from "three";
 import { ScriptMethod } from "../../types";
-import {  useEffect, useRef, useState } from "react";
+import {  useEffect, useMemo, useRef, useState } from "react";
 import {  useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
 import { CHARACTER_HEIGHT } from "../Model/Controls/Controls";
+import { ScriptStateStore } from "../state";
 
 type TalkRadiusProps = {
-  radius: number;
   setActiveMethodId: (methodId?: string) => void;
   talkMethod: ScriptMethod,
+  useScriptStateStore: ScriptStateStore,
 }
 
-const TalkRadius = ({ radius, setActiveMethodId, talkMethod }: TalkRadiusProps) => {
+const TalkRadius = ({ setActiveMethodId, talkMethod, useScriptStateStore }: TalkRadiusProps) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const talkSphereRef = useRef<Mesh>(null);
 
@@ -34,8 +35,22 @@ const TalkRadius = ({ radius, setActiveMethodId, talkMethod }: TalkRadiusProps) 
     setIsIntersecting(isIntersecting);
   });
 
+  const isTalkable = useScriptStateStore(state => state.isTalkable);
+  const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
+
+  const hasValidTalkMethod = useMemo(() => {
+    if (!talkMethod) {
+      return false;
+    }
+    return talkMethod.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'RET').length > 0;
+  }, [talkMethod]);
+
+  const hasActiveText = useGlobalStore(state => state.currentMessages.length > 0);
+
+  const isPlayerAbleToTalk = isTalkable && !hasActiveTalkMethod && hasValidTalkMethod && !hasActiveText;
+
   useEffect(() => {
-    if (!isIntersecting) {
+    if (!isIntersecting || !isPlayerAbleToTalk) {
       return;
     }
 
@@ -53,13 +68,19 @@ const TalkRadius = ({ radius, setActiveMethodId, talkMethod }: TalkRadiusProps) 
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     }
-  }, [isIntersecting, talkMethod, setActiveMethodId]);
+  }, [isIntersecting, talkMethod, setActiveMethodId, isPlayerAbleToTalk]);
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
+ 
+  const talkRadius = useScriptStateStore(state => state.talkRadius / 4096 / 1.5);
+
+  if (!isPlayerAbleToTalk) {
+    return null;
+  }
 
   return (
     <Sphere
-      args={[radius]}
+      args={[talkRadius]}
       position={[0, 0, (CHARACTER_HEIGHT / 2)]}
       ref={talkSphereRef}
       visible={isDebugMode}

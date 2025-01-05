@@ -1,5 +1,5 @@
 import { Script } from "../../types";
-import {  ComponentType, lazy, useCallback, useEffect, useState } from "react";
+import {  ComponentType, lazy, useCallback, useEffect, useMemo, useState } from "react";
 import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
@@ -25,7 +25,7 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<JSX.IntrinsicElements['group']>}>)];
 }));
 
-const Model = ({ animationController, controlDirection, models, script,setActiveMethodId, useScriptStateStore }: ModelProps) => {
+const Model = ({activeMethodId, animationController, controlDirection, models, script,setActiveMethodId, useScriptStateStore }: ModelProps) => {
   const headAngle = useScriptStateStore(state => state.headAngle);
   const modelId = useScriptStateStore(state => state.modelId);
 
@@ -95,18 +95,15 @@ const Model = ({ animationController, controlDirection, models, script,setActive
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
   const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && !isLeadCharacter);
 
-  const isTalkable = useScriptStateStore(state => state.isTalkable);
-  const talkRadius = useScriptStateStore(state => state.talkRadius);
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
-  const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
 
   const modelJsx = (
     <group name={`model--${script.groupId}`}>
-      {isTalkable && talkMethod && !hasActiveTalkMethod && !isFollower && !isLeadCharacter && (
+      {talkMethod && !isLeadCharacter && !isFollower && (
         <TalkRadius
-          radius={talkRadius / 4096 / 1.5}
           setActiveMethodId={setActiveMethodId}
           talkMethod={talkMethod}
+          useScriptStateStore={useScriptStateStore}
         />
       )}
       <ModelComponent

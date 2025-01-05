@@ -15,6 +15,7 @@ export type HandlerArgs = {
   currentOpcode: OpcodeObj,
   currentOpcodeIndex: number,
   currentState: ScriptState,
+  isDebugging: boolean,
   opcodes: OpcodeObj[],
   scene: Scene,
   script: Script,
@@ -820,7 +821,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
 
 
-  MOVE: async ({ currentState, STACK }) => {
+  MOVE: async ({ currentState, isDebugging, STACK }) => {
     // const distanceToStop =
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
@@ -833,7 +834,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     // }
 
     currentState.movementTarget = target;
-    await moveToPoint(positionSpring, target, movementSpeed);
+    await moveToPoint(positionSpring, target, movementSpeed, isDebugging);
     currentState.movementTarget = undefined;
   },
 

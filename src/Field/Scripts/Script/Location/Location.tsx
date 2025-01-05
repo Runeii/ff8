@@ -32,6 +32,8 @@ const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationPr
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
 
+  const talkMethod = script.methods.find(method => method.methodId === 'talk');
+
   if (!linePoints || !isLineOn) {
     return null;
   }
@@ -45,11 +47,13 @@ const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationPr
         visible={isDebugMode}
       />
       <group position={talkPosition}>
-        <TalkRadius
-          radius={200 / 4096 / 1.5}
-          setActiveMethodId={setActiveMethodId}
-          talkMethod={script.methods.find(method => method.methodId === 'talk')!}
-        />
+        {talkMethod && (
+          <TalkRadius
+            setActiveMethodId={setActiveMethodId}
+            talkMethod={talkMethod}
+            useScriptStateStore={useScriptStateStore}
+          />
+        )}
       </group>
     </>
   );
