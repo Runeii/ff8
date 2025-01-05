@@ -49,9 +49,7 @@ const TalkRadius = ({ radius, setActiveMethodId, talkMethod }: TalkRadiusProps) 
       setActiveMethodId(talkMethod?.methodId);
     }
 
-    window.addEventListener('keydown', onKeyDown, {
-      once: true,
-    });
+    window.addEventListener('keydown', onKeyDown);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     }

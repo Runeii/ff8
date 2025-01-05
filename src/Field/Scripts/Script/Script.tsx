@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Script as ScriptType } from "../types";
 import useMethod from "./useMethod";
 import Background from "./Background/Background";
@@ -30,31 +30,79 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
   const entityRef = useRef<Group>(null);
 
   const [activeMethodId, setActiveMethodId] = useState<string>();
-  const [remoteExecutionKey, setRemoteExecutionKey] = useState<string>();
-  useEffect(() => {
-    if (activeMethodId) {
-      return;
-    }
-  
-    if (!remoteExecutionKey) {
-      return;
-    }
 
-    document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key: remoteExecutionKey } }));
-    setRemoteExecutionKey(undefined);
-  }, [activeMethodId, remoteExecutionKey]);
+  const [remoteExecutionRequests, setRemoteExecutionRequests] = useState<RemoteExecutionRequest[]>([]);
   
   const useScriptStateStore = useMemo(() => createScriptState(), []);
   const animationController = useMemo(() => createAnimationController(), []);
-  const hasCompletedConstructor = useMethod(script, useScriptStateStore, activeMethodId, setActiveMethodId, isActive, animationController);
 
-  useEffect(() => {
-    if (!hasCompletedConstructor) {
-      return;
+  const [hasCompletedConstructor, setHasCompletedConstructor] = useState(false);
+
+  // Constructor
+  useMethod({
+    methodId: 'constructor?',
+    isActive,
+    isLooping: false,
+    isPaused: false,
+    script,
+    useScriptStateStore,
+    animationController,
+    onComplete: () => {
+      onSetupCompleted();
+      setHasCompletedConstructor(true);
+    },
+  });
+
+  if (script.groupId === 6) {
+  //  console.log('Script::', 'hasCompletedConstructor –', hasCompletedConstructor, activeMethodId, 'is active');
+  }
+
+  // Default method (loop)
+  useMethod({
+    methodId: 'default',
+    isActive: hasCompletedConstructor,
+    isLooping: true,
+    isPaused: !!(remoteExecutionRequests.length > 0 || activeMethodId),
+    script,
+    useScriptStateStore,
+    animationController,
+    isDebugging: script.groupId === 18
+  });
+
+  // Adhoc method handler
+  useMethod({
+    methodId: activeMethodId,
+    isActive: hasCompletedConstructor && activeMethodId !== undefined,
+    isLooping: false,
+    isPaused: false,
+    script,
+    useScriptStateStore,
+    animationController,
+    isDebugging: script.groupId === 18 && !!activeMethodId,
+    onComplete: () => {
+      useGlobalStore.setState({ hasActiveTalkMethod: false });
+      setActiveMethodId(undefined);
     }
+  });
 
-    onSetupCompleted();
-  }, [hasCompletedConstructor, onSetupCompleted]);
+  // Remote execution request method handler
+  const activeRemoteExecutionRequest = remoteExecutionRequests[0];
+  useMethod({
+    methodId: activeRemoteExecutionRequest?.methodId,
+    isActive: hasCompletedConstructor && activeRemoteExecutionRequest !== undefined,
+    isLooping: false,
+    isPaused: false,
+    script,
+    useScriptStateStore,
+    animationController,
+    onComplete: () => {
+      setRemoteExecutionRequests(requests => {
+        const [completedRequest, ...remainingRequests] = requests;
+        document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key: completedRequest.key } }));
+        return remainingRequests;
+      });
+    }
+  });
 
   const isSolid = useScriptStateStore(state => state.isSolid);
   const isVisible = useScriptStateStore(state => state.isVisible);
@@ -68,15 +116,15 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     }
 
     const handleExecutionRequest = async ({ detail: { key, scriptLabel } }: {detail: ExecuteScriptEventDetail}) => {
-    //  console.log('request received', scriptLabel, script.groupId, script.methods)
       const matchingMethod = script.methods.find((method) => method.scriptLabel === scriptLabel);
       if (!matchingMethod) {
         return;
       }
       
-    //  console.log('request accepted', matchingMethod, scriptLabel, useScriptStateStore.getState())
-      setActiveMethodId(matchingMethod?.methodId);
-      setRemoteExecutionKey(key);
+      setRemoteExecutionRequests(currentRequests => [...currentRequests, {
+        key,
+        methodId: matchingMethod.methodId
+      }]);
     }
 
     const handlePartyEntityExecutionRequest = async ({ detail: { key, methodIndex, partyMemberId: requestedPartyMemberId } }: {detail: ExecutePartyEntityScriptEventDetail}) => {
@@ -88,9 +136,10 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
         return;
       }
       
-    //  console.log('request accepted on entity', matchingMethod, requestedPartyMemberId)
-      setActiveMethodId(matchingMethod?.methodId);
-      setRemoteExecutionKey(key);
+      setRemoteExecutionRequests(currentRequests => [...currentRequests, {
+        key,
+        methodId: matchingMethod.methodId
+      }]);
     }
   
     document.addEventListener('executeScript', handleExecutionRequest);
@@ -115,7 +164,7 @@ const Script = ({ controlDirection, doors, isActive, models, script, onSetupComp
     headAngle.pause();
     angle.pause();
     backgroundAnimationSpring.pause();
-  }, [animationController, isTransitioningMap, useScriptStateStore]);
+  }, [activeMethodId, animationController, isTransitioningMap, useScriptStateStore]);
 
   const movementTarget = useScriptStateStore(state => state.movementTarget);
   useEffect(() => {

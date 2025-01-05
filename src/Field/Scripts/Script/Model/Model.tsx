@@ -102,7 +102,7 @@ const Model = ({ animationController, controlDirection, models, script,setActive
 
   const modelJsx = (
     <group name={`model--${script.groupId}`}>
-      {isTalkable && talkMethod && !hasActiveTalkMethod && (
+      {isTalkable && talkMethod && !hasActiveTalkMethod && !isFollower && !isLeadCharacter && (
         <TalkRadius
           radius={talkRadius / 4096 / 1.5}
           setActiveMethodId={setActiveMethodId}

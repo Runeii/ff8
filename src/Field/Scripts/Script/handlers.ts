@@ -12,7 +12,6 @@ import { createAnimationController } from "./AnimationController";
 
 export type HandlerArgs = {
   animationController: ReturnType<typeof createAnimationController>,
-  activeMethod: ScriptMethod,
   currentOpcode: OpcodeObj,
   currentOpcodeIndex: number,
   currentState: ScriptState,
@@ -44,7 +43,7 @@ export const MEMORY: Record<number, number> = {
 
 export const MESSAGE_VARS: Record<number, string> = {};
 
-export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = {
+export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   RET: () => {
     return 999999
   },
@@ -129,7 +128,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   PSHAC: ({ currentOpcode, STACK }) => {
     STACK.push(currentOpcode.param);
   },
-  CAL: ({ currentOpcode, opcodes, STACK }) => {
+  CAL: ({ currentOpcode, STACK }) => {
     const value2 = STACK.pop() as number;
     const value1 = STACK.pop() as number;
     if (currentOpcode.param === 0) {
@@ -166,7 +165,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
     } else if (currentOpcode.param === 14) {
       STACK.push(value1 ^ value2);
     } else {
-      console.warn(`CAL with param ${currentOpcode.param} not implemented. Script Label ${opcodes[0].param}`);
+      console.warn(`CAL with param ${currentOpcode.param} not implemented.`);
     }
   },
   // NOTE: Jump logic differs from the original implementation
@@ -1172,7 +1171,7 @@ export const OPCODE_HANDLERS: Partial<Record<Opcode, HandlerFuncWithPromise>> = 
   },
   // PLAYS PRELOADED TRACK
   MUSICCHANGE: ({ currentState }) => {
-    console.log('Would play', currentState.backroundMusicId)
+    //console.log('Would play', currentState.backroundMusicId)
   },
   MUSICSTOP: ({ currentState, STACK }) => {
     // 0 OR 1. No idea why. It's even sometimes called successively with 1 and 0

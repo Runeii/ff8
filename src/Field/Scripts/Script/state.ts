@@ -3,6 +3,9 @@ import { Vector3 } from 'three';
 import { create, StoreApi, UseBoundStore } from 'zustand'
 
 export type ScriptState = {
+  STACK: number[];
+  TEMP_STACK: Record<number, number>;
+
   hasRemovedControl: boolean;
   isHalted: boolean;
 
@@ -58,6 +61,9 @@ export type ScriptState = {
 
 export const createScriptState = () => {
   return create<ScriptState>()(() => ({
+    STACK: [],
+    TEMP_STACK: {},
+  
     hasRemovedControl: false,
     isHalted: false,
 
@@ -82,7 +88,7 @@ export const createScriptState = () => {
     pushRadius: 0,
     talkRadius: 200,
     isPushable: false,
-    isTalkable: false,
+    isTalkable: true,
 
     angle: new SpringValue(0),
     headAngle: new SpringValue(0),

@@ -14,6 +14,11 @@ declare global {
     source: string
   }
 
+  type RemoteExecutionRequest = {
+    key: string;
+    methodId: string;
+  }
+
   // Extend the existing DocumentEventMap interface
   interface DocumentEventMap {
     'executeScript': CustomEvent<ExecuteScriptEventDetail>;
