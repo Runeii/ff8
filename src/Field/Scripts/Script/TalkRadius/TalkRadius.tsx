@@ -46,8 +46,9 @@ const TalkRadius = ({ setActiveMethodId, talkMethod, useScriptStateStore }: Talk
   }, [talkMethod]);
 
   const hasActiveText = useGlobalStore(state => state.currentMessages.length > 0);
-
-  const isPlayerAbleToTalk = isTalkable && !hasActiveTalkMethod && hasValidTalkMethod && !hasActiveText;
+  const isUserControllable = useGlobalStore(state => state.isUserControllable);
+  
+  const isPlayerAbleToTalk = isUserControllable && isTalkable && !hasActiveTalkMethod && hasValidTalkMethod && !hasActiveText;
 
   useEffect(() => {
     if (!isIntersecting || !isPlayerAbleToTalk) {
@@ -83,6 +84,9 @@ const TalkRadius = ({ setActiveMethodId, talkMethod, useScriptStateStore }: Talk
       args={[talkRadius]}
       position={[0, 0, (CHARACTER_HEIGHT / 2)]}
       ref={talkSphereRef}
+      userData={{
+        isSolid: true,
+      }}
       visible={isDebugMode}
     >
       <meshBasicMaterial color={`white`} side={DoubleSide} opacity={1} transparent />

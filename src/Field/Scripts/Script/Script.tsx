@@ -14,6 +14,7 @@ import createScriptState from "./state";
 import { WORLD_DIRECTIONS } from "../../../utils";
 import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "./utils";
 import { createAnimationController } from "./AnimationController";
+import { Box } from "@react-three/drei";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -91,6 +92,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     onComplete: () => {
       setRemoteExecutionRequests(requests => {
         const [completedRequest, ...remainingRequests] = requests;
+        console.log('completedRequest', completedRequest);
         document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key: completedRequest.key } }));
         return remainingRequests;
       });
@@ -229,9 +231,12 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
       position={position as unknown as Vector3}
       ref={entityRef}
       name={`entity--${script.groupId}`}
-      //name={isSolid ? 'entity-blockage' : 'entity-passable'}
+      userData={{
+        isSolid,
+      }}
       visible={isVisible}
     >
+      {isSolid && <Box args={[0.05, 0.05, 0.2]} visible={false} userData={{ isSolid }} />}
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location script={script} useScriptStateStore={useScriptStateStore} setActiveMethodId={setActiveMethodId} />}
       {script.type === 'model' && <Model animationController={animationController} models={models} setActiveMethodId={setActiveMethodId} script={script} useScriptStateStore={useScriptStateStore} />}

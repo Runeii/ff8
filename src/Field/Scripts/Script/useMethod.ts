@@ -91,6 +91,12 @@ const useMethod = ({
   }, [isActive, isPaused])
 
   useEffect(() => {
+    if (currentOpcodeIndex === 0) {
+      console.log('Starting', script.groupId, method?.scriptLabel, method?.methodId);
+    }
+  }, [currentOpcodeIndex, method, script]);
+
+  useEffect(() => {
     if (!isActive || isPaused || !isExecutableMethod || !currentOpcode || !method) {
       return;
     }

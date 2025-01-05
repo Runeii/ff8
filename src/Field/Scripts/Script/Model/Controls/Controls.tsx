@@ -124,14 +124,14 @@ const Controls = ({ animationController, children, modelName, useScriptStateStor
     }
     const blockages: Object3D[] = [];
     scene.traverse((object) => {
-      if (object.name === "entity-blockage") {
+      if (object.userData.isSolid) {
         blockages.push(object);
       }
       if (object.name === "door-closed") {
         blockages.push(object);
       }
     });
-    
+
     const isPermitted = checkForIntersections(player, newPosition, blockages, camera);
     
     if (!isPermitted) {

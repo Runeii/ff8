@@ -102,7 +102,7 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
         characterPosition: pendingCharacterPosition ?? getInitialEntrance(data),
         pendingCharacterPosition: undefined,
 
-        isUserControllable: true,
+        isUserControllable: pendingFieldId !== 'start0',
         isRunEnabled: true,
 
         currentParameterStates: {},
