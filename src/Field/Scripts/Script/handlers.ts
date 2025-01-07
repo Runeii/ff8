@@ -45,6 +45,9 @@ export const MEMORY: Record<number, number> = {
 export const MESSAGE_VARS: Record<number, string> = {};
 
 export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
+  SPLIT: () => {
+    // TO IMPLEMENT
+  },
   RET: () => {
     return 999999
   },
@@ -1158,7 +1161,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     currentState.backroundMusicId = STACK.pop() as number;
   },
   // PLAYS PRELOADED TRACK
-  MUSICCHANGE: ({ currentState }) => {
+  MUSICCHANGE: () => {
     //console.log('Would play', currentState.backroundMusicId)
   },
   MUSICSTOP: ({ currentState, STACK }) => {

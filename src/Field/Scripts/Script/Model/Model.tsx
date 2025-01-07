@@ -1,5 +1,5 @@
 import { Script } from "../../types";
-import {  ComponentType, lazy, useCallback, useEffect, useMemo, useState } from "react";
+import {  ComponentType, lazy, useCallback, useEffect, useState } from "react";
 import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";

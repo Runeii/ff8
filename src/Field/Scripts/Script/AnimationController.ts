@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { AnimationAction, AnimationClip, AnimationMixer, LoopPingPong, LoopRepeat } from "three";
 import { create } from "zustand";
 
@@ -13,7 +12,7 @@ type AnimationControllerState = {
   idleEndFrame: number | undefined;
 }
 
-export function createAnimationController(isDebug = false) {
+export function createAnimationController() {
   const state = create<AnimationControllerState>()(() => ({
     mixer: undefined,
     clips: [],
