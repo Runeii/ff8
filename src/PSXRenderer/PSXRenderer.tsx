@@ -4,8 +4,8 @@ import { Mesh, MeshBasicMaterial, NearestFilter, PlaneGeometry, RGBFormat, WebGL
 import { OrthographicCamera } from '@react-three/drei';
 
 const PSXRenderer = () => {
-  const WIDTH = 640 * 2;
-  const HEIGHT = 480 * 2;
+  const WIDTH = 640;
+  const HEIGHT = 480;
 
   const { gl, scene, camera } = useThree();
   const renderTarget = useRef(new WebGLRenderTarget(WIDTH, HEIGHT, {
