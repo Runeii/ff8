@@ -32,7 +32,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 0, // progress
+  256: 5000, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
