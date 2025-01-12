@@ -110,6 +110,10 @@ const Model = ({animationController, models, script,setActiveMethodId, useScript
         scale={0.06}
         // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
         ref={setModelRef}
+        userData={{
+          partyMemberId,
+          useScriptStateStore
+        }}
       />
     </group>
   );

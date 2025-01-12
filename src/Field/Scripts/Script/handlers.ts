@@ -7,7 +7,7 @@ import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent } from "./Model/modelUtils";
 import { displayMessage, fadeOutMap, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint } from "./common";
-import { ScriptState } from "./state";
+import { ScriptState, ScriptStateStore } from "./state";
 import { createAnimationController } from "./AnimationController";
 
 export type HandlerArgs = {
@@ -45,9 +45,6 @@ export const MEMORY: Record<number, number> = {
 export const MESSAGE_VARS: Record<number, string> = {};
 
 export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
-  SPLIT: () => {
-    // TO IMPLEMENT
-  },
   RET: () => {
     return 999999
   },
@@ -1356,6 +1353,37 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     useGlobalStore.setState({
       activeCameraId: STACK.pop() as number
     })
+  },
+  SPLIT: async ({ currentState, scene, STACK }) => {
+    const { party } = useGlobalStore.getState();
+
+    const member1 = getPartyMemberModelComponent(scene, party[0])
+    const member2 = getPartyMemberModelComponent(scene, party[1])
+    const member3 = getPartyMemberModelComponent(scene, party[2])
+
+    const member2Position = STACK.splice(-3);
+    const member1Position = STACK.splice(-3);
+    const member3Position = STACK.splice(-3);
+
+    await Promise.all(
+      [
+        moveToPoint(
+          (member1.userData.useScriptStateStore as ScriptStateStore).getState().position,
+          new Vector3(member1Position[0], member1Position[1], member1Position[2]),
+          currentState.movementSpeed
+        ),
+        moveToPoint(
+          (member2.userData.useScriptStateStore as ScriptStateStore).getState().position,
+          new Vector3(member2Position[0], member2Position[1], member2Position[2]),
+          currentState.movementSpeed
+        ),
+        moveToPoint(
+          (member3.userData.useScriptStateStore as ScriptStateStore).getState().position,
+          new Vector3(member3Position[0], member3Position[1], member3Position[2]),
+          currentState.movementSpeed
+        )
+      ]
+    )
   },
 
 
