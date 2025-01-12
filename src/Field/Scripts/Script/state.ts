@@ -73,7 +73,7 @@ export const createScriptState = () => {
     linePoints: null,
 
     isVisible: true,
-    isSolid: true,
+    isSolid: false,
     isUnused: false,
 
     modelId: 0,

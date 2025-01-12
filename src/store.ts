@@ -64,7 +64,7 @@ const useGlobalStore = create<GlobalState>()(() => ({
   pendingFieldId: undefined as unknown as typeof MAP_NAMES[number],
 
   currentLocationPlaceName: 0, // we don't currently use this for anything
-  isUserControllable: true,
+  isUserControllable: false,
   isRunEnabled: true,
   initialAngle: 0,
 

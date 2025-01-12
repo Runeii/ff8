@@ -76,7 +76,7 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
       const {isMapFadeEnabled} = useGlobalStore.getState();
 
       if (isMapFadeEnabled) {
-       await opacitySpring.start(0);
+     //  await opacitySpring.start(0);
       }
 
       setData(null);

@@ -8,6 +8,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Euler, Mesh, Quaternion, Vector3 } from "three";
 import useMeshIntersection from "../useMeshIntersection";
 import { ScriptStateStore } from "../state";
+import useGlobalStore from "../../../../store";
 
 type DoorProps = {
   doors: FieldData['doors'];
@@ -78,6 +79,8 @@ const Door = ({ doors, script, setActiveMethodId, useScriptStateStore }: DoorPro
 
   const linePoints = useMemo(() => door?.line, [door]);
 
+  const isDebugMode = useGlobalStore(state => state.isDebugMode);
+
   if (!linePoints || !isDoorOn || !box) {
     return null;
   }
@@ -86,10 +89,13 @@ const Door = ({ doors, script, setActiveMethodId, useScriptStateStore }: DoorPro
     <>
       <Box
         args={[0.001, box.length, 0.1]}
-        name={isDoorOpen ? 'door-open' : 'door-closed'}
+        name={`door-${script.name}`}
         position={box.midpoint}
         rotation={box.rotation}
-        visible={false}
+        userData={{
+          isSolid: !isDoorOpen
+        }}
+        visible={isDebugMode}
         >
         <meshBasicMaterial color={isDoorOpen ? 'green' : 'red'} opacity={1} transparent />
       </Box>

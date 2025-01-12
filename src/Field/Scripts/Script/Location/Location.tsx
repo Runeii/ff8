@@ -18,10 +18,10 @@ const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationPr
   const isLineOn = useScriptStateStore(state => state.isLineOn);
   const linePoints = useScriptStateStore(state => state.linePoints);
 
-  const { isIntersecting, wasIntersecting } = useLineIntersection(linePoints ?? undefined, isLineOn);
+  const { isIntersecting, wasIntersecting, hasEverExited } = useLineIntersection(linePoints ?? undefined, isLineOn);
 
-  useTriggerEvent('touchon',  script, setActiveMethodId, isIntersecting);
-  useTriggerEvent('touchoff', script, setActiveMethodId, !isIntersecting && wasIntersecting);
+  useTriggerEvent('touchon',  script, setActiveMethodId, isIntersecting && hasEverExited);
+  useTriggerEvent('touchoff', script, setActiveMethodId, !isIntersecting && wasIntersecting && hasEverExited);
 
   const talkPosition = useMemo(() => {
     if (!linePoints || !linePoints?.[0] || !linePoints?.[1]) {

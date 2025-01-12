@@ -9,7 +9,7 @@ const useLineIntersection = (points: Vector3[] | undefined, isActive = true) => 
   const [hasEverExited, setHasEverExited] = useState(false);
 
   useFrame(({ scene }) => {
-    const mesh = scene.getObjectByName("character") as Object3D;
+    const mesh = scene.getObjectByName("hitbox") as Object3D;
 
     if (!mesh || !points || !isActive) {
       return false;

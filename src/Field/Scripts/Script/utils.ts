@@ -52,11 +52,20 @@ export const remoteExecute = (scriptLabel: number, source: string, partyMemberId
     if (detail.key !== key) {
       return;
     }
-
+    
+    console.log('scriptFinished', detail)
     resolve();
   });
   //console.log('Dispatching request from', source, 'to', scriptLabel, partyMemberId)
   const { party } = useGlobalStore.getState();
+  console.log('Dispatch request', scriptLabel, {
+    detail: {
+      key,
+      scriptLabel,
+      partyMemberId: partyMemberId ? party[partyMemberId] : undefined,
+      source,
+    } as ExecuteScriptEventDetail
+  })
   document.dispatchEvent(new CustomEvent('executeScript', {
     detail: {
       key,

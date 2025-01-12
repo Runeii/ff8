@@ -6,6 +6,7 @@ import { useThree } from "@react-three/fiber";
 import { createAnimationController } from "./AnimationController";
 
 const useMethod = ({
+  key,
   methodId,
   isActive,
   isLooping,
@@ -16,6 +17,7 @@ const useMethod = ({
   isDebugging = false,
   onComplete,
 }: {
+  key?: string,
   methodId?: string,
   isActive: boolean,
   isLooping: boolean,
@@ -45,7 +47,7 @@ const useMethod = ({
     return () => {
       setCurrentOpcodeIndex(0);
     }
-  }, [isActive, method]);
+  }, [isActive, key, method]);
 
   const currentOpcode = useMemo(() => {
     if (!method?.opcodes[currentOpcodeIndex]) {
@@ -89,12 +91,6 @@ const useMethod = ({
   useEffect(() => {
     loopKeyRef.current = `${Date.now()}-${isActive}-${isPaused}`
   }, [isActive, isPaused])
-
-  useEffect(() => {
-    if (currentOpcodeIndex === 0) {
-      console.log('Starting', script.groupId, method?.scriptLabel, method?.methodId);
-    }
-  }, [currentOpcodeIndex, method, script]);
 
   useEffect(() => {
     if (!isActive || isPaused || !isExecutableMethod || !currentOpcode || !method) {

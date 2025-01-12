@@ -32,7 +32,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 5000, // progress
+  256: 0, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -520,6 +520,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await remoteExecuteOnPartyEntity(currentOpcode.param, methodIndex, source)
   },
   FADEIN: async () => {
+    console.log('es')
     const { canvasOpacitySpring } = useGlobalStore.getState();
     await wait(500)
     canvasOpacitySpring.start(1);

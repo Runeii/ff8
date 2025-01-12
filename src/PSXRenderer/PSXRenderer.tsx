@@ -4,8 +4,8 @@ import { Mesh, MeshBasicMaterial, NearestFilter, PlaneGeometry, RGBFormat, WebGL
 import { OrthographicCamera } from '@react-three/drei';
 
 const PSXRenderer = () => {
-  const WIDTH = 640;
-  const HEIGHT = 480;
+  const WIDTH = 320;
+  const HEIGHT = 240;
 
   const { gl, scene, camera } = useThree();
   const renderTarget = useRef(new WebGLRenderTarget(WIDTH, HEIGHT, {
@@ -24,22 +24,25 @@ const PSXRenderer = () => {
   const fullscreenQuad = useRef(mesh);
 
   const orthoCameraRef = useRef(null);
-
   useFrame(() => {
-    if (!orthoCameraRef.current) {
+    if (!orthoCameraRef.current || !fullscreenQuad.current) {
       return;
     }
-    gl.clear()
+  
+    // Clear the WebGL context and set render target
     gl.autoClear = false;
-
+  
+    // Render the main scene to the render target
     gl.setRenderTarget(renderTarget.current);
     gl.clearColor();
     gl.clear(true, true, true);
     gl.render(scene, camera);
-
-    mesh.setRotationFromQuaternion(camera.quaternion);
+  
+    // Render the fullscreen quad to the default framebuffer
     gl.setRenderTarget(null);
     gl.clear();
+    mesh.setRotationFromQuaternion(camera.quaternion);
+
     gl.render(fullscreenQuad.current, orthoCameraRef.current);
   }, 1);
 

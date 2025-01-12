@@ -127,14 +127,12 @@ const Controls = ({ animationController, children, modelName, useScriptStateStor
       if (object.userData.isSolid) {
         blockages.push(object);
       }
-      if (object.name === "door-closed") {
-        blockages.push(object);
-      }
     });
 
     const isPermitted = checkForIntersections(player, newPosition, blockages, camera);
     
     if (!isPermitted) {
+      console.log('not permitted')
       return;
     }
     

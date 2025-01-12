@@ -1,5 +1,5 @@
 import './index.css'
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Field from './Field/Field'
 
@@ -14,7 +14,6 @@ import { attachKeyDownListeners } from './Field/Scripts/Script/common'
 import { Perf } from 'r3f-perf'
 import MAP_NAMES from './constants/maps'
 import Memory from './Memory/Memory'
-import PSXRenderer from './PSXRenderer/PSXRenderer'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
@@ -75,12 +74,11 @@ export default function App() {
         far: 100,
       }} className="canvas">
         {isDebugMode && <Perf />}
-        <PSXRenderer />
         <Suspense>
           {fieldId === 'wm00' ? <WorldMap /> : <Field opacitySpring={opacity} />}
         </Suspense>
+        <Ui />
       </Canvas>
-      <Ui />
       {isDebugMode && <Memory />}
       </animated.div>
     <Controller />

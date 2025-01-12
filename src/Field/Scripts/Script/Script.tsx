@@ -76,12 +76,13 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     onComplete: () => {
       useGlobalStore.setState({ hasActiveTalkMethod: false });
       setActiveMethodId(undefined);
-    }
+    },
   });
 
   // Remote execution request method handler
   const activeRemoteExecutionRequest = remoteExecutionRequests[0];
   useMethod({
+    key: activeRemoteExecutionRequest?.key,
     methodId: activeRemoteExecutionRequest?.methodId,
     isActive: hasCompletedConstructor && activeRemoteExecutionRequest !== undefined,
     isLooping: false,
@@ -92,18 +93,24 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     onComplete: () => {
       setRemoteExecutionRequests(requests => {
         const [completedRequest, ...remainingRequests] = requests;
-        console.log('completedRequest', completedRequest);
+        if (script.groupId === 15) {
+
+          console.log('completedRequest', completedRequest);
+        }
         document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key: completedRequest.key } }));
+        if (script.groupId === 15) {
+          console.log('remainingRequests', remainingRequests);
+        }
         return remainingRequests;
       });
     }
   });
 
-  const isSolid = useScriptStateStore(state => state.isSolid);
   const isVisible = useScriptStateStore(state => state.isVisible);
   const isUnused = useScriptStateStore(state => state.isUnused);
   const position = useScriptStateStore(state => state.position);
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
+  const isSolid = useScriptStateStore(state => state.isSolid);
 
   useEffect(() => {
     if (isUnused) {
@@ -115,11 +122,16 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
       if (!matchingMethod) {
         return;
       }
-      
-      setRemoteExecutionRequests(currentRequests => [...currentRequests, {
-        key,
-        methodId: matchingMethod.methodId
-      }]);
+      setRemoteExecutionRequests(currentRequests => {
+        const updatedRequests = [...currentRequests, {
+          key,
+          methodId: matchingMethod.methodId
+        }]
+        
+        console.log('Found a matching script', script.groupId, scriptLabel, matchingMethod);
+        console.log('updatedRequests', updatedRequests);
+        return updatedRequests;
+      });
     }
 
     const handlePartyEntityExecutionRequest = async ({ detail: { key, methodIndex, partyMemberId: requestedPartyMemberId } }: {detail: ExecutePartyEntityScriptEventDetail}) => {
@@ -130,7 +142,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
       if (!matchingMethod) {
         return;
       }
-      
+      console.log('handlePartyEntityExecutionRequest', script.groupId, methodIndex, matchingMethod);
       setRemoteExecutionRequests(currentRequests => [...currentRequests, {
         key,
         methodId: matchingMethod.methodId
@@ -236,7 +248,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
       }}
       visible={isVisible}
     >
-      {isSolid && <Box args={[0.05, 0.05, 0.2]} visible={false} userData={{ isSolid }} />}
+      {isSolid && <Box args={[0.05, 0.05, 0.2]} name={`entity--${script.groupId}-hitbox`} visible={false} userData={{ isSolid }} />}
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location script={script} useScriptStateStore={useScriptStateStore} setActiveMethodId={setActiveMethodId} />}
       {script.type === 'model' && <Model animationController={animationController} models={models} setActiveMethodId={setActiveMethodId} script={script} useScriptStateStore={useScriptStateStore} />}
