@@ -40,7 +40,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
 
   // Constructor
   useMethod({
-    methodId: 'constructor?',
+    methodId: 'constructor',
     isActive,
     isLooping: false,
     isPaused: false,
@@ -56,7 +56,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
   // Default method (loop)
   useMethod({
     methodId: 'default',
-    isActive: hasCompletedConstructor,
+    isActive: hasCompletedConstructor && !useScriptStateStore.getState().isUnused,
     isLooping: true,
     isPaused: !!(remoteExecutionRequests.length > 0 || activeMethodId),
     script,
@@ -73,6 +73,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
+    isDebugging: true,
     onComplete: () => {
       useGlobalStore.setState({ hasActiveTalkMethod: false });
       setActiveMethodId(undefined);
@@ -90,17 +91,11 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
+    isDebugging: false,
     onComplete: () => {
       setRemoteExecutionRequests(requests => {
         const [completedRequest, ...remainingRequests] = requests;
-        if (script.groupId === 15) {
-
-          console.log('completedRequest', completedRequest);
-        }
         document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key: completedRequest.key } }));
-        if (script.groupId === 15) {
-          console.log('remainingRequests', remainingRequests);
-        }
         return remainingRequests;
       });
     }
@@ -127,9 +122,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
           key,
           methodId: matchingMethod.methodId
         }]
-        
-        console.log('Found a matching script', script.groupId, scriptLabel, matchingMethod);
-        console.log('updatedRequests', updatedRequests);
+
         return updatedRequests;
       });
     }
@@ -142,7 +135,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
       if (!matchingMethod) {
         return;
       }
-      console.log('handlePartyEntityExecutionRequest', script.groupId, methodIndex, matchingMethod);
+
       setRemoteExecutionRequests(currentRequests => [...currentRequests, {
         key,
         methodId: matchingMethod.methodId
@@ -229,11 +222,10 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     const currentRotation = convert255ToRadians(useScriptStateStore.getState().angle.get());
     entityRef.current.quaternion.setFromAxisAngle(meshUp, faceDownBaseAngle + currentRotation);
   });
-
   if (isUnused) {
     return null;
   }
-
+  
   if (partyMemberId !== undefined && !activeParty.includes(partyMemberId)) {
     return null;
   }

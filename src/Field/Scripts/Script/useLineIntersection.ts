@@ -2,13 +2,20 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useState } from "react";
 import { checkForIntersection } from "../../Gateways/gatewayUtils";
 import { Object3D, Vector3 } from "three";
+import useGlobalStore from "../../../store";
 
 const useLineIntersection = (points: Vector3[] | undefined, isActive = true) => {
+  const hasMoved = useGlobalStore(state => state.hasMoved);
+  
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [wasIntersecting, setWasIntersecting] = useState(false);
   const [hasEverExited, setHasEverExited] = useState(false);
 
   useFrame(({ scene }) => {
+    if (!hasMoved) {
+      return;
+    }
+
     const mesh = scene.getObjectByName("hitbox") as Object3D;
 
     if (!mesh || !points || !isActive) {

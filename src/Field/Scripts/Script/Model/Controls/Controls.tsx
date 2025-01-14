@@ -8,12 +8,9 @@ import { checkForIntersections, getPositionOnWalkmesh, WORLD_DIRECTIONS } from "
 import useGlobalStore from "../../../../../store";
 import  { ScriptStateStore } from "../../state";
 import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "../../utils";
-import { createAnimationController } from "../../AnimationController";
 
 type ControlsProps = {
-  animationController: ReturnType<typeof createAnimationController>,
   children: React.ReactNode;
-  modelName: string;
   useScriptStateStore: ScriptStateStore;
 }
 
@@ -24,7 +21,7 @@ const WALKING_SPEED = 0.08;
 const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
-const Controls = ({ animationController, children, modelName, useScriptStateStore }: ControlsProps) => {
+const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();
@@ -52,13 +49,17 @@ const Controls = ({ animationController, children, modelName, useScriptStateStor
     }
 
     setHasPlacedCharacter(true);
+    return () => {
+      setHasPlacedCharacter(false);
+    }
   }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, position, walkmesh]);
 
-  const playerAnimationIndex = useGlobalStore(state => state.playerAnimationIndex);
+  const movementSpeed = useScriptStateStore(state => state.movementSpeed);
   useEffect(() => {
-    animationController.setIdleAnimation(playerAnimationIndex);
-    animationController.playIdleAnimation();
-  }, [animationController, playerAnimationIndex]);
+    useGlobalStore.setState({
+      playerMovementSpeed: movementSpeed,
+    });
+  }, [movementSpeed]);
 
   const fieldDirection = useGlobalStore(state => state.fieldDirection);
   useFrame(({ camera, scene }, delta) => {
@@ -97,10 +98,9 @@ const Controls = ({ animationController, children, modelName, useScriptStateStor
       direction.add(meshMoveRight);
     }
 
-    const isAllowedToMove = useGlobalStore.getState().isUserControllable;
-    if (direction.lengthSq() <= 0 || !isAllowedToMove) {
-      useGlobalStore.setState({
-        playerAnimationIndex: 0,
+    if (direction.lengthSq() <= 0 ) {
+      useScriptStateStore.setState({
+        movementSpeed: 0,
       })
       return;
     }
@@ -109,10 +109,8 @@ const Controls = ({ animationController, children, modelName, useScriptStateStor
     const speed = isWalking ? WALKING_SPEED : RUNNING_SPEED
     direction.normalize().multiplyScalar(speed).multiplyScalar(delta);
 
-    const runAnimationIndex = modelName === 'd044' ? 12 : 2;
-    const walkAnimationIndex = modelName === 'd044' ? 12 : 1;
-    useGlobalStore.setState({
-      playerAnimationIndex: isWalking ? walkAnimationIndex : runAnimationIndex,
+    useScriptStateStore.setState({
+      movementSpeed: isWalking ? 2560 : 7560,
     });
 
     const desiredPosition = new Vector3().fromArray(position.get()).add(direction);
@@ -141,6 +139,10 @@ const Controls = ({ animationController, children, modelName, useScriptStateStor
 
     position.start([newPosition.x, newPosition.y, newPosition.z], {
       immediate: true,
+    });
+
+    useGlobalStore.setState({
+      hasMoved: true,
     });
 
     // Current forward
@@ -181,9 +183,6 @@ const Controls = ({ animationController, children, modelName, useScriptStateStor
         ],
       }
     });
-  
-    player.userData.hasMoved = true;
-
   });
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);

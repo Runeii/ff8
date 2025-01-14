@@ -5,10 +5,14 @@ import { Opcode, OpcodeObj, Script } from "../types";
 import { dummiedCommand, openMessage, remoteExecute, remoteExecuteOnPartyEntity, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
-import { getPartyMemberModelComponent } from "./Model/modelUtils";
+import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
 import { displayMessage, fadeOutMap, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint } from "./common";
 import { ScriptState, ScriptStateStore } from "./state";
 import { createAnimationController } from "./AnimationController";
+import { MUSIC_IDS } from "../../../constants/audio";
+import MusicController from "./MusicController";
+
+const musicController = MusicController();
 
 export type HandlerArgs = {
   animationController: ReturnType<typeof createAnimationController>,
@@ -32,7 +36,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 0, // progress
+  256: 283, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -248,7 +252,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     currentState.isHalted = true;
   },
   SETPLACE: ({ STACK }) => {
-    useGlobalStore.setState({ currentLocationPlaceName: STACK.pop() as number });
+    const placeName = STACK.pop() as number;
+    useGlobalStore.setState({ currentLocationPlaceName: placeName });
+    //const area = AREAS[placeName];
+    //const music = AREA_MUSIC[area];
+    //musicController.preloadMusic(music);
+    //musicController.playMusic();
   },
   KEYON: async ({ currentOpcodeIndex, STACK }) => {
     const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
@@ -444,7 +453,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   ISTOUCH: ({ scene, script, STACK, TEMP_STACK }) => {
     const actorId = STACK.pop() as number;
-    const isTouch = isTouching(script.groupId, `model--${actorId}`, scene)
+    const isTouch = isTouching(script.groupId, `entity--${actorId}`, scene)
 
     TEMP_STACK[0] = isTouch ? 1 : 0;
   },
@@ -517,7 +526,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await remoteExecuteOnPartyEntity(currentOpcode.param, methodIndex, source)
   },
   FADEIN: async () => {
-    console.log('es')
     const { canvasOpacitySpring } = useGlobalStore.getState();
     await wait(500)
     canvasOpacitySpring.start(1);
@@ -714,6 +722,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   ANIMESYNC: async ({ animationController }) => {
     return new Promise((resolve) => {
+      resolve();
       if (animationController.getIsPlaying() === false) {
         resolve();
       }
@@ -797,10 +806,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     // const actorId = 
     STACK.pop() as number;
   },
-  GETINFO: ({ TEMP_STACK }) => {
+  GETINFO: ({ scene, script, TEMP_STACK }) => {
+    const entity = getScriptEntity(scene, script.groupId);
+    const position = entity.getWorldPosition(new Vector3());
+    console.log('At', position, floatingPointToNumber(position.x), floatingPointToNumber(position.y), floatingPointToNumber(position.z));
     // We need to get this script entity's X/Y and stick it in to:
-    TEMP_STACK[0] = 0; // X
-    TEMP_STACK[1] = 0; // Y
+    TEMP_STACK[0] = floatingPointToNumber(position.x);
+    TEMP_STACK[1] = floatingPointToNumber(position.y);
+    TEMP_STACK[2] = floatingPointToNumber(position.z);
   },
   MSPEED: ({ currentState, STACK }) => {
     const movementSpeed = STACK.pop() as number;
@@ -841,7 +854,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
     const actorId = STACK.pop() as number;
 
-    const targetActor = scene.getObjectByName(`model--${actorId}`) as Group;
+    const targetActor = scene.getObjectByName(`entity--${actorId}`) as Group;
     if (!targetActor) {
       console.warn('Target actor not found', actorId);
       return;
@@ -1020,11 +1033,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const duration = STACK.pop() as number;
     const targetId = STACK.pop() as number;
 
-    turnToFaceEntity(script.groupId, `model--${targetId}`, duration, scene, currentState.angle)
+    turnToFaceEntity(script.groupId, `entity--${targetId}`, duration, scene, currentState.angle)
   },
   DIRA: ({ currentState, scene, script, STACK }) => {
     const targetActorId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `model--${targetActorId}`, 0, scene, currentState.angle)
+    turnToFaceEntity(script.groupId, `entity--${targetActorId}`, 0, scene, currentState.angle)
   },
 
   // Turn to face party member
@@ -1052,7 +1065,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   FACEDIRA: ({ currentState, scene, script, STACK }) => {
     const frames = STACK.pop() as number;
     const targetActorId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `model--${targetActorId}`, frames, scene, currentState.headAngle)
+    turnToFaceEntity(script.groupId, `entity--${targetActorId}`, frames, scene, currentState.headAngle)
   },
   FACEDIRP: ({ currentState, scene, script, STACK }) => {
     const frames = STACK.pop() as number;
@@ -1074,7 +1087,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   RFACEDIRA: ({ currentState, scene, script, STACK }) => {
     const frames = STACK.pop() as number;
     const targetActorId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `model--${targetActorId}`, frames, scene, currentState.headAngle)
+    turnToFaceEntity(script.groupId, `entity--${targetActorId}`, frames, scene, currentState.headAngle)
   },
   RFACEDIRP: ({ currentState, scene, script, STACK }) => {
     const frames = STACK.pop() as number;
@@ -1154,32 +1167,39 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   INITSOUND: () => { },
 
   MUSICVOLSYNC: () => { },
-  //PRELOADS TRACK
-  MUSICLOAD: ({ currentState, STACK }) => {
-    currentState.backroundMusicId = STACK.pop() as number;
+  MUSICLOAD: ({ currentOpcode, STACK }) => {
+    console.log(currentOpcode)
+    const id = STACK.pop() as keyof typeof MUSIC_IDS;
+    musicController.preloadMusic(MUSIC_IDS[id]);
   },
-  // PLAYS PRELOADED TRACK
   MUSICCHANGE: () => {
-    //console.log('Would play', currentState.backroundMusicId)
+    musicController.playMusic();
   },
-  MUSICSTOP: ({ currentState, STACK }) => {
-    // 0 OR 1. No idea why. It's even sometimes called successively with 1 and 0
-    STACK.pop() as number;
-    currentState.backroundMusicId = undefined;
+  MUSICSTOP: ({  STACK }) => {
+    const channel = STACK.pop() as 1 | 0;
+    musicController.pauseChannel(channel);
   },
-  MUSICVOL: ({ currentState, STACK }) => {
-    // const unknown = 
-    STACK.pop() as number;
+  MUSICVOL: ({  STACK }) => {
+    const channel = STACK.pop() as number;
     const volume = STACK.pop() as number;
-    currentState.backgroundMusicVolume = volume;
+    musicController.setVolume(channel, volume);
   },
-  MUSICVOLTRANS: ({ currentState, STACK }) => {
-    // const unknown = 
-    STACK.pop() as number;
-    // const duration =
-    STACK.pop() as number;
+  MUSICVOLTRANS: ({  STACK }) => {
     const volume = STACK.pop() as number;
-    currentState.backgroundMusicVolume = volume;
+    const duration = STACK.pop() as number;
+    const channel = STACK.pop() as number;
+    
+    musicController.transitionVolume(channel, volume, duration);
+  },
+  MUSICVOLFADE: ({ STACK }) => {
+    STACK.pop() as number; // const startVolume =  //maybe?
+    STACK.pop() as number; // const frames =  //maybe?
+    STACK.pop() as number; // const endVolume = 
+    STACK.pop() as number; // ???
+  },
+  DUALMUSIC: ({ STACK }) => {
+    const volume = STACK.pop() as number; // I think this is a volume value? 0 - 127
+    musicController.dualMusic(volume);
   },
   // This is used once. I think it restarts the track?
   MUSICREPLAY: () => {
@@ -1189,15 +1209,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
   },
   // This is an assumption
-  MUSICSTATUS: ({ currentState, TEMP_STACK }) => {
-    const isPlaying = currentState.isPlayingBackgroundMusic ? 1 : 0
+  MUSICSTATUS: ({ TEMP_STACK }) => {
+    const isPlaying = useGlobalStore.getState().backgroundMusic?.playing() ? 1 : 0
     TEMP_STACK[0] = isPlaying;
-  },
-  MUSICVOLFADE: ({ STACK }) => {
-    STACK.pop() as number; // const startVolume =  //maybe?
-    STACK.pop() as number; // const frames =  //maybe?
-    STACK.pop() as number; // const endVolume = 
-    STACK.pop() as number; // ???
   },
 
   LOADSYNC: () => { },
@@ -1354,36 +1368,75 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       activeCameraId: STACK.pop() as number
     })
   },
-  SPLIT: async ({ currentState, scene, STACK }) => {
+  SPLIT: async ({ scene, STACK }) => {
     const { party } = useGlobalStore.getState();
+
+    useGlobalStore.setState({
+      isPartyFollowing: false
+    });
 
     const member1 = getPartyMemberModelComponent(scene, party[0])
     const member2 = getPartyMemberModelComponent(scene, party[1])
     const member3 = getPartyMemberModelComponent(scene, party[2])
+    const member3Position = vectorToFloatingPoint(STACK.splice(-3));
+    const member2Position = vectorToFloatingPoint(STACK.splice(-3));
+    const member1Position = vectorToFloatingPoint(STACK.splice(-3));
 
-    const member2Position = STACK.splice(-3);
-    const member1Position = STACK.splice(-3);
-    const member3Position = STACK.splice(-3);
+    const member1State = member1.userData.useScriptStateStore as ScriptStateStore
+    const member2State = member2.userData.useScriptStateStore as ScriptStateStore
+    const member3State = member3.userData.useScriptStateStore as ScriptStateStore
+
+    member1State.setState({
+      movementTarget: member1Position,
+      movementSpeed: 2560
+    });
+
+    member2State.setState({
+      movementTarget: member2Position,
+      movementSpeed: 2560
+    });
+
+    member3State.setState({
+      movementTarget: member3Position,
+      movementSpeed: 2560
+    });
 
     await Promise.all(
       [
         moveToPoint(
-          (member1.userData.useScriptStateStore as ScriptStateStore).getState().position,
-          new Vector3(member1Position[0], member1Position[1], member1Position[2]),
-          currentState.movementSpeed
+          member1State.getState().position,
+          member1Position,
+          member1State.getState().movementSpeed,
         ),
         moveToPoint(
-          (member2.userData.useScriptStateStore as ScriptStateStore).getState().position,
-          new Vector3(member2Position[0], member2Position[1], member2Position[2]),
-          currentState.movementSpeed
+          member2State.getState().position,
+          member2Position,
+          member2State.getState().movementSpeed,
         ),
         moveToPoint(
-          (member3.userData.useScriptStateStore as ScriptStateStore).getState().position,
-          new Vector3(member3Position[0], member3Position[1], member3Position[2]),
-          currentState.movementSpeed
-        )
+          member3State.getState().position,
+          member3Position,
+          member3State.getState().movementSpeed,
+        ),
       ]
     )
+
+    member1State.setState({
+      movementTarget: undefined
+    });
+
+    member2State.setState({
+      movementTarget: undefined
+    });
+
+    member3State.setState({
+      movementTarget: undefined
+    });
+  },
+  JOIN: () => {
+    useGlobalStore.setState({
+      isPartyFollowing: true
+    });
   },
 
 
@@ -1570,9 +1623,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
     STACK.pop() as number;
   },
-  DUALMUSIC: ({ STACK }) => {
-    STACK.pop() as number;
-  },
   CHANGEPARTY: ({ STACK }) => {
     STACK.pop() as number;
     STACK.pop() as number;
@@ -1602,12 +1652,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   MESW: ({ STACK }) => {
     STACK.splice(-2);
   },
+  // @ts-expect-error Not in opcodes list
   UNKNOWN1: ({ STACK }) => {
     STACK.pop() as number;
   },
+  // @ts-expect-error Not in opcodes list
   UNKNOWN17: ({ STACK }) => {
     STACK.pop() as number;
   },
+  // @ts-expect-error Not in opcodes list
   UNKNOWN18: ({ STACK }) => {
     STACK.pop() as number;
   },
@@ -1756,7 +1809,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   MENUDISABLE: dummiedCommand,
   MOVIESYNC: dummiedCommand,
   REST: dummiedCommand,
-  JOIN: dummiedCommand,
   FOLLOWOFF: dummiedCommand,
   FOLLOWON: dummiedCommand,
   REFRESHPARTY: dummiedCommand,

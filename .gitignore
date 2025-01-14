@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 
 public/output
+public/audio
 public/models
 public/*.glb
 converter/target

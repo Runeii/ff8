@@ -90,9 +90,29 @@ const Model = ({animationController, models, script,setActiveMethodId, useScript
     head.rotation.y = headAngle.get();
   })
 
+
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
-  const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && !isLeadCharacter);
+  const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && state.isPartyFollowing && !isLeadCharacter);
+
+  const playerMovementSpeed = useGlobalStore(state => state.playerMovementSpeed);
+  const movementSpeed = useScriptStateStore(state => isFollower ? playerMovementSpeed : state.movementSpeed);
+  const position = useScriptStateStore(state => state.position);
+
+  useFrame(() => {
+    const isControllingLeadCharacter = isLeadCharacter && playerMovementSpeed > 0
+    if ((!position.isAnimating && !isControllingLeadCharacter) || movementSpeed === 0) {
+      animationController.setIdleAnimation(0);
+      animationController.playIdleAnimation();  
+      return;
+    }
+
+    const WALK_ANIMATION = 1;
+    const RUN_ANIMATION = 2;
+
+    animationController.setIdleAnimation(movementSpeed > 4000 ? RUN_ANIMATION : WALK_ANIMATION);
+    animationController.playIdleAnimation();
+  })
 
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
 
@@ -120,13 +140,13 @@ const Model = ({animationController, models, script,setActiveMethodId, useScript
 
   if (isLeadCharacter) {
     return (
-      <Controls animationController={animationController} modelName={modelName} useScriptStateStore={useScriptStateStore}>
+      <Controls useScriptStateStore={useScriptStateStore}>
         {modelJsx}
       </Controls>
     );
   } else if (isFollower) {
     return (
-      <Follower animationController={animationController} partyMemberId={partyMemberId} useScriptStateStore={useScriptStateStore}>
+      <Follower partyMemberId={partyMemberId} useScriptStateStore={useScriptStateStore}>
         {modelJsx}
       </Follower>
     )

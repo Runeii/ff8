@@ -1,6 +1,7 @@
 import { SpringValue } from '@react-spring/web';
 import { Vector3 } from 'three';
 import { create, StoreApi, UseBoundStore } from 'zustand'
+import type { Howl} from 'howler';
 
 export type ScriptState = {
   hasRemovedControl: boolean;
@@ -37,9 +38,8 @@ export type ScriptState = {
 
   isDoorOn: boolean;
 
-  backroundMusicId?: number;
-  backgroundMusicVolume: number;
-  isPlayingBackgroundMusic: boolean;
+  pendingBackgroundMusic?: Howl;
+  pendingBackgroundMusicSrc?: string;
 
   spuValue: number;
 
@@ -103,7 +103,10 @@ export const createScriptState = () => {
 
     countdownTime: 0,
     countdownTimer: undefined,
-    winSize: {}
+    winSize: {},
+
+    pendingBackgroundMusic: undefined,
+    pendingBackgroundMusicSrc: undefined,
   }))
 }
 

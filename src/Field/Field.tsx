@@ -13,8 +13,27 @@ import { getInitialEntrance } from '../utils';
 import { MEMORY } from './Scripts/Script/handlers';
 import MAP_NAMES from '../constants/maps';
 import { SpringValue } from '@react-spring/web';
+import { getFieldData } from './fieldUtils';
 
-export type FieldData = typeof data;
+export type RawFieldData = typeof data;
+
+export type FieldData = Omit<RawFieldData, 'scripts' | 'tiles'> & {
+  scripts: Script[];
+  tiles: {
+    index: number,
+    X: number,
+    Y: number,
+    Z: number,
+    texID: number,
+    isBlended: number,
+    depth: number,
+    palID: number,
+    layerID: number,
+    blendType: number,
+    parameter: number,
+    state: number,
+  }[]
+};
 
 type FieldProps = {
   data: Omit<FieldData, 'scripts'> & {
@@ -91,8 +110,8 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
         return;
       }
 
-      const response = await fetch(`/output/${pendingFieldId}.json`);
-      const data = await response.json() as FieldProps['data'];
+      const data = await getFieldData(pendingFieldId);
+
       setData(data);
 
       const pendingCharacterPosition = useGlobalStore.getState().pendingCharacterPosition;
@@ -102,6 +121,7 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
         characterPosition: pendingCharacterPosition ?? getInitialEntrance(data),
         pendingCharacterPosition: undefined,
 
+        hasMoved: false,
         isUserControllable: pendingFieldId !== 'start0',
         isRunEnabled: true,
 

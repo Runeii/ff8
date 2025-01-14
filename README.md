@@ -13,3 +13,8 @@ https://docs.google.com/spreadsheets/d/1A19nUPFqvhmwBfkm0oJiAowiaPbEgGUX4jCSOSel
 * Parse NPC chara.one files
 * Finish implementation of remaining opcodes
 * Add animated rotations/look to NPC characters
+
+
+
+Notes for opcodes:
+* Music takes 0 or 1 for channel (dualmusic)

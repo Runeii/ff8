@@ -41,6 +41,13 @@ const useMethod = ({
   const [currentOpcodeIndex, setCurrentOpcodeIndex] = useState(0);
 
   useEffect(() => {
+    if (!isDebugging || !isActive || currentOpcodeIndex > 0) {
+      return;
+    }
+    console.log('Starting', script.groupId, key, methodId);
+  }, [currentOpcodeIndex, isDebugging, isActive, key, script.groupId, methodId]);
+
+  useEffect(() => {
     if (!isActive) {
       return;
     }
@@ -97,7 +104,7 @@ const useMethod = ({
       return;
     }
 
-    if (isDebugging) {
+    if (isDebugging && script.groupId === 8) {
       console.log('Executing', methodId, currentOpcode)
     }
 
@@ -158,16 +165,16 @@ const useMethod = ({
   }, [onComplete]);
   
   const hasCompletedRun = !!(method && (currentOpcodeIndex >= method.opcodes.length && !isLooping));
+
   useEffect(() => {
     if (!hasCompletedRun) {
       return;
     }
     if (isDebugging) {
-      console.log(`Method ${methodId} has completed`);
-      console.log('Firing while paused?', isPaused, methodId, currentOpcodeIndex);
+      console.log('Completed', script.groupId, key, methodId);
     }
     onCompleteRef.current?.();
-  }, [hasCompletedRun,currentOpcodeIndex, isPaused, isDebugging, methodId]);
+  }, [hasCompletedRun, currentOpcodeIndex, isPaused, isDebugging, methodId, script.groupId, key]);
 }
 
 export default useMethod;

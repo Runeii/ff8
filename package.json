@@ -16,12 +16,14 @@
     "@react-spring/web": "^9.7.5",
     "@react-three/drei": "^9.114.6",
     "@react-three/fiber": "^8.17.10",
+    "howler": "^2.2.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "three": "^0.169.0",
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@types/howler": "^2.2.12",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@types/three": "^0.167.1",
@@ -32,7 +34,9 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "r3f-perf": "^7.2.3",
+    "sharp": "^0.33.5",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "vite-plugin-image-optimizer": "^1.1.8"
   }
 }

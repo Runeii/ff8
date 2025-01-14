@@ -42,7 +42,7 @@ const TalkRadius = ({ setActiveMethodId, talkMethod, useScriptStateStore }: Talk
     if (!talkMethod) {
       return false;
     }
-    return talkMethod.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'RET').length > 0;
+    return talkMethod.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET').length > 0;
   }, [talkMethod]);
 
   const hasActiveText = useGlobalStore(state => state.currentMessages.length > 0);

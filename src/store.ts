@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { Vector3 } from 'three';
 import { SpringValue } from '@react-spring/web';
 import MAP_NAMES from './constants/maps';
+import type { Howl} from 'howler';
 
 interface GlobalState {
   isDebugMode: boolean,
@@ -19,6 +20,7 @@ interface GlobalState {
   pendingFieldId: typeof MAP_NAMES[number],
 
   initialAngle: number,
+  hasMoved: boolean,
   isUserControllable: boolean,
   isRunEnabled: boolean,
 
@@ -41,8 +43,8 @@ interface GlobalState {
   availableCharacters: number[],
   party: number[],
   congaWaypointHistory: CongaHistory[],
-  playerSpeed: number,
-  playerAnimationIndex: number,
+  playerMovementSpeed: number,
+  isPartyFollowing: boolean,
 
   currentFocusActor?: number,
 
@@ -50,6 +52,10 @@ interface GlobalState {
   lockedTriangles: number[],
 
   activeCameraId: number,
+
+  backgroundMusicSrc?: string,
+  backgroundMusic?: Howl,
+  dualMusic?: Howl,
 }
 
 const useGlobalStore = create<GlobalState>()(() => ({
@@ -64,6 +70,7 @@ const useGlobalStore = create<GlobalState>()(() => ({
   pendingFieldId: undefined as unknown as typeof MAP_NAMES[number],
 
   currentLocationPlaceName: 0, // we don't currently use this for anything
+  hasMoved: false,
   isUserControllable: false,
   isRunEnabled: true,
   initialAngle: 0,
@@ -83,8 +90,8 @@ const useGlobalStore = create<GlobalState>()(() => ({
   availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   party: [0, 2, 5],
   congaWaypointHistory: [],
-  playerSpeed: 0,
-  playerAnimationIndex: 0,
+  playerMovementSpeed: 0,
+  isPartyFollowing: true,
 
   currentFocusActor: undefined,
 
@@ -93,6 +100,10 @@ const useGlobalStore = create<GlobalState>()(() => ({
   lockedTriangles: [],
 
   activeCameraId: 0,
+
+  backgroundMusicSrc: undefined,
+  backgroundMusic: undefined,
+  dualMusic: undefined,
 }))
 
 export default useGlobalStore

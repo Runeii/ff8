@@ -14,10 +14,10 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
     const geometries = walkmesh.map(triangle => {
       const geometry = new BufferGeometry();
       const vertices = new Float32Array([
-        ...vectorToFloatingPoint(triangle.vertices[0]).toArray(),
-        ...vectorToFloatingPoint(triangle.vertices[1]).toArray(),
-        ...vectorToFloatingPoint(triangle.vertices[2]).toArray(),
-        ...vectorToFloatingPoint(triangle.vertices[0]).toArray(),
+        ...vectorToFloatingPoint(triangle[0]).toArray(),
+        ...vectorToFloatingPoint(triangle[1]).toArray(),
+        ...vectorToFloatingPoint(triangle[2]).toArray(),
+        ...vectorToFloatingPoint(triangle[0]).toArray(),
       ]);
 
       geometry.setAttribute('position', new BufferAttribute(vertices, 3));      
@@ -37,11 +37,13 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
 
+  const lockedTriangles = useGlobalStore(state => state.lockedTriangles);
+
   return (
     <group name="walkmesh">
       {walkMeshGeometry.map((geometry, index) => (
         <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={isDebugMode}>
-          <meshBasicMaterial color={"red"} transparent opacity={0.2} side={DoubleSide} />
+          <meshBasicMaterial color={lockedTriangles.includes(index) ? "black" : 'yellow'} transparent opacity={0.2} side={DoubleSide} />
         </mesh>
       ))}
     </group>

@@ -7,6 +7,8 @@ type AnimationControllerState = {
   activeAction: AnimationAction | undefined;
   isPlaying: boolean;
   speed: number;
+
+  currentlyPlayingIdleAnimationId: number | undefined;
   idleAnimationId: number | undefined;
   idleStartFrame: number | undefined;
   idleEndFrame: number | undefined;
@@ -19,7 +21,8 @@ export function createAnimationController() {
     activeAction: undefined,
     isPlaying: false,
     speed: 30,
-
+    
+    currentlyPlayingIdleAnimationId: undefined,
     idleAnimationId: undefined,
     idleStartFrame: undefined,
     idleEndFrame: undefined,
@@ -168,12 +171,19 @@ export function createAnimationController() {
   }
 
   const playIdleAnimation = () => {
-    const { idleAnimationId, idleStartFrame, idleEndFrame } = state.getState();
+    const { currentlyPlayingIdleAnimationId, idleAnimationId, idleStartFrame, idleEndFrame } = state.getState();
 
     if (idleAnimationId === undefined) {
       console.warn("No idle animation set. Call setIdleAnimation first.");
       return;
     }
+
+    if (currentlyPlayingIdleAnimationId === idleAnimationId) {
+      return;
+    }
+
+    state.setState({ currentlyPlayingIdleAnimationId: idleAnimationId });
+
     return playAnimation({
       animationId: idleAnimationId,
       startFrame: idleStartFrame,

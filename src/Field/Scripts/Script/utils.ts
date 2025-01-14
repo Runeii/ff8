@@ -53,19 +53,11 @@ export const remoteExecute = (scriptLabel: number, source: string, partyMemberId
       return;
     }
     
-    console.log('scriptFinished', detail)
     resolve();
   });
-  //console.log('Dispatching request from', source, 'to', scriptLabel, partyMemberId)
+
   const { party } = useGlobalStore.getState();
-  console.log('Dispatch request', scriptLabel, {
-    detail: {
-      key,
-      scriptLabel,
-      partyMemberId: partyMemberId ? party[partyMemberId] : undefined,
-      source,
-    } as ExecuteScriptEventDetail
-  })
+
   document.dispatchEvent(new CustomEvent('executeScript', {
     detail: {
       key,
@@ -86,8 +78,6 @@ export const remoteExecuteOnPartyEntity = (partyMemberId: number, methodIndex: n
 
     resolve();
   });
-
-  // console.log('Dispatching request from', source, 'to', methodIndex, 'on', partyMemberId)
 
   const { party } = useGlobalStore.getState();
 
@@ -165,4 +155,26 @@ export const convertRadiansTo255 = (radians: number) => {
     throw new Error("Radians must be in the range 0 to 2π.");
   }
   return Math.round(radians * (255 / (2 * Math.PI)));
+}
+
+
+export const hasCrossedLine = (vector1: Vector3, vector2: Vector3, linePoint1: Vector3, linePoint2: Vector3) => {
+  // Create line direction vector
+  const lineDirection = new Vector3()
+      .subVectors(linePoint2, linePoint1)
+      .normalize();
+
+  // Create vectors from line start to each point
+  const toVector1 = new Vector3().subVectors(vector1, linePoint1);
+  const toVector2 = new Vector3().subVectors(vector2, linePoint1);
+
+  // Calculate cross products
+  const cross1 = new Vector3().crossVectors(lineDirection, toVector1);
+  const cross2 = new Vector3().crossVectors(lineDirection, toVector2);
+
+  // Calculate dot product of the cross products
+  // If negative, points are on opposite sides
+  const dotProduct = cross1.dot(cross2);
+
+  return dotProduct < 0;
 }

@@ -79,6 +79,8 @@ export const turnToFaceEntity = async (thisId: number, targetName: string, durat
   turnToFaceAngle(angle255, duration, spring);
 }
 
+export const calculateMovingSpeed = (distance: number, movementSpeed: number) => distance / movementSpeed * 3 * 10000000
+
 export const moveToPoint = async (spring: SpringValue<number[]>, targetPoint: Vector3, movementSpeed: number, isDebugging?: boolean) => {
   const start = spring.get();
   const distance = targetPoint.distanceTo(new Vector3(...start));
@@ -88,7 +90,10 @@ export const moveToPoint = async (spring: SpringValue<number[]>, targetPoint: Ve
   await spring.start(targetPoint.toArray(), {
     immediate: false,
     config: {
-      duration: distance / movementSpeed * 3 * 10000000,
+      duration: calculateMovingSpeed(distance, movementSpeed)
+    },
+    onRest: () => {
+      console.log('Finished moving to point:', targetPoint.toArray());
     }
   })
 }
@@ -98,7 +103,7 @@ export const isTouching = (thisId: number, targetName: string, scene: Scene) => 
   const targetMesh = scene.getObjectByName(targetName) as Group;
 
   if (!thisMesh || !targetMesh) {
-    console.warn('Error checking if touching:', thisMesh, targetMesh);
+    console.warn('Error checking if touching:', thisId, thisMesh, targetMesh);
     return false;
   }
 

@@ -20,8 +20,25 @@ const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationPr
 
   const { isIntersecting, wasIntersecting, hasEverExited } = useLineIntersection(linePoints ?? undefined, isLineOn);
 
-  useTriggerEvent('touchon',  script, setActiveMethodId, isIntersecting && hasEverExited);
-  useTriggerEvent('touchoff', script, setActiveMethodId, !isIntersecting && wasIntersecting && hasEverExited);
+
+  const hasValidTouchHandler = useMemo(() => {
+    const touchMethod = script.methods.find(method => method.methodId === 'touch')
+    if (!touchMethod) {
+      return false;
+    }
+    return touchMethod.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET').length > 0;
+  }, [script]);
+
+  const hasValidAcrossHandler = useMemo(() => {
+    const acrossMethod = script.methods.find(method => method.methodId === 'across')
+    if (!acrossMethod) {
+      return false;
+    }
+    return acrossMethod.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET').length > 0;
+  }, [script]);
+  
+  useTriggerEvent(hasValidTouchHandler ? 'touch' : 'touchon',  script, setActiveMethodId, isIntersecting && hasEverExited);
+  useTriggerEvent(hasValidAcrossHandler ? 'across' : 'touchoff', script, setActiveMethodId, !isIntersecting && wasIntersecting && hasEverExited);
 
   const talkPosition = useMemo(() => {
     if (!linePoints || !linePoints?.[0] || !linePoints?.[1]) {
