@@ -72,7 +72,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
       return
     }
 
-    const player = scene.getObjectByName("character");
+    const player = scene.getObjectByName("focus");
 
     if (!initialCameraTargetPosition || !player) {
       return
@@ -126,8 +126,11 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     const pitchRotation = new Quaternion().setFromAxisAngle(RIGHT, -calculateAngleForParallax(finalPanY, cameraZoom));
     camera.quaternion.multiply(pitchRotation);
 
-    backgroundPanRef.current.panX = finalPanX + boundaries.left;
-    backgroundPanRef.current.panY = -finalPanY + boundaries.top;
+    backgroundPanRef.current.boundaries = boundaries;
+    backgroundPanRef.current.panX = finalPanX
+    backgroundPanRef.current.panY = finalPanY;
+    //backgroundPanRef.current.panX = finalPanX + boundaries.left;
+    //backgroundPanRef.current.panY = -finalPanY + boundaries.top;
   });
 
   return null;

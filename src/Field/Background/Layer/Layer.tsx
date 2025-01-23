@@ -81,8 +81,7 @@ type LayerProps = {
 const Layer = ({ backgroundPanRef, tile }: LayerProps) => {
   const layerRef = useRef<Mesh<PlaneGeometry>>(null);
 
-  const { canvas, parameter, state, isBlended, blendType, layerID } = tile;
-
+  const { canvas, parameter, state, isBlended, blendType, layerID, layerRenderID } = tile;
   const [line] = useState<Line3>(new Line3(new Vector3(), new Vector3()));
   const [point] = useState<Vector3>(new Vector3());
   useFrame(({camera}) => {
@@ -104,6 +103,7 @@ const Layer = ({ backgroundPanRef, tile }: LayerProps) => {
     const direction = camera.getWorldDirection(new Vector3());
     line.start.copy(camera.getWorldPosition(new Vector3()));
     line.end.copy(line.start).add(direction.clone().multiplyScalar(length));
+
     layerRef.current.quaternion.copy(camera.quaternion);
 
     line.at(tile.Z / 1000, point);
@@ -145,11 +145,13 @@ const Layer = ({ backgroundPanRef, tile }: LayerProps) => {
     return texture;
   }, [pannedCanvas]);
 
+  const controlledScrolls = useGlobalStore(state => state.controlledScrolls)
+
   useFrame(() => {
     if (!layerRef.current) {
       return;
     }
-  
+
     pannedCanvas.width = SCREEN_WIDTH;
     pannedCanvas.height = SCREEN_HEIGHT;
 
@@ -160,10 +162,31 @@ const Layer = ({ backgroundPanRef, tile }: LayerProps) => {
     }
 
 
-    const panX = Math.round(backgroundPanRef.current.panX);
-    const panY = Math.round(backgroundPanRef.current.panY);
+    const boundaries = backgroundPanRef.current.boundaries;
 
+    const horizontalRange = boundaries.left - boundaries.right;
+    const verticalRange = boundaries.top - boundaries.bottom;
+
+    let panX = Math.round(backgroundPanRef.current.panX + boundaries.left);
+    let panY = Math.round(-backgroundPanRef.current.panY + boundaries.top);
+
+    const controlledScroll = controlledScrolls[layerRenderID]
+    if (controlledScroll) {
+      let xPos = backgroundPanRef.current.panX / horizontalRange;
+      if (Number.isNaN(xPos)) {
+        xPos = 0;
+      }
+      let yPos = backgroundPanRef.current.panY / verticalRange;
+      if (Number.isNaN(yPos)) {
+        yPos = 0;
+      }
+
+      panX = (boundaries.left + controlledScroll.x1) - (xPos * controlledScroll.x2);
+      panY = (boundaries.top + controlledScroll.y1) - (yPos * controlledScroll.y2);
+    }
+    
     context.imageSmoothingEnabled = false;
+    context.clearRect(0, 0, pannedCanvas.width, pannedCanvas.height);
     context.drawImage(
       canvas,
       0,

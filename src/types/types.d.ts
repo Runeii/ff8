@@ -37,6 +37,12 @@ declare global {
 
 
   type CameraPanAngle = {
+    boundaries: {
+      left: number,
+      right: number,
+      bottom: number,
+      top: number,
+    },
     panX: number,
     panY: number
   }

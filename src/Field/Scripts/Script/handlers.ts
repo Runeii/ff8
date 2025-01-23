@@ -44,6 +44,7 @@ export const MEMORY: Record<number, number> = {
   721: 0, // zell model
   722: 0, // selphie model
   723: 0, // quistis model
+  1025: 0,
 };
 
 export const MESSAGE_VARS: Record<number, string> = {};
@@ -269,6 +270,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   KEYSCAN: ({ STACK, TEMP_STACK }) => {
     const key = STACK.pop() as keyof typeof KEY_FLAGS
     const isDown = isKeyDown(key);
+    console.log(key, isDown)
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
   KEYSCAN2: ({ STACK, TEMP_STACK }) => {
@@ -1029,10 +1031,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
 
   // Turn to face entity
-  CTURN: ({ currentState, scene, script, STACK }) => {
+  CTURN: ({ currentOpcode, currentState, scene, script, STACK }) => {
     const duration = STACK.pop() as number;
     const targetId = STACK.pop() as number;
-
+    console.log(currentOpcode, script)
     turnToFaceEntity(script.groupId, `entity--${targetId}`, duration, scene, currentState.angle)
   },
   DIRA: ({ currentState, scene, script, STACK }) => {
@@ -1233,7 +1235,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     })
   },
   CSCROLL: ({ STACK }) => {
-    STACK.splice(-3);
+    //const x = 
+    STACK.pop() as number;
+    //const y = 
+    STACK.pop() as number;
+    // const duration =
+    STACK.pop() as number;
+    
   },
   CSCROLLA: ({ STACK }) => {
     STACK.splice(-2);

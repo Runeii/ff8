@@ -16,6 +16,7 @@ const TILES_PER_COLUMN = 64; // Number of tiles per column in texture
 
 export type TileWithTexture = FieldData['tiles'][number] & {
   canvas: HTMLCanvasElement,
+  layerRenderID: number,
   texture: CanvasTexture
 };
 
@@ -32,7 +33,11 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
     const groupedTiles: {
       [key: string]: TileWithTexture;
     } = {};
-  
+    
+    // We use this for some weird opcodes
+    let layerRenderIDs = tiles.map(tile => tile.layerID);
+    layerRenderIDs = layerRenderIDs.filter((id, index) => layerRenderIDs.indexOf(id) === index).sort((a,b) => a - b);
+
     tiles.forEach((tile) => {
       const layerId = `${tile.layerID}-${tile.Z}-${tile.blendType}-${tile.parameter}-${tile.state}`;
 
@@ -83,6 +88,7 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
       groupedTiles[layerId] = {
         ...tile,
         canvas,
+        layerRenderID: layerRenderIDs.indexOf(tile.layerID),
         texture: new CanvasTexture(canvas),
       };
     });

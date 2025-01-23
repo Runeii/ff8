@@ -3,6 +3,7 @@ import { Vector3 } from 'three';
 import { SpringValue } from '@react-spring/web';
 import MAP_NAMES from './constants/maps';
 import type { Howl} from 'howler';
+import { FieldData } from './Field/Field';
 
 interface GlobalState {
   isDebugMode: boolean,
@@ -56,6 +57,8 @@ interface GlobalState {
   backgroundMusicSrc?: string,
   backgroundMusic?: Howl,
   dualMusic?: Howl,
+
+  fieldData?: FieldData,
 }
 
 const useGlobalStore = create<GlobalState>()(() => ({
@@ -88,7 +91,7 @@ const useGlobalStore = create<GlobalState>()(() => ({
   isMapFadeEnabled: true,
 
   availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-  party: [0, 2, 5],
+  party: [0, 1, 5],
   congaWaypointHistory: [],
   playerMovementSpeed: 0,
   isPartyFollowing: true,
@@ -104,6 +107,8 @@ const useGlobalStore = create<GlobalState>()(() => ({
   backgroundMusicSrc: undefined,
   backgroundMusic: undefined,
   dualMusic: undefined,
+
+  fieldData: undefined,
 }))
 
 export default useGlobalStore

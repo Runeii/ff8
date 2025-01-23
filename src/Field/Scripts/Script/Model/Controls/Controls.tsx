@@ -8,6 +8,7 @@ import { checkForIntersections, getPositionOnWalkmesh, WORLD_DIRECTIONS } from "
 import useGlobalStore from "../../../../../store";
 import  { ScriptStateStore } from "../../state";
 import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "../../utils";
+import Focus from "./Focus/Focus";
 
 type ControlsProps = {
   children: React.ReactNode;
@@ -190,6 +191,7 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
   return (
     <group name="character">
       {children}
+      <Focus />
       <Box args={[0.05, 0.05, CHARACTER_HEIGHT + 1]} position={[0,0,CHARACTER_HEIGHT / 2]} name="hitbox" visible={isDebugMode}>
         <meshBasicMaterial color="green" opacity={0.2} transparent />
       </Box>
