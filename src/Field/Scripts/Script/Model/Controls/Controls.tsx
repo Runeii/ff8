@@ -63,6 +63,7 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
   }, [movementSpeed]);
 
   const fieldDirection = useGlobalStore(state => state.fieldDirection);
+  const isUserControllable = useGlobalStore(state => state.isUserControllable);
   useFrame(({ camera, scene }, delta) => {
     if (position.isAnimating) {
       return;
@@ -99,7 +100,7 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
       direction.add(meshMoveRight);
     }
 
-    if (direction.lengthSq() <= 0 ) {
+    if (direction.lengthSq() <= 0 || !isUserControllable) {
       useScriptStateStore.setState({
         movementSpeed: 0,
       })

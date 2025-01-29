@@ -32,6 +32,7 @@ export function createAnimationController() {
 
   const initialize = (mixerInstance: AnimationMixer, animationClips: AnimationClip[]) => {
     state.setState({
+      currentlyPlayingIdleAnimationId: undefined,
       mixer: mixerInstance,
       clips: animationClips,
     });

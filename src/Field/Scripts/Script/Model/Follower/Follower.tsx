@@ -10,7 +10,7 @@ type FollowerProps = {
   useScriptStateStore: ScriptStateStore
 }
 
-const DISTANCE = 20;
+const DISTANCE = 10;
 
 const Follower = ({ children, partyMemberId, useScriptStateStore}: FollowerProps) => {
   const offset = useGlobalStore(state => state.party.findIndex(id => id === partyMemberId));
