@@ -30,7 +30,7 @@ export default function App() {
           aspect: ASPECT_RATIO,
           near: 0.0001,
           far: 100,
-        }} className="canvas">
+        }} frameloop='demand' className="canvas">
           <Entrypoint />
           {isDebugMode && <Perf />}
         </Canvas>

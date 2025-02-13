@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import {  useThree } from "@react-three/fiber";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 const KEY_MAP: Record<string, keyof MovementFlags> = {
   ArrowUp: "forward",
@@ -12,20 +13,26 @@ const KEY_MAP: Record<string, keyof MovementFlags> = {
 };
 
 export const onMovementKeyPress = (
-  movementFlags: React.MutableRefObject<MovementFlags>,
+  invalidate: (frames?: number) => void,
+  setMovementFlags: Dispatch<SetStateAction<MovementFlags>>,
   value: boolean
 ) => (event: KeyboardEvent) => {
+  invalidate()
   const movementKey = KEY_MAP[event.code];
 
-  if (movementKey) {
-    movementFlags.current[movementKey] = value;
-  }
-
-  movementFlags.current.isWalking = event.shiftKey;
+  setMovementFlags((movementFlags: MovementFlags) => {
+    const currentFlags: MovementFlags = { ...movementFlags };
+    if (Object.keys(movementFlags).includes(movementKey)) {
+      currentFlags[movementKey] = value;
+    }
+    currentFlags.isWalking = event.shiftKey;
+    return currentFlags;
+  });
 };
 
 const useKeyboardControls = () => {
-  const movementFlagsRef = useRef<MovementFlags>({
+  const invalidate = useThree(({ invalidate }) => invalidate);
+  const [movementFlags, setMovementFlags] = useState<MovementFlags>({
     forward: false,
     backward: false,
     left: false,
@@ -34,8 +41,8 @@ const useKeyboardControls = () => {
   });
 
   useEffect(() => {
-    const handleKeyDown = onMovementKeyPress(movementFlagsRef, true);
-    const handleKeyUp = onMovementKeyPress(movementFlagsRef, false);
+    const handleKeyDown = onMovementKeyPress(invalidate, setMovementFlags, true);
+    const handleKeyUp = onMovementKeyPress(invalidate, setMovementFlags, false);
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
@@ -44,9 +51,9 @@ const useKeyboardControls = () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [invalidate]);
 
-  return movementFlagsRef.current;
+  return movementFlags;
 };
 
 export default useKeyboardControls;

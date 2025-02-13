@@ -98,7 +98,7 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
     const handleTransition = async () => {
       const {isMapFadeEnabled} = useGlobalStore.getState();
 
-      if (isMapFadeEnabled) {
+      if (isMapFadeEnabled && import.meta.env.DEV !== true) {
        await opacitySpring.start(0);
       }
 

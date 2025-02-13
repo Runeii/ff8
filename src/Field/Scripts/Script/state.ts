@@ -2,6 +2,7 @@ import { SpringValue } from '@react-spring/web';
 import { Vector3 } from 'three';
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import type { Howl} from 'howler';
+import { invalidate } from '@react-three/fiber';
 
 export type ScriptState = {
   hasRemovedControl: boolean;
@@ -88,7 +89,11 @@ export const createScriptState = () => {
     headAngle: new SpringValue(0),
 
     // @ts-expect-error Weird spring value issue with arrays
-    position: new SpringValue([0, 0, 0]),
+    position: new SpringValue([0, 0, 0], {
+      onChange: () => {
+        invalidate()
+      }
+    }),
     movementDuration: 0,
     movementSpeed: 0,
     movementTarget: undefined,

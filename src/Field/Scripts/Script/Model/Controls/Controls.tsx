@@ -1,5 +1,5 @@
 import { Box } from "@react-three/drei";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Group, Mesh, Object3D, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
 import { useFrame, useThree } from "@react-three/fiber";
@@ -23,6 +23,8 @@ const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
 const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
+  const frameloop = useThree(({ frameloop }) => frameloop);
+  const invalidate = useThree(({ invalidate }) => invalidate);
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();
@@ -64,6 +66,7 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
 
   const fieldDirection = useGlobalStore(state => state.fieldDirection);
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
+  const previousDirectionLengthSq = useRef(0);
   useFrame(({ camera, scene }, delta) => {
     if (position.isAnimating) {
       return;
@@ -74,39 +77,48 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
     }
 
     const walkmesh = scene.getObjectByName("walkmesh");
-
+    
     if (!player || !walkmesh) {
       return;
     }
-
+    
     direction.copy(ZERO_VECTOR);
-
+    
     const {rightVector: meshMoveRight} = getCameraDirections(camera);
     const {forwardVector} = getCharacterForwardDirection(camera);
     const meshMoveDown = forwardVector.clone().negate();
     if (movementFlags.forward) {
       direction.sub(meshMoveDown);
     }
-
+    
     if (movementFlags.backward) {
       direction.add(meshMoveDown);
     }
-
+    
     if (movementFlags.left) {
       direction.sub(meshMoveRight);
     }
-
+    
     if (movementFlags.right) {
       direction.add(meshMoveRight);
     }
 
+    if (direction.lengthSq() <= 0 && direction.lengthSq() === previousDirectionLengthSq.current) {
+      return;
+    }
+
+    invalidate()
+
+    previousDirectionLengthSq.current = direction.lengthSq();
+
     if (direction.lengthSq() <= 0 || !isUserControllable) {
+      console.log('exit')
       useScriptStateStore.setState({
         movementSpeed: 0,
       })
       return;
     }
-    
+
     const isWalking = !isRunEnabled || movementFlags.isWalking;
     const speed = isWalking ? WALKING_SPEED : RUNNING_SPEED
     direction.normalize().multiplyScalar(speed).multiplyScalar(delta);
@@ -118,6 +130,7 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
     const desiredPosition = new Vector3().fromArray(position.get()).add(direction);
 
     const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT);
+
 
     if (!newPosition) {
       return
@@ -139,6 +152,7 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
     direction.z = 0;
     direction.normalize();
 
+
     position.start([newPosition.x, newPosition.y, newPosition.z], {
       immediate: true,
     });
@@ -146,7 +160,6 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
     useGlobalStore.setState({
       hasMoved: true,
     });
-
     // Current forward
     const meshForward = new Vector3(-1,0,0).applyQuaternion(player.quaternion).normalize();
     meshForward.z = 0;
