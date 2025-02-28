@@ -1,5 +1,7 @@
 import {Howl} from 'howler'
 
+const BASE_VOLUME = 0.4;
+
 const MusicController = () => {
   let preloadedAudio: Howl | undefined = undefined;
   let preloadedSrc: string | undefined = undefined;
@@ -15,7 +17,8 @@ const MusicController = () => {
       src: [src],
       preload: true,
       loop: true,
-      autoplay: false
+      autoplay: false,
+      volume: BASE_VOLUME,
     }); 
     preloadedSrc = src;
   }
@@ -46,7 +49,7 @@ const MusicController = () => {
   }
 
   const dualMusic = (volume: number) => {
-    setVolume(1, volume);
+    setVolume(1, volume * BASE_VOLUME);
 
     if (preloadedSrc === channel1Src) {
       channel1!.pause();
@@ -89,7 +92,7 @@ const MusicController = () => {
     if (!audio) {
       return;
     }
-    audio.volume(volume / 127);
+    audio.volume(volume / 127 * BASE_VOLUME);
   }
 
   const transitionVolume = (channelId: number, volume: number, duration: number) => {
@@ -97,7 +100,7 @@ const MusicController = () => {
     if (!audio) {
       return;
     }
-    audio.fade(audio.volume(), volume / 127, duration * 30); // FPS
+    audio.fade(audio.volume(), volume / 127 * BASE_VOLUME, duration * 30); // FPS
   }
 
   return {
