@@ -33,8 +33,7 @@ export const displayMessage = async (id: number, x: number, y: number, channel: 
     channel,
     width,
     height,
-    isCloseable
-  });
+  }, isCloseable);
 }
 
 export const turnToFaceAngle = async (angle: number, frames: number, spring: SpringValue<number>) => {

@@ -23,7 +23,6 @@ const direction = new Vector3();
 const ZERO_VECTOR = new Vector3(0, 0, 0);
 
 const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
-  const frameloop = useThree(({ frameloop }) => frameloop);
   const invalidate = useThree(({ invalidate }) => invalidate);
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   

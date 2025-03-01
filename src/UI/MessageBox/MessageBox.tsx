@@ -1,13 +1,29 @@
-import { Box, Plane, useTexture } from "@react-three/drei"
+import {  Plane, useTexture } from "@react-three/drei"
 import { useEffect, useLayoutEffect, useMemo, useState } from "react"
-import { BackSide, CanvasTexture, ClampToEdgeWrapping, DoubleSide, FrontSide, RepeatWrapping, TextureLoader } from "three"
+import { CanvasTexture, ClampToEdgeWrapping, RepeatWrapping } from "three"
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants"
+import { useFrame } from "@react-three/fiber"
+import { fontLayout, fontWidths} from "./fontLayout.ts"
+import { processTagsInString } from "../Text/textUtils.ts"
+import useGlobalStore from "../../store.ts"
 
 type MessageBoxProps = {
   message: Message
 }
 
 const SAFE_BOUNDS = 8;
+
+const SOURCE_TILE_SIZE = 95.8;
+
+const OUTPUT_TILE_SIZE = 24;
+const OUTPUT_HEIGHT_MODIFIER = 1;
+const OUTPUT_LINE_HEIGHT = OUTPUT_TILE_SIZE * OUTPUT_HEIGHT_MODIFIER * 1.4;
+const OPTION_MARGIN = OUTPUT_TILE_SIZE * 1.5;
+
+
+const LEFT_MARGIN = OUTPUT_TILE_SIZE / 2;
+const TOP_MARGIN = OUTPUT_TILE_SIZE / 2;
+
 
 // We are working in 320x240 screen space here
 const calculatePlacement = (message: Message, width: number, height: number) => {
@@ -21,7 +37,7 @@ const calculatePlacement = (message: Message, width: number, height: number) => 
 
   const safeMaxX = SCREEN_WIDTH - SAFE_BOUNDS - width;
   const safeMaxY = SCREEN_HEIGHT - SAFE_BOUNDS - height;
-console.log(safeMaxY, SCREEN_HEIGHT, height, SAFE_BOUNDS)
+
   const finalX = Math.min(safeX, safeMaxX);
   const finalY = Math.min(safeY, safeMaxY);
 
@@ -31,17 +47,6 @@ console.log(safeMaxY, SCREEN_HEIGHT, height, SAFE_BOUNDS)
   }
 }
 
-const SOURCE_TILE_SIZE = 95.8;
-
-const OUTPUT_TILE_SIZE = 24;
-const OUTPUT_HEIGHT_MODIFIER = 1;
-const OUTPUT_LINE_HEIGHT = OUTPUT_TILE_SIZE * OUTPUT_HEIGHT_MODIFIER * 1.4;
-const OPTION_MARGIN = OUTPUT_TILE_SIZE * 1.5;
-
-import { useFrame } from "@react-three/fiber"
-import { fontLayout, fontWidths} from "./fontLayout.ts"
-import { processTagsInString } from "../Text/textUtils.ts"
-import useGlobalStore from "../../store.ts"
 
 const MessageBox = ({ message }: MessageBoxProps) => {
   const { id, text, askOptions, isCloseable } = message;
@@ -117,30 +122,18 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     }));
   }, [currentIndex, currentPage, id, text.length]);
 
-  useFrame(() => {
-    const ctx = textCanvas.getContext('2d');
-    if (!ctx) {
-      return;
-    }
-
-    textCanvas.width = SCREEN_WIDTH * 2;
-    textCanvas.height = SCREEN_HEIGHT * 2;
-
-    ctx.fillStyle = 'rgba(0, 0, 0, 0)';
-    ctx.fillRect(0, 0, textCanvas.width, textCanvas.height);
-
-
-    ctx.fillStyle = 'white';
-
-    const leftMargin = OUTPUT_TILE_SIZE / 2;
-    const topMargin = OUTPUT_TILE_SIZE / 2;
-
-    let x = leftMargin;
-    let y = topMargin;
+  const { placements, width, height, selectedY } = useMemo(() => {
+    let x = LEFT_MARGIN;
+    let y = TOP_MARGIN;
     let highestX = 0;
 
-    const placements = [];
-    formattedText?.split('\n').forEach((line, index) => {
+    const placements: {
+      rowIndex: number;
+      columnIndex: number;
+      x: number;
+      y: number;
+    }[] = [];
+    formattedText?.split('\n').forEach((line) => {
       line.split('').forEach((char) => {
         const rowIndex = fontLayout.findIndex((layoutRow) => layoutRow.includes(char));
         const columnIndex = fontLayout[rowIndex].indexOf(char);
@@ -151,7 +144,7 @@ const MessageBox = ({ message }: MessageBoxProps) => {
           baseWidth = 0.7;
         }
 
-        const character_width = OUTPUT_TILE_SIZE * (fontWidths[char] ?? baseWidth);
+        const character_width = OUTPUT_TILE_SIZE * (fontWidths[char as keyof typeof fontWidths] ?? baseWidth);
 
         placements.push({
           rowIndex,
@@ -164,10 +157,10 @@ const MessageBox = ({ message }: MessageBoxProps) => {
         highestX = Math.max(highestX, x);
       })
       y += OUTPUT_LINE_HEIGHT;
-      x = leftMargin;
+      x = LEFT_MARGIN;
     });
 
-    x = leftMargin + OPTION_MARGIN;
+    x = LEFT_MARGIN + OPTION_MARGIN;
 
     let selectedY = 0;
     options?.forEach((line, index) => {
@@ -184,7 +177,7 @@ const MessageBox = ({ message }: MessageBoxProps) => {
           baseWidth = 0.7;
         }
 
-        const character_width = OUTPUT_TILE_SIZE * (fontWidths[char] ?? baseWidth);
+        const character_width = OUTPUT_TILE_SIZE * (fontWidths[char as keyof typeof fontWidths] ?? baseWidth);
 
         placements.push({
           rowIndex,
@@ -197,21 +190,39 @@ const MessageBox = ({ message }: MessageBoxProps) => {
         highestX = Math.max(highestX, x);
       })
       y += OUTPUT_LINE_HEIGHT;
-      x = leftMargin + OPTION_MARGIN;
+      x = LEFT_MARGIN + OPTION_MARGIN;
     });
 
-    const width = message.placement.width ? message.placement.width * 2 : highestX + leftMargin;
-    const height = message.placement.height ? message.placement.height * 2 : y + topMargin;
-    
-    const requestedX = message.placement.x ?? 0;
-    const requestedY = message.placement.y ?? 0;
+    const width = message.placement.width ? message.placement.width * 2 : highestX + LEFT_MARGIN / 2;
+    const height = message.placement.height ? message.placement.height * 2 : y + TOP_MARGIN / 2;
+
+    return {
+      placements,
+      width,
+      height,
+      selectedY
+    }
+  }, [currentIndex, formattedText, message.placement.height, message.placement.width, options]);
+
+  useFrame(() => {
+    const ctx = textCanvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+
+    textCanvas.width = SCREEN_WIDTH * 2;
+    textCanvas.height = SCREEN_HEIGHT * 2;
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+    ctx.fillRect(0, 0, textCanvas.width, textCanvas.height);
+
+
+    ctx.fillStyle = 'white';
     
     const placement = calculatePlacement(message, width / 2, height / 2);
-    //const xPos = (width / 2 + requestedX > SCREEN_WIDTH ? SCREEN_WIDTH - width / 2 : requestedX) * 2;
-    //const yPos = (height / 2 + requestedY > SCREEN_HEIGHT - SAFE_BOUNDS ? SCREEN_HEIGHT - height / 2 : requestedY) * 2;
     const xPos = placement.x * 2;
     const yPos = placement.y * 2;
-    ctx.imageSmoothingEnabled = false;
 
     // Draw background
     const gradient = ctx.createLinearGradient(0, 0, width, 0);
@@ -254,7 +265,7 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     }
     const cursorImageRatio = 15 / 24;
     const imageHeight = OUTPUT_TILE_SIZE * cursorImageRatio
-    ctx.drawImage(cursor.image, xPos + leftMargin, yPos + selectedY + ((OUTPUT_TILE_SIZE - imageHeight) / 2), OUTPUT_TILE_SIZE, imageHeight);
+    ctx.drawImage(cursor.image, xPos + LEFT_MARGIN, yPos + selectedY + ((OUTPUT_TILE_SIZE - imageHeight) / 2), OUTPUT_TILE_SIZE, imageHeight);
   });
 
   const texture = new CanvasTexture(textCanvas);

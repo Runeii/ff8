@@ -25,7 +25,7 @@ const WorldMap = () => {
     fadeInMap();
   
     const text = `Select destination:\n${Object.keys(points).join('\n')}`;
-    openMessage('worldMap', [text], { x: 0,  y: 0 }, {
+    openMessage('worldMap', [text], { x: 0,  y: 0 }, true, {
       first: 1,
       default: 1,
       cancel: undefined

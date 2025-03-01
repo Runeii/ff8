@@ -417,7 +417,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const uniqueId = `${id}--${Date.now()}`;
 
     useGlobalStore.setState({ isUserControllable: false });
-    const result = await openMessage(uniqueId, availableMessages[id], { x, y, channel }, {
+    const result = await openMessage(uniqueId, availableMessages[id], { x, y, channel }, true, {
       first,
       last,
       default: defaultOpt,
