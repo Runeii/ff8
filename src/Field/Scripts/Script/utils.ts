@@ -91,7 +91,7 @@ export const remoteExecuteOnPartyEntity = (partyMemberId: number, methodIndex: n
   }));
 })
 
-export const openMessage = (id: string, text: string[], placement: MessagePlacement, askOptions?: AskOptions) => new Promise<number>((resolve) => {
+export const openMessage = (id: string, text: string[], placement: MessagePlacement, askOptions?: AskOptions, isCloseable = true) => new Promise<number>((resolve) => {
   const { currentMessages } = useGlobalStore.getState();
 
   document.addEventListener('messageClosed', ({ detail }) => {
@@ -109,6 +109,7 @@ export const openMessage = (id: string, text: string[], placement: MessagePlacem
         id,
         text,
         placement,
+        isCloseable,
         askOptions,
       }
     ]

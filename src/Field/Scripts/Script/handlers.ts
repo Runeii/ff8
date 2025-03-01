@@ -36,7 +36,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 283, // progress
+  256: 0, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -371,7 +371,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     const { x, y, width, height } = currentState.winSize[channel];
 
-    displayMessage(id, x, y, channel, width, height);
+    displayMessage(id, x, y, channel, width, height, false);
   },
   AMES: async ({ STACK }) => {
     const y = STACK.pop() as number;

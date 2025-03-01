@@ -1,0 +1,277 @@
+import { Box, Plane, useTexture } from "@react-three/drei"
+import { useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { BackSide, CanvasTexture, ClampToEdgeWrapping, DoubleSide, FrontSide, RepeatWrapping, TextureLoader } from "three"
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants"
+
+type MessageBoxProps = {
+  message: Message
+}
+
+const SAFE_BOUNDS = 8;
+
+// We are working in 320x240 screen space here
+const calculatePlacement = (message: Message, width: number, height: number) => {
+  // Requested X/Y pos
+  const baseX = message.placement.x ?? 0;
+  const baseY = message.placement.y ?? 0;
+
+  // X/Y pos within safe bounds top/left
+  const safeX = Math.max(baseX, SAFE_BOUNDS);
+  const safeY = Math.max(baseY, SAFE_BOUNDS);
+
+  const safeMaxX = SCREEN_WIDTH - SAFE_BOUNDS - width;
+  const safeMaxY = SCREEN_HEIGHT - SAFE_BOUNDS - height;
+console.log(safeMaxY, SCREEN_HEIGHT, height, SAFE_BOUNDS)
+  const finalX = Math.min(safeX, safeMaxX);
+  const finalY = Math.min(safeY, safeMaxY);
+
+  return {
+    x: finalX,
+    y: finalY
+  }
+}
+
+const SOURCE_TILE_SIZE = 95.8;
+
+const OUTPUT_TILE_SIZE = 24;
+const OUTPUT_HEIGHT_MODIFIER = 1;
+const OUTPUT_LINE_HEIGHT = OUTPUT_TILE_SIZE * OUTPUT_HEIGHT_MODIFIER * 1.4;
+const OPTION_MARGIN = OUTPUT_TILE_SIZE * 1.5;
+
+import { useFrame } from "@react-three/fiber"
+import { fontLayout, fontWidths} from "./fontLayout.ts"
+import { processTagsInString } from "../Text/textUtils.ts"
+import useGlobalStore from "../../store.ts"
+
+const MessageBox = ({ message }: MessageBoxProps) => {
+  const { id, text, askOptions, isCloseable } = message;
+
+  const textCanvas = useMemo(() => document.createElement('canvas'), []);
+
+  const background = useTexture('message_background.png');
+  background.wrapS = RepeatWrapping; // Clamp horizontally (100% width)
+  background.wrapT = RepeatWrapping;      //
+  background.repeat.set(0.7, 40);
+  background.needsUpdate = true;
+  const font = useTexture('HDFont/merged_output/merged_white.png');
+  const cursor = useTexture('cursor.png');
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState((askOptions?.default ?? 0) - (askOptions?.first ?? 0));
+
+  const [formattedText, options] = useMemo(() => {
+    const formattedText = processTagsInString(text[currentPage]);
+    if (!askOptions) {
+      return [formattedText, null];
+    }
+    const splitLines = formattedText.split('\n');
+    // askOptions.first is first line, askOptions.last is last line, extract array of lines without mutating original array
+    const options = splitLines.slice(askOptions.first, askOptions.last ? askOptions.last + 1 : splitLines.length);
+    const originalText = splitLines.slice(0, askOptions.first).join('\n');
+    return [originalText, options];
+  }, [text, currentPage, askOptions]);
+
+  useLayoutEffect(() => {
+    const handleKeyDown = (e: Event) => {
+      const event = e as unknown as KeyboardEvent; 
+    
+      if (event.code === 'Space' && isCloseable) {
+        setCurrentPage(prev => prev + 1);
+      }
+      if (!options) {
+        return;
+      }
+      if (event.key === 'ArrowUp') {
+        setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+      }
+      if (event.key === 'ArrowDown') {
+        setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, options.length - 1));
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isCloseable,options, text]);
+
+  useEffect(() => {
+    if (currentPage < text.length) {
+      return;
+    }
+
+    useGlobalStore.setState(state => {
+      const currentMessages = state.currentMessages.filter(message => message.id !== id);
+      return {
+        ...state,
+        currentMessages
+      };
+    });
+
+    document.dispatchEvent(new CustomEvent('messageClosed', {
+      detail: {
+        id,
+        selectedOption: currentIndex,
+      }
+    }));
+  }, [currentIndex, currentPage, id, text.length]);
+
+  useFrame(() => {
+    const ctx = textCanvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+
+    textCanvas.width = SCREEN_WIDTH * 2;
+    textCanvas.height = SCREEN_HEIGHT * 2;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+    ctx.fillRect(0, 0, textCanvas.width, textCanvas.height);
+
+
+    ctx.fillStyle = 'white';
+
+    const leftMargin = OUTPUT_TILE_SIZE / 2;
+    const topMargin = OUTPUT_TILE_SIZE / 2;
+
+    let x = leftMargin;
+    let y = topMargin;
+    let highestX = 0;
+
+    const placements = [];
+    formattedText?.split('\n').forEach((line, index) => {
+      line.split('').forEach((char) => {
+        const rowIndex = fontLayout.findIndex((layoutRow) => layoutRow.includes(char));
+        const columnIndex = fontLayout[rowIndex].indexOf(char);
+
+        const isUppercase = char === char.toUpperCase();
+        let baseWidth = isUppercase ? 0.8 : 0.6;
+        if (Number.isInteger(parseInt(char))) {
+          baseWidth = 0.7;
+        }
+
+        const character_width = OUTPUT_TILE_SIZE * (fontWidths[char] ?? baseWidth);
+
+        placements.push({
+          rowIndex,
+          columnIndex,
+          x,
+          y,
+        });
+
+        x += character_width;
+        highestX = Math.max(highestX, x);
+      })
+      y += OUTPUT_LINE_HEIGHT;
+      x = leftMargin;
+    });
+
+    x = leftMargin + OPTION_MARGIN;
+
+    let selectedY = 0;
+    options?.forEach((line, index) => {
+      if (index === currentIndex) {
+        selectedY = y;
+      }
+      line.split('').forEach((char) => {
+        const rowIndex = fontLayout.findIndex((layoutRow) => layoutRow.includes(char));
+        const columnIndex = fontLayout[rowIndex].indexOf(char);
+
+        const isUppercase = char === char.toUpperCase();
+        let baseWidth = isUppercase ? 0.8 : 0.6;
+        if (Number.isInteger(parseInt(char))) {
+          baseWidth = 0.7;
+        }
+
+        const character_width = OUTPUT_TILE_SIZE * (fontWidths[char] ?? baseWidth);
+
+        placements.push({
+          rowIndex,
+          columnIndex,
+          x,
+          y,
+        });
+
+        x += character_width;
+        highestX = Math.max(highestX, x);
+      })
+      y += OUTPUT_LINE_HEIGHT;
+      x = leftMargin + OPTION_MARGIN;
+    });
+
+    const width = message.placement.width ? message.placement.width * 2 : highestX + leftMargin;
+    const height = message.placement.height ? message.placement.height * 2 : y + topMargin;
+    
+    const requestedX = message.placement.x ?? 0;
+    const requestedY = message.placement.y ?? 0;
+    
+    const placement = calculatePlacement(message, width / 2, height / 2);
+    //const xPos = (width / 2 + requestedX > SCREEN_WIDTH ? SCREEN_WIDTH - width / 2 : requestedX) * 2;
+    //const yPos = (height / 2 + requestedY > SCREEN_HEIGHT - SAFE_BOUNDS ? SCREEN_HEIGHT - height / 2 : requestedY) * 2;
+    const xPos = placement.x * 2;
+    const yPos = placement.y * 2;
+    ctx.imageSmoothingEnabled = false;
+
+    // Draw background
+    const gradient = ctx.createLinearGradient(0, 0, width, 0);
+    gradient.addColorStop(0, 'rgb(66,66,58)');
+    gradient.addColorStop(1, 'rgb(99,99,99)');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(xPos, yPos, width, height);
+
+    // Draw borders
+    ctx.strokeStyle = '#848484';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(xPos, yPos);
+    ctx.lineTo(xPos + width, yPos);
+    ctx.moveTo(xPos, yPos);
+    ctx.lineTo(xPos, yPos + height);
+    ctx.stroke()
+
+    ctx.strokeStyle = '#3a3a3a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(xPos + width, yPos);
+    ctx.lineTo(xPos + width, yPos + height);
+    ctx.moveTo(xPos, yPos + height);
+    ctx.lineTo(xPos + width, yPos + height);
+    ctx.stroke()
+
+    ctx.fillStyle = 'white';
+    placements.forEach(({ rowIndex, columnIndex, x, y }) =>
+      ctx.drawImage(
+        font.image,
+        columnIndex * SOURCE_TILE_SIZE, rowIndex * SOURCE_TILE_SIZE, SOURCE_TILE_SIZE, SOURCE_TILE_SIZE,
+        xPos + x, yPos + y, OUTPUT_TILE_SIZE, OUTPUT_TILE_SIZE
+      )
+    );
+
+    if (!options) {
+      return;
+    }
+    const cursorImageRatio = 15 / 24;
+    const imageHeight = OUTPUT_TILE_SIZE * cursorImageRatio
+    ctx.drawImage(cursor.image, xPos + leftMargin, yPos + selectedY + ((OUTPUT_TILE_SIZE - imageHeight) / 2), OUTPUT_TILE_SIZE, imageHeight);
+  });
+
+  const texture = new CanvasTexture(textCanvas);
+  texture.wrapS = ClampToEdgeWrapping;
+  texture.wrapT = ClampToEdgeWrapping;
+  texture.needsUpdate = true;
+
+  return (
+    <>
+    <Plane
+      args={[SCREEN_WIDTH, SCREEN_HEIGHT, 1]}
+      position={[SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2, -1]}
+    >
+      <meshBasicMaterial map={texture} transparent />
+    </Plane>
+    </>
+  );
+}
+
+export default MessageBox;

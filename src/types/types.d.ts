@@ -78,6 +78,7 @@ declare global {
     text: string[];
     placement: MessagePlacement;
     askOptions?: AskOptions
+    isCloseable: boolean;
   }
 
   type MessagePlacement = {

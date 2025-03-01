@@ -30,14 +30,14 @@ export default function App() {
           aspect: ASPECT_RATIO,
           near: 0.0001,
           far: 100,
-        }} frameloop='demand' className="canvas" gl={{
+        }} frameloop='always' className="canvas" gl={{
           logarithmicDepthBuffer: true,
         }}>
           <Entrypoint />
           {isDebugMode && <Perf />}
+          <Ui />
         </Canvas>
           {isDebugMode && <Memory />}
-          <Ui />
       </div>
       <Controller />
     </>

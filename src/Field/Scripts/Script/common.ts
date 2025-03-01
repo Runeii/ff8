@@ -23,7 +23,7 @@ export const fadeOutMap = async () => {
   canvasOpacitySpring.start(0);
 }
 
-export const displayMessage = async (id: number, x: number, y: number, channel: number, width?: number, height?: number) => {
+export const displayMessage = async (id: number, x: number, y: number, channel: number, width?: number, height?: number, isCloseable = true) => {
   const { availableMessages } = useGlobalStore.getState();
 
   const uniqueId = `${id}--${Date.now()}`;
@@ -32,7 +32,8 @@ export const displayMessage = async (id: number, x: number, y: number, channel: 
     y,
     channel,
     width,
-    height
+    height,
+    isCloseable
   });
 }
 

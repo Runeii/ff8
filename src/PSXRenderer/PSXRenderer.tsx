@@ -2,10 +2,11 @@ import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Mesh, MeshBasicMaterial, NearestFilter, PlaneGeometry, RGBFormat, WebGLRenderTarget } from 'three';
 import { OrthographicCamera } from '@react-three/drei';
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants/constants';
 
 const PSXRenderer = () => {
-  const WIDTH = 320;
-  const HEIGHT = 240;
+  const WIDTH = SCREEN_WIDTH;
+  const HEIGHT = SCREEN_HEIGHT;
 
   const { gl, scene, camera } = useThree();
   const renderTarget = useRef(new WebGLRenderTarget(WIDTH, HEIGHT, {
