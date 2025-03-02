@@ -54,6 +54,10 @@ const Controller = () => {
 
       window.dispatchEvent(keyEvent4);
     });
+
+    return () => {
+      joystick.destroy();
+    }
   }, []);
 
   return (
