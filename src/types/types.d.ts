@@ -1,4 +1,5 @@
 import { useAnimations } from "@react-three/drei";
+import { Blending } from "three";
 
 declare global {
   interface ExecuteScriptEventDetail {
@@ -114,6 +115,18 @@ declare global {
   }
 
 
+  type Layer = {
+    blendType: Blending;
+    canvas: HTMLCanvasElement;
+    isBlended: boolean;
+    layerID: number;
+    id: string;
+    parameter: number;
+    state: number;
+    z: number;
+  }
+
+  type Tile = FieldData['tiles'][number];
 }
 
 export { };

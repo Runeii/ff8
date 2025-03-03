@@ -1,10 +1,9 @@
 import { useLoader } from "@react-three/fiber";
 import { ClampToEdgeWrapping, NearestFilter, RGBAFormat, TextureLoader } from "three";
-import { FieldData } from "../Field/Field";
 import { useMemo } from "react";
 
-const useTilesTexture = (backgroundDetails: FieldData['backgroundDetails']) => {
-  const tilesTexture = useLoader(TextureLoader, `/output/sprites/${backgroundDetails.sprite}`);
+const useTilesTexture = (filename: string) => {
+  const tilesTexture = useLoader(TextureLoader, `/output/sprites/${filename}`);
 
   return useMemo(() => {
     tilesTexture.format = RGBAFormat;

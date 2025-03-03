@@ -1,123 +1,38 @@
-import { Plane } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef, useState } from "react";
-import {
-  AdditiveBlending,
-  CanvasTexture,
-  ClampToEdgeWrapping,
-  DoubleSide,
-  Line3,
-  Material,
-  MathUtils,
-  Mesh,
-  NearestFilter,
-  NoBlending,
-  NormalBlending,
-  PerspectiveCamera,
-  PlaneGeometry, 
-  SubtractiveBlending,
-  Vector3,
-} from "three";
-import { TileWithTexture } from "../Background";
-import useGlobalStore from "../../../store";
-import { FieldData } from "../../Field";
+import { useRef, useState } from "react";
+import { ClampToEdgeWrapping, Line3, NearestFilter, PerspectiveCamera, Sprite, SRGBColorSpace, Vector3 } from "three";
+import { useFrame, useThree } from "@react-three/fiber";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
-
-const BLENDS = {
-  1: AdditiveBlending,
-  2: SubtractiveBlending,
-  3: AdditiveBlending, // "+25%"
-  4: NoBlending,
-  0: NormalBlending // Default to normal blending for unknowns
-};
+import { getCameraDirections } from "../../Camera/cameraUtils";
+import useGlobalStore from "../../../store";
 
 
-function getPlaneScaleToFillFrustum(
-  plane: Mesh<PlaneGeometry, Material | Material[]>,
+function getVisibleDimensionsAtDistance(
   camera: PerspectiveCamera,
-  planeWidth: number = SCREEN_WIDTH,
-  planeHeight: number = SCREEN_HEIGHT
-): { x: number; y: number } {
-  // Get the world positions of the camera and the plane
-  const cameraWorldPosition = new Vector3();
-  camera.getWorldPosition(cameraWorldPosition);
-
-  const planeWorldPosition = new Vector3();
-  plane.getWorldPosition(planeWorldPosition);
-
-  // Compute the distance from the camera to the plane along the camera's view direction
-  const viewDirection = new Vector3();
-  camera.getWorldDirection(viewDirection);
-
-  const distance = planeWorldPosition.clone().sub(cameraWorldPosition).dot(viewDirection);
-  // If the plane is behind the camera, return zeros or handle as needed
-  if (distance <= 0) {
-    console.warn('Plane is behind the camera.');
-    return { x: 0, y: 0 };
-  }
-
-  // Convert the camera's field of view from degrees to radians
-  const fovInRadians = MathUtils.degToRad(camera.fov);
-
-  // Calculate the height and width of the frustum at the distance
-  const frustumHeight = 2 * distance * Math.tan(fovInRadians / 2);
-  const frustumWidth = frustumHeight * camera.aspect;
-
-  // Calculate the scale factors needed to match the frustum dimensions
-  const scaleX = frustumWidth / planeWidth;
-  const scaleY = frustumHeight / planeHeight;
-
-  // Return the scale factors
-  return { x: scaleX, y: scaleY };
+  distance: number
+): { width: number; height: number } {
+  // Calculate half the height based on the camera's FOV
+  const vFOV = camera.fov * Math.PI / 180; // Convert FOV to radians
+  const height = 2 * Math.tan(vFOV / 2) * Math.abs(distance);
+  
+  // Calculate width using the aspect ratio
+  const width = height * camera.aspect;
+  
+  return { width, height };
 }
 
-
 type LayerProps = {
-  backgroundDetails: FieldData['backgroundDetails']
   backgroundPanRef: React.MutableRefObject<CameraPanAngle>;
-  tile: TileWithTexture;
+  layer: Layer;
 };
 
-const Layer = ({ backgroundPanRef, tile }: LayerProps) => {
-  const layerRef = useRef<Mesh<PlaneGeometry>>(null);
+const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
+  const layerRef = useRef<Sprite>(null);
 
-  const { canvas, parameter, state, isBlended, blendType, layerID, layerRenderID } = tile;
   const [line] = useState<Line3>(new Line3(new Vector3(), new Vector3()));
   const [point] = useState<Vector3>(new Vector3());
-  useFrame(({camera}) => {
-    if (!layerRef.current) {
-      return;
-    }
 
-    const {initialTargetPosition, initialPosition} = camera.userData as {
-      initialPosition: Vector3,
-      initialTargetPosition: Vector3,
-    }
-    if (!initialPosition || !initialTargetPosition) {
-      return;
-    }
-    line.start.copy(initialPosition);
-    line.end.copy(initialTargetPosition);
-    const length = line.distance();
-
-    const direction = camera.getWorldDirection(new Vector3());
-    line.start.copy(camera.getWorldPosition(new Vector3()));
-    line.end.copy(line.start).add(direction.clone().multiplyScalar(length));
-
-    layerRef.current.quaternion.copy(camera.quaternion);
-
-    line.at(tile.Z / 1000, point);
-  
-    layerRef.current.position.copy(point);
-
-    layerRef.current.rotation.setFromQuaternion(camera.quaternion);
-    const scale = getPlaneScaleToFillFrustum(layerRef.current, camera as PerspectiveCamera);
-    layerRef.current.scale.set(scale.x * 1, scale.y * 1, 1)
-   })
-   
-   const isLayerVisible = useGlobalStore((storeState) => {
-
-    
+  const {layerID, parameter, state} = layer;
+  const isLayerVisible = useGlobalStore((storeState) => {
     const { backgroundLayerVisibility, currentParameterStates, currentParameterVisibility} = storeState;
 
     if (backgroundLayerVisibility[layerID] === false) {
@@ -135,41 +50,68 @@ const Layer = ({ backgroundPanRef, tile }: LayerProps) => {
     return true;
   });
 
-  const [pannedCanvas] = useState(document.createElement('canvas'));
-  const pannedTexture = useMemo(() => {
-    const texture = new CanvasTexture(pannedCanvas);
-    texture.wrapS = ClampToEdgeWrapping;
-    texture.wrapT = ClampToEdgeWrapping;
-    texture.minFilter = NearestFilter;
-    texture.magFilter = NearestFilter;
-    return texture;
-  }, [pannedCanvas]);
 
-  const controlledScrolls = useGlobalStore(state => state.controlledScrolls)
-
+  const camera = useThree(state => state.camera as PerspectiveCamera);
   useFrame(() => {
     if (!layerRef.current) {
       return;
     }
 
-    pannedCanvas.width = SCREEN_WIDTH;
-    pannedCanvas.height = SCREEN_HEIGHT;
+    const {initialTargetPosition, initialPosition} = camera.userData as {
+      initialPosition: Vector3,
+      initialTargetPosition: Vector3,
+    }
 
-    const context = pannedCanvas.getContext('2d');
-    if (!context) {
-      console.error('Could not get 2D context from canvas');
+    layerRef.current.visible = isLayerVisible;
+
+    if (!initialPosition || !initialTargetPosition || !isLayerVisible) {
       return;
     }
 
 
-    const boundaries = backgroundPanRef.current.boundaries;
+    /*
+    // Position
+    */
+    line.start.copy(initialPosition);
+    line.end.copy(initialTargetPosition);
+    const length = line.distance();
 
-    const horizontalRange = boundaries.left - boundaries.right;
-    const verticalRange = boundaries.top - boundaries.bottom;
+    const direction = camera.getWorldDirection(new Vector3());
+    line.start.copy(camera.getWorldPosition(new Vector3()));
+    line.end.copy(line.start).add(direction.clone().multiplyScalar(length));
 
-    let panX = Math.round(backgroundPanRef.current.panX + boundaries.left);
-    let panY = Math.round(-backgroundPanRef.current.panY + boundaries.top);
+    layerRef.current.quaternion.copy(camera.quaternion);
 
+    line.at(layer.z / 1000, point);
+  
+    layerRef.current.position.copy(point);
+
+    /*
+    // Scaling to fill frustum
+    */
+    // Get frustum width/height at distance
+    const layerPosition = layerRef.current.position.clone();
+    camera.worldToLocal(layerPosition);
+    const zDistance = Math.abs(layerPosition.z);
+    const result = getVisibleDimensionsAtDistance(camera, zDistance);
+
+    // First calculate scale relative to 320 wide
+    const widthScale = layer.canvas.width / SCREEN_WIDTH;
+    const width = result.width * widthScale;
+
+    // And then calculate height based on the aspect ratio
+    const heightScale = layer.canvas.height / layer.canvas.width;
+    const height = width * heightScale
+
+    layerRef.current.scale.set(width, height, 1)
+
+    /*
+    // Panning
+    */
+    const widthUnits = result.width / SCREEN_WIDTH;
+    const heightUnits = result.height / SCREEN_HEIGHT;
+
+    /*
     const controlledScroll = controlledScrolls[layerRenderID]
     if (controlledScroll) {
       let xPos = backgroundPanRef.current.panX / horizontalRange;
@@ -184,39 +126,30 @@ const Layer = ({ backgroundPanRef, tile }: LayerProps) => {
       panX = (boundaries.left + controlledScroll.x1) - (xPos * controlledScroll.x2);
       panY = (boundaries.top + controlledScroll.y1) - (yPos * controlledScroll.y2);
     }
+    */
     
-    context.imageSmoothingEnabled = false;
-    context.clearRect(0, 0, pannedCanvas.width, pannedCanvas.height);
-    context.drawImage(
-      canvas,
-      0,
-      0,
-      canvas.width,
-      canvas.height,
-      panX,
-      panY,
-      canvas.width,
-      canvas.height
-    );
+    const directions = getCameraDirections(camera);
 
-    pannedTexture.needsUpdate = true;
+    layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(backgroundPanRef.current.panX * widthUnits));
+    layerRef.current.position.add(directions.upVector.clone().multiplyScalar(backgroundPanRef.current.panY * heightUnits));
   })
-
-  if (!isLayerVisible) {
-    return null;
-  }
-
+     
   return (
-    <Plane args={[SCREEN_WIDTH, SCREEN_HEIGHT]} ref={layerRef} renderOrder={16 - layerID}>
-      <meshBasicMaterial
-        blending={isBlended ? BLENDS[blendType as keyof typeof BLENDS] : NormalBlending}
-        map={pannedTexture}
-        side={DoubleSide}
-        alphaTest={0.5}
-        transparent
+    <sprite ref={layerRef} position={[0, 0, 0]} scale={[layer.canvas.width, layer.canvas.height, 1]} renderOrder={16 - layer.layerID}>
+      <spriteMaterial transparent={true} alphaTest={0.1} color={0xffffff} blending={layer.blendType}>
+        <canvasTexture
+          attach="map"
+          premultiplyAlpha
+          image={layer.canvas}
+          minFilter={NearestFilter}
+          colorSpace={SRGBColorSpace}
+          magFilter={NearestFilter}
+          wrapS={ClampToEdgeWrapping}
+          wrapT={ClampToEdgeWrapping}
         />
-    </Plane>
-  )
+      </spriteMaterial>
+    </sprite>
+  );
 }
 
 export default Layer;
