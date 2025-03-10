@@ -111,27 +111,52 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     const widthUnits = result.width / SCREEN_WIDTH;
     const heightUnits = result.height / SCREEN_HEIGHT;
 
-    /*
-    const controlledScroll = controlledScrolls[layerRenderID]
-    if (controlledScroll) {
-      let xPos = backgroundPanRef.current.panX / horizontalRange;
-      if (Number.isNaN(xPos)) {
-        xPos = 0;
-      }
-      let yPos = backgroundPanRef.current.panY / verticalRange;
-      if (Number.isNaN(yPos)) {
-        yPos = 0;
-      }
+    const { layerScrollAdjustments, layerManualScrolls } = useGlobalStore.getState()
 
-      panX = (boundaries.left + controlledScroll.x1) - (xPos * controlledScroll.x2);
-      panY = (boundaries.top + controlledScroll.y1) - (yPos * controlledScroll.y2);
+    // Unclear to me why we need to use a non standard layerID here,
+    // but that seems to be what Opcodes expect
+    // Update: I think it's layer index rather than ID
+    const controlledScroll = layerScrollAdjustments[layer.renderID]
+
+    let panX = backgroundPanRef.current.panX;
+    let panY = backgroundPanRef.current.panY 
+
+    if (controlledScroll) {
+      const {
+        xOffset,
+        yOffset,
+        xScrollSpeed,
+        yScrollSpeed,
+      } = controlledScroll;
+
+      const adjustedX = (panX / 256) * xScrollSpeed;
+      const adjustedY = (panY / 256) * yScrollSpeed;
+
+      panX = xOffset + adjustedX;
+      panY = -yOffset + adjustedY;
     }
-    */
-    
+
+    if (layerManualScrolls[layer.renderID]) {
+      const {
+        xOffset,
+        yOffset,
+      } = layerManualScrolls[layer.renderID];
+
+      panX += xOffset.get();
+      panY += yOffset.get();
+    }
+
+    if (Number.isNaN(panX) || !Number.isFinite(panX)) {
+      panX = 0;
+    }
+    if (Number.isNaN(panY) || !Number.isFinite(panY)) {
+      panY = 0;
+    }
+
     const directions = getCameraDirections(camera);
 
-    layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(backgroundPanRef.current.panX * widthUnits));
-    layerRef.current.position.add(directions.upVector.clone().multiplyScalar(backgroundPanRef.current.panY * heightUnits));
+    layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(panX * widthUnits));
+    layerRef.current.position.add(directions.upVector.clone().multiplyScalar(panY * heightUnits));
   })
      
   return (

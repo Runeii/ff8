@@ -30,12 +30,16 @@ interface GlobalState {
   availableMessages: string[][],
 
   currentMessages: Message[],
-  controlledScrolls: Record<number, {
-    layerID: number,
-    x1: number,
-    x2: number,
-    y1: number
-    y2: number
+
+  layerManualScrolls: Record<number, {
+    xOffset: SpringValue<number>,
+    yOffset: SpringValue<number>,
+  }>,
+  layerScrollAdjustments: Record<number, {
+    xOffset: number,
+    yOffset: number,
+    xScrollSpeed: number,
+    yScrollSpeed: number,
   }>,
 
   canvasOpacitySpring: SpringValue<number>,
@@ -86,7 +90,8 @@ const useGlobalStore = create<GlobalState>()(() => ({
 
   currentMessages: [],
 
-  controlledScrolls: [],
+  layerManualScrolls: {},
+  layerScrollAdjustments: {},
   canvasOpacitySpring: new SpringValue(0),
   isMapFadeEnabled: true,
 

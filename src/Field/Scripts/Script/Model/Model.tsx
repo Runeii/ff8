@@ -8,6 +8,7 @@ import Follower from "./Follower/Follower";
 import { ScriptStateStore } from "../state";
 import { createAnimationController } from "../AnimationController";
 import TalkRadius from "../TalkRadius/TalkRadius";
+import Focus from "./Focus/Focus";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
@@ -116,8 +117,12 @@ const Model = ({animationController, models, script,setActiveMethodId, useScript
 
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
 
+  const currentFocusActorId = useGlobalStore(state => state.currentFocusActor);
+  const isFocused = currentFocusActorId === useScriptStateStore.getState().modelId || (currentFocusActorId === undefined && isLeadCharacter);
+
   const modelJsx = (
     <group>
+      {isFocused && <Focus />}
       {talkMethod && !isLeadCharacter && !isFollower && (
         <TalkRadius
           setActiveMethodId={setActiveMethodId}

@@ -6,7 +6,7 @@ import { dummiedCommand, openMessage, remoteExecute, remoteExecuteOnPartyEntity,
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
-import { displayMessage, fadeOutMap, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint } from "./common";
+import { displayMessage, fadeOutMap, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint, setLayerScroll } from "./common";
 import { ScriptState, ScriptStateStore } from "./state";
 import { createAnimationController } from "./AnimationController";
 import { MUSIC_IDS } from "../../../constants/audio";
@@ -36,7 +36,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 0, // progress
+  256: 40000, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -283,7 +283,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     currentState.backgroundAnimationSpring.set(frame);
   },
   BGOFF: ({ currentState }) => {
-    currentState.isBackgroundVisible = false;
+   currentState.isBackgroundVisible = false;
   },
   BGANIMESPEED: ({ currentState, STACK }) => {
     const speed = STACK.pop() as number;
@@ -462,22 +462,28 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   SCROLLMODE2: ({ STACK }) => {
     const lastFive = STACK.splice(-5);
-    const layerID = lastFive[0]; // I think this is the layer
-    const x1 = lastFive[1];
-    const y1 = lastFive[2];
-    const x2 = lastFive[3];
-    const y2 = lastFive[4];
+    const layerIndex = lastFive[0]; // layer id
+    const xOffset = lastFive[1]; // I reckon offset
+    const yOffset = lastFive[2]; // I reckon offset
+    const xScrollSpeed = lastFive[3]; // a scroll ratio in a direction
+    const yScrollSpeed = lastFive[4]; // a scroll ratio in a direction
+
+    const controlledScroll = useGlobalStore.getState().layerScrollAdjustments[layerIndex] ?? {
+      xOffset: 0,
+      yOffset: 0,
+      xScrollSpeed: 0,
+      yScrollSpeed: 0,
+    };
+
+    controlledScroll.xOffset = xOffset;
+    controlledScroll.yOffset = yOffset;
+    controlledScroll.xScrollSpeed = xScrollSpeed;
+    controlledScroll.yScrollSpeed = yScrollSpeed;
 
     useGlobalStore.setState({
-      controlledScrolls: {
-        ...useGlobalStore.getState().controlledScrolls,
-        [layerID]: {
-          layerID,
-          x1,
-          x2,
-          y1,
-          y2,
-        }
+      layerScrollAdjustments: {
+        ...useGlobalStore.getState().layerScrollAdjustments,
+        [layerIndex]: controlledScroll
       }
     })
   },
@@ -1259,20 +1265,38 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.splice(-2);
   },
   DSCROLL2: ({ STACK }) => {
-    STACK.splice(-3);
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+    const layerID = STACK.pop() as number;
+
+    setLayerScroll(layerID, x, y);
   },
   LSCROLLA: ({ STACK }) => {
     STACK.splice(-2);
   },
   LSCROLL2: ({ STACK }) => {
-    STACK.splice(-4);
+    const speed = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+    const layerID = STACK.pop() as number;
+
+    setLayerScroll(layerID, x, y, speed);
   },
   LSCROLL3: ({ STACK }) => {
     STACK.splice(-6);
   },
   SCROLLSYNC: () => { },
-  SCROLLSYNC2: ({ STACK }) => {
-    STACK.pop() as number;
+  SCROLLSYNC2: async ({ STACK }) => {
+    const layerID = STACK.pop() as number;
+
+    const controlledScroll = useGlobalStore.getState().layerManualScrolls[layerID];
+    if (!controlledScroll) {
+      return;
+    }
+
+    while (controlledScroll.xOffset.isAnimating || controlledScroll.yOffset.isAnimating) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
   },
   PGETINFO: ({ scene, script, STACK, TEMP_STACK }) => {
     const partyMemberId = STACK.pop() as number;

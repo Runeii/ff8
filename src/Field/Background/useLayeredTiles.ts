@@ -1,21 +1,22 @@
 import { useMemo } from "react";
 import useTilesTexture from "./useTilesTexture";
-import { NoBlending, Texture } from "three";
+import { Texture } from "three";
 import { getLayerIdFromTile, TILE_BLENDS_TO_THREEJS, TILE_PADDING, TILE_SIZE, TILES_PER_COLUMN } from "./tileUtils";
 
-const initialiseLayer = (tile: Tile, width: number, height: number): Layer => {
+const initialiseLayer = (tile: Tile, width: number, height: number, layerRenderID: number): Layer => {
   const canvas = document.createElement('canvas');
 
   canvas.width = width;
   canvas.height = height;
 
   const blendType = TILE_BLENDS_TO_THREEJS[tile.blendType as keyof typeof TILE_BLENDS_TO_THREEJS];
+
   return {
     canvas,
     blendType,
     id: getLayerIdFromTile(tile),
-    isBlended: blendType !== NoBlending,
     layerID: tile.layerID,
+    renderID: layerRenderID,
     parameter: tile.parameter,
     state: tile.state,
     z: tile.Z,
@@ -66,9 +67,12 @@ const useLayeredTiles = (tiles: Tile[], filename: string, width: number, height:
     tiles.forEach((tile) => {
       const layerId = getLayerIdFromTile(tile);
 
+      let layerRenderIDs = tiles.map(tile => tile.layerID);
+      layerRenderIDs = layerRenderIDs.filter((id, index) => layerRenderIDs.indexOf(id) === index).sort((a,b) => a - b);
+
       // Initialize the Z group if it doesn't exist
       if (!result[layerId]) {
-        result[layerId] = initialiseLayer(tile, width, height);
+        result[layerId] = initialiseLayer(tile, width, height, layerRenderIDs.indexOf(tile.layerID));
       }
 
       const { canvas } = result[layerId];

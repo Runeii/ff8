@@ -163,3 +163,31 @@ export const attachKeyDownListeners = () => {
   window.addEventListener('keydown', keydownListener);
   window.addEventListener('keyup', keyupListener);
 }
+
+export const setLayerScroll = (layerIndex: number, x: number, y: number, transitionDuration = 0) => {
+  const manualScroll = useGlobalStore.getState().layerManualScrolls[layerIndex] ?? {
+    xOffset: new SpringValue(0),
+    yOffset: new SpringValue(0),
+  }
+
+  manualScroll.xOffset.start(x, {
+    immediate: transitionDuration === 0,
+    config: {
+      duration: transitionDuration > 0 ? transitionDuration / 30 * 1000 : undefined,
+    },
+  });
+
+  manualScroll.yOffset.start(y, {
+    immediate: transitionDuration === 0,
+    config: {
+      duration: transitionDuration > 0 ? transitionDuration / 30 * 1000 : undefined,
+    }
+  });
+
+  useGlobalStore.setState({
+    layerManualScrolls: {
+      ...useGlobalStore.getState().layerManualScrolls,
+      [layerIndex]: manualScroll,
+    }
+  })
+}

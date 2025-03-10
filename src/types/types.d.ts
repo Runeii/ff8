@@ -118,8 +118,8 @@ declare global {
   type Layer = {
     blendType: Blending;
     canvas: HTMLCanvasElement;
-    isBlended: boolean;
     layerID: number;
+    renderID: number;
     id: string;
     parameter: number;
     state: number;
