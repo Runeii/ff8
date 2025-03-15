@@ -133,6 +133,7 @@ const Model = ({animationController, models, script,setActiveMethodId, useScript
       <ModelComponent
         name={`party--${partyMemberId ?? 'none'}`}
         scale={0.06}
+        position={[0, 0, -0.004]}
         // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
         ref={setModelRef}
         userData={{
@@ -145,7 +146,7 @@ const Model = ({animationController, models, script,setActiveMethodId, useScript
 
   if (isLeadCharacter) {
     return (
-      <Controls useScriptStateStore={useScriptStateStore}>
+      <Controls useScriptStateStore={useScriptStateStore} script={script}>
         {modelJsx}
       </Controls>
     );

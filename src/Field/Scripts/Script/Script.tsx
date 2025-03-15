@@ -58,6 +58,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     methodId: 'default',
     isActive: hasCompletedConstructor && !useScriptStateStore.getState().isUnused,
     isLooping: true,
+    isDebugging: false,
     isPaused: !!(remoteExecutionRequests.length > 0 || activeMethodId),
     script,
     useScriptStateStore,
@@ -73,7 +74,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
-    isDebugging: true,
+    isDebugging: script.groupId === 16,
     onComplete: () => {
       useGlobalStore.setState({ hasActiveTalkMethod: false });
       setActiveMethodId(undefined);
@@ -91,7 +92,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
-    isDebugging: false,
+    isDebugging: script.groupId === 16,
     onComplete: () => {
       setRemoteExecutionRequests(requests => {
         const [completedRequest, ...remainingRequests] = requests;
@@ -222,6 +223,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     const currentRotation = convert255ToRadians(useScriptStateStore.getState().angle.get());
     entityRef.current.quaternion.setFromAxisAngle(meshUp, faceDownBaseAngle + currentRotation);
   });
+
   if (isUnused) {
     return null;
   }

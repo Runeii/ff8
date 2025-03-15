@@ -1,11 +1,12 @@
 import {  Plane, useTexture } from "@react-three/drei"
 import { useEffect, useLayoutEffect, useMemo, useState } from "react"
-import { CanvasTexture, ClampToEdgeWrapping, RepeatWrapping } from "three"
+import { CanvasTexture, ClampToEdgeWrapping, RepeatWrapping, Texture } from "three"
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants"
 import { useFrame } from "@react-three/fiber"
 import { fontLayout, fontWidths} from "./fontLayout.ts"
-import { processTagsInString } from "../Text/textUtils.ts"
+import { createModifier } from "../Text/textUtils.ts"
 import useGlobalStore from "../../store.ts"
+import { FontColor, Modifier, Placement } from "../textTypes.ts"
 
 type MessageBoxProps = {
   message: Message
@@ -58,21 +59,61 @@ const MessageBox = ({ message }: MessageBoxProps) => {
   background.wrapT = RepeatWrapping;      //
   background.repeat.set(0.7, 40);
   background.needsUpdate = true;
-  const font = useTexture('HDFont/merged_output/merged_white.png');
+
+  const white = useTexture('HDFont/merged_output/merged_white.png');
+  const red = useTexture('HDFont/merged_output/merged_red.png');
+  const blue = useTexture('HDFont/merged_output/merged_blue.png');
+  const green = useTexture('HDFont/merged_output/merged_green.png');
+  const yellow = useTexture('HDFont/merged_output/merged_yellow.png');
+  const magenta = useTexture('HDFont/merged_output/merged_magenta.png');
+  const gray = useTexture('HDFont/merged_output/merged_gray.png');
+  const shadow = useTexture('HDFont/merged_output/merged_shadow.png');
+
+  const fontTextures: Record<FontColor, Texture> = { white, red, blue, green, yellow, magenta, gray, shadow };
+
   const cursor = useTexture('cursor.png');
 
   const [currentPage, setCurrentPage] = useState(0);
   const [currentIndex, setCurrentIndex] = useState((askOptions?.default ?? 0) - (askOptions?.first ?? 0));
 
-  const [formattedText, options] = useMemo(() => {
-    const formattedText = processTagsInString(text[currentPage]);
-    if (!askOptions) {
-      return [formattedText, null];
+
+  useEffect(() => {
+    if (currentPage < text.length) {
+      return;
     }
-    const splitLines = formattedText.split('\n');
+
+    useGlobalStore.setState(state => {
+      const currentMessages = state.currentMessages.filter(message => message.id !== id);
+      return {
+        ...state,
+        currentMessages
+      };
+    });
+
+    document.dispatchEvent(new CustomEvent('messageClosed', {
+      detail: {
+        id,
+        selectedOption: currentIndex,
+      }
+    }));
+  }, [currentIndex, currentPage, id, text.length]);
+
+  const [formattedText, options] = useMemo(() => {
+    if (currentPage >= text.length) {
+      return [null, null];
+    }
+    if (!askOptions) {
+      return [text[currentPage], null];
+    }
+
+    const splitLines = text[currentPage].split('\n');
     // askOptions.first is first line, askOptions.last is last line, extract array of lines without mutating original array
     const options = splitLines.slice(askOptions.first, askOptions.last ? askOptions.last + 1 : splitLines.length);
     const originalText = splitLines.slice(0, askOptions.first).join('\n');
+  
+    if (originalText.length === 0) {
+      return [null, options];
+    }
     return [originalText, options];
   }, [text, currentPage, askOptions]);
 
@@ -101,41 +142,42 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     }
   }, [isCloseable,options, text]);
 
-  useEffect(() => {
-    if (currentPage < text.length) {
-      return;
-    }
-
-    useGlobalStore.setState(state => {
-      const currentMessages = state.currentMessages.filter(message => message.id !== id);
-      return {
-        ...state,
-        currentMessages
-      };
-    });
-
-    document.dispatchEvent(new CustomEvent('messageClosed', {
-      detail: {
-        id,
-        selectedOption: currentIndex,
-      }
-    }));
-  }, [currentIndex, currentPage, id, text.length]);
-
   const { placements, width, height, selectedY } = useMemo(() => {
     let x = LEFT_MARGIN;
     let y = TOP_MARGIN;
     let highestX = 0;
 
-    const placements: {
-      rowIndex: number;
-      columnIndex: number;
-      x: number;
-      y: number;
-    }[] = [];
+
+    const placements: (Placement | Modifier)[] = [];
+
     formattedText?.split('\n').forEach((line) => {
+      let hasOpenModifier = false;
+      let modifier = '';
       line.split('').forEach((char) => {
+        if (char === '{') {
+          hasOpenModifier = true;
+          return;
+        }
+
+        if (char === '}') {
+          hasOpenModifier = false;
+          placements.push(createModifier(modifier));
+          modifier = '';
+          return;
+        }
+
+        if (hasOpenModifier) {
+          console.log(char)
+          modifier += char;
+          return;
+        }
+
         const rowIndex = fontLayout.findIndex((layoutRow) => layoutRow.includes(char));
+        if (rowIndex < 0) {
+          console.error(`Character not found in font layout: ${char}`);
+          return;
+        }
+
         const columnIndex = fontLayout[rowIndex].indexOf(char);
 
         const isUppercase = char === char.toUpperCase();
@@ -204,6 +246,7 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     }
   }, [currentIndex, formattedText, message.placement.height, message.placement.width, options]);
 
+  // Window decoration
   useFrame(() => {
     const ctx = textCanvas.getContext('2d');
     if (!ctx) {
@@ -251,14 +294,20 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     ctx.lineTo(xPos + width, yPos + height);
     ctx.stroke()
 
-    ctx.fillStyle = 'white';
-    placements.forEach(({ rowIndex, columnIndex, x, y }) =>
+    let currentColor: FontColor = 'white';
+    placements.forEach((placement) => {
+      if ('type' in placement && placement.type === 'color' && placement.color) {
+        currentColor = placement.color;
+        return;
+      }
+      const { rowIndex, columnIndex, x, y } = placement as Placement;
+      const font = fontTextures[currentColor].image;
       ctx.drawImage(
-        font.image,
+        font,
         columnIndex * SOURCE_TILE_SIZE, rowIndex * SOURCE_TILE_SIZE, SOURCE_TILE_SIZE, SOURCE_TILE_SIZE,
         xPos + x, yPos + y, OUTPUT_TILE_SIZE, OUTPUT_TILE_SIZE
       )
-    );
+    });
 
     if (!options) {
       return;

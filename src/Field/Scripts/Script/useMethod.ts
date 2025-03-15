@@ -104,7 +104,7 @@ const useMethod = ({
       return;
     }
 
-    if (isDebugging && script.groupId === 8) {
+    if (isDebugging) {
       console.log('Executing', methodId, currentOpcode)
     }
 

@@ -1,3 +1,5 @@
+import { Modifier } from "../textTypes";
+
 const colorTagRegex = /\{(darkgrey|grey|yellow|red|green|blue|purple|white)\}/g;
 const waitTagRegex = /\{Wait\d+\}/g;
 const generalTagRegex = /\{(\w+)\}/g; // General match for any tag in braces
@@ -11,14 +13,6 @@ const processSegment = (segment: string, openColor?: string) => {
     // Handle Wait tag by removing it from the segment
     const removedWaitTag = segment.replace(waitTagRegex, '');
     return { text: removedWaitTag, newColor: openColor };
-  }
-
-  if (colorMatch) {
-    // Handle Color tag
-    const tag = colorMatch[0];
-    const closeColor = openColor ? '</span>' : '';
-    const openNewColor = `<span class="${tag.replace('{', '').replace('}', '').toLowerCase()}">`;
-    return { text: closeColor + openNewColor, newColor: tag }; // Open new color
   }
 
   if (generalMatch) {
@@ -55,3 +49,49 @@ export const processTagsInString = (input: string) => {
   // Close any open color tag at the end
   return result.openColor ? result.output + '</span>' : result.output;
 };
+
+// Missing: wait, "general"
+export const createModifier = (tag: string) => {
+  const result: Modifier = {
+    type: 'general',
+  }
+
+  switch (tag) {
+    case 'Red':
+      result.type = 'color';
+      result.color = 'red';
+      break;
+    case 'Green':
+      result.type = 'color';
+      result.color = 'green';
+      break;
+    case 'Blue':
+      result.type = 'color';
+      result.color = 'blue';
+      break;
+    case 'Yellow':
+      result.type = 'color';
+      result.color = 'yellow';
+      break;
+    case 'Magenta':
+      result.type = 'color';
+      result.color = 'magenta';
+      break;
+    case 'Gray':
+      result.type = 'color';
+      result.color = 'gray';
+      break;
+    case 'Shadow':
+      result.type = 'color';
+      result.color = 'shadow';
+      break;
+    case 'White':
+      result.type = 'color';
+      result.color = 'white';
+      break;
+    default:
+      break;
+  }
+
+  return result;
+}

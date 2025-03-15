@@ -79,21 +79,37 @@ export const turnToFaceEntity = async (thisId: number, targetName: string, durat
   turnToFaceAngle(angle255, duration, spring);
 }
 
-export const calculateMovingSpeed = (distance: number, movementSpeed: number) => distance / movementSpeed * 3 * 10000000
+export const calculateMovingSpeed = (distance: number, movementSpeed: number) => {
+  const speed = distance / movementSpeed * 3 * 10000000
+
+  if (Number.isNaN(speed) || speed === Infinity) {
+    return 2000 * distance;
+  }
+
+  return speed;
+}
 
 export const moveToPoint = async (spring: SpringValue<number[]>, targetPoint: Vector3, movementSpeed: number, isDebugging?: boolean) => {
   const start = spring.get();
   const distance = targetPoint.distanceTo(new Vector3(...start));
+
   if (isDebugging) {
     console.log('Moving to point:', targetPoint.toArray(), distance, movementSpeed);
   }
+
+  if (spring.get() === targetPoint.toArray()) {
+    return;
+  }
+
   await spring.start(targetPoint.toArray(), {
     immediate: false,
     config: {
       duration: calculateMovingSpeed(distance, movementSpeed)
     },
     onRest: () => {
-      console.log('Finished moving to point:', targetPoint.toArray());
+      if (isDebugging) {
+        console.log('Finished moving to point:', targetPoint.toArray());
+      }
     }
   })
 }

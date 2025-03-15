@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { openMessage } from "../Field/Scripts/Script/utils";
 import MAP_NAMES from "../constants/maps";
-import useGlobalStore from "../store";
 import { fadeInMap } from "../Field/Scripts/Script/common";
 
 const points: Record<string, typeof MAP_NAMES[number]> = {
@@ -20,25 +19,21 @@ const points: Record<string, typeof MAP_NAMES[number]> = {
   //"Lab": 'edview1b',
 }
 
-const WorldMap = () => {
+const Onboarding = () => {
   useEffect(() => {
     fadeInMap();
+
+    openMessage('welcome', ['Welcome'], { x: 0,  y: 0 }, false);
   
-    const text = `Select destination:\n${Object.keys(points).join('\n')}`;
-    openMessage('worldMap', [text], { x: 0,  y: 0 }, true, {
-      first: 1,
-      default: 1,
+    openMessage('menu', ['New Game\nResume Game\nControls'], { x: 100,  y: 80 }, true, {
+      first: 0,
+      default: 0,
       cancel: undefined
-    }).then((selectedOption) => {
-      console.log('Selected:', selectedOption);
-      useGlobalStore.setState({
-        fieldId: undefined,
-        pendingFieldId: Object.values(points)[selectedOption],
-      })
     });
+
   }, []);
 
   return null;
 }
 
-export default WorldMap;
+export default Onboarding;

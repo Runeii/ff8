@@ -52,6 +52,10 @@ interface GlobalState {
   isPartyFollowing: boolean,
 
   currentFocusActor?: number,
+  cameraFocusOffset: {
+    x: SpringValue<number>,
+    y: SpringValue<number>,
+  }
 
   hasActiveTalkMethod: boolean,
   lockedTriangles: number[],
@@ -102,6 +106,10 @@ const useGlobalStore = create<GlobalState>()(() => ({
   isPartyFollowing: true,
 
   currentFocusActor: undefined,
+  cameraFocusOffset: {
+    x: new SpringValue(0),
+    y: new SpringValue(0),
+  },
 
   hasActiveTalkMethod: false,
 
