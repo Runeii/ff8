@@ -1,6 +1,5 @@
 import { Suspense, useEffect } from "react"
 import useGlobalStore from "./store";
-import Onboarding from "./Onboarding/Onboarding";
 import FieldLoader from "./Field/Field";
 import { useSpring } from "@react-spring/web";
 import { attachKeyDownListeners } from "./Field/Scripts/Script/common";
@@ -53,7 +52,7 @@ const Entrypoint = () => {
   return (
     <>
       <Suspense>
-        {fieldId === 'wm00' ? <Onboarding /> : <FieldLoader opacitySpring={opacity} />}
+        <FieldLoader opacitySpring={opacity} />
       </Suspense>
     </>
   )

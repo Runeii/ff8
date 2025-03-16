@@ -53,7 +53,7 @@ body,
 .canvas {
   height: auto !important;
   aspect-ratio: 320 / 224;
-  background-color: blue;
+  background-color: black;
 }
 
 .canvas,

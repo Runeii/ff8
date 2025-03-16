@@ -14,6 +14,7 @@ import { MEMORY } from './Scripts/Script/handlers';
 import MAP_NAMES from '../constants/maps';
 import { SpringValue } from '@react-spring/web';
 import { getFieldData } from './fieldUtils';
+import Onboarding from '../Onboarding/Onboarding';
 
 export type RawFieldData = typeof data;
 
@@ -76,8 +77,8 @@ type FieldLoaderProps = Omit<FieldProps, 'data'> & {
 }
 
 const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
-
   const pendingFieldId = useGlobalStore(state => state.pendingFieldId);
+
   const fieldId = useGlobalStore(state => state.fieldId);
 
   const currentFieldIdRef = useRef(fieldId);
@@ -115,7 +116,6 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
       }
 
       const data = await getFieldData(pendingFieldId);
-
       setData(data);
 
       const pendingCharacterPosition = useGlobalStore.getState().pendingCharacterPosition;
@@ -156,6 +156,11 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
     }
     handleTransition();
   }, [gl, pendingFieldId, opacitySpring]);
+
+  
+  if (fieldId === 'wm00') {
+    return <Onboarding />
+  }
 
   if (!data) {
     return null;

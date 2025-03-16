@@ -76,7 +76,6 @@ const MessageBox = ({ message }: MessageBoxProps) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [currentIndex, setCurrentIndex] = useState((askOptions?.default ?? 0) - (askOptions?.first ?? 0));
 
-
   useEffect(() => {
     if (currentPage < text.length) {
       return;
@@ -106,7 +105,8 @@ const MessageBox = ({ message }: MessageBoxProps) => {
       return [text[currentPage], null];
     }
 
-    const splitLines = text[currentPage].split('\n');
+    const sanitisedText = text[currentPage].replaceAll('{Squall}', 'Squall');
+    const splitLines = sanitisedText.split('\n');
     // askOptions.first is first line, askOptions.last is last line, extract array of lines without mutating original array
     const options = splitLines.slice(askOptions.first, askOptions.last ? askOptions.last + 1 : splitLines.length);
     const originalText = splitLines.slice(0, askOptions.first).join('\n');
@@ -121,15 +121,26 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     const handleKeyDown = (e: Event) => {
       const event = e as unknown as KeyboardEvent; 
     
-      if (event.code === 'Space' && isCloseable) {
+      if (!options && event.code === 'Space' && isCloseable) {
         setCurrentPage(prev => prev + 1);
       }
+
       if (!options) {
         return;
       }
+
+      if (event.code === 'Space') {
+        if (options[currentIndex].includes('{Gray}')) {
+          return;
+        }
+
+        setCurrentPage(prev => prev + 1);
+      }
+
       if (event.key === 'ArrowUp') {
         setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
       }
+
       if (event.key === 'ArrowDown') {
         setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, options.length - 1));
       }
@@ -140,7 +151,7 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [isCloseable,options, text]);
+  }, [currentIndex, id, isCloseable, options, text]);
 
   const { placements, width, height, selectedY } = useMemo(() => {
     let x = LEFT_MARGIN;
@@ -167,7 +178,6 @@ const MessageBox = ({ message }: MessageBoxProps) => {
         }
 
         if (hasOpenModifier) {
-          console.log(char)
           modifier += char;
           return;
         }
@@ -209,7 +219,26 @@ const MessageBox = ({ message }: MessageBoxProps) => {
       if (index === currentIndex) {
         selectedY = y;
       }
+      let hasOpenModifier = false;
+      let modifier = '';
       line.split('').forEach((char) => {
+        if (char === '{') {
+          hasOpenModifier = true;
+          return;
+        }
+
+        if (char === '}') {
+          hasOpenModifier = false;
+          placements.push(createModifier(modifier));
+          modifier = '';
+          return;
+        }
+
+        if (hasOpenModifier) {
+          modifier += char;
+          return;
+        }
+
         const rowIndex = fontLayout.findIndex((layoutRow) => layoutRow.includes(char));
         const columnIndex = fontLayout[rowIndex].indexOf(char);
 
