@@ -110,7 +110,6 @@ const Controls = ({ children, useScriptStateStore }: ControlsProps) => {
     previousDirectionLengthSq.current = direction.lengthSq();
 
     if (direction.lengthSq() <= 0 || !isUserControllable) {
-      console.log('exit')
       useScriptStateStore.setState({
         movementSpeed: 0,
       })

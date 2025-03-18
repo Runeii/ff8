@@ -2,6 +2,7 @@ import { Hud, OrthographicCamera } from "@react-three/drei";
 import useGlobalStore from "../store";
 import MessageBox from "./MessageBox/MessageBox";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/constants";
+import { Fragment } from "react/jsx-runtime";
 
 const Ui = () => {
   const currentMessages = useGlobalStore(state => state.currentMessages);
@@ -16,6 +17,7 @@ const Ui = () => {
   }, {} as Record<number, Message[]>);
 
   const messagesArray = Object.values(messagesByChannel);
+
   return (
     <Hud>
       <OrthographicCamera
@@ -26,9 +28,11 @@ const Ui = () => {
         bottom={-(SCREEN_HEIGHT / 2)}
         position={[SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2, 0]}
       />
-      {messagesArray.map((messages) =>
-        messages.map(message => <MessageBox key={message.id} message={message} />)
-      )}
+      {messagesArray.map((messages) => (
+        <Fragment key={messages[0].id}>
+          {messages.map(message => <MessageBox key="message--${message.id}" message={message} />)}
+        </Fragment>
+      ))}
     </Hud>
   );
 }

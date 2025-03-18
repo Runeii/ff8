@@ -4,9 +4,10 @@ import { CanvasTexture, ClampToEdgeWrapping, RepeatWrapping, Texture } from "thr
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants"
 import { useFrame } from "@react-three/fiber"
 import { fontLayout, fontWidths} from "./fontLayout.ts"
-import { createModifier } from "../Text/textUtils.ts"
+import { createModifier } from "../textUtils.ts"
 import useGlobalStore from "../../store.ts"
 import { FontColor, Modifier, Placement } from "../textTypes.ts"
+import { config, useSpring } from "@react-spring/web"
 
 type MessageBoxProps = {
   message: Message
@@ -153,7 +154,7 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     }
   }, [currentIndex, id, isCloseable, options, text]);
 
-  const { placements, width, height, selectedY } = useMemo(() => {
+  const { placements, width: widthWithoutScaling, height: heightWithoutScaling, selectedY } = useMemo(() => {
     let x = LEFT_MARGIN;
     let y = TOP_MARGIN;
     let highestX = 0;
@@ -275,7 +276,41 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     }
   }, [currentIndex, formattedText, message.placement.height, message.placement.width, options]);
 
-  // Window decoration
+  const [visiblePlacements, setVisiblePlacements] = useState<typeof placements>([]);
+
+  const [scaleSpring] = useSpring(() => ({ 
+    scale: 1,
+    from: { scale: 0 },
+    config: {
+      clamp: true,
+      ...config.stiff
+    }
+  }), []);
+
+  useEffect(() => {
+    if (!placements) {
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      if (scaleSpring.scale.get() < 1) {
+        return;
+      }
+
+      if (visiblePlacements.length >= placements.length) {
+        clearInterval(interval);
+        return;
+      }
+
+      const newPlacements = placements.slice(0, visiblePlacements.length + 1);
+      setVisiblePlacements(newPlacements);
+    }, 4);
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [placements, scaleSpring, visiblePlacements]);
+
   useFrame(() => {
     const ctx = textCanvas.getContext('2d');
     if (!ctx) {
@@ -286,15 +321,17 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     textCanvas.height = SCREEN_HEIGHT * 2;
 
     ctx.imageSmoothingEnabled = false;
-    ctx.fillStyle = 'rgba(0, 0, 0, 0)';
-    ctx.fillRect(0, 0, textCanvas.width, textCanvas.height);
-
-
-    ctx.fillStyle = 'white';
     
-    const placement = calculatePlacement(message, width / 2, height / 2);
-    const xPos = placement.x * 2;
-    const yPos = placement.y * 2;
+    const placement = calculatePlacement(message, widthWithoutScaling / 2, heightWithoutScaling / 2);
+    const xPosWithoutScaling = placement.x * 2;
+    const yPosWithoutScaling = placement.y * 2;
+
+    const scale = scaleSpring.scale.get();
+    const width = widthWithoutScaling * scale;
+    const height = heightWithoutScaling * scale;
+
+    const xPos = xPosWithoutScaling + widthWithoutScaling / 2 - width / 2;
+    const yPos = yPosWithoutScaling + heightWithoutScaling / 2 - height / 2;
 
     // Draw background
     const gradient = ctx.createLinearGradient(0, 0, width, 0);
@@ -322,13 +359,20 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     ctx.moveTo(xPos, yPos + height);
     ctx.lineTo(xPos + width, yPos + height);
     ctx.stroke()
+    texture.needsUpdate = scaleSpring.scale.get() < 1;
+
+    if (scaleSpring.scale.get() < 1) {
+      return
+    }
 
     let currentColor: FontColor = 'white';
-    placements.forEach((placement) => {
+
+    visiblePlacements.forEach((placement) => {
       if ('type' in placement && placement.type === 'color' && placement.color) {
         currentColor = placement.color;
         return;
       }
+
       const { rowIndex, columnIndex, x, y } = placement as Placement;
       const font = fontTextures[currentColor].image;
       ctx.drawImage(
