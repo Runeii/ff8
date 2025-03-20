@@ -1,5 +1,19 @@
 import { Camera, Quaternion, Vector3 } from "three";
 import { FieldData } from "../Field";
+import { radToDeg } from "three/src/math/MathUtils.js";
+
+const FF8_PERSPECTIVE_DIVISOR = 256;
+
+export const calculateFOV = (cameraZoom: number, screenHeight: number): number => {
+  // Convert to FF8's perspective division approach
+  const perspectiveStrength = cameraZoom / FF8_PERSPECTIVE_DIVISOR;
+  
+  // Calculate FOV based on FF8's method of determining view angle
+  const fovRadians = 2 * Math.atan(screenHeight / (2.0 * perspectiveStrength * FF8_PERSPECTIVE_DIVISOR));
+  
+  return radToDeg(fovRadians);
+};
+
 
 export const getRotationAngleAroundAxis = (initialRotation: Quaternion, currentRotation: Quaternion, axis: Vector3) => {
   // Normalize the axis
@@ -43,42 +57,13 @@ const getSmoothOrthogonalVector = (axis: Vector3): Vector3 => {
   return orthogonal;
 };
 
+
 export const calculateParallax = (angle: number, depth: number): number => {
-  // Ensure depth is valid
-  if (depth <= 0) {
-    throw new Error("Depth must be greater than zero.");
-  }
-
-  // Calculate the factor by which the parallax reduces the effect based on depth
-  const parallaxFactor = 1 - (1 / depth);
-
-  // Calculate parallax displacement based on rotation angle
-  return Math.sin(angle) * parallaxFactor * depth;
+  return (angle * depth) / FF8_PERSPECTIVE_DIVISOR;
 }
 
 export const calculateAngleForParallax = (pan: number, depth: number): number => {
-  // Ensure depth is greater than one
-  if (depth <= 1) {
-    throw new Error("Depth must be greater than one.");
-  }
-
-  // Calculate the parallax factor
-  const parallaxFactor = 1 - (1 / depth);
-
-  // Calculate the denominator
-  const denominator = parallaxFactor * depth;
-
-  // Calculate the sine of the angle
-  const sinAngle = pan / denominator;
-
-  // Validate the sine value
-  if (sinAngle < -1 || sinAngle > 1) {
-    throw new Error("Invalid pan level for the given depth. The sin(angle) must be between -1 and 1.");
-  }
-
-  // Calculate and return the angle in radians
-  return Math.asin(sinAngle);
-  //return Math.asin(sinAngle) * 0.92; /// 0.92 is a magic number to adjust the angle
+  return (pan * FF8_PERSPECTIVE_DIVISOR) / depth;
 }
 
 const forwardVector = new Vector3();
@@ -126,8 +111,8 @@ export const getReliableRotationAxes = (camera: Camera) => {
 };
 
 export const getBoundaries = (limits: FieldData['limits']) => ({
-  left: limits.cameraRange.left + limits.screenRange.right / 2,
-  right: limits.cameraRange.right - limits.screenRange.right / 2,
-  top: limits.cameraRange.top + limits.screenRange.bottom / 2,
-  bottom: limits.cameraRange.bottom - limits.screenRange.bottom / 2,
+  left: (limits.cameraRange.left + limits.screenRange.right / 2) / FF8_PERSPECTIVE_DIVISOR,
+  right: (limits.cameraRange.right - limits.screenRange.right / 2) / FF8_PERSPECTIVE_DIVISOR,
+  top: (limits.cameraRange.top + limits.screenRange.bottom / 2) / FF8_PERSPECTIVE_DIVISOR,
+  bottom: (limits.cameraRange.bottom - limits.screenRange.bottom / 2) / FF8_PERSPECTIVE_DIVISOR,
 })

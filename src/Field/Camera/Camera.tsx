@@ -3,8 +3,8 @@ import { PerspectiveCamera, Quaternion, Vector3 } from 'three';
 import { vectorToFloatingPoint, WORLD_DIRECTIONS } from "../../utils";
 import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useMemo, useState } from "react";
-import { calculateAngleForParallax, calculateParallax, getBoundaries, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
-import { clamp, radToDeg } from "three/src/math/MathUtils.js";
+import { calculateAngleForParallax, calculateFOV, calculateParallax, getBoundaries, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
+import { clamp } from "three/src/math/MathUtils.js";
 import { SCREEN_HEIGHT } from "../../constants/constants";
 import useGlobalStore from "../../store";
 
@@ -46,7 +46,9 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     camera.position.set(tx, ty, tz);
     camera.up.set(camAxisY.x, camAxisY.y, camAxisY.z);
     camera.lookAt(lookAtTarget);
-    (camera as PerspectiveCamera).fov = radToDeg(2 * Math.atan(SCREEN_HEIGHT/(2.0 * camera_zoom)))
+
+    camera.fov = calculateFOV(camera_zoom, SCREEN_HEIGHT);
+
     camera.updateProjectionMatrix();
 
     const direction = new Vector3(0, 0, -1); // Default forward direction in Three.js
@@ -112,6 +114,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
       -pitchAngle,
       cameraZoom,
     );
+
     camera.rotation.copy(initialCameraRotation);
 
     const finalPanX = clamp(panX, boundaries.left, boundaries.right);
@@ -127,10 +130,8 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     camera.quaternion.multiply(pitchRotation);
 
     backgroundPanRef.current.boundaries = boundaries;
-    backgroundPanRef.current.panX = finalPanX
-    backgroundPanRef.current.panY = finalPanY;
-    //backgroundPanRef.current.panX = finalPanX + boundaries.left;
-    //backgroundPanRef.current.panY = -finalPanY + boundaries.top;
+    backgroundPanRef.current.panX = finalPanX * 256;
+    backgroundPanRef.current.panY = finalPanY * 256;
   });
 
   return null;
