@@ -5,10 +5,8 @@ import { radToDeg } from "three/src/math/MathUtils.js";
 const FF8_PERSPECTIVE_DIVISOR = 256;
 
 export const calculateFOV = (cameraZoom: number, screenHeight: number): number => {
-  // Convert to FF8's perspective division approach
   const perspectiveStrength = cameraZoom / FF8_PERSPECTIVE_DIVISOR;
   
-  // Calculate FOV based on FF8's method of determining view angle
   const fovRadians = 2 * Math.atan(screenHeight / (2.0 * perspectiveStrength * FF8_PERSPECTIVE_DIVISOR));
   
   return radToDeg(fovRadians);
@@ -68,7 +66,6 @@ export const calculateAngleForParallax = (pan: number, depth: number): number =>
 
 const forwardVector = new Vector3();
 export const getCameraDirections = (camera: Camera) => {
-  // Ensure the camera's matrixWorld is up to date
   camera.updateMatrixWorld();
 
   camera.getWorldDirection(forwardVector);
