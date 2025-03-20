@@ -11,8 +11,18 @@ type BackgroundProps = {
 const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
   const { backgroundDetails, limits, tiles } = data;
 
-  const width = Math.abs(limits.cameraRange.left) + Math.abs(limits.cameraRange.right);
-  const height = Math.abs(limits.cameraRange.top) + Math.abs(limits.cameraRange.bottom);
+  let width = Math.round(backgroundDetails.width / 16) * 16
+  const horizontalRange = Math.abs(limits.cameraRange.left) + Math.abs(limits.cameraRange.right);
+  if (width < horizontalRange) {
+    width = horizontalRange;
+  }
+
+  let height = Math.ceil(backgroundDetails.height / 16) * 16
+  const verticalRange = Math.abs(limits.cameraRange.top) + Math.abs(limits.cameraRange.bottom);
+  if (height < verticalRange) {
+    height = verticalRange;
+  }
+  console.log('width', width, 'height', height, backgroundDetails.width, backgroundDetails.height);
 
   const layers = useLayeredTiles(tiles, backgroundDetails.sprite, width, height);
 

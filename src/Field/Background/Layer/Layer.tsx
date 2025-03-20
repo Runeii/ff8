@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ClampToEdgeWrapping, Line3, NearestFilter, PerspectiveCamera, Sprite, SRGBColorSpace, Vector3 } from "three";
+import { ClampToEdgeWrapping, Line3, NearestFilter, NormalBlending, PerspectiveCamera, Sprite, SRGBColorSpace, Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
 import { getCameraDirections } from "../../Camera/cameraUtils";
@@ -136,15 +136,14 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
       panY = -yOffset + adjustedY;
     }
 
-    if (layerManualScrolls[layer.renderID]) {
-      const {
-        xOffset,
-        yOffset,
-      } = layerManualScrolls[layer.renderID];
-
-      panX += xOffset.get();
-      panY += yOffset.get();
-    }
+   if (layerManualScrolls[layer.renderID]) {
+     const {
+       xOffset,
+       yOffset,
+     } = layerManualScrolls[layer.renderID];
+     panX -= xOffset.get();
+     panY += yOffset.get();
+   }
 
     if (Number.isNaN(panX) || !Number.isFinite(panX)) {
       panX = 0;
@@ -160,7 +159,7 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
   })
      
   return (
-    <sprite ref={layerRef} position={[0, 0, 0]} scale={[layer.canvas.width, layer.canvas.height, 1]} renderOrder={16 - layer.layerID}>
+    <sprite ref={layerRef} position={[0, 0, 0]} scale={[layer.canvas.width, layer.canvas.height, 1]} renderOrder={layer.layerID}>
       <spriteMaterial transparent={true} alphaTest={0.1} color={0xffffff} blending={layer.blendType}>
         <canvasTexture
           attach="map"

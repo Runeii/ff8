@@ -36,7 +36,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 40000, // progress
+  256: 0, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -230,7 +230,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   MAPJUMP3: ({ currentOpcode, STACK }) => {
     currentOpcode.param   // walkmesh ID, not necessary for us
     const mapJumpDetailsInMemory = STACK.splice(-5);
-
+return
     useGlobalStore.setState({
       pendingFieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
       initialAngle: mapJumpDetailsInMemory[4],
@@ -373,13 +373,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     displayMessage(id, x, y, channel, width, height, false);
   },
-  AMES: async ({ STACK }) => {
+  AMES: ({ STACK }) => {
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
     const id = STACK.pop() as number;
     const channel = STACK.pop() as number;
 
-    await displayMessage(id, x, y, channel);
+    displayMessage(id, x, y, channel, undefined, undefined, false);
   },
   AMESW: async ({ STACK }) => {
     const y = STACK.pop() as number;
@@ -1037,10 +1037,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
 
   // Turn to face entity
-  CTURN: ({ currentOpcode, currentState, scene, script, STACK }) => {
+  CTURN: ({ currentState, scene, script, STACK }) => {
     const duration = STACK.pop() as number;
     const targetId = STACK.pop() as number;
-    console.log(currentOpcode, script)
+
     turnToFaceEntity(script.groupId, `entity--${targetId}`, duration, scene, currentState.angle)
   },
   DIRA: ({ currentState, scene, script, STACK }) => {
@@ -1137,6 +1137,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   DSCROLLA: ({ STACK }) => {
     const actorCode = STACK.pop() as number;
+
     useGlobalStore.setState({
       currentFocusActor: actorCode
     });
@@ -1144,6 +1145,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   DSCROLLA2: ({ STACK }) => {
     STACK.pop() as number;
     const actorCode = STACK.pop() as number;
+
     useGlobalStore.setState({
       currentFocusActor: actorCode
     });
@@ -1229,31 +1231,76 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
   },
   LSCROLLP: ({ STACK }) => {
-    // Does this scroll to a position? Only has x/y
-    STACK.splice(-2);
+    const newY = STACK.pop() as number;
+    const newX = STACK.pop() as number;
+
+    const {x, y} = useGlobalStore.getState().cameraFocusOffset;
+
+    x.start(newX, {
+      config: {
+        duration: 1000,
+      }
+    })
+
+    y.start(newY, {
+      config: {
+        duration: 1000,
+      }
+    })
   },
   DSCROLLP: ({ STACK }) => {
     // Does this reset the camera?
     // const value = 
     STACK.pop() as number;
+    const {x, y} = useGlobalStore.getState().cameraFocusOffset;
+
+    x.start(0, {
+      immediate: true,
+      config: {
+        duration: 0,
+      }
+    })
+
+    y.start(0, {
+      immediate: true,
+      config: {
+        duration: 0,
+      }
+    })
+
     useGlobalStore.setState({
       currentFocusActor: undefined,
     })
   },
   CSCROLL: ({ STACK }) => {
-    //const x = 
-    STACK.pop() as number;
-    //const y = 
-    STACK.pop() as number;
-    // const duration =
-    STACK.pop() as number;
-    
+    const duration =STACK.pop() as number; 
+    const newY = STACK.pop() as number;
+    const newX = STACK.pop() as number;
+
+    const {x, y} = useGlobalStore.getState().cameraFocusOffset;
+
+    x.start(0, {
+      immediate: true,
+      config: {
+        duration: duration / 30 * 1000,
+      }
+    })
+
+    y.start(0, {
+      immediate: true,
+      config: {
+        duration: duration / 30 * 1000,
+      }
+    })
   },
   CSCROLLA: ({ STACK }) => {
     STACK.splice(-2);
   },
   CSCROLLP: ({ STACK }) => {
-    STACK.splice(-2);
+    const newY = STACK.pop() as number;
+    const newX = STACK.pop() as number;
+
+    const {x, y} = useGlobalStore.getState().cameraFocusOffset;
   },
   CSCROLL2: ({ STACK }) => {
     STACK.splice(-4);
@@ -1262,7 +1309,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.splice(-1);
   },
   DSCROLL: ({ STACK }) => {
-    STACK.splice(-2);
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+
+    setLayerScroll(99, x, y);
   },
   DSCROLL2: ({ STACK }) => {
     const y = STACK.pop() as number;
@@ -1283,7 +1333,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     setLayerScroll(layerID, x, y, speed);
   },
   LSCROLL3: ({ STACK }) => {
-    STACK.splice(-6);
+    const speed = STACK.pop() as number;
+    const endY = STACK.pop() as number;
+    const endX = STACK.pop() as number;
+    const startY = STACK.pop() as number;
+    const startX = STACK.pop() as number;
+    
+    // Pop layer ID from stack
+    const layerID = STACK.pop() as number; 
+    setLayerScroll(layerID, endX, endY, speed, startX, startY);
   },
   SCROLLSYNC: () => { },
   SCROLLSYNC2: async ({ STACK }) => {

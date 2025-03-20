@@ -180,10 +180,18 @@ export const attachKeyDownListeners = () => {
   window.addEventListener('keyup', keyupListener);
 }
 
-export const setLayerScroll = (layerIndex: number, x: number, y: number, transitionDuration = 0) => {
+export const setLayerScroll = (layerIndex: number, x: number, y: number, transitionDuration = 0, startX?: number, startY?: number) => {
   const manualScroll = useGlobalStore.getState().layerManualScrolls[layerIndex] ?? {
     xOffset: new SpringValue(0),
     yOffset: new SpringValue(0),
+  }
+
+  if (startX !== undefined) {
+    manualScroll.xOffset.set(startX);
+  }
+
+  if (startY !== undefined) {
+    manualScroll.yOffset.set(startY);
   }
 
   manualScroll.xOffset.start(x, {

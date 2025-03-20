@@ -9,6 +9,14 @@ const initialiseLayer = (tile: Tile, width: number, height: number, layerRenderI
   canvas.width = width;
   canvas.height = height;
 
+  const context = canvas.getContext('2d');
+
+  if (!context) {
+    console.error('Could not get 2D context from canvas');
+    throw new Error('Could not get 2D context from canvas');
+  }
+  
+  context.clearRect(0, 0, canvas.width, canvas.height);
   const blendType = TILE_BLENDS_TO_THREEJS[tile.blendType as keyof typeof TILE_BLENDS_TO_THREEJS];
 
   return {
@@ -70,6 +78,9 @@ const useLayeredTiles = (tiles: Tile[], filename: string, width: number, height:
       let layerRenderIDs = tiles.map(tile => tile.layerID);
       layerRenderIDs = layerRenderIDs.filter((id, index) => layerRenderIDs.indexOf(id) === index).sort((a,b) => a - b);
 
+      if (layerRenderIDs[0] !== 0) {
+        layerRenderIDs.unshift(0);
+      }
       // Initialize the Z group if it doesn't exist
       if (!result[layerId]) {
         result[layerId] = initialiseLayer(tile, width, height, layerRenderIDs.indexOf(tile.layerID));
@@ -78,7 +89,6 @@ const useLayeredTiles = (tiles: Tile[], filename: string, width: number, height:
       const { canvas } = result[layerId];
 
       drawTile(tile, canvas, tilesTexture);
-      document.body.appendChild(canvas);
     });
 
     return Object.values(result);

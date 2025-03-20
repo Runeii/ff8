@@ -1,5 +1,6 @@
 import { useAnimations } from "@react-three/drei";
 import { Blending } from "three";
+import { FieldData } from "../Field/Field";
 
 declare global {
   interface ExecuteScriptEventDetail {
