@@ -95,7 +95,6 @@ export const openMessage = (id: string, text: string[], placement: MessagePlacem
   const { currentMessages } = useGlobalStore.getState();
 
   document.addEventListener('messageClosed', ({ detail }) => {
-    console.log(detail)
     if (detail.id !== id) {
       return;
     }

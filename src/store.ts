@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Vector3 } from 'three';
+import { Object3D, Vector3 } from 'three';
 import { SpringValue } from '@react-spring/web';
 import MAP_NAMES from './constants/maps';
 import type { Howl} from 'howler';
@@ -31,10 +31,6 @@ interface GlobalState {
 
   currentMessages: Message[],
 
-  layerManualScrolls: Record<number, {
-    xOffset: SpringValue<number>,
-    yOffset: SpringValue<number>,
-  }>,
   layerScrollAdjustments: Record<number, {
     xOffset: number,
     yOffset: number,
@@ -51,11 +47,13 @@ interface GlobalState {
   playerMovementSpeed: number,
   isPartyFollowing: boolean,
 
-  currentFocusActor?: number,
-  cameraFocusOffset: {
-    x: SpringValue<number>,
-    y: SpringValue<number>,
-  }
+  cameraAndLayerStartXY: {x: number, y: number}[],
+  cameraAndLayerEndXY: {x: number, y: number}[],
+  cameraAndLayerDurations: number[],
+  cameraAndLayerModes: number[],
+  cameraAndLayerTransitioning: boolean[],
+  cameraAndLayerTransitionProgresses: number[],
+  cameraFocusObject?: Object3D,
 
   hasActiveTalkMethod: boolean,
   lockedTriangles: number[],
@@ -94,7 +92,6 @@ const useGlobalStore = create<GlobalState>()(() => ({
 
   currentMessages: [],
 
-  layerManualScrolls: {},
   layerScrollAdjustments: {},
   canvasOpacitySpring: new SpringValue(0),
   isMapFadeEnabled: true,
@@ -105,11 +102,13 @@ const useGlobalStore = create<GlobalState>()(() => ({
   playerMovementSpeed: 0,
   isPartyFollowing: true,
 
-  currentFocusActor: undefined,
-  cameraFocusOffset: {
-    x: new SpringValue(0),
-    y: new SpringValue(0),
-  },
+  cameraAndLayerStartXY: new Array(8).fill({x: 0, y: 0}),
+  cameraAndLayerEndXY: new Array(8).fill({x: 0, y: 0}),
+  cameraAndLayerDurations: new Array(8).fill(0),
+  cameraAndLayerModes: new Array(8).fill(0),
+  cameraAndLayerTransitioning: new Array(8).fill(false),
+  cameraAndLayerTransitionProgresses: new Array(8).fill(0),
+  cameraFocusObject: undefined,
 
   hasActiveTalkMethod: false,
 

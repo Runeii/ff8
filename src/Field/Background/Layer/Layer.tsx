@@ -1,9 +1,11 @@
 import { useRef, useState } from "react";
-import { ClampToEdgeWrapping, Line3, NearestFilter, NormalBlending, PerspectiveCamera, Sprite, SRGBColorSpace, Vector3 } from "three";
+import { ClampToEdgeWrapping, Line3, NearestFilter, PerspectiveCamera, Sprite, SRGBColorSpace, Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
 import { getCameraDirections } from "../../Camera/cameraUtils";
 import useGlobalStore from "../../../store";
+import { useSpring } from "@react-spring/web";
+import useScrollSpring from "../../useScrollSpring";
 
 
 function getVisibleDimensionsAtDistance(
@@ -52,6 +54,9 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
 
 
   const camera = useThree(state => state.camera as PerspectiveCamera);
+
+  const scrollSpring = useScrollSpring(layer.renderID);
+
   useFrame(() => {
     if (!layerRef.current) {
       return;
@@ -111,7 +116,7 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     const widthUnits = result.width / SCREEN_WIDTH;
     const heightUnits = result.height / SCREEN_HEIGHT;
 
-    const { layerScrollAdjustments, layerManualScrolls } = useGlobalStore.getState()
+    const { layerScrollAdjustments } = useGlobalStore.getState()
 
     // Unclear to me why we need to use a non standard layerID here,
     // but that seems to be what Opcodes expect
@@ -136,14 +141,8 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
       panY = -yOffset + adjustedY;
     }
 
-   if (layerManualScrolls[layer.renderID]) {
-     const {
-       xOffset,
-       yOffset,
-     } = layerManualScrolls[layer.renderID];
-     panX -= xOffset.get();
-     panY += yOffset.get();
-   }
+    panX -= scrollSpring.x.get();
+    panY -= scrollSpring.y.get();
 
     if (Number.isNaN(panX) || !Number.isFinite(panX)) {
       panX = 0;

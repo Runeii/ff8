@@ -6,7 +6,7 @@ import { dummiedCommand, openMessage, remoteExecute, remoteExecuteOnPartyEntity,
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
-import { displayMessage, fadeOutMap, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint, setLayerScroll } from "./common";
+import { displayMessage, fadeOutMap, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint, setCameraAndLayerScroll, setCameraAndLayerFocus } from "./common";
 import { ScriptState, ScriptStateStore } from "./state";
 import { createAnimationController } from "./AnimationController";
 import { MUSIC_IDS } from "../../../constants/audio";
@@ -36,7 +36,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 0, // progress
+  256: 321, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -387,9 +387,7 @@ return
     const id = STACK.pop() as number;
     const channel = STACK.pop() as number;
 
-    useGlobalStore.setState({ isUserControllable: false });
     await displayMessage(id, x, y, channel);
-    useGlobalStore.setState({ isUserControllable: true });
   },
   RAMESW: async ({ STACK }) => {
     const y = STACK.pop() as number;
@@ -416,7 +414,6 @@ return
 
     const uniqueId = `${id}--${Date.now()}`;
 
-    useGlobalStore.setState({ isUserControllable: false });
     const result = await openMessage(uniqueId, availableMessages[id], { x, y, channel }, true, {
       first,
       last,
@@ -424,7 +421,6 @@ return
       cancel: cancelOpt,
     });
     TEMP_STACK[0] = result;
-    useGlobalStore.setState({ isUserControllable: true });
   },
   ASK: (args) => {
     const { STACK } = args;
@@ -439,7 +435,6 @@ return
     useGlobalStore.setState({
       currentMessages: useGlobalStore.getState().currentMessages.slice(0, -1)
     });
-    useGlobalStore.setState({ isUserControllable: true });
   },
   MESVAR: ({ STACK }) => {
     const value = STACK.pop() as number;
@@ -451,7 +446,6 @@ return
     useGlobalStore.setState({
       currentMessages: useGlobalStore.getState().currentMessages.slice(0, -1)
     });
-    useGlobalStore.setState({ isUserControllable: true });
   },
   ISTOUCH: ({ scene, script, STACK, TEMP_STACK }) => {
     const actorId = STACK.pop() as number;
@@ -1135,29 +1129,6 @@ return
   RUNENABLE: () => {
     useGlobalStore.setState({ isRunEnabled: true });
   },
-  DSCROLLA: ({ STACK }) => {
-    const actorCode = STACK.pop() as number;
-
-    useGlobalStore.setState({
-      currentFocusActor: actorCode
-    });
-  },
-  DSCROLLA2: ({ STACK }) => {
-    STACK.pop() as number;
-    const actorCode = STACK.pop() as number;
-
-    useGlobalStore.setState({
-      currentFocusActor: actorCode
-    });
-  },
-  CSCROLLA2: ({ STACK }) => {
-    STACK.pop() as number; // i reckon one of these is frames (c = controlled?)
-    STACK.pop() as number; //
-    const actorCode = STACK.pop() as number;
-    useGlobalStore.setState({
-      currentFocusActor: actorCode
-    });
-  },
   DOORLINEON: ({ currentState }) => {
     currentState.isDoorOn = true;
   },
@@ -1230,110 +1201,63 @@ return
     // Likely sound effect ID
     STACK.pop() as number;
   },
-  LSCROLLP: ({ STACK }) => {
-    const newY = STACK.pop() as number;
-    const newX = STACK.pop() as number;
 
-    const {x, y} = useGlobalStore.getState().cameraFocusOffset;
+  /*
+  DSCROLL: all instant
+  LSCROLL: all with duration
+  CSCROLL: camera (0) with duration
+  DSCROLL2: layer instant
+  LSCROLL2/CSCROLL2: identical, layer with duration
 
-    x.start(newX, {
-      config: {
-        duration: 1000,
-      }
-    })
-
-    y.start(newY, {
-      config: {
-        duration: 1000,
-      }
-    })
-  },
-  DSCROLLP: ({ STACK }) => {
-    // Does this reset the camera?
-    // const value = 
-    STACK.pop() as number;
-    const {x, y} = useGlobalStore.getState().cameraFocusOffset;
-
-    x.start(0, {
-      immediate: true,
-      config: {
-        duration: 0,
-      }
-    })
-
-    y.start(0, {
-      immediate: true,
-      config: {
-        duration: 0,
-      }
-    })
-
-    useGlobalStore.setState({
-      currentFocusActor: undefined,
-    })
-  },
-  CSCROLL: ({ STACK }) => {
-    const duration =STACK.pop() as number; 
-    const newY = STACK.pop() as number;
-    const newX = STACK.pop() as number;
-
-    const {x, y} = useGlobalStore.getState().cameraFocusOffset;
-
-    x.start(0, {
-      immediate: true,
-      config: {
-        duration: duration / 30 * 1000,
-      }
-    })
-
-    y.start(0, {
-      immediate: true,
-      config: {
-        duration: duration / 30 * 1000,
-      }
-    })
-  },
-  CSCROLLA: ({ STACK }) => {
-    STACK.splice(-2);
-  },
-  CSCROLLP: ({ STACK }) => {
-    const newY = STACK.pop() as number;
-    const newX = STACK.pop() as number;
-
-    const {x, y} = useGlobalStore.getState().cameraFocusOffset;
-  },
-  CSCROLL2: ({ STACK }) => {
-    STACK.splice(-4);
-  },
-  CSCROLL3: ({ STACK }) => {
-    STACK.splice(-1);
-  },
+  level 3 is just an inverted x/y
+  */
   DSCROLL: ({ STACK }) => {
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
-
-    setLayerScroll(99, x, y);
+    setCameraAndLayerScroll(x, y, 0);
   },
-  DSCROLL2: ({ STACK }) => {
+  LSCROLL: ({ STACK }) => {
+    const duration = STACK.pop() as number;
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
+
+    setCameraAndLayerScroll(x, y, duration);
+  },
+  CSCROLL: ({ STACK }) => {
+    const duration = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+
+    setCameraAndLayerScroll(x, y, duration);
+  },
+  DSCROLL2: async ({ STACK }) => {
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+
     const layerID = STACK.pop() as number;
 
-    setLayerScroll(layerID, x, y);
-  },
-  LSCROLLA: ({ STACK }) => {
-    STACK.splice(-2);
+    setCameraAndLayerScroll(x, y, 0, layerID);
   },
   LSCROLL2: ({ STACK }) => {
-    const speed = STACK.pop() as number;
+    const duration = STACK.pop() as number;
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
+
     const layerID = STACK.pop() as number;
 
-    setLayerScroll(layerID, x, y, speed);
+    setCameraAndLayerScroll(x, y, duration, layerID);
   },
-  LSCROLL3: ({ STACK }) => {
-    const speed = STACK.pop() as number;
+  CSCROLL2: ({ STACK }) => {
+    const duration = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+
+    const layerID = STACK.pop() as number;
+
+    setCameraAndLayerScroll(x, y, duration, layerID);
+  },
+  CSCROLL3: async ({ STACK }) => {
+    const duration = STACK.pop() as number;
     const endY = STACK.pop() as number;
     const endX = STACK.pop() as number;
     const startY = STACK.pop() as number;
@@ -1341,18 +1265,96 @@ return
     
     // Pop layer ID from stack
     const layerID = STACK.pop() as number; 
-    setLayerScroll(layerID, endX, endY, speed, startX, startY);
+
+    setCameraAndLayerScroll(startX, startY, 0, layerID);
+    setCameraAndLayerScroll(endX, endY, duration, layerID);
   },
-  SCROLLSYNC: () => { },
+  LSCROLL3: async ({ STACK }) => {
+    const duration = STACK.pop() as number;
+    const endY = STACK.pop() as number;
+    const endX = STACK.pop() as number;
+    const startY = STACK.pop() as number;
+    const startX = STACK.pop() as number;
+    
+    // Pop layer ID from stack
+    const layerID = STACK.pop() as number;
+
+    await setCameraAndLayerScroll(startX, startY, 0, layerID);
+    setCameraAndLayerScroll(endX, endY, duration, layerID);
+  },
+
+  DSCROLLP: async ({ scene, STACK }) => {
+    const partyMemberId = STACK.pop() as number;
+
+    const mesh = getPartyMemberModelComponent(scene, partyMemberId);
+    setCameraAndLayerFocus(mesh, 0);
+  },
+  LSCROLLP: ({ scene, STACK }) => {
+    const duration = STACK.pop() as number;
+    const partyMemberId = STACK.pop() as number;
+
+    const mesh = getPartyMemberModelComponent(scene, partyMemberId);
+    setCameraAndLayerFocus(mesh, duration);
+  },
+  CSCROLLP: ({ scene, STACK }) => {
+    const duration = STACK.pop() as number;
+    const partyMemberId = STACK.pop() as number;
+
+    const mesh = getPartyMemberModelComponent(scene, partyMemberId);
+    setCameraAndLayerFocus(mesh, duration);
+  },
+  DSCROLLA: async ({ scene, STACK }) => {
+    const actorCode = STACK.pop() as number;
+
+    const mesh = getScriptEntity(scene, actorCode);
+    setCameraAndLayerFocus(mesh, 0);
+  },
+  CSCROLLA: ({ scene, STACK }) => {
+    const duration = STACK.pop() as number;
+    const actorCode = STACK.pop() as number;
+
+    const mesh = getScriptEntity(scene, actorCode);
+    setCameraAndLayerFocus(mesh, duration);
+  },
+  LSCROLLA: ({ scene, STACK }) => {
+    const duration = STACK.pop() as number;
+    const actorCode = STACK.pop() as number;
+
+    const mesh = getScriptEntity(scene, actorCode);
+    setCameraAndLayerFocus(mesh, duration);
+  },
+  DSCROLLA2: ({ scene, STACK }) => {
+    const actorCode = STACK.pop() as number;
+    const layerID = STACK.pop() as number;
+
+    if (layerID !== 0) {
+      console.warn('DSCROLLA2: Layer ID is not 0', layerID);
+    }
+
+    const mesh = getScriptEntity(scene, actorCode);
+    setCameraAndLayerFocus(mesh, 0);
+  },
+  CSCROLLA2: ({ scene, STACK }) => {
+    const duration = STACK.pop() as number;
+    const actorCode = STACK.pop() as number;
+    const layerID = STACK.pop() as number;
+
+    if (layerID !== 0) {
+      console.warn('CSCROLLA2: Layer ID is not 0', layerID);
+    }
+
+    const mesh = getScriptEntity(scene, actorCode);
+    setCameraAndLayerFocus(mesh, duration);
+  },
+  SCROLLSYNC: async () => {
+    while (useGlobalStore.getState().cameraAndLayerTransitioning.some(isTransitioning => isTransitioning)) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+  },
   SCROLLSYNC2: async ({ STACK }) => {
     const layerID = STACK.pop() as number;
 
-    const controlledScroll = useGlobalStore.getState().layerManualScrolls[layerID];
-    if (!controlledScroll) {
-      return;
-    }
-
-    while (controlledScroll.xOffset.isAnimating || controlledScroll.yOffset.isAnimating) {
+    while (useGlobalStore.getState().cameraAndLayerTransitioning[layerID]) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -1669,9 +1671,6 @@ return
   },
   PHSENABLE: ({ STACK }) => {
     STACK.pop() as number;
-  },
-  LSCROLL: ({ STACK }) => {
-    STACK.splice(-3);
   },
   // Sets draw point ID
   UNKNOWN16: ({ STACK }) => {

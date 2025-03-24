@@ -134,7 +134,6 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
         currentParameterStates: {},
         currentParameterVisibility: {},
         layerScrollAdjustments: {},
-        layerManualScrolls: {},
 
         currentMessages: [],
 

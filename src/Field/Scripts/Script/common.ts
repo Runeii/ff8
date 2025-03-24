@@ -2,7 +2,7 @@ import { SpringValue } from "@react-spring/web";
 import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
 import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection, openMessage } from "./utils";
-import { Group, Scene, Vector3 } from "three";
+import { Group, Object3D, Scene, Vector3 } from "three";
 import { WORLD_DIRECTIONS } from "../../../utils";
 
 export const fadeInMap = async () => {
@@ -180,38 +180,61 @@ export const attachKeyDownListeners = () => {
   window.addEventListener('keyup', keyupListener);
 }
 
-export const setLayerScroll = (layerIndex: number, x: number, y: number, transitionDuration = 0, startX?: number, startY?: number) => {
-  const manualScroll = useGlobalStore.getState().layerManualScrolls[layerIndex] ?? {
-    xOffset: new SpringValue(0),
-    yOffset: new SpringValue(0),
-  }
+export const setCameraAndLayerScroll = async (x: number, y: number, duration: number, layerIndex?: number) => {
+  const {cameraAndLayerStartXY, cameraAndLayerEndXY, cameraAndLayerDurations, cameraAndLayerTransitioning, cameraAndLayerTransitionProgresses, cameraAndLayerModes, cameraFocusObject} = useGlobalStore.getState();
 
-  if (startX !== undefined) {
-    manualScroll.xOffset.set(startX);
-  }
+  const newCameraAndLayerStartXY = [...cameraAndLayerStartXY].map(
+    (value, index) =>
+      index === layerIndex || layerIndex === undefined
+    ? cameraAndLayerEndXY[index] ?? ({x: 0, y: 0}) : value
+  );
 
-  if (startY !== undefined) {
-    manualScroll.yOffset.set(startY);
-  }
+  const newCameraAndLayerEndXY = [...cameraAndLayerEndXY].map(
+    (value, index) => index === layerIndex || layerIndex === undefined ? ({x, y}) : value
+  );
 
-  manualScroll.xOffset.start(x, {
-    immediate: transitionDuration === 0,
-    config: {
-      duration: transitionDuration > 0 ? transitionDuration / 30 * 1000 : undefined,
-    },
-  });
+  const newCameraAndLayerDurations = [...cameraAndLayerDurations].map(
+    (value, index) => index === layerIndex || layerIndex === undefined ? duration : value
+  );
 
-  manualScroll.yOffset.start(y, {
-    immediate: transitionDuration === 0,
-    config: {
-      duration: transitionDuration > 0 ? transitionDuration / 30 * 1000 : undefined,
-    }
-  });
+  const newCameraAndLayerModes = [...cameraAndLayerModes].map(
+    (value, index) => index === layerIndex || layerIndex === undefined ? 0 : value
+  );
+
+  const newCameraAndLayerTransitioning = [...cameraAndLayerTransitioning].map(
+    (value, index) => index === layerIndex || layerIndex === undefined ? true : value
+  );
+  console.log('Setting to', newCameraAndLayerTransitioning)
+  const newCameraAndLayerTransitionProgresses = [...cameraAndLayerTransitionProgresses].map(
+    (value, index) => index === layerIndex || layerIndex === undefined ?
+      0 :
+      value
+  );
+
+  // Clear focus if touching 0 layer
+  const newCameraFocusObject = layerIndex && layerIndex !== 0 ? cameraFocusObject : undefined;
 
   useGlobalStore.setState({
-    layerManualScrolls: {
-      ...useGlobalStore.getState().layerManualScrolls,
-      [layerIndex]: manualScroll,
-    }
+    cameraFocusObject: newCameraFocusObject,
+    cameraAndLayerStartXY: newCameraAndLayerStartXY,
+    cameraAndLayerEndXY: newCameraAndLayerEndXY,
+    cameraAndLayerDurations: newCameraAndLayerDurations,
+    cameraAndLayerTransitioning: newCameraAndLayerTransitioning,
+    cameraAndLayerTransitionProgresses: newCameraAndLayerTransitionProgresses,
+    cameraAndLayerModes: newCameraAndLayerModes,
+  })
+}
+
+// This could probably smooth out resetting any set X/Ys
+export const setCameraAndLayerFocus = (object: Object3D, duration: number) => {
+  const {cameraAndLayerDurations, cameraAndLayerEndXY} = useGlobalStore.getState();
+
+  useGlobalStore.setState({
+    cameraFocusObject: object,
+    cameraAndLayerStartXY: [...cameraAndLayerEndXY],
+    cameraAndLayerEndXY: new Array(cameraAndLayerDurations.length).fill(0),
+    cameraAndLayerTransitionProgresses: new Array(cameraAndLayerDurations.length).fill(0),
+    cameraAndLayerTransitioning: new Array(cameraAndLayerDurations.length).fill(true),
+    cameraAndLayerDurations: new Array(cameraAndLayerDurations.length).fill(duration),
   })
 }

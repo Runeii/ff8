@@ -2,11 +2,13 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { PerspectiveCamera, Quaternion, Vector3 } from 'three';
 import { vectorToFloatingPoint, WORLD_DIRECTIONS } from "../../utils";
 import { FieldData } from "../Field";
-import { MutableRefObject, useEffect, useMemo, useState } from "react";
+import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { calculateAngleForParallax, calculateFOV, calculateParallax, getBoundaries, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
-import { clamp } from "three/src/math/MathUtils.js";
+import { clamp, lerp } from "three/src/math/MathUtils.js";
 import { SCREEN_HEIGHT } from "../../constants/constants";
 import useGlobalStore from "../../store";
+import Focus from "./Focus/Focus";
+import useScrollSpring from "../useScrollSpring";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
@@ -68,13 +70,17 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     [limits]
   );
 
+  const { cameraFocusObject } = useGlobalStore();
+
+  const scrollSpring = useScrollSpring(0);
+
   // This is the main logic for the camera movement
   useFrame(({ scene }) => {
     if (activeCameraId !== 0) {
       return
     }
 
-    const player = scene.getObjectByName("focus");
+    const player = cameraFocusObject ?? scene.getObjectByName("focus");
 
     if (!initialCameraTargetPosition || !player) {
       return
@@ -117,12 +123,17 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
 
     camera.rotation.copy(initialCameraRotation);
 
-    const finalPanX = clamp(panX, boundaries.left, boundaries.right);
-    const finalPanY = clamp(panY, boundaries.top, boundaries.bottom);
+    const xPan = scrollSpring.x.get();
+    const yPan = scrollSpring.y.get();
+
+    const clippedPanX = clamp(panX, boundaries.left, boundaries.right);
+    const finalPanX = clippedPanX - xPan / 256;
+
+    const clippedPanY = clamp(panY, boundaries.top, boundaries.bottom);
+    const finalPanY = clippedPanY - yPan / 256;
 
     const { UP, RIGHT } = WORLD_DIRECTIONS;
   
-
     const yawRotation = new Quaternion().setFromAxisAngle(UP, calculateAngleForParallax(finalPanX, cameraZoom));
     camera.quaternion.multiply(yawRotation);
     
@@ -130,11 +141,11 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     camera.quaternion.multiply(pitchRotation);
 
     backgroundPanRef.current.boundaries = boundaries;
-    backgroundPanRef.current.panX = finalPanX * 256;
-    backgroundPanRef.current.panY = finalPanY * 256;
+    backgroundPanRef.current.panX = clippedPanX * 256;
+    backgroundPanRef.current.panY = clippedPanY * 256;
   });
 
-  return null;
+  return <Focus />;
 }
 
 export default Camera;
