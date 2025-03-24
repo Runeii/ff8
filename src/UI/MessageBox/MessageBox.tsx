@@ -161,7 +161,6 @@ const MessageBox = ({ message }: MessageBoxProps) => {
 
 
     const placements: (Placement | Modifier)[] = [];
-
     formattedText?.split('\n').forEach((line) => {
       let hasOpenModifier = false;
       let modifier = '';
@@ -277,6 +276,9 @@ const MessageBox = ({ message }: MessageBoxProps) => {
   }, [currentIndex, formattedText, message.placement.height, message.placement.width, options]);
 
   const [visiblePlacements, setVisiblePlacements] = useState<typeof placements>([]);
+  useEffect(() => {
+    setVisiblePlacements([]);
+  }, [formattedText, currentPage]);
 
   const [scaleSpring] = useSpring(() => ({ 
     scale: 1,

@@ -3,6 +3,7 @@ import useGlobalStore from "../store";
 import MessageBox from "./MessageBox/MessageBox";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/constants";
 import { Fragment } from "react/jsx-runtime";
+import { Suspense } from "react";
 
 const Ui = () => {
   const currentMessages = useGlobalStore(state => state.currentMessages);
@@ -28,11 +29,13 @@ const Ui = () => {
         bottom={-(SCREEN_HEIGHT / 2)}
         position={[SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2, 0]}
       />
-      {messagesArray.map((messages) => (
-        <Fragment key={messages[0].id}>
-          {messages.map(message => <MessageBox key="message--${message.id}" message={message} />)}
-        </Fragment>
-      ))}
+      <Suspense>
+        {messagesArray.map((messages) => (
+          <Fragment key={messages[0].id}>
+            {messages.map(message => <MessageBox key="message--${message.id}" message={message} />)}
+          </Fragment>
+        ))}
+      </Suspense>
     </Hud>
   );
 }

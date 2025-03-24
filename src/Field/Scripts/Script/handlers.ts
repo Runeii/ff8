@@ -230,7 +230,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   MAPJUMP3: ({ currentOpcode, STACK }) => {
     currentOpcode.param   // walkmesh ID, not necessary for us
     const mapJumpDetailsInMemory = STACK.splice(-5);
-return
+
     useGlobalStore.setState({
       pendingFieldId: MAP_NAMES[mapJumpDetailsInMemory[0]],
       initialAngle: mapJumpDetailsInMemory[4],
