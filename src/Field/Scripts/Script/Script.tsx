@@ -82,7 +82,8 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
   });
 
   // Remote execution request method handler
-  const activeRemoteExecutionRequest = remoteExecutionRequests[0];
+  const activeRemoteExecutionRequest = remoteExecutionRequests.at(-1);
+
   useMethod({
     key: activeRemoteExecutionRequest?.key,
     methodId: activeRemoteExecutionRequest?.methodId,
@@ -118,6 +119,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
       if (!matchingMethod) {
         return;
       }
+
       setRemoteExecutionRequests(currentRequests => {
         const updatedRequests = [...currentRequests, {
           key,

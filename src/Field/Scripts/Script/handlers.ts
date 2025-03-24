@@ -262,7 +262,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   KEYON: async ({ currentOpcodeIndex, STACK }) => {
     const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
-
+    console.log(isDown)
     if (isDown) {
       return currentOpcodeIndex + 2;
     }
@@ -442,9 +442,19 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     MESSAGE_VARS[id] = value.toString();
   },
   WINCLOSE: ({ STACK }) => {
-    STACK.pop() as number; // const channel
+    const channel = STACK.pop() as number; // const channel
+
+    const currentMessages = useGlobalStore.getState().currentMessages;
+    
+    const matchingMessages = currentMessages.filter(message => message.placement.channel === channel);
+    const lastOpenedMessage = matchingMessages[matchingMessages.length - 1];
+    if (!lastOpenedMessage) {
+      console.warn('No message to close');
+      return;
+    }
+    const closedMessages = currentMessages.filter(message => message.id !== lastOpenedMessage.id);
     useGlobalStore.setState({
-      currentMessages: useGlobalStore.getState().currentMessages.slice(0, -1)
+      currentMessages: closedMessages,
     });
   },
   ISTOUCH: ({ scene, script, STACK, TEMP_STACK }) => {

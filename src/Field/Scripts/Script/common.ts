@@ -146,7 +146,7 @@ export const animateBackground = async (spring: SpringValue<number>, speed: numb
 }
 
 export const KEY_FLAGS = {
-  16: '', // 'Cancel'
+  16: 'w', // 'Cancel'
   32: '', // 'Menu'
   64: ' ', // 'OK/Accept'
   128: '', //'Card game button'

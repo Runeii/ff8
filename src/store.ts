@@ -67,60 +67,62 @@ interface GlobalState {
   fieldData?: FieldData,
 }
 
-const useGlobalStore = create<GlobalState>()(() => ({
-  isDebugMode: false,
+export const INITIAL_STATE: GlobalState = {
+    isDebugMode: false,
+  
+    fieldDirection: 0,
+  
+    availableMessages: [],
+    characterPosition: undefined as unknown as Vector3,
+    pendingCharacterPosition: undefined as unknown as Vector3,
+    fieldId: '' as typeof MAP_NAMES[number],
+    pendingFieldId: undefined as unknown as typeof MAP_NAMES[number],
+  
+    currentLocationPlaceName: 0, // we don't currently use this for anything
+    hasMoved: false,
+    isUserControllable: false,
+    isRunEnabled: true,
+    initialAngle: 0,
+  
+    backgroundLayerVisibility: {},
+    currentParameterStates: {},
+    currentParameterVisibility: {},
+  
+    isMapJumpEnabled: true,
+  
+    currentMessages: [],
+  
+    layerScrollAdjustments: {},
+    canvasOpacitySpring: new SpringValue(0),
+    isMapFadeEnabled: true,
+  
+    availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    party: [0, 1, 5],
+    congaWaypointHistory: [],
+    playerMovementSpeed: 0,
+    isPartyFollowing: true,
+  
+    cameraAndLayerStartXY: new Array(8).fill({x: 0, y: 0}),
+    cameraAndLayerEndXY: new Array(8).fill({x: 0, y: 0}),
+    cameraAndLayerDurations: new Array(8).fill(0),
+    cameraAndLayerModes: new Array(8).fill(0),
+    cameraAndLayerTransitioning: new Array(8).fill(false),
+    cameraAndLayerTransitionProgresses: new Array(8).fill(0),
+    cameraFocusObject: undefined,
+  
+    hasActiveTalkMethod: false,
+  
+    lockedTriangles: [],
+  
+    activeCameraId: 0,
+  
+    backgroundMusicSrc: undefined,
+    backgroundMusic: undefined,
+    dualMusic: undefined,
+  
+    fieldData: undefined,
+  }
 
-  fieldDirection: 0,
-
-  availableMessages: [],
-  characterPosition: undefined as unknown as Vector3,
-  pendingCharacterPosition: undefined as unknown as Vector3,
-  fieldId: '' as typeof MAP_NAMES[number],
-  pendingFieldId: undefined as unknown as typeof MAP_NAMES[number],
-
-  currentLocationPlaceName: 0, // we don't currently use this for anything
-  hasMoved: false,
-  isUserControllable: false,
-  isRunEnabled: true,
-  initialAngle: 0,
-
-  backgroundLayerVisibility: {},
-  currentParameterStates: {},
-  currentParameterVisibility: {},
-
-  isMapJumpEnabled: true,
-
-  currentMessages: [],
-
-  layerScrollAdjustments: {},
-  canvasOpacitySpring: new SpringValue(0),
-  isMapFadeEnabled: true,
-
-  availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-  party: [0, 1, 5],
-  congaWaypointHistory: [],
-  playerMovementSpeed: 0,
-  isPartyFollowing: true,
-
-  cameraAndLayerStartXY: new Array(8).fill({x: 0, y: 0}),
-  cameraAndLayerEndXY: new Array(8).fill({x: 0, y: 0}),
-  cameraAndLayerDurations: new Array(8).fill(0),
-  cameraAndLayerModes: new Array(8).fill(0),
-  cameraAndLayerTransitioning: new Array(8).fill(false),
-  cameraAndLayerTransitionProgresses: new Array(8).fill(0),
-  cameraFocusObject: undefined,
-
-  hasActiveTalkMethod: false,
-
-  lockedTriangles: [],
-
-  activeCameraId: 0,
-
-  backgroundMusicSrc: undefined,
-  backgroundMusic: undefined,
-  dualMusic: undefined,
-
-  fieldData: undefined,
-}))
+const useGlobalStore = create<GlobalState>()(() => ({...INITIAL_STATE}))
 
 export default useGlobalStore
