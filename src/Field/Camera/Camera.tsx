@@ -2,9 +2,9 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { PerspectiveCamera, Quaternion, Vector3 } from 'three';
 import { vectorToFloatingPoint, WORLD_DIRECTIONS } from "../../utils";
 import { FieldData } from "../Field";
-import { MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
+import { MutableRefObject, useEffect, useMemo, useState } from "react";
 import { calculateAngleForParallax, calculateFOV, calculateParallax, getBoundaries, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
-import { clamp, lerp } from "three/src/math/MathUtils.js";
+import { clamp } from "three/src/math/MathUtils.js";
 import { SCREEN_HEIGHT } from "../../constants/constants";
 import useGlobalStore from "../../store";
 import Focus from "./Focus/Focus";
@@ -128,7 +128,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
 
     const clippedPanX = clamp(panX, boundaries.left, boundaries.right);
     const finalPanX = clippedPanX - xPan / 256;
-
+    
     const clippedPanY = clamp(panY, boundaries.top, boundaries.bottom);
     const finalPanY = clippedPanY - yPan / 256;
 

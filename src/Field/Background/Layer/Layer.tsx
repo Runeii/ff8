@@ -4,8 +4,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
 import { getCameraDirections } from "../../Camera/cameraUtils";
 import useGlobalStore from "../../../store";
-import { useSpring } from "@react-spring/web";
 import useScrollSpring from "../../useScrollSpring";
+import { clamp } from "three/src/math/MathUtils.js";
 
 
 function getVisibleDimensionsAtDistance(
@@ -151,10 +151,14 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
       panY = 0;
     }
 
+    const {left, right, top, bottom} = backgroundPanRef.current.boundaries;
+    const clampedPanX = clamp(panX, left * 256, right * 256);
+    const clampedPanY = clamp(panY, top * 256, bottom * 256);
+
     const directions = getCameraDirections(camera);
 
-    layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(panX * widthUnits));
-    layerRef.current.position.add(directions.upVector.clone().multiplyScalar(panY * heightUnits));
+    layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(clampedPanX * widthUnits));
+    layerRef.current.position.add(directions.upVector.clone().multiplyScalar(clampedPanY * heightUnits));
   })
      
   return (
