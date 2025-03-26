@@ -36,7 +36,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 321, // progress
+  256: 0, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -621,22 +621,17 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const lastFrame = STACK.pop() as number;
 
     animationController.setIdleAnimation(animationId, firstFrame, lastFrame);
-    animationController.playIdleAnimation();
   },
   ANIME: async ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
-    await animationController.playAnimation({
-      animationId,
-    });
-
-    animationController.playIdleAnimation();
+    await animationController.playAnimation(animationId);
   },
   ANIMEKEEP: async ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
-    await animationController.playAnimation({
-      animationId,
+    await animationController.playAnimation(animationId, {
+      keepLastFrame: true,
     });
   },
   CANIME: async ({ animationController, currentOpcode, STACK }) => {
@@ -644,39 +639,32 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    await animationController.playAnimation({
-      animationId,
+    await animationController.playAnimation(animationId, {
       startFrame: firstFrame,
       endFrame: lastFrame,
     });
-
-    animationController.playIdleAnimation();
   },
   CANIMEKEEP: async ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    await animationController.playAnimation({
-      animationId: animationId,
+    await animationController.playAnimation(animationId, {
       startFrame: firstFrame,
       endFrame: lastFrame,
+      keepLastFrame: true,
     });
   },
   RANIME: ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
-    animationController.playAnimation({
-      animationId,
-    }).then(() => {
-      animationController.playIdleAnimation();
-    });
+    animationController.playAnimation(animationId)
   },
   RANIMEKEEP: ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
-    animationController.playAnimation({
-      animationId,
+    animationController.playAnimation(animationId, {
+      keepLastFrame: true,
     });
   },
   RCANIME: ({ animationController, currentOpcode, STACK }) => {
@@ -684,44 +672,38 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    animationController.playAnimation({
-      animationId,
+    animationController.playAnimation(animationId, {
       startFrame: firstFrame,
       endFrame: lastFrame,
-    }).then(() => {
-      animationController.playIdleAnimation();
-    });
-
+    })
   },
   RCANIMEKEEP: ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    animationController.playAnimation({
-      animationId,
+    animationController.playAnimation(animationId, {
       startFrame: firstFrame,
       endFrame: lastFrame,
+      keepLastFrame: true,
     })
   },
   RANIMELOOP: ({ animationController, currentOpcode, }) => {
     const animationId = currentOpcode.param;
 
-    animationController.playAnimation({
-      animationId,
-      isRepeating: true,
+    animationController.playAnimation(animationId, {
+      loop: true,
     })
   },
   RCANIMELOOP: ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
-    const firstFrame = STACK.pop() as number;
-    const lastFrame = STACK.pop() as number;
+    const startFrame = STACK.pop() as number;
+    const endFrame = STACK.pop() as number;
 
-    animationController.playAnimation({
-      animationId,
-      startFrame: firstFrame,
-      endFrame: lastFrame,
-      isRepeating: true,
+    animationController.playAnimation(animationId, {
+      startFrame,
+      endFrame,
+      loop: true,
     })
   },
   LADDERANIME: ({ currentOpcode, currentState, STACK }) => {
@@ -733,21 +715,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     animationController.setAnimationSpeed(STACK.pop() as number)
   },
   ANIMESYNC: async ({ animationController }) => {
-    return new Promise((resolve) => {
-      resolve();
-      if (animationController.getIsPlaying() === false) {
-        resolve();
-      }
-
-      animationController.subscribe(state => {
-        if (!state.isPlaying) {
-          resolve()
-        }
-      })
-    });
+    while (animationController.getIsPlaying()) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
   },
   ANIMESTOP: ({ animationController }) => {
-    animationController.stopAnimations();
+    animationController.stopAnimation();
   },
   POPANIME: () => { },
   PUSHANIME: () => { },

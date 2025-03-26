@@ -41,11 +41,11 @@ const useMethod = ({
   const [currentOpcodeIndex, setCurrentOpcodeIndex] = useState(0);
 
   useEffect(() => {
-    if (!isDebugging || !isActive || currentOpcodeIndex > 0) {
+    if (!isActive || currentOpcodeIndex > 0 || methodId === 'default' || !isDebugging) {
       return;
     }
-    console.log('Starting', script.groupId, key, methodId);
-  }, [currentOpcodeIndex, isDebugging, isActive, key, script.groupId, methodId]);
+    console.log('Starting', script.groupId, methodId, method, key);
+  }, [currentOpcodeIndex, isDebugging, isActive, key, script.groupId, methodId, method]);
 
   useEffect(() => {
     if (!isActive) {
@@ -101,6 +101,9 @@ const useMethod = ({
 
   useEffect(() => {
     if (!isActive || isPaused || !isExecutableMethod || !currentOpcode || !method) {
+      if (isDebugging) {
+        console.log('Early exit', 'isActive', isActive, 'isPaused', isPaused, 'isExecutableMethod', isExecutableMethod, 'currentOpcode', currentOpcode, 'method', method);
+      }
       return;
     }
 

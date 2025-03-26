@@ -74,7 +74,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
-    isDebugging: script.groupId === 16,
+    isDebugging: script.groupId === 1,
     onComplete: () => {
       useGlobalStore.setState({ hasActiveTalkMethod: false });
       setActiveMethodId(undefined);
@@ -93,7 +93,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
-    isDebugging: script.groupId === 16,
+    isDebugging: script.groupId === 1,
     onComplete: () => {
       setRemoteExecutionRequests(requests => {
         const [completedRequest, ...remainingRequests] = requests;
@@ -162,7 +162,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
       return;
     }
     const { backgroundAnimationSpring, position, headAngle, angle} = useScriptStateStore.getState();
-    animationController.pauseAnimations();
+    animationController.stopAnimation();
     position.pause();
     headAngle.pause();
     angle.pause();
