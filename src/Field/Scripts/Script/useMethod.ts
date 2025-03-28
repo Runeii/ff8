@@ -3,7 +3,7 @@ import { Script } from "../types";
 import { ScriptStateStore } from "./state";
 import { OPCODE_HANDLERS } from "./handlers";
 import { useThree } from "@react-three/fiber";
-import { createAnimationController } from "./AnimationController";
+import { createAnimationController } from "./AnimationController/AnimationController";
 
 const useMethod = ({
   key,

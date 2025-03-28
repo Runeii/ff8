@@ -5,7 +5,7 @@ import type data from '../../public/output/escouse2.json';
 import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
-import { useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import Scripts from './Scripts/Scripts';
 import useGlobalStore, { INITIAL_STATE } from '../store';
 import { Script } from './Scripts/types';
@@ -50,6 +50,16 @@ const Field = ({ data }: FieldProps) => {
     },
     panX: 0,
     panY: 0,
+  });
+
+  // Allow animation controllers to know when the frame is updated outside of R3F
+  useFrame(({ clock }) => {
+    const event = new CustomEvent('frame', {
+      detail: {
+        delta: clock.getDelta(),
+      }
+    });
+    window.dispatchEvent(event);
   });
 
   return (

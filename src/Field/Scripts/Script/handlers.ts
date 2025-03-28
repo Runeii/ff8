@@ -8,7 +8,7 @@ import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
 import { displayMessage, fadeOutMap, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint, setCameraAndLayerScroll, setCameraAndLayerFocus } from "./common";
 import { ScriptState, ScriptStateStore } from "./state";
-import { createAnimationController } from "./AnimationController";
+import { createAnimationController } from "./AnimationController/AnimationController";
 import { MUSIC_IDS } from "../../../constants/audio";
 import MusicController from "./MusicController";
 
@@ -262,7 +262,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   KEYON: async ({ currentOpcodeIndex, STACK }) => {
     const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
-    console.log(isDown)
+
     if (isDown) {
       return currentOpcodeIndex + 2;
     }

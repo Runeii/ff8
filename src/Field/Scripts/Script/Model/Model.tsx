@@ -6,7 +6,7 @@ import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
 import Follower from "./Follower/Follower";
 import { ScriptStateStore } from "../state";
-import { createAnimationController } from "../AnimationController";
+import { createAnimationController } from "../AnimationController/AnimationController";
 import TalkRadius from "../TalkRadius/TalkRadius";
 
 type ModelProps = {
@@ -59,7 +59,7 @@ const Model = ({animationController, models, script,setActiveMethodId, useScript
       return;
     }
   
-    animationController.initialize(ref.animations.mixer, ref.animations.clips);
+    animationController.initialize(ref.animations.mixer, ref.animations.clips, ref.group);
     setMeshGroup(ref.group.current);
     setHead(ref.nodes.head);
     convertMaterialsToBasic(ref.group.current);
@@ -99,11 +99,19 @@ const Model = ({animationController, models, script,setActiveMethodId, useScript
   const movementSpeed = useScriptStateStore(state => isFollower ? playerMovementSpeed : state.movementSpeed);
   const position = useScriptStateStore(state => state.position);
 
+  const [isMoving, setIsMoving] = useState(false);
   useFrame(() => {
-    const isControllingLeadCharacter = isLeadCharacter && playerMovementSpeed > 0
-    if ((!position.isAnimating && !isControllingLeadCharacter) || movementSpeed === 0) {
+    if (position.isAnimating !== isMoving) {
+      setIsMoving(position.isAnimating);
+    }
+  });
+
+  const isControllingLeadCharacter = isLeadCharacter && playerMovementSpeed > 0;
+
+  useEffect(() => {
+    if ((!isMoving || movementSpeed === 0) && !isControllingLeadCharacter) {
       animationController.setIdleAnimation(0);
-      animationController.playIdleAnimation();  
+      animationController.requestIdleAnimation();  
       return;
     }
 
@@ -111,8 +119,8 @@ const Model = ({animationController, models, script,setActiveMethodId, useScript
     const RUN_ANIMATION = 2;
 
     animationController.setIdleAnimation(movementSpeed > 4000 ? RUN_ANIMATION : WALK_ANIMATION);
-    animationController.playIdleAnimation();
-  })
+    animationController.requestIdleAnimation();
+  }, [movementSpeed, animationController, isControllingLeadCharacter, script.groupId, script, isMoving]);
 
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
 

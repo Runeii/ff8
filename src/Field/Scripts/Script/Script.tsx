@@ -13,7 +13,7 @@ import { Group, Vector3 } from "three";
 import createScriptState from "./state";
 import { WORLD_DIRECTIONS } from "../../../utils";
 import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "./utils";
-import { createAnimationController } from "./AnimationController";
+import { createAnimationController } from "./AnimationController/AnimationController";
 import { Box } from "@react-three/drei";
 
 type ScriptProps = {
@@ -34,7 +34,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
   const [remoteExecutionRequests, setRemoteExecutionRequests] = useState<RemoteExecutionRequest[]>([]);
   
   const useScriptStateStore = useMemo(() => createScriptState(), []);
-  const animationController = useMemo(() => createAnimationController(), []);
+  const animationController = useMemo(() => createAnimationController(script.groupId), [script.groupId]);
 
   const [hasCompletedConstructor, setHasCompletedConstructor] = useState(false);
 
@@ -58,7 +58,6 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     methodId: 'default',
     isActive: hasCompletedConstructor && !useScriptStateStore.getState().isUnused,
     isLooping: true,
-    isDebugging: false,
     isPaused: !!(remoteExecutionRequests.length > 0 || activeMethodId),
     script,
     useScriptStateStore,
@@ -74,7 +73,6 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
-    isDebugging: script.groupId === 1,
     onComplete: () => {
       useGlobalStore.setState({ hasActiveTalkMethod: false });
       setActiveMethodId(undefined);
@@ -93,7 +91,6 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
-    isDebugging: script.groupId === 1,
     onComplete: () => {
       setRemoteExecutionRequests(requests => {
         const [completedRequest, ...remainingRequests] = requests;

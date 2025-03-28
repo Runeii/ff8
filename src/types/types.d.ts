@@ -3,6 +3,16 @@ import { Blending } from "three";
 import { FieldData } from "../Field/Field";
 
 declare global {
+  interface WindowEventMap {
+    // Define your custom event type
+    frame: CustomEvent<{
+      action: AnimationAction;
+      endTime: number;
+      loops: boolean;
+      delta: number;
+    }>;
+  }
+
   interface ExecuteScriptEventDetail {
     scriptLabel: number;
     key: string
