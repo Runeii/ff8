@@ -59,7 +59,7 @@ const Model = ({animationController, models, script,setActiveMethodId, useScript
       return;
     }
   
-    animationController.initialize(ref.animations.mixer, ref.animations.clips, ref.group);
+    animationController.initialize(ref.animations.mixer, ref.animations.clips, ref.group.current);
     setMeshGroup(ref.group.current);
     setHead(ref.nodes.head);
     convertMaterialsToBasic(ref.group.current);
