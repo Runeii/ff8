@@ -1330,14 +1330,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     setCameraAndLayerFocus(mesh, duration);
   },
   SCROLLSYNC: async () => {
-    while (useGlobalStore.getState().cameraAndLayerTransitioning.some(isTransitioning => isTransitioning)) {
+    while (useGlobalStore.getState().cameraAndLayerScrollSprings.some(spring => spring.x.isAnimating || spring.y.isAnimating) || useGlobalStore.getState().cameraFocusSpring.isAnimating) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
   SCROLLSYNC2: async ({ STACK }) => {
     const layerID = STACK.pop() as number;
 
-    while (useGlobalStore.getState().cameraAndLayerTransitioning[layerID]) {
+    while (useGlobalStore.getState().cameraAndLayerScrollSprings[layerID]) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },

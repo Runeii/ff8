@@ -141,8 +141,8 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
       panY = -yOffset + adjustedY;
     }
 
-    panX -= scrollSpring.x.get();
-    panY -= scrollSpring.y.get();
+    panX += scrollSpring.get().x;
+    panY += scrollSpring.get().y;
 
     if (Number.isNaN(panX) || !Number.isFinite(panX)) {
       panX = 0;

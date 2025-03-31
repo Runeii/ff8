@@ -1,4 +1,4 @@
-import { Modifier } from "../textTypes";
+import { Modifier } from "./textTypes";
 
 // Missing: wait, "general"
 export const createModifier = (tag: string) => {

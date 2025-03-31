@@ -1,4 +1,4 @@
-import { AnimationClip, Mesh, Object3D, VectorKeyframeTrack, NumberKeyframeTrack, QuaternionKeyframeTrack, Vector3 } from 'three';
+import { AnimationClip, Object3D, VectorKeyframeTrack, NumberKeyframeTrack, QuaternionKeyframeTrack, Vector3 } from 'three';
 
 /**
  * Applies a base animation (rest pose) directly to a mesh's bones/objects

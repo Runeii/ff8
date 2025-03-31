@@ -180,61 +180,50 @@ export const attachKeyDownListeners = () => {
   window.addEventListener('keyup', keyupListener);
 }
 
-export const setCameraAndLayerScroll = async (x: number, y: number, duration: number, layerIndex?: number) => {
-  const {cameraAndLayerStartXY, cameraAndLayerEndXY, cameraAndLayerDurations, cameraAndLayerTransitioning, cameraAndLayerTransitionProgresses, cameraAndLayerModes, cameraFocusObject} = useGlobalStore.getState();
+const standardScrollConfig = (duration: number) => ({
+  config: {
+    duration: duration / 30 * 1000,
+  },
+  immediate: duration === 0,
+})
+export const setCameraAndLayerScroll = async (x: number, y: number, duration: number, layerIndex: number = 0) => {
+  const {x: xSpring, y: ySpring} = useGlobalStore.getState().cameraAndLayerScrollSprings[layerIndex];
 
-  const newCameraAndLayerStartXY = [...cameraAndLayerStartXY].map(
-    (value, index) =>
-      index === layerIndex || layerIndex === undefined
-    ? cameraAndLayerEndXY[index] ?? ({x: 0, y: 0}) : value
-  );
+  const previousGoalX = xSpring.goal;
+  const previousGoalY = ySpring.goal;
 
-  const newCameraAndLayerEndXY = [...cameraAndLayerEndXY].map(
-    (value, index) => index === layerIndex || layerIndex === undefined ? ({x, y}) : value
-  );
+  xSpring.start({
+    from: previousGoalX,
+    to: y,
+    ...standardScrollConfig(duration),
+  })
 
-  const newCameraAndLayerDurations = [...cameraAndLayerDurations].map(
-    (value, index) => index === layerIndex || layerIndex === undefined ? duration : value
-  );
-
-  const newCameraAndLayerModes = [...cameraAndLayerModes].map(
-    (value, index) => index === layerIndex || layerIndex === undefined ? 0 : value
-  );
-
-  const newCameraAndLayerTransitioning = [...cameraAndLayerTransitioning].map(
-    (value, index) => index === layerIndex || layerIndex === undefined ? true : value
-  );
-  console.log('Setting to', newCameraAndLayerTransitioning)
-  const newCameraAndLayerTransitionProgresses = [...cameraAndLayerTransitionProgresses].map(
-    (value, index) => index === layerIndex || layerIndex === undefined ?
-      0 :
-      value
-  );
-
-  // Clear focus if touching 0 layer
-  const newCameraFocusObject = layerIndex && layerIndex !== 0 ? cameraFocusObject : undefined;
-
-  useGlobalStore.setState({
-    cameraFocusObject: newCameraFocusObject,
-    cameraAndLayerStartXY: newCameraAndLayerStartXY,
-    cameraAndLayerEndXY: newCameraAndLayerEndXY,
-    cameraAndLayerDurations: newCameraAndLayerDurations,
-    cameraAndLayerTransitioning: newCameraAndLayerTransitioning,
-    cameraAndLayerTransitionProgresses: newCameraAndLayerTransitionProgresses,
-    cameraAndLayerModes: newCameraAndLayerModes,
+  ySpring.start({
+    from: previousGoalY,
+    to: x,
+    ...standardScrollConfig(duration),
   })
 }
 
 // This could probably smooth out resetting any set X/Ys
-export const setCameraAndLayerFocus = (object: Object3D, duration: number) => {
-  const {cameraAndLayerDurations, cameraAndLayerEndXY} = useGlobalStore.getState();
+export const setCameraAndLayerFocus = (object: Object3D | undefined, duration: number) => {
+  new Array(8).fill(0).forEach((_, i) => {
+    setCameraAndLayerScroll(0, 0, duration, i);
+  })
 
   useGlobalStore.setState({
     cameraFocusObject: object,
-    cameraAndLayerStartXY: [...cameraAndLayerEndXY],
-    cameraAndLayerEndXY: new Array(cameraAndLayerDurations.length).fill(0),
-    cameraAndLayerTransitionProgresses: new Array(cameraAndLayerDurations.length).fill(0),
-    cameraAndLayerTransitioning: new Array(cameraAndLayerDurations.length).fill(true),
-    cameraAndLayerDurations: new Array(cameraAndLayerDurations.length).fill(duration),
+    cameraFocusSpring: new SpringValue({
+      from: 0,
+      to: 1,
+      config: { duration },
+      immediate: duration === 0,
+      onStart: () => {
+        console.log('Focusing on', object);
+      },
+      onRest: () => {
+        console.log('Focus complete');
+      }
+    }),
   })
 }

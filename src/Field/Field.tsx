@@ -7,7 +7,7 @@ import Camera from './Camera/Camera';
 import Background from './Background/Background';
 import { useFrame, useThree } from '@react-three/fiber';
 import Scripts from './Scripts/Scripts';
-import useGlobalStore, { INITIAL_STATE } from '../store';
+import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
 import { getInitialEntrance } from '../utils';
 import { MEMORY } from './Scripts/Script/handlers';
@@ -145,13 +145,12 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
         currentParameterVisibility: {},
         layerScrollAdjustments: {},
 
-        cameraAndLayerStartXY: INITIAL_STATE.cameraAndLayerStartXY,
-        cameraAndLayerEndXY: INITIAL_STATE.cameraAndLayerEndXY,
-        cameraAndLayerDurations: INITIAL_STATE.cameraAndLayerDurations,
-        cameraAndLayerModes: INITIAL_STATE.cameraAndLayerModes,
-        cameraAndLayerTransitioning: INITIAL_STATE.cameraAndLayerTransitioning,
-        cameraAndLayerTransitionProgresses: INITIAL_STATE.cameraAndLayerTransitionProgresses,
         cameraFocusObject: undefined,
+        cameraFocusSpring: new SpringValue(0),
+        cameraAndLayerScrollSprings: new Array(8).fill({
+          x: new SpringValue(0),
+          y: new SpringValue(0),
+        }),
         
 
         currentMessages: [],

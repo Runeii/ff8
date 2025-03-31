@@ -1,44 +1,26 @@
-import { useSpring } from "@react-spring/web";
 import useGlobalStore from "../store";
 
 const useScrollSpring = (layerIndex: number) => {
-  const { cameraAndLayerTransitioning, cameraAndLayerStartXY, cameraAndLayerEndXY, cameraAndLayerDurations } = useGlobalStore();
+  return {
+    get: () => {
+      const {cameraAndLayerScrollSprings} = useGlobalStore.getState();
 
-  const [spring] = useSpring(() => ({
-    from : {
-      x: cameraAndLayerStartXY[layerIndex]?.x ?? 0,
-      y: cameraAndLayerStartXY[layerIndex]?.y ?? 0,
-    },
-    to: {
-      x: cameraAndLayerEndXY[layerIndex]?.x ?? 0,
-      y: cameraAndLayerEndXY[layerIndex]?.y ?? 0,
-    },
-    config: {
-      duration: cameraAndLayerDurations[layerIndex] / 30 * 1000,
-      precision: 0.01
-    },
-    onStart: () => {
-      useGlobalStore.setState({
-        cameraAndLayerTransitioning: cameraAndLayerTransitioning.map((value, index) => index === layerIndex ? true : value)
-      })
-    },
-    onRest: () => {
-      const currentCameraAndLayerTransitioning = useGlobalStore.getState().cameraAndLayerTransitioning;
+      const { x: xSpring, y: ySpring } = cameraAndLayerScrollSprings[layerIndex];
       if (layerIndex === 0) {
-        useGlobalStore.setState({
-          cameraAndLayerTransitioning: currentCameraAndLayerTransitioning.map(() => false)
-        })
-
-        return;
+        return {
+          x: xSpring.get(),
+          y: ySpring.get(),
+        }
       }
       
-      useGlobalStore.setState({
-        cameraAndLayerTransitioning: currentCameraAndLayerTransitioning.map((value, index) => index === layerIndex ? false : value)
-      })
-    }
-  }), [cameraAndLayerStartXY, cameraAndLayerEndXY, cameraAndLayerDurations, layerIndex]);
+      const cameraSpring = cameraAndLayerScrollSprings[0];
 
-  return spring;
+      return {
+        x: xSpring.get() + cameraSpring.x.get(),
+        y: ySpring.get() + cameraSpring.y.get(),
+      }
+    }
+  }
 }
 
 export default useScrollSpring;

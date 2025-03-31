@@ -1,31 +1,34 @@
 import { Sphere } from "@react-three/drei";
 import useGlobalStore from "../../../store";
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import {  useRef } from "react";
 import { Mesh, Vector3 } from "three";
 import { getPartyMemberModelComponent } from "../../Scripts/Script/Model/modelUtils";
 
 const FOCUS_VECTOR = new Vector3(0, 0, 0);
+
 const Focus = () => {
   const isDebugMode = useGlobalStore((state) => state.isDebugMode);
 
   const focusRef = useRef<Mesh>(null);
-  const { cameraFocusObject, cameraAndLayerDurations } = useGlobalStore();
+
+  const { cameraFocusObject, cameraFocusSpring } = useGlobalStore();
 
   useFrame(({scene}) => {
     if (!focusRef.current) {
       return;
     }
 
-    const focusTarget = cameraFocusObject ?? getPartyMemberModelComponent(scene, 0);
-    if (!focusTarget) {
+    const targetMesh = cameraFocusObject ?? getPartyMemberModelComponent(scene, 0);
+
+    if (!targetMesh) {
       return;
     }
 
-    const targetWorldPosition = focusTarget.getWorldPosition(FOCUS_VECTOR);
-  
-    const lerpFactor = cameraAndLayerDurations[0] > 0 ? 1 / cameraAndLayerDurations[0] : 1;
-    focusRef.current.position.lerp(targetWorldPosition, lerpFactor);
+    focusRef.current.position.lerp(
+      targetMesh.getWorldPosition(FOCUS_VECTOR),
+      cameraFocusSpring.get()
+    );
   });
 
   return (

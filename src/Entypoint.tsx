@@ -12,8 +12,6 @@ useGlobalStore.setState({
 });
 
 const Entrypoint = () => {
-  const fieldId = useGlobalStore(state => state.fieldId);
-
   useEffect(() => {
     attachKeyDownListeners();
   }, []);
