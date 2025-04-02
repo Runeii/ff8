@@ -25,6 +25,11 @@ const Focus = () => {
       return;
     }
 
+    if (!cameraFocusSpring) {
+      focusRef.current.position.copy(targetMesh.getWorldPosition(FOCUS_VECTOR));
+      return
+    }
+
     focusRef.current.position.lerp(
       targetMesh.getWorldPosition(FOCUS_VECTOR),
       cameraFocusSpring.get()

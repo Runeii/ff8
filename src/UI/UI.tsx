@@ -32,7 +32,7 @@ const Ui = () => {
       <Suspense>
         {messagesArray.map((messages) => (
           <Fragment key={messages[0].id}>
-            {messages.map(message => <MessageBox key="message--${message.id}" message={message} />)}
+            {messages.map(message => <MessageBox key={`message--${message.id}`} message={message} />)}
           </Fragment>
         ))}
       </Suspense>

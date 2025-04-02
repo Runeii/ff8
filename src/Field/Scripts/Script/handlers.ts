@@ -36,7 +36,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 0, // progress
+  256: 4, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -260,9 +260,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     //musicController.preloadMusic(music);
     //musicController.playMusic();
   },
-  KEYON: async ({ currentOpcodeIndex, STACK }) => {
-    const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
-
+  KEYON: async ({ currentOpcodeIndex }) => {
+    //const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
+    const isDown = true;
     if (isDown) {
       return currentOpcodeIndex + 2;
     }
@@ -1330,7 +1330,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     setCameraAndLayerFocus(mesh, duration);
   },
   SCROLLSYNC: async () => {
-    while (useGlobalStore.getState().cameraAndLayerScrollSprings.some(spring => spring.x.isAnimating || spring.y.isAnimating) || useGlobalStore.getState().cameraFocusSpring.isAnimating) {
+    while (
+      useGlobalStore.getState().cameraAndLayerScrollSprings.some(spring => spring.x.isAnimating || spring.y.isAnimating)
+      || useGlobalStore.getState().cameraFocusSpring?.isAnimating
+    ) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },

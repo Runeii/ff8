@@ -8,6 +8,11 @@ export type Placement = {
 }
 
 export type Modifier = {
-  type: 'color' | 'wait' | 'general';
+  type: 'color'
   color?: FontColor;
+} | {
+  type: 'wait';
+  duration: number;
+} | {
+  type: 'general';
 }

@@ -146,7 +146,7 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
         layerScrollAdjustments: {},
 
         cameraFocusObject: undefined,
-        cameraFocusSpring: new SpringValue(0),
+        cameraFocusSpring: undefined,
         cameraAndLayerScrollSprings: new Array(8).fill({
           x: new SpringValue(0),
           y: new SpringValue(0),

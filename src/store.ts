@@ -49,7 +49,7 @@ interface GlobalState {
 
   cameraAndLayerScrollSprings: {x: SpringValue<number>, y: SpringValue<number>}[],
   cameraFocusObject: Object3D | undefined,
-  cameraFocusSpring: SpringValue<number>,
+  cameraFocusSpring: SpringValue<number> | undefined,
 
   hasActiveTalkMethod: boolean,
   lockedTriangles: number[],
@@ -103,7 +103,7 @@ export const INITIAL_STATE: GlobalState = {
       y: new SpringValue(0),
     }),
     cameraFocusObject: undefined,
-    cameraFocusSpring: new SpringValue(0),
+    cameraFocusSpring: undefined,
   
     hasActiveTalkMethod: false,
   

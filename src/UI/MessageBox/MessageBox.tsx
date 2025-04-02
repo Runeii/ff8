@@ -4,7 +4,7 @@ import { CanvasTexture, ClampToEdgeWrapping, RepeatWrapping, Texture } from "thr
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants"
 import { useFrame } from "@react-three/fiber"
 import { fontLayout, fontWidths} from "./fontLayout.ts"
-import { createModifier } from "../textUtils.ts"
+import { createModifier, formatNameTags } from "../textUtils.ts"
 import useGlobalStore from "../../store.ts"
 import { FontColor, Modifier, Placement } from "../textTypes.ts"
 import { config, useSpring } from "@react-spring/web"
@@ -102,11 +102,12 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     if (currentPage >= text.length) {
       return [null, null];
     }
-    if (!askOptions) {
-      return [text[currentPage], null];
-    }
 
-    const sanitisedText = text[currentPage].replaceAll('{Squall}', 'Squall');
+    const sanitisedText = formatNameTags(text[currentPage]);
+
+    if (!askOptions) {
+      return [sanitisedText, null];
+    }
     const splitLines = sanitisedText.split('\n');
     // askOptions.first is first line, askOptions.last is last line, extract array of lines without mutating original array
     const options = splitLines.slice(askOptions.first, askOptions.last ? askOptions.last + 1 : splitLines.length);
@@ -294,22 +295,34 @@ const MessageBox = ({ message }: MessageBoxProps) => {
       return;
     }
 
-    const interval = window.setInterval(() => {
+    const newPlacements = placements.slice(0, visiblePlacements.length + 1);
+    const latestPlacement = newPlacements[newPlacements.length - 1];
+    
+    let nextTick = 4
+    if (latestPlacement && 'type' in latestPlacement && latestPlacement.type === 'wait') {
+      nextTick = latestPlacement.duration * 1000 / 30;
+    }
+    
+    let timer: number;
+
+    const tickHandler = () => {
       if (scaleSpring.scale.get() < 1) {
+        timer = setTimeout(tickHandler, nextTick);
         return;
       }
 
       if (visiblePlacements.length >= placements.length) {
-        clearInterval(interval);
+        clearTimeout(timer);
         return;
       }
 
-      const newPlacements = placements.slice(0, visiblePlacements.length + 1);
       setVisiblePlacements(newPlacements);
-    }, 4);
-
+    }
+    
+    timer = setTimeout(tickHandler, nextTick);
+  
     return () => {
-      clearInterval(interval)
+      clearTimeout(timer);
     }
   }, [placements, scaleSpring, visiblePlacements]);
 
@@ -374,7 +387,6 @@ const MessageBox = ({ message }: MessageBoxProps) => {
         currentColor = placement.color;
         return;
       }
-
       const { rowIndex, columnIndex, x, y } = placement as Placement;
       const font = fontTextures[currentColor].image;
       ctx.drawImage(

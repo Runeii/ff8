@@ -20,7 +20,6 @@ const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationPr
 
   const { isIntersecting, wasIntersecting, hasEverExited } = useLineIntersection(linePoints ?? undefined, isLineOn);
 
-
   const hasValidTouchHandler = useMemo(() => {
     const touchMethod = script.methods.find(method => method.methodId === 'touch')
     if (!touchMethod) {
