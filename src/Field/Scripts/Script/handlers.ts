@@ -36,7 +36,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export const MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 4, // progress
+  256: 0, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -1261,7 +1261,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     
     // Pop layer ID from stack
     const layerID = STACK.pop() as number;
-
+    console.log('LSCROLL3', layerID, startX, startY, endX, endY, duration)
     await setCameraAndLayerScroll(startX, startY, 0, layerID);
     setCameraAndLayerScroll(endX, endY, duration, layerID);
   },

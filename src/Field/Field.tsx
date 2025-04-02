@@ -147,10 +147,10 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
 
         cameraFocusObject: undefined,
         cameraFocusSpring: undefined,
-        cameraAndLayerScrollSprings: new Array(8).fill({
+        cameraAndLayerScrollSprings: new Array(8).fill(0).map(() => ({
           x: new SpringValue(0),
           y: new SpringValue(0),
-        }),
+        })),
         
 
         currentMessages: [],

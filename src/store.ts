@@ -98,10 +98,10 @@ export const INITIAL_STATE: GlobalState = {
     playerMovementSpeed: 0,
     isPartyFollowing: true,
   
-    cameraAndLayerScrollSprings: new Array(8).fill({
+    cameraAndLayerScrollSprings: new Array(8).fill(0).map(() => ({
       x: new SpringValue(0),
       y: new SpringValue(0),
-    }),
+    })),
     cameraFocusObject: undefined,
     cameraFocusSpring: undefined,
   
