@@ -2,7 +2,6 @@ import { SpringValue } from '@react-spring/web';
 import { Vector3 } from 'three';
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import type { Howl} from 'howler';
-import { invalidate } from '@react-three/fiber';
 
 export type ScriptState = {
   hasRemovedControl: boolean;
@@ -29,13 +28,7 @@ export type ScriptState = {
   isPushable: boolean;
   isTalkable: boolean;
 
-  angle: SpringValue<number>;
-  headAngle: SpringValue<number>;
-
-  position: SpringValue<number[]>;
-  movementTarget: Vector3 | undefined;
-  movementDuration: number;
-  movementSpeed: number;
+  isHeadTrackingPlayer: boolean;
 
   isDoorOn: boolean;
 
@@ -85,18 +78,7 @@ export const createScriptState = () => {
     isPushable: false,
     isTalkable: true,
 
-    angle: new SpringValue(0),
-    headAngle: new SpringValue(0),
-
-    // @ts-expect-error Weird spring value issue with arrays
-    position: new SpringValue([0, 0, 0], {
-      onChange: () => {
-        invalidate()
-      }
-    }),
-    movementDuration: 0,
-    movementSpeed: 0,
-    movementTarget: undefined,
+    isHeadTrackingPlayer: false,
 
     isDoorOn: true,
 

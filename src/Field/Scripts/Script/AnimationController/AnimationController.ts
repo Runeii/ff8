@@ -1,14 +1,16 @@
-import { AnimationAction, AnimationClip, AnimationMixer, LoopOnce, LoopRepeat } from "three";
+import { AnimationAction, AnimationClip, AnimationMixer, Bone, LoopOnce, LoopRepeat } from "three";
 import { create } from "zustand";
 import { type Object3D } from 'three';
 import { applyBaseAnimationDirectly } from "./animationUtils";
+import createRotationController from "../RotationController/RotationController";
 
 const FPS = 30;
 
-export const createAnimationController = (id: string | number) => {
+export const createAnimationController = (id: string | number, headController: ReturnType<typeof createRotationController>) => {
   const { getState, setState } = create(() => ({
     activeAnimationId: undefined as number | undefined,
     clips: [] as AnimationClip[],
+    headBone: undefined as Bone | undefined,
     isPlaying: false,
     isIdle: false,
     id,
@@ -41,6 +43,16 @@ export const createAnimationController = (id: string | number) => {
     }
   }
 
+  const handleApplyHeadRotation = () => {
+    const {headBone} = getState();
+    if (!headBone) {
+      return;
+    }
+    const {angle} = headController.getState();
+    const radians = (angle.get() / 256) * 2 * Math.PI;
+    headBone.rotation.y = radians;
+  }
+
   const handleFrame = ({detail: { delta }}: {detail: {delta: number}}) => {
     const { action, endTime, loop } = getState().playback;
     if (!action) {
@@ -49,12 +61,16 @@ export const createAnimationController = (id: string | number) => {
     const timeScale = getState().speed / FPS;
     action.time += Math.min(delta * timeScale, 1 / FPS);
 
+    
     // 0 is the reset pose with 0 duration, we manually apply this to the mesh
     if (getState().activeAnimationId === 0) {
-    applyBaseAnimationDirectly(getState().mesh!, action.getClip());
+      applyBaseAnimationDirectly(getState().mesh!, action.getClip());
+      handleApplyHeadRotation();
       return;
     }
 
+    handleApplyHeadRotation();
+    
     if (action.time >= endTime && !loop) {
       action.paused = true;
       handleAnimationComplete();
@@ -197,6 +213,13 @@ export const createAnimationController = (id: string | number) => {
     setState({ mixer, clips, mesh });
   }
 
+  const setHeadBone = (headBone: Bone) => {
+    if (headBone === getState().headBone) {
+      return;
+    }
+    setState({ headBone });
+  }
+
   return {
     getIsPlaying,
     getState,
@@ -206,5 +229,6 @@ export const createAnimationController = (id: string | number) => {
     setIdleAnimation,
     setAnimationSpeed,
     stopAnimation,
+    setHeadBone
   }
 }

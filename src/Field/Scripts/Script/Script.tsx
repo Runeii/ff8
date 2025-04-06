@@ -11,10 +11,10 @@ import { FieldData } from "../../Field";
 import { useFrame } from "@react-three/fiber";
 import { Group, Vector3 } from "three";
 import createScriptState from "./state";
-import { WORLD_DIRECTIONS } from "../../../utils";
-import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection } from "./utils";
 import { createAnimationController } from "./AnimationController/AnimationController";
 import { Box } from "@react-three/drei";
+import createMovementController from "./MovementController/MovementController";
+import createRotationController from "./RotationController/RotationController";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -34,7 +34,10 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
   const [remoteExecutionRequests, setRemoteExecutionRequests] = useState<RemoteExecutionRequest[]>([]);
   
   const useScriptStateStore = useMemo(() => createScriptState(), []);
-  const animationController = useMemo(() => createAnimationController(script.groupId), [script.groupId]);
+  const movementController = useMemo(() => createMovementController(script.groupId), [script.groupId]);
+  const headController = useMemo(() => createRotationController(script.groupId, movementController, entityRef), [script.groupId, movementController]);
+  const rotationController = useMemo(() => createRotationController(script.groupId, movementController, entityRef), [script.groupId, movementController]);
+  const animationController = useMemo(() => createAnimationController(script.groupId, headController), [script.groupId, headController]);
 
   const [hasCompletedConstructor, setHasCompletedConstructor] = useState(false);
 
@@ -47,6 +50,9 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
+    headController,
+    movementController,
+    rotationController,
     onComplete: () => {
       onSetupCompleted();
       setHasCompletedConstructor(true);
@@ -62,6 +68,9 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
+    headController,
+    movementController,
+    rotationController,
   });
 
   // Adhoc method handler
@@ -73,6 +82,9 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
+    headController,
+    movementController,
+    rotationController,
     onComplete: () => {
       useGlobalStore.setState({ hasActiveTalkMethod: false });
       setActiveMethodId(undefined);
@@ -91,6 +103,9 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     script,
     useScriptStateStore,
     animationController,
+    headController,
+    movementController,
+    rotationController,
     onComplete: () => {
       setRemoteExecutionRequests(requests => {
         const [completedRequest, ...remainingRequests] = requests;
@@ -102,7 +117,6 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
 
   const isVisible = useScriptStateStore(state => state.isVisible);
   const isUnused = useScriptStateStore(state => state.isUnused);
-  const position = useScriptStateStore(state => state.position);
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const isSolid = useScriptStateStore(state => state.isSolid);
 
@@ -158,69 +172,41 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
     if (!isTransitioningMap) {
       return;
     }
-    const { backgroundAnimationSpring, position, headAngle, angle} = useScriptStateStore.getState();
+    const { backgroundAnimationSpring} = useScriptStateStore.getState();
+    const { position } = movementController.getState();
     animationController.stopAnimation();
     position.pause();
-    headAngle.pause();
-    angle.pause();
     backgroundAnimationSpring.pause();
-  }, [activeMethodId, animationController, isTransitioningMap, useScriptStateStore]);
+  }, [activeMethodId, animationController, isTransitioningMap, movementController, useScriptStateStore]);
 
-  const fieldDirection = useGlobalStore(state => state.fieldDirection);
-  const movementTarget = useScriptStateStore(state => state.movementTarget);
-  useEffect(() => {
-    if (!movementTarget || !entityRef.current) {
-      return;
-    }
-
-    entityRef.current.rotation.set(0, 0, 0);
-    entityRef.current.quaternion.identity();
-    
-    // Current forward
-    const meshForward = new Vector3(-1,0,0).applyQuaternion(entityRef.current.quaternion).normalize();
-    meshForward.z = 0;
-
-    // Get up axis
-    const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
-  
-    // Calculate initial angle to face down
-    const base = convert255ToRadians(fieldDirection);
-    const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
-    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
-
-    const targetDirection = movementTarget.clone().sub(entityRef.current.position).normalize();
-    const targetAngle = getRotationAngleToDirection(meshForward, targetDirection, meshUp);
-    
-    let radian = (targetAngle - faceDownBaseAngle) % (Math.PI * 2);
-    if (radian < 0) {
-      radian += Math.PI * 2; // Ensure the angle is in the range [0, 2π)
-    }
-  
-    useScriptStateStore.getState().angle.set(convertRadiansTo255(radian));
-  }, [fieldDirection, movementTarget, useScriptStateStore]);
-
-  useFrame(() => {
+  const controlDirection = useGlobalStore(state => state.fieldDirection);
+  useFrame(({ scene }) => {
     if (!entityRef.current || script.type !== 'model') {
       return;
     }
 
-    entityRef.current.rotation.set(0, 0, 0);
+    const position = movementController.getPosition();
+    entityRef.current.position.set(position.x, position.y, position.z);
+
     entityRef.current.quaternion.identity();
-  
-    // Current forward
-    const meshForward = new Vector3(-1,0,0).applyQuaternion(entityRef.current.quaternion).normalize();
-    meshForward.z = 0;
-
-    // Get up axis
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
-  
-    // Calculate initial angle to face down
-    const base = convert255ToRadians(fieldDirection);
-    const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
-    const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
 
-    const currentRotation = convert255ToRadians(useScriptStateStore.getState().angle.get());
-    entityRef.current.quaternion.setFromAxisAngle(meshUp, faceDownBaseAngle + currentRotation);
+    const { movementTarget } = movementController.getState();
+    if (movementTarget) {
+      rotationController.turnToFaceVector(movementTarget, 0);      
+    }
+
+    const raw256Angle = rotationController.getState().angle.get();
+    const faceDownAdjustment = -256 / 4;
+    const adjustedForField = (raw256Angle + controlDirection + faceDownAdjustment) % 256;
+    const radians = (adjustedForField / 256) * 2 * Math.PI;
+
+    entityRef.current.quaternion.setFromAxisAngle(meshUp, radians);
+
+    if (useScriptStateStore.getState().isHeadTrackingPlayer) {
+      const player = scene.getObjectByName("character") as Group;
+      headController.turnToFaceDirection(player.getWorldPosition(new Vector3()), 0);
+    }
   });
 
   if (isUnused) {
@@ -233,7 +219,6 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
 
   return (
     <animated.group
-      position={position as unknown as Vector3}
       ref={entityRef}
       name={`entity--${script.groupId}`}
       userData={{
@@ -244,7 +229,7 @@ const Script = ({ doors, isActive, models, script, onSetupCompleted }: ScriptPro
       {isSolid && <Box args={[0.05, 0.05, 0.2]} name={`entity--${script.groupId}-hitbox`} visible={false} userData={{ isSolid }} />}
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location script={script} useScriptStateStore={useScriptStateStore} setActiveMethodId={setActiveMethodId} />}
-      {script.type === 'model' && <Model animationController={animationController} models={models} setActiveMethodId={setActiveMethodId} script={script} useScriptStateStore={useScriptStateStore} />}
+      {script.type === 'model' && <Model animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} setActiveMethodId={setActiveMethodId} script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'door' && <Door doors={doors} script={script} setActiveMethodId={setActiveMethodId} useScriptStateStore={useScriptStateStore} />}
     </animated.group>
   );

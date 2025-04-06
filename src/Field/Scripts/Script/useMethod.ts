@@ -4,6 +4,8 @@ import { ScriptStateStore } from "./state";
 import { OPCODE_HANDLERS } from "./handlers";
 import { useThree } from "@react-three/fiber";
 import { createAnimationController } from "./AnimationController/AnimationController";
+import createMovementController from "./MovementController/MovementController";
+import createRotationController from "./RotationController/RotationController";
 
 const useMethod = ({
   key,
@@ -14,6 +16,9 @@ const useMethod = ({
   script,
   useScriptStateStore,
   animationController,
+  headController,
+  movementController,
+  rotationController,
   isDebugging = false,
   onComplete,
 }: {
@@ -25,6 +30,9 @@ const useMethod = ({
   script: Script,
   useScriptStateStore: ScriptStateStore,
   animationController: ReturnType<typeof createAnimationController>,
+  headController: ReturnType<typeof createRotationController>,
+  movementController: ReturnType<typeof createMovementController>,
+  rotationController: ReturnType<typeof createRotationController>,
   isDebugging?: boolean,
   onComplete?: () => void,
 }) => {  
@@ -80,18 +88,8 @@ const useMethod = ({
       return;
     }
     
-    const state = useScriptStateStore.getState();
-    state.position.stop();
-    const currentAngle = state.angle.get();
-    const currentHeadAngle = state.headAngle.get();
-    state.angle.stop();
-    state.headAngle.stop();
-
-    return () => {
-      state.angle.start(currentAngle);
-      state.headAngle.start(currentHeadAngle);
-    }
-  }, [currentOpcodeIndex, isDebugging, isPaused, methodId, useScriptStateStore]);
+    movementController.stop();
+  }, [currentOpcodeIndex, isDebugging, isPaused, methodId, movementController, useScriptStateStore]);
 
   // We use this to ensure we discard the results if state changes while we're executing
   const loopKeyRef = useRef<string>('');
@@ -129,8 +127,11 @@ const useMethod = ({
         currentOpcode,
         currentState: state,
         currentOpcodeIndex: method.opcodes.indexOf(currentOpcode),
+        headController,
         isDebugging,
+        movementController,
         opcodes: method.opcodes,
+        rotationController,
         scene,
         script,
         STACK: FROZEN_STACK,
@@ -159,7 +160,7 @@ const useMethod = ({
       setCurrentOpcodeIndex(currentIndex => currentIndex + 1);
     }
     execute();
-  }, [STACK, TEMP_STACK, animationController, currentOpcode, isActive, isDebugging, isExecutableMethod, isLooping, isPaused, method, methodId, scene, script, useScriptStateStore]);
+  }, [STACK, TEMP_STACK, animationController, currentOpcode, isActive, isDebugging, isExecutableMethod, isLooping, isPaused, method, methodId, movementController, scene, script, useScriptStateStore]);
 
   
   const onCompleteRef = useRef(onComplete);

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import WalkMesh from './WalkMesh/WalkMesh';
 
 import type data from '../../public/output/escouse2.json';
@@ -15,6 +15,10 @@ import MAP_NAMES from '../constants/maps';
 import { SpringValue } from '@react-spring/web';
 import { getFieldData } from './fieldUtils';
 import Onboarding from '../Onboarding/Onboarding';
+import createMovementController from './Scripts/Script/MovementController/MovementController';
+import { getPartyMemberModelComponent } from './Scripts/Script/Model/modelUtils';
+import { Line } from '@react-three/drei';
+import { Vector3 } from 'three';
 
 export type RawFieldData = typeof data;
 

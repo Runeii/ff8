@@ -121,28 +121,30 @@ export const getRotationAngleToDirection = (
   targetDirection: Vector3,
   rotationAxis: Vector3 = new Vector3(0, 0, 1)
 ) => {
-  // Normalize the input vectors
+  // Normalize the vectors and rotation axis
   const currentDirNormalized = currentDirection.clone().normalize();
   const targetDirNormalized = targetDirection.clone().normalize();
-
-  // Compute the dot product and clamp to avoid precision errors
-  const dot = clamp(
-    currentDirNormalized.dot(targetDirNormalized),
-    -1,
-    1
-  );
-
-  // Calculate the angle in radians
+  const axisNormalized = rotationAxis.clone().normalize();
+  
+  // Project both vectors onto the plane perpendicular to the rotation axis
+  const currentProj = currentDirNormalized.clone().sub(
+    axisNormalized.clone().multiplyScalar(currentDirNormalized.dot(axisNormalized))
+  ).normalize();
+  
+  const targetProj = targetDirNormalized.clone().sub(
+    axisNormalized.clone().multiplyScalar(targetDirNormalized.dot(axisNormalized))
+  ).normalize();
+  
+  // Calculate the angle between the projected vectors
+  const dot = Math.max(-1, Math.min(1, currentProj.dot(targetProj)));
   const angle = Math.acos(dot);
-
-  // Determine the sign of the angle using the cross product
-  const cross = new Vector3().crossVectors(currentDirNormalized, targetDirNormalized);
-
-  // If the cross product points in the same direction as the rotation axis, the angle is positive
-  const sign = cross.dot(rotationAxis) >= 0 ? 1 : -1;
-
-  return angle * sign; // Return the signed angle
-}
+  
+  // Determine the sign of rotation
+  const cross = new Vector3().crossVectors(currentProj, targetProj);
+  const sign = Math.sign(cross.dot(axisNormalized));
+  
+  return angle * sign;
+};
 
 export const convert255ToRadians = (value: number) => {
   if (value < 0 || value > 255) {
@@ -158,6 +160,7 @@ export const convertRadiansTo255 = (radians: number) => {
   return Math.round(radians * (255 / (2 * Math.PI)));
 }
 
+export const convert256ToRadians = (value: number) => (value % 256 / 256) * 2 * Math.PI;
 
 export const hasCrossedLine = (vector1: Vector3, vector2: Vector3, linePoint1: Vector3, linePoint2: Vector3) => {
   // Create line direction vector

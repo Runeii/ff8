@@ -22,7 +22,6 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
   if (height < verticalRange) {
     height = verticalRange;
   }
-  console.log('width', width, 'height', height, backgroundDetails.width, backgroundDetails.height);
 
   const layers = useLayeredTiles(tiles, backgroundDetails.sprite, width, height);
 

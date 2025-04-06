@@ -6,11 +6,13 @@ import { dummiedCommand, openMessage, remoteExecute, remoteExecuteOnPartyEntity,
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
-import { displayMessage, fadeOutMap, turnToFaceAngle, turnToFaceEntity, isKeyDown, KEY_FLAGS, animateBackground, isTouching, moveToPoint, setCameraAndLayerScroll, setCameraAndLayerFocus } from "./common";
-import { ScriptState, ScriptStateStore } from "./state";
+import { displayMessage, fadeOutMap, isKeyDown, KEY_FLAGS, animateBackground, isTouching, setCameraAndLayerScroll, setCameraAndLayerFocus } from "./common";
+import { ScriptState } from "./state";
 import { createAnimationController } from "./AnimationController/AnimationController";
+import { createMovementController } from "./MovementController/MovementController";
 import { MUSIC_IDS } from "../../../constants/audio";
 import MusicController from "./MusicController";
+import createRotationController from "./RotationController/RotationController";
 
 const musicController = MusicController();
 
@@ -20,6 +22,9 @@ export type HandlerArgs = {
   currentOpcodeIndex: number,
   currentState: ScriptState,
   isDebugging: boolean,
+  headController: ReturnType<typeof createRotationController>,
+  movementController: ReturnType<typeof createMovementController>,
+  rotationController: ReturnType<typeof createRotationController>,
   opcodes: OpcodeObj[],
   scene: Scene,
   script: Script,
@@ -430,16 +435,31 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     OPCODE_HANDLERS?.AASK?.(args);
   },
-  MESSYNC: ({ STACK }) => {
-    STACK.pop() as number; // const channel
-    useGlobalStore.setState({
-      currentMessages: useGlobalStore.getState().currentMessages.slice(0, -1)
-    });
+  MESSYNC: async ({ STACK }) => {
+    const channel = STACK.pop() as number;
+    while (useGlobalStore.getState().currentMessages.some(message => message.placement.channel === channel)) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
   },
   MESVAR: ({ STACK }) => {
     const value = STACK.pop() as number;
     const id = STACK.pop() as number;
     MESSAGE_VARS[id] = value.toString();
+  },
+  MESMODE: ({ STACK }) => {
+    const color = STACK.pop() as number;
+    const mode = STACK.pop() as number;
+    const channel = STACK.pop() as number;
+
+    useGlobalStore.setState(state => ({
+      messageStyles: {
+        ...state.messageStyles,
+        [channel]: {
+          color,
+          mode,
+        },
+      },
+    }));
   },
   WINCLOSE: ({ STACK }) => {
     const channel = STACK.pop() as number; // const channel
@@ -743,7 +763,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SHOW: ({ currentState }) => {
     currentState.isVisible = true;
   },
-  SET: ({ currentOpcode, currentState, scene, STACK }) => {
+  SET: ({ currentOpcode, movementController, scene, STACK }) => {
     currentOpcode.param // walkmesh triangle ID, unused
     const lastTwo = STACK.splice(-2);
     const walkmesh = scene.getObjectByName('walkmesh') as Group;
@@ -755,17 +775,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       return;
     }
 
-    currentState.position.start([position.x, position.y, position.z], {
-      immediate: true,
-    });
+    movementController.setPosition(position);
   },
-  SET3: async ({ currentOpcode, currentState, STACK }) => {
+  SET3: async ({ currentOpcode, movementController, STACK }) => {
     currentOpcode.param // walkmesh triangle ID, unused
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
-    currentState.position.start([position.x, position.y, position.z], {
-      immediate: true,
-    });
+
+    movementController.setPosition(position);
   },
   TALKRADIUS: ({ currentState, STACK }) => {
     const radius = STACK.pop() as number;
@@ -800,9 +817,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     TEMP_STACK[1] = floatingPointToNumber(position.y);
     TEMP_STACK[2] = floatingPointToNumber(position.z);
   },
-  MSPEED: ({ currentState, STACK }) => {
+  MSPEED: ({ movementController, STACK }) => {
     const movementSpeed = STACK.pop() as number;
-    currentState.movementSpeed = movementSpeed;
+    movementController.setMovementSpeed(movementSpeed);
   },
   MOVEFLUSH: ({ currentState }) => {
     currentState.movementTarget = undefined;
@@ -813,112 +830,87 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     currentState.movementTarget = undefined;
     currentState.position.stop();
   },
-  MOVESYNC: async ({ currentState }) => {
-    while (currentState.position.isAnimating) {
+  PMOVECANCEL: () => {},
+
+  MOVESYNC: async ({ movementController }) => {
+    while (movementController.getState().position.isAnimating) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
 
 
-  MOVE: async ({ currentState, isDebugging, STACK }) => {
+  MOVE: async ({ movementController, STACK }) => {
     // const distanceToStop =
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    const { movementSpeed, position: positionSpring } = currentState;
-
-    currentState.movementTarget = target;
-    await moveToPoint(positionSpring, target, movementSpeed, isDebugging);
-    currentState.movementTarget = undefined;
+    await movementController.moveToPoint(target);
   },
 
   // MOVEA: move to actor
-  MOVEA: async ({ currentState, scene, STACK }) => {
+  MOVEA: async ({ movementController, scene, STACK }) => {
     // const distanceToStop =
     STACK.pop() as number;
     const actorId = STACK.pop() as number;
 
-    const targetActor = scene.getObjectByName(`entity--${actorId}`) as Group;
-    if (!targetActor) {
-      console.warn('Target actor not found', actorId);
-      return;
-    }
-
-    const target = targetActor.getWorldPosition(new Vector3());
-
-    currentState.movementTarget = target;
-    await moveToPoint(currentState.position, target, currentState.movementSpeed);
-    currentState.movementTarget = undefined;
+    await movementController.moveToObject(`entity--${actorId}`, scene);
   },
 
   // PMOVEA: move to party member
-  PMOVEA: async ({ currentState, scene, STACK }) => {
+  PMOVEA: async ({ movementController, scene, STACK }) => {
     // const distanceToStop =
     STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
 
-    const targetActor = scene.getObjectByName(`party--${partyMemberId}`) as Group;
-    if (!targetActor) {
-      console.warn('Target actor not found', partyMemberId);
-      return;
-    }
-    const target = targetActor.getWorldPosition(new Vector3());
-
-    currentState.movementTarget = target;
-    await moveToPoint(currentState.position, target, currentState.movementSpeed);
-    currentState.movementTarget = undefined;
+    await movementController.moveToObject(`party--${partyMemberId}`, scene)
   },
 
 
   // CMOVE: no turn, no animation
-  CMOVE: async ({ currentState, STACK }) => {
+  CMOVE: async ({ movementController, STACK }) => {
     // const distanceToStop =
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    const { movementSpeed, position: positionSpring } = currentState;
-
-    await moveToPoint(positionSpring, target, movementSpeed);
+    await movementController.moveToPoint(target, {
+      isAnimationEnabled: false,
+      isFacingTarget: false,
+    });
   },
 
   // FMOVE: turn, no animation
-  FMOVE: async ({ currentState, STACK }) => {
+  FMOVE: async ({ movementController, STACK }) => {
     // const distanceToStop =
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    const { movementSpeed, position: positionSpring } = currentState;
-
-    currentState.movementTarget = target;
-    await moveToPoint(positionSpring, target, movementSpeed);
-    currentState.movementTarget = undefined;
+    await movementController.moveToPoint(target, {
+      isAnimationEnabled: false,
+      isFacingTarget: true,
+    });
   },
-  FMOVEA: async ({ currentState, STACK, scene }) => {
+  FMOVEA: async ({ movementController, STACK, scene }) => {
+    // const distanceToStop =
+    STACK.pop() as number;
+    const actorId = STACK.pop() as number;
+
+    await movementController.moveToObject(`entity--${actorId}`, scene, {
+      isAnimationEnabled: false,
+      isFacingTarget: true,
+    });
+  },
+  FMOVEP: async ({ movementController, scene, STACK }) => {
     // const distanceToStop =
     STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
 
-    const targetActor = scene.getObjectByName(`party--${partyMemberId}`) as Group;
-
-    const target = targetActor.getWorldPosition(new Vector3());
-    currentState.movementTarget = target;
-    await moveToPoint(currentState.position, target, currentState.movementSpeed);
-    currentState.movementTarget = undefined;
-  },
-  FMOVEP: async ({ currentState, scene, STACK }) => {
-    // const distanceToStop =
-    STACK.pop() as number;
-    const partyMemberId = STACK.pop() as number;
-
-    const targetActor = scene.getObjectByName(`party--${partyMemberId}`) as Group;
-    const target = targetActor.getWorldPosition(new Vector3());
-
-    currentState.movementTarget = target;
-    await moveToPoint(currentState.position, target, currentState.movementSpeed);
-    currentState.movementTarget = undefined;
+    await movementController.moveToObject(`party--${partyMemberId}`, scene, {
+      isAnimationEnabled: false,
+      isFacingTarget: true,
+    });
   },
 
   // R SET: do not await
@@ -958,130 +950,150 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
 
   // Turn to angle
-  CTURNL: ({ currentState, STACK }) => {
+  CTURNL: ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentState.angle)
+    rotationController.turnToFaceAngle(angle, duration);
   },
-  CTURNR: ({ currentState, STACK }) => {
+  CTURNR: ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentState.angle)
+    rotationController.turnToFaceAngle(angle, duration);
   },
-  DIR: ({ currentState, STACK }) => {
+  DIR: ({ rotationController, STACK }) => {
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, 0, currentState.angle)
+    rotationController.turnToFaceAngle(angle, 0);
   },
-  UNKNOWN6: ({ currentState, STACK }) => {
+  // Forces clockwise turn
+  UNKNOWN6: ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentState.angle)
+    rotationController.turnToFaceAngle(angle, duration);
   },
-  UNKNOWN7: ({ currentState, STACK }) => {
+  // Forces counter-clockwise turn
+  UNKNOWN7: ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentState.angle)
+    rotationController.turnToFaceAngle(angle, duration);
   },
-  UNKNOWN8: ({ currentState, STACK }) => {
+  // Forces clockwise turn
+  UNKNOWN8: ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentState.angle)
+    rotationController.turnToFaceAngle(angle, duration);
   },
-  UNKNOWN9: ({ currentState, STACK }) => {
+  // Forces counter-clockwise turn
+  UNKNOWN9: ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentState.angle)
+    rotationController.turnToFaceAngle(angle, duration);
   },
-  LTURNL: ({ currentState, STACK }) => {
+  LTURNL: async ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentState.angle)
+    await rotationController.turnToFaceAngle(angle, duration);
   },
-  LTURNR: ({ currentState, STACK }) => {
+  LTURNR: async ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentState.angle)
+    await rotationController.turnToFaceAngle(angle, duration);
   },
-  LTURN: ({ currentState, STACK }) => {
+  LTURN: async ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentState.angle)
-  },
-  PLTURN: ({ currentState, STACK }) => {
-    const duration = STACK.pop() as number;
-    const angle = STACK.pop() as number;
-    turnToFaceAngle(angle, duration, currentState.angle)
+    await rotationController.turnToFaceAngle(angle, duration);
   },
 
   // Turn to face entity
-  CTURN: ({ currentState, scene, script, STACK }) => {
+  CTURN: ({ rotationController, scene, STACK }) => {
     const duration = STACK.pop() as number;
     const targetId = STACK.pop() as number;
 
-    turnToFaceEntity(script.groupId, `entity--${targetId}`, duration, scene, currentState.angle)
+    rotationController.turnToFaceEntity(`entity--${targetId}`, scene, duration);
   },
-  DIRA: ({ currentState, scene, script, STACK }) => {
+  DIRA: ({ rotationController, scene, STACK }) => {
     const targetActorId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `entity--${targetActorId}`, 0, scene, currentState.angle)
+    rotationController.turnToFaceEntity(`entity--${targetActorId}`, scene, 0);
   },
 
-  // Turn to face party member
-  // TODO: documentation is incorrect compared to usage.
-  DIRP: ({ currentState, scene, script, STACK }) => {
-    const partyMemberId = STACK.pop() as number;
-    STACK.pop() as number; // unknown
-    STACK.pop() as number; // unknown
-    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, 0, scene, currentState.angle)
+  // I think this sets rotation to a vector?
+  DIRP: ({ rotationController, STACK }) => {
+    const z = STACK.pop() as number;
+    const y = STACK.pop() as number; 
+    const x = STACK.pop() as number;
+    
+    const directionVector = vectorToFloatingPoint({x, y, z});
+    rotationController.turnToFaceDirection(directionVector, 0);
   },
-  PCTURN: ({ currentState, scene, script, STACK }) => {
+  PLTURN: async ({ rotationController, scene }) => {
+    await rotationController.turnToFaceEntity(`party--0`, scene, 0);
+  },
+  PCTURN: ({  rotationController, scene, STACK }) => {
     const duration = STACK.pop() as number;
-    STACK.pop() as number; // unknown
-    turnToFaceEntity(script.groupId, `party--0`, duration, scene, currentState.angle)
-  },
-  PDIRA: ({ currentState, scene, script, STACK }) => {
     const partyMemberId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, 0, scene, currentState.angle)
+    rotationController.turnToFaceEntity(`party--${partyMemberId}`, scene, duration);
+  },
+  // Retrieves the current angle of player
+  PDIRA: ({ scene, STACK }) => {
+    const partyMemberId = STACK.pop() as number;
+    const player = scene.getObjectByName(`party--${partyMemberId}`) as Group;
+    STACK.push((player.userData.rotationController as HandlerArgs['rotationController']).getState().angle.get())
   },
 
 
-  FACEDIR: ({ STACK }) => {
-    STACK.splice(-4);
+  FACEDIRINIT: ({ currentState }) => {
+    currentState.isHeadTrackingPlayer = true;
   },
-  FACEDIRA: ({ currentState, scene, script, STACK }) => {
-    const frames = STACK.pop() as number;
+  FACEDIR: ({ headController, STACK }) => {
+    const duration = STACK.pop() as number;
+    const z = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+    
+    const directionVector = vectorToFloatingPoint({x, y, z});
+    headController.turnToFaceDirection(directionVector, duration);
+  },
+  FACEDIRA: ({ headController, scene, STACK }) => {
+    const duration = STACK.pop() as number;
     const targetActorId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `entity--${targetActorId}`, frames, scene, currentState.headAngle)
+    headController.turnToFaceEntity(`entity--${targetActorId}`, scene, duration);
   },
-  FACEDIRP: ({ currentState, scene, script, STACK }) => {
-    const frames = STACK.pop() as number;
+  FACEDIRP: ({ headController, scene, STACK }) => {
+    const duration = STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, frames, scene, currentState.headAngle)
+    headController.turnToFaceEntity(`party--${partyMemberId}`, scene, duration);
   },
-  FACEDIROFF: ({ currentState, STACK }) => {
-    const frames = STACK.pop() as number;
-    turnToFaceAngle(0, frames, currentState.headAngle)
+  FACEDIROFF: ({ headController, STACK }) => {
+    const duration = STACK.pop() as number;
+    headController.turnToFaceAngle(0, duration);
   },
-  FACEDIRSYNC: async ({ currentState }) => {
-    while (currentState.headAngle.isAnimating) {
+  FACEDIRSYNC: async ({ headController }) => {
+    while (headController.getState().angle.isAnimating) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
-  RFACEDIR: ({ STACK }) => {
-    STACK.splice(-4);
+  RFACEDIR: async ({ headController, STACK }) => {
+    const duration = STACK.pop() as number;
+    const z = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+    
+    const directionVector = vectorToFloatingPoint({x, y, z});
+    await headController.turnToFaceDirection(directionVector, duration);
   },
-  RFACEDIRA: ({ currentState, scene, script, STACK }) => {
-    const frames = STACK.pop() as number;
+  RFACEDIRA: async ({ headController, scene, STACK }) => {
+    const duration = STACK.pop() as number;
     const targetActorId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `entity--${targetActorId}`, frames, scene, currentState.headAngle)
+    await headController.turnToFaceEntity(`entity--${targetActorId}`, scene, duration);
   },
-  RFACEDIRP: ({ currentState, scene, script, STACK }) => {
-    const frames = STACK.pop() as number;
+  RFACEDIRP: async ({ headController, scene, STACK }) => {
+    const duration = STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
-    turnToFaceEntity(script.groupId, `party--${partyMemberId}`, frames, scene, currentState.headAngle)
+    await headController.turnToFaceEntity(`party--${partyMemberId}`, scene, duration);
   },
-  RFACEDIROFF: ({ currentState, STACK }) => {
-    const frames = STACK.pop() as number;
-    turnToFaceAngle(0, frames, currentState.headAngle)
+  RFACEDIROFF: async ({ headController, STACK }) => {
+    const duration = STACK.pop() as number;
+    await headController.turnToFaceAngle(0, duration)
   },
   FACEDIRI: ({ STACK }) => {
     STACK.splice(-4);
@@ -1101,10 +1113,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SHADELEVEL: ({ STACK }) => {
     // const shadeLevel = 
     STACK.pop() as number;
-  },
-  DOFFSET: ({ STACK }) => {
-    // const lastThree = 
-    STACK.splice(-3);
   },
   RUNDISABLE: () => {
     useGlobalStore.setState({ isRunEnabled: false });
@@ -1460,61 +1468,77 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const member2Position = vectorToFloatingPoint(STACK.splice(-3));
     const member1Position = vectorToFloatingPoint(STACK.splice(-3));
 
-    const member1State = member1.userData.useScriptStateStore as ScriptStateStore
-    const member2State = member2.userData.useScriptStateStore as ScriptStateStore
-    const member3State = member3.userData.useScriptStateStore as ScriptStateStore
+    const member1MovementController = member1.userData.movementController as ReturnType<typeof createMovementController>
+    const member2MovementController = member2.userData.movementController as ReturnType<typeof createMovementController>
+    const member3MovementController = member3.userData.movementController as ReturnType<typeof createMovementController>
+  
+    member1MovementController.setMovementSpeed(2560);    
+    member2MovementController.setMovementSpeed(2560);
+    member3MovementController.setMovementSpeed(2560);
 
-    member1State.setState({
-      movementTarget: member1Position,
-      movementSpeed: 2560
-    });
-
-    member2State.setState({
-      movementTarget: member2Position,
-      movementSpeed: 2560
-    });
-
-    member3State.setState({
-      movementTarget: member3Position,
-      movementSpeed: 2560
-    });
-
-    await Promise.all(
-      [
-        moveToPoint(
-          member1State.getState().position,
-          member1Position,
-          member1State.getState().movementSpeed,
-        ),
-        moveToPoint(
-          member2State.getState().position,
-          member2Position,
-          member2State.getState().movementSpeed,
-        ),
-        moveToPoint(
-          member3State.getState().position,
-          member3Position,
-          member3State.getState().movementSpeed,
-        ),
-      ]
-    )
-
-    member1State.setState({
-      movementTarget: undefined
-    });
-
-    member2State.setState({
-      movementTarget: undefined
-    });
-
-    member3State.setState({
-      movementTarget: undefined
-    });
+    await Promise.all([
+      member1MovementController.moveToPoint(member1Position),
+      member2MovementController.moveToPoint(member2Position),
+      member3MovementController.moveToPoint(member3Position),
+    ])
   },
   JOIN: () => {
     useGlobalStore.setState({
       isPartyFollowing: true
     });
+  },
+
+  DOFFSET: async ({ movementController, STACK }) => {
+    const z = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+
+    await movementController.moveToOffset(x, y, z, 0);
+  },
+  COFFSET: ({ movementController, STACK }) => {
+    const duration = STACK.pop() as number;
+    const z = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+
+    movementController.moveToOffset(x, y, z, duration);
+  },
+  COFFSETS: async ({ movementController, STACK }) => {
+    const endX = STACK.pop() as number;
+    const endZ = STACK.pop() as number;
+    const endY = STACK.pop() as number;
+    const duration = STACK.pop() as number;
+    const startZ = STACK.pop() as number;
+    const startY = STACK.pop() as number;
+    const startX = STACK.pop() as number;
+    
+    await movementController.moveToOffset(startX, startY, startZ, 0)
+    movementController.moveToOffset(endX, endY, endZ, duration);
+  },
+  LOFFSET: ({ movementController, STACK }) => {
+    const duration = STACK.pop() as number;
+    const z = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+
+    movementController.moveToOffset(x, y, z, duration);
+  },
+  LOFFSETS: async ({ movementController, STACK }) => {
+    const endX = STACK.pop() as number;
+    const endZ = STACK.pop() as number;
+    const endY = STACK.pop() as number;
+    const duration = STACK.pop() as number;
+    const startZ = STACK.pop() as number;
+    const startY = STACK.pop() as number;
+    const startX = STACK.pop() as number;
+    
+    await movementController.moveToOffset(startX, startY, startZ, 0)
+    movementController.moveToOffset(endX, endY, endZ, duration);
+  },
+  OFFSETSYNC: async ({ movementController }) => {
+    while (movementController.getState().offset.isAnimating) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
   },
 
 
@@ -1641,10 +1665,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   PREMAPJUMP2: ({ STACK }) => {
     STACK.pop() as number;
-  },
-  // Sets message box style for channel (we don't use channels atm)
-  MESMODE: ({ STACK }) => {
-    STACK.splice(-3);
   },
   BATTLE: ({ STACK }) => {
     STACK.splice(-2);
@@ -1844,23 +1864,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.splice(-4);
   },
   COLSYNC: () => { },
-  COFFSET: ({ STACK }) => {
-    STACK.splice(-4);
-  },
-  COFFSETS: ({ STACK }) => {
-    STACK.splice(-7);
-  },
-  LOFFSET: ({ STACK }) => {
-    STACK.splice(-4);
-  },
-  LOFFSETS: ({ STACK }) => {
-    STACK.splice(-7);
-  },
   MENUTUTO: () => { },
   TUTO: ({ STACK }) => {
     STACK.pop() as number;
   },
-  OFFSETSYNC: () => { },
   UNKNOWN2: ({ STACK }) => {
     STACK.pop() as number;
   },
@@ -1893,7 +1900,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SETODIN: dummiedCommand,
   MENUPHS: dummiedCommand,
   MENUNORMAL: dummiedCommand,
-  FACEDIRINIT: dummiedCommand,
   SARALYDISPON: dummiedCommand,
   SARALYDISPOFF: dummiedCommand,
   SARALYON: dummiedCommand,
@@ -1920,7 +1926,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   PCOPYINFO: unusedCommand,
   AXISSYNC: unusedCommand,
   DSCROLL3: unusedCommand,
-  PMOVECANCEL: unusedCommand,
   GETHP: unusedCommand,
   KEYON2: unusedCommand,
   KEYSIGHNCHANGE: unusedCommand,

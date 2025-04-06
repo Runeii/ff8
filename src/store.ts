@@ -30,6 +30,10 @@ interface GlobalState {
   availableMessages: string[][],
 
   currentMessages: Message[],
+  messageStyles: Record<number,{
+    color: number,
+    mode: number,
+  }>
 
   layerScrollAdjustments: Record<number, {
     xOffset: number,
@@ -87,6 +91,7 @@ export const INITIAL_STATE: GlobalState = {
     isMapJumpEnabled: true,
   
     currentMessages: [],
+    messageStyles: {},
   
     layerScrollAdjustments: {},
     canvasOpacitySpring: new SpringValue(0),

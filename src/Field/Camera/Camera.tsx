@@ -59,6 +59,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     camera.userData = {
       initialPosition: camera.position.clone(),
       initialTargetPosition: lookAtTarget.clone(),
+      initialDirection: direction.clone(),
     }
 
     setInitialCameraTargetPosition(lookAtTarget.clone());

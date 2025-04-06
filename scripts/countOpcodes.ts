@@ -70,6 +70,7 @@ const processFolder = async (folderPath: string, outputFilePath: string) => {
         });
       })
     );
+
     await writeFile(outputFilePath, JSON.stringify(cumulativeResult, null, 2), 'utf-8');
     console.log(`Cumulative data saved to ${outputFilePath}`);
   } catch (error) {

@@ -4,7 +4,7 @@ import { CanvasTexture, ClampToEdgeWrapping, RepeatWrapping, Texture } from "thr
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants"
 import { useFrame } from "@react-three/fiber"
 import { fontLayout, fontWidths} from "./fontLayout.ts"
-import { createModifier, formatNameTags } from "../textUtils.ts"
+import { convertFF8GrayscaleToRGB, createModifier, formatNameTags } from "../textUtils.ts"
 import useGlobalStore from "../../store.ts"
 import { FontColor, Modifier, Placement } from "../textTypes.ts"
 import { config, useSpring } from "@react-spring/web"
@@ -326,6 +326,11 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     }
   }, [placements, scaleSpring, visiblePlacements]);
 
+  const messageStyle = useGlobalStore(state => state.messageStyles[message.placement.channel ?? 0]) ?? {
+    mode: 0,
+    color: 4096 // 4096 3072 3000 2000 1500 2048 ???
+  };
+
   useFrame(() => {
     const ctx = textCanvas.getContext('2d');
     if (!ctx) {
@@ -350,11 +355,15 @@ const MessageBox = ({ message }: MessageBoxProps) => {
 
     // Draw background
     const gradient = ctx.createLinearGradient(0, 0, width, 0);
-    gradient.addColorStop(0, 'rgb(66,66,58)');
-    gradient.addColorStop(1, 'rgb(99,99,99)');
 
-    ctx.fillStyle = gradient;
-    ctx.fillRect(xPos, yPos, width, height);
+    const alpha = messageStyle.mode === 0 ? 1 : 0.5;
+    gradient.addColorStop(0, `rgb(66,66,58,${alpha})`);
+    gradient.addColorStop(1, `rgb(99,99,99,${alpha})`);
+    
+    if (messageStyle.mode !== 2) {
+      ctx.fillStyle = gradient;
+      ctx.fillRect(xPos, yPos, width, height);
+    }
 
     // Draw borders
     ctx.strokeStyle = '#848484';
@@ -389,6 +398,7 @@ const MessageBox = ({ message }: MessageBoxProps) => {
       }
       const { rowIndex, columnIndex, x, y } = placement as Placement;
       const font = fontTextures[currentColor].image;
+      ctx.filter = `brightness(${messageStyle.color / 4096})`;
       ctx.drawImage(
         font,
         columnIndex * SOURCE_TILE_SIZE, rowIndex * SOURCE_TILE_SIZE, SOURCE_TILE_SIZE, SOURCE_TILE_SIZE,
