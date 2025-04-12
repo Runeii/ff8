@@ -1,7 +1,9 @@
 import { SpringRef } from "@react-spring/web";
 import useGlobalStore from "../../../store";
-import { Vector3 } from "three";
+import { Object3D, Scene, Vector3 } from "three";
 import { clamp } from "three/src/math/MathUtils.js";
+import createScriptController from "./ScriptController/ScriptController";
+import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
 
 export const KEYS: Record<number, string> = {
   192: 'Space'
@@ -46,50 +48,41 @@ export function asyncSetSpring<T extends object>(setSpring: SpringRef<T>, state:
   });
 }
 
-export const remoteExecute = (scriptLabel: number, source: string, partyMemberId?: number) => new Promise<void>((resolve) => {
+export const remoteExecute = async (scriptLabel: number, priority = 0) => new Promise<void>((resolve) => {
   const key = Math.random().toString(36).substring(7);
+
   document.addEventListener('scriptFinished', ({ detail }) => {
     if (detail.key !== key) {
       return;
     }
-    
     resolve();
   });
-
-  const { party } = useGlobalStore.getState();
 
   document.dispatchEvent(new CustomEvent('executeScript', {
     detail: {
       key,
       scriptLabel,
-      partyMemberId: partyMemberId ? party[partyMemberId] : undefined,
-      source,
+      priority,
     } as ExecuteScriptEventDetail
   }));
-})
+});
 
-export const remoteExecuteOnPartyEntity = (partyMemberId: number, methodIndex: number, source: string) => new Promise<void>((resolve) => {
-  const key = Math.random().toString(36).substring(7);
+export const remoteExecutePartyMember = async (scene: Scene, partyMemberIndex: number, scriptLabel: number, priority = 0) => {
+  const actor = getPartyMemberModelComponent(scene, partyMemberIndex);
+  if (!actor) {
+    console.warn(`Party member index ${partyMemberIndex} not found`);
+    return;
+  }
+  
+  const scriptController = actor.userData.scriptController as ReturnType<typeof createScriptController>;
 
-  document.addEventListener('scriptFinished', ({ detail }) => {
-    if (detail.key !== key) {
-      return;
-    }
-
-    resolve();
-  });
-
-  const { party } = useGlobalStore.getState();
-
-  document.dispatchEvent(new CustomEvent('executeScriptOnPartyEntity', {
-    detail: {
-      key,
-      methodIndex,
-      partyMemberId: party[partyMemberId],
-      source,
-    } as ExecutePartyEntityScriptEventDetail
-  }));
-})
+  if (!scriptController) {
+    console.warn(`Script controller not found for party member ${partyMemberIndex}`);
+    return;
+  }
+  console.log(`Executing script ${scriptLabel} on party member ${partyMemberIndex} ${partyMemberIndex}`);
+  await scriptController.triggerMethodByIndex(scriptLabel, false, priority);
+}
 
 export const openMessage = (id: string, text: string[], placement: MessagePlacement, isCloseable = true, askOptions?: AskOptions) => new Promise<number>((resolve) => {
   const { currentMessages } = useGlobalStore.getState();

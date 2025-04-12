@@ -30,7 +30,7 @@ body,
   display: flex;
   place-content: center;
   place-items: center;
-  background-color: yellow;
+  background-color: black;
 }
 
 .container {

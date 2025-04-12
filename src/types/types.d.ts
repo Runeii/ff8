@@ -14,16 +14,9 @@ declare global {
   }
 
   interface ExecuteScriptEventDetail {
+    key: string;
     scriptLabel: number;
-    key: string
-    source: string
-  }
-
-  interface ExecutePartyEntityScriptEventDetail {
-    methodIndex: number;
-    partyMemberId: number;
-    key: string
-    source: string
+    priority: number
   }
 
   type RemoteExecutionRequest = {

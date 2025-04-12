@@ -10,7 +10,7 @@ export type MoveOptions = {
 }
 
 export const SPEED = {
-  WALKING: 0.16,
+  WALKING: 0.9,
   RUNNING: 0.5,
 }
 
@@ -105,6 +105,7 @@ export const createMovementController = (id: string | number) => {
   const moveToOffset = async (x: number, y: number, z:number, duration: number) => {
     const target = new Vector3(...[x,y,z].map(numberToFloatingPoint));
 
+    getState().offset.resume();
     await getState().offset.start([
       target.x,
       target.y,
@@ -129,7 +130,19 @@ export const createMovementController = (id: string | number) => {
     }
   }
 
-  const stop = () => {}
+  const stop = () => {
+    const { position, offset } = getState();
+    position.stop();
+    offset.stop();
+    setMovementTarget(undefined);
+  }
+
+  const pause = () => {
+    const { position, offset } = getState();
+    position.set(position.get());
+    position.finish();
+    offset.set(offset.get());
+  }
 
   return {
     getState,
@@ -137,6 +150,7 @@ export const createMovementController = (id: string | number) => {
     moveToObject,
     moveToOffset,
     moveToPoint,
+    pause,
     setMovementTarget,
     setMovementSpeed,
     setPosition,

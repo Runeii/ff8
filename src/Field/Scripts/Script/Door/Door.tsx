@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Script } from "../../types";
 import { FieldData } from "../../../Field";
 import { Box } from "@react-three/drei";
@@ -17,7 +17,7 @@ type DoorProps = {
   useScriptStateStore: ScriptStateStore;
 }
 
-const Door = ({ doors, script, setActiveMethodId, useScriptStateStore }: DoorProps) => {
+const Door = ({ doors, script, setActiveMethodId,scriptController,  useScriptStateStore }: DoorProps) => {
   const isDoorOn = useScriptStateStore(state => state.isDoorOn);
 
   const [isDoorOpen, setIsDoorOpen] = useState(false);
@@ -56,12 +56,6 @@ const Door = ({ doors, script, setActiveMethodId, useScriptStateStore }: DoorPro
   const hitboxRef = useRef<Mesh>(null);
   const { isIntersecting } = useMeshIntersection(playerHitbox, hitboxRef.current!, isDoorOn);
 
-  const setDoorOpenState = useCallback((isOpen: boolean) => {
-    return (methodId: string) => {
-      setIsDoorOpen(isOpen);
-      setActiveMethodId(methodId);
-    }
-  }, [setActiveMethodId]);
 
   let playerPosition = new Vector3();
   const [isNearDoor, setIsNearDoor] = useState(false);
@@ -74,8 +68,16 @@ const Door = ({ doors, script, setActiveMethodId, useScriptStateStore }: DoorPro
     const distanceFromDoor = playerPosition.distanceTo(doorPosition);
     setIsNearDoor(distanceFromDoor < 0.1);
   });
-  useTriggerEvent('open', script, setDoorOpenState(true), isIntersecting && !isDoorOpen);
-  useTriggerEvent('close', script, setDoorOpenState(false), !isNearDoor && isDoorOpen);
+
+  useEffect(() => {
+    if (isIntersecting && !isDoorOpen) {
+      setIsDoorOpen(true);  
+      scriptController.triggerMethod('open', false);
+    } else if (!isNearDoor && isDoorOpen) {
+      setIsDoorOpen(false);  
+      scriptController.triggerMethod('close', false);
+    }
+  }, [isNearDoor, isIntersecting, isDoorOpen, scriptController]);
 
   const linePoints = useMemo(() => door?.line, [door]);
 

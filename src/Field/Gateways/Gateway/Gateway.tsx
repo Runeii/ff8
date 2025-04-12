@@ -24,15 +24,9 @@ const Gateway = ({
 
   const isMapJumpEnabled = useGlobalStore((state) => state.isMapJumpEnabled);
 
-  const {hasEverExited,isIntersecting} = useLineIntersection(formattedGateway.sourceLine, isMapJumpEnabled);
-
-  useEffect(() => {
-    if (!isIntersecting || !hasEverExited) {
-      return;
-    }
-
-    onIntersect(formattedGateway)
-  }, [formattedGateway, hasEverExited, isIntersecting, onIntersect])
+  useLineIntersection(formattedGateway.sourceLine, isMapJumpEnabled, {
+    onAcross: () => onIntersect(formattedGateway),
+  })
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
 

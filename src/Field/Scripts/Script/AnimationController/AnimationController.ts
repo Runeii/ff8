@@ -36,9 +36,15 @@ export const createAnimationController = (id: string | number, headController: R
       isPlaying: false,
     });
 
+    if (id === 1) {
+      console.log('ended')
+    }
     window.removeEventListener('frame', handleFrame);
 
     if (getState().resumeIdleOnComplete) {
+      if (id === 1) {
+        console.log('resume ended')
+      }
       requestIdleAnimation();
     }
   }

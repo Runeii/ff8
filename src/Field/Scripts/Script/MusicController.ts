@@ -28,7 +28,7 @@ const MusicController = () => {
       console.warn('No music preloaded, unable to play');
       return
     }
-  console.log('playMusic', preloadedSrc, channel0Src, channel1Src);
+
     if (preloadedSrc === channel0Src) {
       channel0!.pause();
       channel0!.play();
@@ -73,7 +73,7 @@ const MusicController = () => {
   const getChannelAudio = (channelId: number) => {
     const audio = channelId === 0 ? channel0 : channel1;
     if (!audio) {
-      console.trace('No audio on channel', channelId);
+      console.warn('No audio on channel', channelId);
       return;
     }
     return audio;

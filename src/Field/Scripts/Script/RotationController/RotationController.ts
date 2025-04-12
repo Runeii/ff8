@@ -63,12 +63,17 @@ export const createRotationController = (
     await turnToFaceVector(target, duration);
   }
 
+  const stop = () => {
+    getState().angle.stop();
+  }
+
   return {
     getState,
     turnToFaceAngle,
     turnToFaceEntity,
     turnToFaceVector,
     turnToFaceDirection,
+    stop,
   }
 }
 

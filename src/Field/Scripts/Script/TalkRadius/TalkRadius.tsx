@@ -13,7 +13,7 @@ type TalkRadiusProps = {
   useScriptStateStore: ScriptStateStore,
 }
 
-const TalkRadius = ({ setActiveMethodId, talkMethod, useScriptStateStore }: TalkRadiusProps) => {
+const TalkRadius = ({ setActiveMethodId, scriptController, talkMethod, useScriptStateStore }: TalkRadiusProps) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const talkSphereRef = useRef<Mesh>(null);
 
@@ -62,14 +62,16 @@ const TalkRadius = ({ setActiveMethodId, talkMethod, useScriptStateStore }: Talk
       }
 
       useGlobalStore.setState({ hasActiveTalkMethod: true });
-      setActiveMethodId(talkMethod?.methodId);
+      scriptController.triggerMethod('talk', false).then(() => {
+        useGlobalStore.setState({ hasActiveTalkMethod: false });
+      });
     }
 
     window.addEventListener('keydown', onKeyDown);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     }
-  }, [isIntersecting, talkMethod, setActiveMethodId, isPlayerAbleToTalk]);
+  }, [isIntersecting, talkMethod, scriptController, setActiveMethodId, isPlayerAbleToTalk]);
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
  

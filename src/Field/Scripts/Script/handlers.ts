@@ -2,17 +2,18 @@ import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script } from "../types";
-import { dummiedCommand, openMessage, remoteExecute, remoteExecuteOnPartyEntity, unusedCommand, wait } from "./utils";
+import { dummiedCommand, openMessage, remoteExecute, remoteExecutePartyMember, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
 import { displayMessage, fadeOutMap, isKeyDown, KEY_FLAGS, animateBackground, isTouching, setCameraAndLayerScroll, setCameraAndLayerFocus } from "./common";
-import { ScriptState } from "./state";
+import createScriptState, { ScriptState } from "./state";
 import { createAnimationController } from "./AnimationController/AnimationController";
 import { createMovementController } from "./MovementController/MovementController";
 import { MUSIC_IDS } from "../../../constants/audio";
 import MusicController from "./MusicController";
 import createRotationController from "./RotationController/RotationController";
+import { KeyboardEvent } from "react";
 
 const musicController = MusicController();
 
@@ -20,7 +21,7 @@ export type HandlerArgs = {
   animationController: ReturnType<typeof createAnimationController>,
   currentOpcode: OpcodeObj,
   currentOpcodeIndex: number,
-  currentState: ScriptState,
+  currentState: Readonly<ScriptState>,
   isDebugging: boolean,
   headController: ReturnType<typeof createRotationController>,
   movementController: ReturnType<typeof createMovementController>,
@@ -28,6 +29,7 @@ export type HandlerArgs = {
   opcodes: OpcodeObj[],
   scene: Scene,
   script: Script,
+  setState: ReturnType<typeof createScriptState>['setState'],
   STACK: number[],
   TEMP_STACK: Record<number, number>
 }
@@ -56,7 +58,7 @@ export const MESSAGE_VARS: Record<number, string> = {};
 
 export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   RET: () => {
-    return 999999
+    return -1
   },
   PSHI_L: ({ currentOpcode, STACK, TEMP_STACK }) => {
     STACK.push(TEMP_STACK[currentOpcode.param] ?? 0);
@@ -192,28 +194,32 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     return targetLabelIndex;
   },
   // MODIFIED JUMP LOGIC ENDS
-  SETLINE: ({ currentState, STACK }) => {
+  SETLINE: ({ setState, STACK }) => {
     const linePointsInMemory = STACK.splice(-6);
-    currentState.linePoints = [
-      vectorToFloatingPoint(linePointsInMemory.slice(0, 3)),
-      vectorToFloatingPoint(linePointsInMemory.slice(3)),
-    ]
+    setState({
+      linePoints: [
+        vectorToFloatingPoint(linePointsInMemory.slice(0, 3)),
+        vectorToFloatingPoint(linePointsInMemory.slice(3)),
+      ]
+    })
   },
   UCON: () => {
     useGlobalStore.setState({ isUserControllable: true });
   },
-  UCOFF: ({ currentState }) => {
+  UCOFF: ({ setState }) => {
     const isUserControllable = useGlobalStore.getState().isUserControllable;
     if (isUserControllable) {
-      currentState.hasRemovedControl = true;
+      setState({
+        hasRemovedControl: true,
+      })
     }
     useGlobalStore.setState({ isUserControllable: false });
   },
-  LINEON: ({ currentState }) => {
-    currentState.isLineOn = true;
+  LINEON: ({ setState }) => {
+    setState({ isLineOn: true })
   },
-  LINEOFF: ({ currentState }) => {
-    currentState.isLineOn = false;
+  LINEOFF: ({ setState }) => {
+    setState({ isLineOn: false })
   },
   MAPJUMPO: ({ STACK }) => {
     STACK.pop() as number; // const walkmeshTriangleId = STACK.pop() as number;
@@ -253,9 +259,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       pendingFieldId: 'wm00',
     });
   },
-  HALT: ({ currentOpcode, currentState }) => {
+  HALT: ({ currentOpcode, setState }) => {
     currentOpcode.param // always 0
-    currentState.isHalted = true;
+    setState({
+      isHalted: true,
+    })
   },
   SETPLACE: ({ STACK }) => {
     const placeName = STACK.pop() as number;
@@ -282,17 +290,23 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
-  BGDRAW: ({ currentState, STACK }) => {
+  BGDRAW: ({ currentState, setState, STACK }) => {
     const frame = STACK.pop() as number;
-    currentState.isBackgroundVisible = true;
+    setState({
+      isBackgroundVisible: true,
+    })
     currentState.backgroundAnimationSpring.set(frame);
   },
-  BGOFF: ({ currentState }) => {
-   currentState.isBackgroundVisible = false;
+  BGOFF: ({ setState }) => {
+    setState({
+      isBackgroundVisible: false,
+    })
   },
-  BGANIMESPEED: ({ currentState, STACK }) => {
+  BGANIMESPEED: ({ setState, STACK }) => {
     const speed = STACK.pop() as number;
-    currentState.backgroundAnimationSpeed = speed;
+    setState({
+      backgroundAnimationSpeed: speed,
+    })
   },
   BGANIMESYNC: async ({ currentState }) => {
     while (currentState.backgroundAnimationSpring.isAnimating) {
@@ -310,11 +324,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       }
     })
   },
-  RBGANIME: ({ currentState, STACK }) => {
+  RBGANIME: ({ currentState,setState, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
-    currentState.isBackgroundVisible = true;
+    setState({
+      isBackgroundVisible: true,
+    })
     animateBackground(
       currentState.backgroundAnimationSpring,
       currentState.backgroundAnimationSpeed,
@@ -323,11 +339,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       false,
     )
   },
-  RBGANIMELOOP: ({ currentState, STACK }) => {
+  RBGANIMELOOP: ({ currentState,setState, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
-    currentState.isBackgroundVisible = true;
+    setState({
+      isBackgroundVisible: true,
+    })
 
     animateBackground(
       currentState.backgroundAnimationSpring,
@@ -340,11 +358,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   BGSHADE: ({ STACK }) => {
     STACK.splice(-7); // const lastSeven = STACK.splice(-7);
   },
-  BGANIME: async ({ currentState, STACK }) => {
+  BGANIME: async ({ currentState, setState, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
-    currentState.isBackgroundVisible = true;
+    setState({
+      isBackgroundVisible: true,
+    })
     await animateBackground(
       currentState.backgroundAnimationSpring,
       currentState.backgroundAnimationSpeed,
@@ -437,6 +457,28 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   MESSYNC: async ({ STACK }) => {
     const channel = STACK.pop() as number;
+
+    const closeMessage = (e: Event) => {
+      const event = e as unknown as KeyboardEvent;
+      if (event.key !== KEY_FLAGS[192]) {
+        return;
+      }
+      const currentMessages = useGlobalStore.getState().currentMessages;
+      // Remove first message in the channel but leave rest in channel
+      const closedMessage = currentMessages.find(message => message.placement.channel === channel);
+      if (!closedMessage) {
+        return;
+      }
+
+      useGlobalStore.setState({
+        currentMessages: currentMessages.filter(message => message.id !== closedMessage.id),
+      });
+
+      window.removeEventListener('keydown', closeMessage);
+    }
+    window.addEventListener('keydown', closeMessage)
+
+
     while (useGlobalStore.getState().currentMessages.some(message => message.placement.channel === channel)) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
@@ -518,44 +560,38 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await wait(psxGameFrames / 30 * 1000);
   },
   // All scripts have a unique label, not sure why other IDs are required in game...
-  REQ: ({ currentOpcode, STACK, script }) => {
-    currentOpcode.param; // entity ID
+  REQ: ({ STACK }) => {
     const label = STACK.pop() as number;
-    STACK.pop(); // priority, we don't use it
-    const source = `${script.groupId}--${currentOpcode.name}`
-    remoteExecute(label, source)
+    const priority = STACK.pop();
+    remoteExecute(label, priority)
   },
-  REQSW: ({ currentOpcode, STACK, script }) => {
-    currentOpcode.param; // entity ID
+  REQSW: ({ STACK }) => {
     const label = STACK.pop() as number;
-    STACK.pop(); // priority, we don't use it
-    const source = `${script.groupId}--${currentOpcode.name}`
-    remoteExecute(label, source)
+    const priority = STACK.pop();
+    remoteExecute(label, priority)
   },
-  REQEW: async ({ currentOpcode, STACK, script }) => {
-    currentOpcode.param; // entity ID
+  REQEW: async ({ STACK }) => {
     const label = STACK.pop() as number;
-    STACK.pop(); // priority, we don't use it
-    const source = `${script.groupId}--${currentOpcode.name}`
-    await remoteExecute(label, source)
+    const priority = STACK.pop();
+    await remoteExecute(label, priority)
   },
-  PREQ: ({ currentOpcode, STACK, script }) => {
-    const methodIndex = STACK.pop() as number;
-    STACK.pop(); // priority, we don't use it
-    const source = `${script.groupId}--${currentOpcode.name}`
-    remoteExecuteOnPartyEntity(currentOpcode.param, methodIndex, source)
+  PREQ: ({ currentOpcode, scene, STACK }) => {
+    const partyMemberIndex = currentOpcode.param as number;
+    const label = STACK.pop() as number;
+    const priority = STACK.pop() as number;
+    remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
   },
-  PREQSW: ({ currentOpcode, STACK, script }) => {
-    const methodIndex = STACK.pop() as number;
-    STACK.pop(); // priority, we don't use it
-    const source = `${script.groupId}--${currentOpcode.name}`
-    remoteExecuteOnPartyEntity(currentOpcode.param, methodIndex, source)
+  PREQSW: ({ currentOpcode, scene, STACK }) => {
+    const partyMemberIndex = currentOpcode.param as number;
+    const label = STACK.pop() as number;
+    const priority = STACK.pop() as number;
+    remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
   },
-  PREQEW: async ({ currentOpcode, STACK, script }) => {
-    const methodIndex = STACK.pop() as number;
-    STACK.pop(); // priority, we don't use it
-    const source = `${script.groupId}--${currentOpcode.name}`
-    await remoteExecuteOnPartyEntity(currentOpcode.param, methodIndex, source)
+  PREQEW: async ({ currentOpcode, scene, STACK }) => {
+    const partyMemberIndex = currentOpcode.param as number;
+    const label = STACK.pop() as number;
+    const priority = STACK.pop() as number;
+    await remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
   },
   FADEIN: async () => {
     const { canvasOpacitySpring } = useGlobalStore.getState();
@@ -608,9 +644,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const index = STACK.pop() as number;
     TEMP_STACK[0] = useGlobalStore.getState().party[index];
   },
-  SETPC: ({ currentState, STACK }) => {
+  SETPC: ({ setState, STACK }) => {
     const partyMemberId = STACK.pop() as number;
-    currentState.partyMemberId = partyMemberId;
+    setState({
+      partyMemberId
+    })
 
     if (useGlobalStore.getState().party.length < 1) {
       useGlobalStore.setState({
@@ -631,9 +669,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       party: useGlobalStore.getState().party.filter(id => id !== characterID),
     });
   },
-  SETMODEL: ({ currentState, currentOpcode }) => {
+  SETMODEL: ({ setState, currentOpcode }) => {
     const modelId = currentOpcode.param;
-    currentState.modelId = modelId;
+
+    setState({
+      modelId
+    })
   },
   BASEANIME: ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
@@ -726,9 +767,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       loop: true,
     })
   },
-  LADDERANIME: ({ currentOpcode, currentState, STACK }) => {
+  LADDERANIME: ({ currentOpcode, STACK }) => {
     currentOpcode.param // unknown
-    currentState.ladderAnimationId = STACK.pop() as number;
+    //currentState.ladderAnimationId = STACK.pop() as number;
     STACK.pop() as number;
   },
   ANIMESPEED: ({ animationController, STACK }) => {
@@ -744,24 +785,24 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   POPANIME: () => { },
   PUSHANIME: () => { },
-  UNUSE: ({ currentOpcode, currentState }) => {
+  UNUSE: ({ currentOpcode, setState }) => {
     currentOpcode.param // always 0
-    currentState.isUnused = true;
+    setState({ isUnused: true })
   },
-  USE: ({ currentState }) => {
-    currentState.isUnused = false;
+  USE: ({ setState }) => {
+    setState({ isUnused: false })
   },
-  THROUGHON: ({ currentState }) => {
-    currentState.isSolid = false;
+  THROUGHON: ({ setState }) => {
+    setState({ isSolid: false })
   },
-  THROUGHOFF: ({ currentState }) => {
-    currentState.isSolid = true;
+  THROUGHOFF: ({ setState }) => {
+    setState({ isSolid: true })
   },
-  HIDE: ({ currentState }) => {
-    currentState.isVisible = false;
+  HIDE: ({ setState }) => {
+    setState({ isVisible: false })
   },
-  SHOW: ({ currentState }) => {
-    currentState.isVisible = true;
+  SHOW: ({ setState }) => {
+    setState({ isVisible: true })
   },
   SET: ({ currentOpcode, movementController, scene, STACK }) => {
     currentOpcode.param // walkmesh triangle ID, unused
@@ -784,25 +825,37 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     movementController.setPosition(position);
   },
-  TALKRADIUS: ({ currentState, STACK }) => {
+  TALKRADIUS: ({ setState, STACK }) => {
     const radius = STACK.pop() as number;
-    currentState.talkRadius = radius;
+    setState({
+      talkRadius: radius,
+    })
   },
-  PUSHRADIUS: ({ currentState, STACK }) => {
+  PUSHRADIUS: ({ setState, STACK }) => {
     const radius = STACK.pop() as number;
-    currentState.pushRadius = radius
+    setState({
+      pushRadius: radius,
+    })
   },
-  PUSHOFF: ({ currentState }) => {
-    currentState.isPushable = false;
+  PUSHOFF: ({ setState }) => {
+    setState({
+      isPushable: false,
+    })
   },
-  PUSHON: ({ currentState }) => {
-    currentState.isPushable = true;
+  PUSHON: ({ setState }) => {
+    setState({
+      isPushable: true,
+    })
   },
-  TALKOFF: ({ currentState }) => {
-    currentState.isTalkable = false;
+  TALKOFF: ({ setState }) => {
+    setState({
+      isTalkable: false,
+    })
   },
-  TALKON: ({ currentState }) => {
-    currentState.isTalkable = true;
+  TALKON: ({ setState }) => {
+    setState({
+      isTalkable: true,
+    })
   },
   SETGETA: ({ STACK }) => {
     // const actorId = 
@@ -811,7 +864,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   GETINFO: ({ scene, script, TEMP_STACK }) => {
     const entity = getScriptEntity(scene, script.groupId);
     const position = entity.getWorldPosition(new Vector3());
-    console.log('At', position, floatingPointToNumber(position.x), floatingPointToNumber(position.y), floatingPointToNumber(position.z));
+
     // We need to get this script entity's X/Y and stick it in to:
     TEMP_STACK[0] = floatingPointToNumber(position.x);
     TEMP_STACK[1] = floatingPointToNumber(position.y);
@@ -1037,12 +1090,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   PDIRA: ({ scene, STACK }) => {
     const partyMemberId = STACK.pop() as number;
     const player = scene.getObjectByName(`party--${partyMemberId}`) as Group;
+    console.log(partyMemberId)
     STACK.push((player.userData.rotationController as HandlerArgs['rotationController']).getState().angle.get())
   },
 
 
-  FACEDIRINIT: ({ currentState }) => {
-    currentState.isHeadTrackingPlayer = true;
+  FACEDIRINIT: ({ setState }) => {
+    setState({
+      isHeadTrackingPlayer: true,
+    })
   },
   FACEDIR: ({ headController, STACK }) => {
     const duration = STACK.pop() as number;
@@ -1120,11 +1176,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   RUNENABLE: () => {
     useGlobalStore.setState({ isRunEnabled: true });
   },
-  DOORLINEON: ({ currentState }) => {
-    currentState.isDoorOn = true;
+  DOORLINEON: ({ setState }) => {
+    setState({ isDoorOn: true, })
   },
-  DOORLINEOFF: ({ currentState }) => {
-    currentState.isDoorOn = false;
+  DOORLINEOFF: ({ setState }) => {
+    setState({ isDoorOn: false, })
   },
 
   // ?
@@ -1218,7 +1274,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const duration = STACK.pop() as number;
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
-
+    console.log(x, y, duration)
     setCameraAndLayerScroll(x, y, duration);
   },
   DSCROLL2: async ({ STACK }) => {
@@ -1424,21 +1480,32 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   MAPJUMPOFF: () => {
     useGlobalStore.setState({ isMapJumpEnabled: false });
   },
-  SETTIMER: ({ currentState, STACK }) => {
+  SETTIMER: ({ currentState,setState, STACK }) => {
     const time = STACK.pop() as number;
-    currentState.countdownTime = time;
-    currentState.countdownTimer = window.setInterval(() => {
-      currentState.countdownTime -= 1;
+
+    const timer = window.setTimeout(() => {
+      setState(state => ({
+        countdownTime: state.countdownTime - 1
+      }))
       console.log(currentState.countdownTime);
       if (currentState.countdownTime <= 0) {
         window.clearTimeout(currentState.countdownTimer);
-        currentState.countdownTimer = undefined;
+        setState({
+          countdownTimer: undefined
+        })
       }
     }, 1000);
+
+    setState({
+      countdownTime: time,
+      countdownTimer: timer,
+    })
   },
-  KILLTIMER: ({ currentState }) => {
+  KILLTIMER: ({ currentState, setState }) => {
     window.clearTimeout(currentState.countdownTimer);
-    currentState.countdownTimer = undefined;
+    setState({
+      countdownTimer: undefined,
+    })
   },
   GETTIMER: ({ currentState, TEMP_STACK }) => {
     TEMP_STACK[0] = currentState.countdownTime
@@ -1455,15 +1522,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     })
   },
   SPLIT: async ({ scene, STACK }) => {
-    const { party } = useGlobalStore.getState();
-
     useGlobalStore.setState({
       isPartyFollowing: false
     });
 
-    const member1 = getPartyMemberModelComponent(scene, party[0])
-    const member2 = getPartyMemberModelComponent(scene, party[1])
-    const member3 = getPartyMemberModelComponent(scene, party[2])
+    const member1 = getPartyMemberModelComponent(scene, 0)
+    const member2 = getPartyMemberModelComponent(scene, 1)
+    const member3 = getPartyMemberModelComponent(scene, 2)
     const member3Position = vectorToFloatingPoint(STACK.splice(-3));
     const member2Position = vectorToFloatingPoint(STACK.splice(-3));
     const member1Position = vectorToFloatingPoint(STACK.splice(-3));

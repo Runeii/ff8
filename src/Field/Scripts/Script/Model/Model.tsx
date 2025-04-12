@@ -28,7 +28,7 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<JSX.IntrinsicElements['group']>}>)];
 }));
 
-const Model = ({animationController, models, movementController, rotationController, script,setActiveMethodId, useScriptStateStore }: ModelProps) => {
+const Model = ({animationController, models, scriptController, movementController, rotationController, script,setActiveMethodId, useScriptStateStore }: ModelProps) => {
   const modelId = useScriptStateStore(state => state.modelId);
 
   const [meshGroup, setMeshGroup] = useState<Group>();
@@ -96,7 +96,6 @@ const Model = ({animationController, models, movementController, rotationControl
       animationController.stopAnimation();
       return;
     }
-
     if (!position.isAnimating && framesSinceMovementRef.current > 5) {
       animationController.setIdleAnimation(0);
       animationController.requestIdleAnimation();
@@ -124,6 +123,7 @@ const Model = ({animationController, models, movementController, rotationControl
       {talkMethod && !isLeadCharacter && !isFollower && (
         <TalkRadius
           setActiveMethodId={setActiveMethodId}
+          scriptController={scriptController}
           talkMethod={talkMethod}
           useScriptStateStore={useScriptStateStore}
         />
@@ -137,7 +137,8 @@ const Model = ({animationController, models, movementController, rotationControl
         userData={{
           partyMemberId,
           movementController,
-          useScriptStateStore
+          useScriptStateStore,
+          scriptController
         }}
       />
     </group>

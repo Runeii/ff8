@@ -194,13 +194,13 @@ export const setCameraAndLayerScroll = async (x: number, y: number, duration: nu
 
   xSpring.start({
     from: previousGoalX,
-    to: y,
+    to: x,
     ...standardScrollConfig(duration),
   })
 
   ySpring.start({
     from: previousGoalY,
-    to: x,
+    to: y,
     ...standardScrollConfig(duration),
   })
 }
@@ -218,12 +218,6 @@ export const setCameraAndLayerFocus = (object: Object3D | undefined, duration: n
       to: 1,
       config: { duration },
       immediate: duration === 0,
-      onStart: () => {
-        console.log('Focusing on', object);
-      },
-      onRest: () => {
-        console.log('Focus complete');
-      }
     }),
   })
 }

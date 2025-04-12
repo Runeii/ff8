@@ -81,7 +81,7 @@ const Field = ({ data }: FieldProps) => {
         scripts={data.scripts}
       />
       <Background backgroundPanRef={backgroundPanRef} data={data} />
-      <Gateways fieldId={data.id} />
+      <Gateways fieldId={data.id}  />
     </group>
   );
 }

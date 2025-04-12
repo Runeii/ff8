@@ -91,9 +91,10 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     const initialCameraRotation = camera.rotation.clone();
     const initialCameraQuaternion = new Quaternion().setFromEuler(initialCameraRotation);
 
-    const position = player.position.clone();
-    player.getWorldPosition(position);
-    camera.lookAt(position);
+      const position = player.position.clone();
+      player.getWorldPosition(position);
+      camera.lookAt(position);
+
     const currentCameraQuaternion = new Quaternion().setFromEuler(camera.rotation);
     
     const { yawAxis, pitchAxis } = getReliableRotationAxes(camera);
@@ -129,7 +130,6 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     //const yPan = 0;
     const clippedPanX = clamp(panX, boundaries.left, boundaries.right);
     const finalPanX = clippedPanX + xPan / 256;
-    
     const clippedPanY = clamp(panY, boundaries.top, boundaries.bottom);
     const finalPanY = clippedPanY + yPan / 256;
 

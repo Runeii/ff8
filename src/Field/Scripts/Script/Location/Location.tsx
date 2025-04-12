@@ -1,9 +1,8 @@
 import { Line } from "@react-three/drei";
 import { Script } from "../../types";
 import { Vector3 } from "three";
-import useTriggerEvent from "../useTriggerEvent";
 import useLineIntersection from "../useLineIntersection";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import TalkRadius from "../TalkRadius/TalkRadius";
 import { ScriptStateStore } from "../state";
 import useGlobalStore from "../../../../store";
@@ -14,30 +13,19 @@ type LocationProps = {
   useScriptStateStore: ScriptStateStore;
 }
 
-const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationProps) => {
+const Location = ({ setActiveMethodId, script, scriptController, useScriptStateStore }: LocationProps) => {
   const isLineOn = useScriptStateStore(state => state.isLineOn);
   const linePoints = useScriptStateStore(state => state.linePoints);
 
-  const { isIntersecting, wasIntersecting, hasEverExited } = useLineIntersection(linePoints ?? undefined, isLineOn);
+  const isUserControllable = useGlobalStore(state => state.isUserControllable);
 
-  const hasValidTouchHandler = useMemo(() => {
-    const touchMethod = script.methods.find(method => method.methodId === 'touch')
-    if (!touchMethod) {
-      return false;
-    }
-    return touchMethod.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET').length > 0;
-  }, [script]);
-
-  const hasValidAcrossHandler = useMemo(() => {
-    const acrossMethod = script.methods.find(method => method.methodId === 'across')
-    if (!acrossMethod) {
-      return false;
-    }
-    return acrossMethod.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET').length > 0;
-  }, [script]);
+  useLineIntersection(linePoints ?? undefined, isLineOn && isUserControllable, {
+    onTouchOn: () => scriptController.triggerMethod('touchon', false, 0, false),
+    onTouch: () => scriptController.triggerMethod('touch', false),
+    onTouchOff: () => scriptController.triggerMethod('touchoff', false),
+    onAcross: () => scriptController.triggerMethod('across', false),
+  })
   
-  useTriggerEvent(hasValidTouchHandler ? 'touch' : 'touchon',  script, setActiveMethodId, isIntersecting && hasEverExited);
-  useTriggerEvent(hasValidAcrossHandler ? 'across' : 'touchoff', script, setActiveMethodId, !isIntersecting && wasIntersecting && hasEverExited);
 
   const talkPosition = useMemo(() => {
     if (!linePoints || !linePoints?.[0] || !linePoints?.[1]) {
@@ -66,6 +54,7 @@ const Location = ({ setActiveMethodId, script, useScriptStateStore }: LocationPr
         {talkMethod && (
           <TalkRadius
             setActiveMethodId={setActiveMethodId}
+            scriptController={scriptController}
             talkMethod={talkMethod}
             useScriptStateStore={useScriptStateStore}
           />
