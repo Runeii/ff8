@@ -1,5 +1,5 @@
-import { Sphere } from "@react-three/drei"
-import { Box3, DoubleSide, Group, Mesh } from "three";
+import { Box, Cylinder, Sphere } from "@react-three/drei"
+import { Box3, BoxGeometry, DoubleSide, Group, Mesh, Object3D, Vector3 } from "three";
 import { ScriptMethod } from "../../types";
 import {  useEffect, useMemo, useRef, useState } from "react";
 import {  useFrame } from "@react-three/fiber";
@@ -8,34 +8,16 @@ import { CHARACTER_HEIGHT } from "../Model/Controls/Controls";
 import { ScriptStateStore } from "../state";
 
 type TalkRadiusProps = {
+  meshGroup: Group;
   setActiveMethodId: (methodId?: string) => void;
   talkMethod: ScriptMethod,
   useScriptStateStore: ScriptStateStore,
 }
 
-const TalkRadius = ({ setActiveMethodId, scriptController, talkMethod, useScriptStateStore }: TalkRadiusProps) => {
-  const [isIntersecting, setIsIntersecting] = useState(false);
-  const talkSphereRef = useRef<Mesh>(null);
-
-  const talkSphereBox = useRef(new Box3());
-  const characterBox = useRef(new Box3());
-
-  useFrame(({scene}) => {
-    const character = scene.getObjectByName("character") as Group;
-
-    if (!talkSphereRef.current || !character) return;
-  
-    talkSphereRef.current.updateMatrixWorld();
-    character.updateMatrixWorld();
-  
-    talkSphereBox.current.setFromObject(talkSphereRef.current);
-    characterBox.current.setFromObject(character);
-
-    const isIntersecting = talkSphereBox.current.intersectsBox(characterBox.current);
-    setIsIntersecting(isIntersecting);
-  });
-
+const TalkRadius = ({ meshGroup, setActiveMethodId, scriptController, talkMethod, useScriptStateStore }: TalkRadiusProps) => {
+  const isUserControllable = useGlobalStore(state => state.isUserControllable);
   const isTalkable = useScriptStateStore(state => state.isTalkable);
+  const hasActiveText = useGlobalStore(state => state.currentMessages.length > 0);
   const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
 
   const hasValidTalkMethod = useMemo(() => {
@@ -45,10 +27,32 @@ const TalkRadius = ({ setActiveMethodId, scriptController, talkMethod, useScript
     return talkMethod.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET').length > 0;
   }, [talkMethod]);
 
-  const hasActiveText = useGlobalStore(state => state.currentMessages.length > 0);
-  const isUserControllable = useGlobalStore(state => state.isUserControllable);
   
   const isPlayerAbleToTalk = isUserControllable && isTalkable && !hasActiveTalkMethod && hasValidTalkMethod && !hasActiveText;
+
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const talkCylinderRef = useRef<Mesh>(null);
+  const talkRadius = useScriptStateStore(state => state.talkRadius / 4096 / 2);
+
+  const talkSphereBoxRef = useRef<Box3>(new Box3());
+  const characterBoxRef = useRef<Box3>(new Box3());
+
+  useFrame(({scene}) => {
+    if (!isPlayerAbleToTalk || !talkCylinderRef.current) {
+      return;
+    }
+    const meshHitbox = scene.getObjectByName("hitbox") as Mesh;
+
+    if (!meshHitbox) {
+      return;
+    }
+  
+    talkSphereBoxRef.current.setFromObject(talkCylinderRef.current);
+    characterBoxRef.current.setFromObject(meshHitbox);
+
+    const isIntersecting = talkSphereBoxRef.current.intersectsBox(characterBoxRef.current);
+    setIsIntersecting(isIntersecting);
+  });
 
   useEffect(() => {
     if (!isIntersecting || !isPlayerAbleToTalk) {
@@ -75,24 +79,24 @@ const TalkRadius = ({ setActiveMethodId, scriptController, talkMethod, useScript
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
  
-  const talkRadius = useScriptStateStore(state => state.talkRadius / 4096 / 1.5);
 
   if (!isPlayerAbleToTalk) {
     return null;
   }
 
   return (
-    <Sphere
-      args={[talkRadius]}
+    <Cylinder
+      args={[talkRadius,talkRadius, CHARACTER_HEIGHT]}
       position={[0, 0, (CHARACTER_HEIGHT / 2)]}
-      ref={talkSphereRef}
+      ref={talkCylinderRef}
       userData={{
         isSolid: true,
       }}
+      rotation={[Math.PI / 2, 0, 0]}
       visible={isDebugMode}
     >
       <meshBasicMaterial color={`white`} side={DoubleSide} opacity={1} transparent />
-    </Sphere>
+    </Cylinder>
   );
 }
 

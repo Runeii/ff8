@@ -187,8 +187,8 @@ const Controls = ({ children, movementController, rotationController }: Controls
   return (
     <group name="character">
       {children}
-      <Box args={[0.05, 0.05, CHARACTER_HEIGHT + 1]} position={[0,0,CHARACTER_HEIGHT / 2]} name="hitbox" visible={isDebugMode}>
-        <meshBasicMaterial color="green" opacity={0.2} transparent />
+      <Box args={[0.02, 0.02, CHARACTER_HEIGHT + 1]} position={[0,0,CHARACTER_HEIGHT / 2]} name="hitbox" visible={isDebugMode}>
+        <meshBasicMaterial color="green" opacity={0.9} transparent />
       </Box>
     </group>
   );

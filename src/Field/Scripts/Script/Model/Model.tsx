@@ -120,8 +120,9 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const modelJsx = (
     <group>
-      {talkMethod && !isLeadCharacter && !isFollower && (
+      {talkMethod && !isLeadCharacter && !isFollower && meshGroup && (
         <TalkRadius
+          meshGroup={meshGroup}
           setActiveMethodId={setActiveMethodId}
           scriptController={scriptController}
           talkMethod={talkMethod}
