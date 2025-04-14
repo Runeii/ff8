@@ -91,7 +91,7 @@ export const checkForIntersections = (object: Object3D, target: Vector3, blockag
   intersectionRaycaster.far = needlePosition.distanceTo(target);
   intersectionRaycaster.near = 0;
   intersectionRaycaster.camera = camera;
-  const intersects = intersectionRaycaster.intersectObjects(blockages, false);
+  const intersects = intersectionRaycaster.intersectObjects(blockages, true);
 
   return intersects.length === 0;
 }

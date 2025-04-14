@@ -63,6 +63,7 @@ const Door = ({ doors, script, setActiveMethodId,scriptController,  useScriptSta
     if (!box || !playerHitbox) {
       return;
     }
+
     playerPosition = playerHitbox.getWorldPosition(playerPosition);
     const doorPosition = box.hitboxMidpoint;
     const distanceFromDoor = playerPosition.distanceTo(doorPosition);

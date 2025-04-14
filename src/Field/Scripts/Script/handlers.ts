@@ -14,6 +14,7 @@ import { MUSIC_IDS } from "../../../constants/audio";
 import MusicController from "./MusicController";
 import createRotationController from "./RotationController/RotationController";
 import { KeyboardEvent } from "react";
+import createSFXController from "./SFXController/SFXController";
 
 const musicController = MusicController();
 
@@ -30,6 +31,7 @@ export type HandlerArgs = {
   scene: Scene,
   script: Script,
   setState: ReturnType<typeof createScriptState>['setState'],
+  sfxController: ReturnType<typeof createSFXController>,
   STACK: number[],
   TEMP_STACK: Record<number, number>
 }
@@ -283,7 +285,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   KEYSCAN: ({ STACK, TEMP_STACK }) => {
     const key = STACK.pop() as keyof typeof KEY_FLAGS
     const isDown = isKeyDown(key);
-    console.log(key, isDown)
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
   KEYSCAN2: ({ STACK, TEMP_STACK }) => {
@@ -767,10 +768,44 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       loop: true,
     })
   },
-  LADDERANIME: ({ currentOpcode, STACK }) => {
-    currentOpcode.param // unknown
-    //currentState.ladderAnimationId = STACK.pop() as number;
-    STACK.pop() as number;
+  LADDERANIME: ({ animationController, currentOpcode, STACK }) => {
+    const unknownParam1 = STACK.pop( ) as number;
+    const unknownParam2 = STACK.pop() as number;
+
+    animationController.setLadderAnimation(currentOpcode.param, unknownParam1, unknownParam2);
+  },
+  LADDERDOWN2: async ({ animationController, currentOpcode, movementController, STACK }) => {
+    // Speed? Offset?
+    currentOpcode.param;
+
+    const end = vectorToFloatingPoint(STACK.splice(-3));
+    const middle = vectorToFloatingPoint(STACK.splice(-3));
+    const start = vectorToFloatingPoint(STACK.splice(-3));
+
+    const animationId = animationController.getState().ladderAnimationId;
+    if (animationId === undefined) {
+      console.warn('Ladder animation not set');
+      return;
+    }
+    movementController.setIsClimbingLadder(true);
+    await movementController.moveToPoint(start);
+    await movementController.moveToPoint(middle, {
+      isFacingTarget: false,
+    });
+    await movementController.moveToPoint(end, {
+      isFacingTarget: false,
+    });
+    movementController.setIsClimbingLadder(false);
+
+  },
+  LADDERUP2: args => OPCODE_HANDLERS?.LADDERDOWN2?.(args),
+  LADDERUP: ({ currentOpcode, STACK }) => {
+    currentOpcode.param;
+    STACK.splice(-4);
+  },
+  LADDERDOWN: ({ currentOpcode, STACK }) => {
+    currentOpcode.param;
+    STACK.splice(-4);
   },
   ANIMESPEED: ({ animationController, STACK }) => {
     animationController.setAnimationSpeed(STACK.pop() as number)
@@ -893,7 +928,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
 
   MOVE: async ({ movementController, STACK }) => {
-    // const distanceToStop =
+    // const distanceToStopAnimationFromTarget =
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
@@ -903,7 +938,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   // MOVEA: move to actor
   MOVEA: async ({ movementController, scene, STACK }) => {
-    // const distanceToStop =
+    // const distanceToStopAnimationFromTarget =
     STACK.pop() as number;
     const actorId = STACK.pop() as number;
 
@@ -912,7 +947,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   // PMOVEA: move to party member
   PMOVEA: async ({ movementController, scene, STACK }) => {
-    // const distanceToStop =
+    // const distanceToStopAnimationFromTarget =
     STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
 
@@ -922,7 +957,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   // CMOVE: no turn, no animation
   CMOVE: async ({ movementController, STACK }) => {
-    // const distanceToStop =
+    // const distanceToStopAnimationFromTarget =
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
@@ -935,7 +970,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   // FMOVE: turn, no animation
   FMOVE: async ({ movementController, STACK }) => {
-    // const distanceToStop =
+    // const distanceToStopAnimationFromTarget =
     STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
@@ -946,7 +981,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     });
   },
   FMOVEA: async ({ movementController, STACK, scene }) => {
-    // const distanceToStop =
+    // const distanceToStopAnimationFromTarget =
     STACK.pop() as number;
     const actorId = STACK.pop() as number;
 
@@ -956,7 +991,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     });
   },
   FMOVEP: async ({ movementController, scene, STACK }) => {
-    // const distanceToStop =
+    // const distanceToStopAnimationFromTarget =
     STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
 
@@ -1192,8 +1227,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     // unknown
     STACK.pop() as number;
   },
+  
+  // Initialises music system, not needed
   INITSOUND: () => { },
-
   MUSICVOLSYNC: () => { },
   MUSICLOAD: ({ currentOpcode, STACK }) => {
     console.log(currentOpcode)
@@ -1243,12 +1279,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
 
   LOADSYNC: () => { },
-  FOOTSTEPON: () => { },
-  SESTOP: ({ STACK }) => {
-    // Likely sound effect ID
-    STACK.pop() as number;
-  },
-
   /*
   DSCROLL: all instant
   LSCROLL: all with duration
@@ -1417,7 +1447,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       return;
     }
 
-    const { x, y, z } = mesh.position;
+    const position = mesh.getWorldPosition(new Vector3());
+    const { x, y, z } = position;
 
     TEMP_STACK[0] = floatingPointToNumber(x);
     TEMP_STACK[1] = floatingPointToNumber(y);
@@ -1449,30 +1480,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     while (currentState.spuValue < frames) {
       await wait(100);
     }
-  },
-  LADDERDOWN2: async ({ currentOpcode, scene, STACK }) => {
-    // Speed? Offset?
-    currentOpcode.param;
-
-    const end = vectorToFloatingPoint(STACK.splice(-3));
-    const middle = vectorToFloatingPoint(STACK.splice(-3));
-    const start = vectorToFloatingPoint(STACK.splice(-3));
-
-    const playerMesh = getPartyMemberModelComponent(scene, 0);
-    playerMesh.position.copy(start);
-    await wait(1000);
-    playerMesh.position.copy(middle);
-    await wait(1000);
-    playerMesh.position.copy(end);
-  },
-  LADDERUP2: args => OPCODE_HANDLERS?.LADDERDOWN2?.(args),
-  LADDERUP: ({ currentOpcode, STACK }) => {
-    currentOpcode.param;
-    STACK.splice(-4);
-  },
-  LADDERDOWN: ({ currentOpcode, STACK }) => {
-    currentOpcode.param;
-    STACK.splice(-4);
   },
   MAPJUMPON: () => {
     useGlobalStore.setState({ isMapJumpEnabled: true });
@@ -1634,22 +1641,90 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   // SOUND
 
+  FOOTSTEP: ({ currentOpcode, movementController, STACK }) => {
+    const unknownArgument = currentOpcode.param; // volume?
+    const unknownStackValue = STACK.pop() as number; //footstep pair ID?
+
+    movementController.setFootsteps()
+  },
+  FOOTSTEPON: ({ movementController }) => {
+    movementController.enableFootsteps();
+  },
+  FOOTSTEPOFF: ({ movementController }) => {
+    movementController.disableFootsteps();
+  },
+  FOOTSTEPCUT: ({ movementController }) => {
+    movementController.resetFootsteps();
+  },
+  FOOTSTEPOFFALL: () => { },
+  FOOTSTEPCOPY: dummiedCommand,
+
+  EFFECTPLAY: ({ sfxController, STACK }) => {
+    const volume = STACK.pop() as number;
+    const pan = STACK.pop() as number;
+    const channel = STACK.pop() as number;
+    const sfxId = STACK.pop() as number; // Is SFXID + 7850
+    sfxController.play(sfxId, channel, volume, pan)
+  },
+  EFFECTPLAY2: ({ currentOpcode, sfxController, STACK }) => {
+    const channel = STACK.pop() as number; 
+    const volume = STACK.pop() as number; 
+    const pan = STACK.pop() as number; 
+    const sfxId = currentOpcode.param; 
+
+    // For now we don't play these because we need to somehow get the SFX list for a field
+    return;
+    sfxController.play(sfxId, channel, volume, pan)
+  },
+  EFFECTLOAD: ({ sfxController, STACK }) => {
+    const loopingBackgroundEffectId = STACK.pop() as number; // note: check docs, apparently not normal
+    sfxController.playLoopingEffect(loopingBackgroundEffectId)
+  },
+  SESTOP: ({ sfxController, STACK }) => {
+    const channel = STACK.pop() as number;
+    sfxController.stop(channel);
+  },
+  SEVOL: ({ sfxController, STACK }) => {
+    const volume = STACK.pop() as number;
+    const channel = STACK.pop() as number;
+
+    sfxController.setVolume(channel, volume);
+  },
+  SEVOLTRANS: ({ sfxController, STACK }) => {
+    const volume = STACK.pop() as number;
+    const duration = STACK.pop() as number;
+    const channel = STACK.pop() as number;
+
+    sfxController.setVolume(channel, volume, duration);
+  },
+  SEPOS: ({ sfxController, STACK }) => {
+    const pan = STACK.pop() as number;
+    const channel = STACK.pop() as number;
+
+    sfxController.setPan(channel, pan);
+  },
+  SEPOSTRANS: ({ sfxController, STACK }) => {
+    const pan = STACK.pop() as number;
+    const duration = STACK.pop() as number;
+    const channel = STACK.pop() as number;
+
+    sfxController.setPan(channel, pan, duration);
+  },
+  ALLSEVOL: ({ sfxController, STACK }) => {
+    const volume = STACK.pop() as number;
+
+    sfxController.setVolume(undefined, volume);
+  },
+  ALLSEVOLTRANS: ({ sfxController, STACK }) => {
+    const volume = STACK.pop() as number;
+    const duration = STACK.pop() as number;
+
+    sfxController.setVolume(undefined, volume, duration);
+  },
+  // Never used ingame
   ALLSEPOSTRANS: ({ STACK }) => {
     STACK.splice(-3);
   },
-  ALLSEVOL: ({ STACK }) => {
-    STACK.pop() as number;
-  },
-  ALLSEVOLTRANS: ({ STACK }) => {
-    STACK.splice(-2);
-  },
-  FOOTSTEP: ({ currentOpcode, STACK }) => {
-    currentOpcode.param; // unknown
-    STACK.pop() as number;
-  },
-  FOOTSTEPOFF: () => { },
-  FOOTSTEPCUT: () => { },
-  FOOTSTEPOFFALL: () => { },
 
 
   MENUSHOP: ({ STACK }) => {
@@ -1659,22 +1734,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   DRAWPOINT: ({ STACK }) => {
     // drawpoint ID
     STACK.pop() as number;
-  },
-  EFFECTPLAY: ({ STACK }) => {
-    STACK.pop() as number; //const volume = 
-    STACK.pop() as number; //const pan = 
-    STACK.pop() as number; //const channel = 
-    STACK.pop() as number; //const sfxId = 
-  },
-  EFFECTPLAY2: ({ currentOpcode, STACK }) => {
-    currentOpcode.param; // const sfxId = 
-    STACK.pop() as number; // const channel = 
-    STACK.pop() as number; // const volume = 
-    STACK.pop() as number; // const pan = 
-  },
-  EFFECTLOAD: ({ STACK }) => {
-    // const loopingBackgroundEffectId = 
-    STACK.pop() as number; // note: check docs, apparently not normal
   },
   SAVEENABLE: ({ STACK }) => {
     // const isEnabled =
@@ -1696,18 +1755,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   MOVIEREADY: ({ STACK }) => {
     STACK.pop() as number;
     STACK.pop() as number;
-  },
-  SEVOL: ({ STACK }) => {
-    STACK.splice(-2);
-  },
-  SEVOLTRANS: ({ STACK }) => {
-    STACK.splice(-3);
-  },
-  SEPOS: ({ STACK }) => {
-    STACK.splice(-2);
-  },
-  SEPOSTRANS: ({ STACK }) => {
-    STACK.splice(-3);
   },
   SETBATTLEMUSIC: ({ STACK }) => {
     STACK.pop() as number;
@@ -1959,7 +2006,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   FOLLOWOFF: dummiedCommand,
   FOLLOWON: dummiedCommand,
   REFRESHPARTY: dummiedCommand,
-  FOOTSTEPCOPY: dummiedCommand,
   MOVIECUT: dummiedCommand,
   MENUSAVE: dummiedCommand,
   SETODIN: dummiedCommand,

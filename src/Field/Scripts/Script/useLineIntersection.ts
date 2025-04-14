@@ -31,7 +31,7 @@ const useLineIntersection = (points: Vector3[] | undefined, isActive = true, {
   onTouchOff?: () => void;
   onAcross?: () => void;
   onTouch?: () => void;
-}) => {
+}, id?: number) => {
   const hasMoved = useGlobalStore(state => state.hasMoved);
 
   const lastSideRef = useRef<STATES>();
@@ -52,15 +52,24 @@ const useLineIntersection = (points: Vector3[] | undefined, isActive = true, {
 
     if (isIntersecting && currentStateRef.current !== "INTERSECTING") {
       onTouchOn?.();
-      onTouch?.();
+      if (id === 6) {
+        console.log('on touch on')
+      }
     }
-    
+
     if (isIntersecting) {
       currentStateRef.current = "INTERSECTING";
+      onTouch?.();
+      if (id === 6) {
+        console.log('on touch')
+      }
       return;
     }
 
     if (currentStateRef.current === 'INTERSECTING') {
+      if (id === 6) {
+        console.log('on touch off')
+      }
       onTouchOff?.();
     }
 
@@ -70,6 +79,9 @@ const useLineIntersection = (points: Vector3[] | undefined, isActive = true, {
 
     if (lastSideRef.current && currentSide !== lastSideRef.current) {
       onAcross?.();
+      if (id === 6) {
+        console.log('on touch across')
+      }
     }
 
     lastSideRef.current = currentSide;

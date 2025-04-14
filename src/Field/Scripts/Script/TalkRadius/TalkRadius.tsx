@@ -86,8 +86,8 @@ const TalkRadius = ({ meshGroup, setActiveMethodId, scriptController, talkMethod
 
   return (
     <Cylinder
-      args={[talkRadius,talkRadius, CHARACTER_HEIGHT]}
-      position={[0, 0, (CHARACTER_HEIGHT / 2)]}
+      args={[talkRadius,talkRadius, CHARACTER_HEIGHT * 1.5]}
+      position={[0, 0, (CHARACTER_HEIGHT / 3)]}
       ref={talkCylinderRef}
       userData={{
         isSolid: true,

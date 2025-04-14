@@ -1,6 +1,6 @@
 import { Script } from "../../types";
 import {  ComponentType, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion } from "three";
+import { Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
@@ -10,6 +10,7 @@ import { createAnimationController } from "../AnimationController/AnimationContr
 import TalkRadius from "../TalkRadius/TalkRadius";
 import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
+import { clamp } from "three/src/math/MathUtils.js";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
@@ -90,12 +91,14 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const framesSinceMovementRef = useRef(0);
   useFrame(() => {
-    const { isAnimationEnabled, movementSpeed, position } = movementController.getState();
+    const { ladderAnimationId } = animationController.getState();
+    const { isAnimationEnabled, isClimbingLadder, movementSpeed, position } = movementController.getState();
 
     if (!isAnimationEnabled) {
       animationController.stopAnimation();
       return;
     }
+
     if (!position.isAnimating && framesSinceMovementRef.current > 5) {
       animationController.setIdleAnimation(0);
       animationController.requestIdleAnimation();
@@ -111,9 +114,53 @@ const Model = ({animationController, models, scriptController, movementControlle
 
     const WALK_ANIMATION = 1;
     const RUN_ANIMATION = 2;
+    const LADDER_ANIMATION = ladderAnimationId;
+
+    if (isClimbingLadder && LADDER_ANIMATION) {
+      animationController.setIdleAnimation(LADDER_ANIMATION);
+      animationController.requestIdleAnimation();
+      return;
+    }
 
     animationController.setIdleAnimation(movementSpeed > 2695 ? RUN_ANIMATION : WALK_ANIMATION);
     animationController.requestIdleAnimation();
+  });
+
+  // Footstep
+  const previousFootstepRef = useRef<'left' | 'right' | undefined>();
+  const isBetweenFootstepsRef = useRef(false);
+  const [playerPosition] = useState<Vector3>(new Vector3(0, 0, 0));
+  const FOOTSTEP_DELAY_RUNNING = 420;
+  const FOOTSTEP_DELAY_WALKING = 500;
+  useFrame(({ camera, scene }) => {
+    const isAnimating = movementController.getState().position.isAnimating;
+    const hasFootsteps = movementController.getState().footsteps.isActive;
+    const isWalking = movementController.getState().movementSpeed < 2695
+  
+    if (!isAnimating || hasFootsteps || isBetweenFootstepsRef.current) {
+      return;
+    }
+
+    const { leftSound, rightSound } = movementController.getState().footsteps;
+
+    if (!leftSound || !rightSound) {
+      return;
+    }
+    
+    const player = scene.getObjectByName("character") as Mesh;
+    player.getWorldPosition(playerPosition);
+    const distance = playerPosition.distanceTo(camera.position);
+
+    const nextFootstep = previousFootstepRef.current === 'right' ? leftSound : rightSound;
+    isBetweenFootstepsRef.current = true;
+    nextFootstep.seek(0);
+    nextFootstep.volume(clamp(0.2, (isWalking ? 0.5 : 1) * (2 - distance), 1));
+    nextFootstep.play();
+    previousFootstepRef.current = previousFootstepRef.current === 'right' ? 'left' : 'right';
+
+    window.setTimeout(() => {
+      isBetweenFootstepsRef.current = false;
+    }, isWalking ? FOOTSTEP_DELAY_WALKING : FOOTSTEP_DELAY_RUNNING);
   });
 
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
@@ -138,6 +185,7 @@ const Model = ({animationController, models, scriptController, movementControlle
         userData={{
           partyMemberId,
           movementController,
+          rotationController,
           useScriptStateStore,
           scriptController
         }}

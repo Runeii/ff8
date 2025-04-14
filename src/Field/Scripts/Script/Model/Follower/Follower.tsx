@@ -22,17 +22,20 @@ const Follower = ({ children, movementController, partyMemberId, rotationControl
   const isLastPartyMember = useGlobalStore(state => state.party.length - 1 === offset);
 
   const scene = useThree(state => state.scene);
-  const leaderMovementController = useMemo(() => {
-    const member1 = getPartyMemberModelComponent(scene, 0)
-    if (!member1) {
-      return null;
-    }
-    return member1.userData.movementController as ReturnType<typeof createMovementController>
-  }, [scene]);
 
-  
   const groupRef = useRef<Group>(null);
   useFrame(() => {
+    const member1 = getPartyMemberModelComponent(scene, 0)
+    if (!member1) {
+      return;
+    }
+
+    const leaderMovementController = member1.userData.movementController as ReturnType<typeof createMovementController>
+
+    if (!leaderMovementController) {
+      return;
+    }
+
     const { congaWaypointHistory } = useGlobalStore.getState();
     const isFirstHistoryItem = congaWaypointHistory.length === 1;
     const history = congaWaypointHistory[offset * DISTANCE - 1];

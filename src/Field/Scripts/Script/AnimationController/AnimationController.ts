@@ -19,6 +19,7 @@ export const createAnimationController = (id: string | number, headController: R
       startFrame: undefined as number | undefined,
       endFrame: undefined as number | undefined,
     },
+    ladderAnimationId: undefined as number | undefined,
     mesh: undefined as Object3D | undefined,
     mixer: undefined as AnimationMixer | undefined,
     playback: {
@@ -226,6 +227,13 @@ export const createAnimationController = (id: string | number, headController: R
     setState({ headBone });
   }
 
+  const setLadderAnimation = (ladderAnimationId: number, _unknownParam1: number, _unknownParam2: number) => {
+    if (ladderAnimationId === getState().ladderAnimationId) {
+      return;
+    }
+    setState({ ladderAnimationId });
+  }
+
   return {
     getIsPlaying,
     getState,
@@ -235,6 +243,7 @@ export const createAnimationController = (id: string | number, headController: R
     setIdleAnimation,
     setAnimationSpeed,
     stopAnimation,
-    setHeadBone
+    setHeadBone,
+    setLadderAnimation
   }
 }

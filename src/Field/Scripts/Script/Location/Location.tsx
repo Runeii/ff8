@@ -20,11 +20,11 @@ const Location = ({ setActiveMethodId, script, scriptController, useScriptStateS
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
 
   useLineIntersection(linePoints ?? undefined, isLineOn && isUserControllable, {
-    onTouchOn: () => scriptController.triggerMethod('touchon', false, 0, false),
+    onTouchOn: () => scriptController.triggerMethod('touchon', false),
     onTouch: () => scriptController.triggerMethod('touch', false),
     onTouchOff: () => scriptController.triggerMethod('touchoff', false),
     onAcross: () => scriptController.triggerMethod('across', false),
-  })
+  }, script.groupId);
   
 
   const talkPosition = useMemo(() => {

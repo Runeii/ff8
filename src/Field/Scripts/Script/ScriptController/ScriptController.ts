@@ -6,6 +6,7 @@ import createMovementController from "../MovementController/MovementController";
 import { createAnimationController } from "../AnimationController/AnimationController";
 import createRotationController from "../RotationController/RotationController";
 import createScriptState from "../state";
+import createSFXController from "../SFXController/SFXController";
 
 const createScriptController = ({
   script,
@@ -14,6 +15,7 @@ const createScriptController = ({
   rotationController,
   animationController,
   movementController,
+  sfxController,
   useScriptStateStore,
   isDebugging = false,
 }: {
@@ -23,6 +25,7 @@ const createScriptController = ({
   rotationController: ReturnType<typeof createRotationController>;
   animationController: ReturnType<typeof createAnimationController>;
   movementController: ReturnType<typeof createMovementController>;
+  sfxController: ReturnType<typeof createSFXController>;
   useScriptStateStore: ReturnType<typeof createScriptState>;
   isDebugging?: boolean;
 }) => {
@@ -118,7 +121,7 @@ const createScriptController = ({
     const currentOpcode = opcodes[activeIndex];
 
     if (isDebugging) {
-      console.log(`ScriptID: ${script.groupId}x${methodId} - Opcode: ${currentOpcode.name} - Index: ${activeIndex}/${opcodes.length} - Queue: ${queue.map(entry => entry.methodId)} - UniqueId: ${uniqueId}`);
+      console.log(`ScriptID: ${script.groupId}x${methodId} - Opcode: ${currentOpcode.name} - Index: ${activeIndex}/${opcodes.length} - Queue: ${queue.map(entry => entry.methodId)} - Stack Length: ${STACK.length} - Temp Stack Length: ${Object.keys(TEMP_STACK).length}`);
     }
     const shouldReturnEarly = handleSpecialCaseOpcodes(currentOpcode, activeIndex);
     if (shouldReturnEarly) {
@@ -162,6 +165,7 @@ const createScriptController = ({
       scene,
       script,
       setState: modifiedStateSetter,
+      sfxController,
       STACK: clonedStack,
       TEMP_STACK: clonedTempStack,
     });
@@ -227,6 +231,11 @@ const createScriptController = ({
     const method = script.methods.find(method => method.methodId === methodId);
     if (!method) {
       console.trace(`Method with id ${methodId} not found in script for ${script.groupId}`);
+      return;
+    }
+
+    const queue = getState().queue;
+    if (queue.some(item => item.methodId === methodId)) {
       return;
     }
 

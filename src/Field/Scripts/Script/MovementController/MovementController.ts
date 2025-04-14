@@ -23,7 +23,14 @@ export const createMovementController = (id: string | number) => {
     // @ts-expect-error SpringValue incorrectly typed
     position: new SpringValue<number[]>([0,0,0]),
     // @ts-expect-error SpringValue incorrectly typed
-    offset: new SpringValue<number[]>([0,0,0])
+    offset: new SpringValue<number[]>([0,0,0]),
+    footsteps: {
+      isActive: false,
+      leftSound: undefined as Howl | undefined,
+      rightSound: undefined as Howl | undefined,
+    },
+    isClimbingLadder: false,
+    speedBeforeClimbingLadder: 0,
   }));
 
   const setMovementTarget = (target?: Vector3) => {
@@ -71,18 +78,22 @@ export const createMovementController = (id: string | number) => {
       ...defaultOptions,
       ...passedOptions,
     }
-
+    
     setMovementTarget(isFacingTarget ? target : undefined);
 
     setIsAnimationEnabled(!!isAnimationEnabled);
-
     const position = getState().position
     const distance = target.distanceTo(new Vector3().fromArray(position.get()));
+
+    let calculatedDuration = duration ?? (distance * 30000000 / getState().movementSpeed);
+    if (Number.isNaN(calculatedDuration) || Number.isFinite(calculatedDuration) === false) {
+      calculatedDuration = 0;
+    }
     await position.start([target.x, target.y, target.z], {
       config: {
-        duration: duration ?? (distance * 30000000 / getState().movementSpeed),
+        duration: calculatedDuration
       },
-      immediate: duration === 0,
+      immediate: calculatedDuration === 0,
     });
 
     setIsAnimationEnabled(true);
@@ -144,6 +155,62 @@ export const createMovementController = (id: string | number) => {
     offset.set(offset.get());
   }
 
+  ///
+
+  // FOOTSTEPS
+  const setFootsteps = () => 
+    setState(state => ({
+      footsteps: {
+        ...state.footsteps,
+        leftSound: new Howl({
+          src: `/audio/footsteps/2.mp3`,
+          preload: true,
+          loop: false,
+          mute:false,
+          volume: 1,
+        }),
+        rightSound: new Howl({
+          src: `/audio/footsteps/3.mp3`,
+          preload: true,
+          loop: false,
+          mute:false,
+          volume: 1,
+        }),
+      }
+    }))
+
+  const enableFootsteps = () =>
+    setState(state => ({
+      footsteps: {
+        ...state.footsteps,
+        isActive: true,
+      }
+    }))
+  
+  const disableFootsteps = () =>
+    setState(state => ({
+      footsteps: {
+        ...state.footsteps,
+        isActive: false,
+      }
+    }))
+
+  const resetFootsteps = () =>
+    setState({
+      footsteps: {
+        isActive: false,
+        leftSound: undefined,
+        rightSound: undefined,
+      }
+    })
+  
+  const setIsClimbingLadder = (isClimbingLadder: boolean) =>
+    setState({
+      movementSpeed: isClimbingLadder ? 1250 : getState().speedBeforeClimbingLadder,
+      isClimbingLadder,
+      speedBeforeClimbingLadder: isClimbingLadder ? getState().movementSpeed : 0,
+    })
+
   return {
     getState,
     getPosition,
@@ -155,7 +222,12 @@ export const createMovementController = (id: string | number) => {
     setMovementSpeed,
     setPosition,
     subscribe,
-    stop
+    stop,
+    setFootsteps,
+    enableFootsteps,
+    disableFootsteps,
+    resetFootsteps,
+    setIsClimbingLadder
   }
 }
 

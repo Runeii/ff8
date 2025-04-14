@@ -26,7 +26,7 @@ const Gateway = ({
 
   useLineIntersection(formattedGateway.sourceLine, isMapJumpEnabled, {
     onAcross: () => onIntersect(formattedGateway),
-  })
+  });
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
 

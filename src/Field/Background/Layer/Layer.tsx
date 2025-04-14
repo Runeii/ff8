@@ -118,9 +118,6 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
 
     const { layerScrollAdjustments } = useGlobalStore.getState()
 
-    // Unclear to me why we need to use a non standard layerID here,
-    // but that seems to be what Opcodes expect
-    // Update: I think it's layer index rather than ID
     const controlledScroll = layerScrollAdjustments[layer.renderID]
 
     let panX = backgroundPanRef.current.panX;
@@ -162,7 +159,7 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
   })
      
   return (
-    <sprite ref={layerRef} position={[0, 0, 0]} scale={[layer.canvas.width, layer.canvas.height, 1]} renderOrder={layer.layerID}>
+    <sprite ref={layerRef} position={[0, 0, 0]} scale={[layer.canvas.width, layer.canvas.height, 1]} renderOrder={20 - layer.layerID}>
       <spriteMaterial transparent={true} alphaTest={0.1} color={0xffffff} blending={layer.blendType}>
         <canvasTexture
           attach="map"

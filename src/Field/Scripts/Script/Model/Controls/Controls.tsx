@@ -35,6 +35,14 @@ const Controls = ({ children, movementController, rotationController }: Controls
   const { position } = movementController.getState();
 
   useEffect(() => {
+    if (movementController.getState().footsteps.leftSound) {
+      return;
+    }
+
+    movementController.setFootsteps();
+  }, [movementController]);
+
+  useEffect(() => {
     if (!walkmesh || !initialFieldPosition || isTransitioningMap) {
       return;
     }
@@ -54,6 +62,7 @@ const Controls = ({ children, movementController, rotationController }: Controls
   }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, movementController, walkmesh]);
 
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
+  const isClimbingLadder = movementController.getState().isClimbingLadder;
   const controlDirection = useGlobalStore(state => state.fieldDirection);
 
   const handleMovement = useCallback(() => { 
@@ -130,7 +139,7 @@ const Controls = ({ children, movementController, rotationController }: Controls
     ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
 
     const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT);
-
+    
     if (!newPosition) {
       return
     }
@@ -141,8 +150,9 @@ const Controls = ({ children, movementController, rotationController }: Controls
         blockages.push(object);
       }
     });
-
+    
     const isPermitted = checkForIntersections(player, newPosition, blockages, camera);
+
     if (!isPermitted) {
       return;
     }
@@ -175,7 +185,7 @@ const Controls = ({ children, movementController, rotationController }: Controls
   }, [isTransitioningMap, hasPlacedCharacter, isUserControllable, handleMovement, rotationController, isRunEnabled, movementFlags.isWalking, movementController, position, controlDirection]);
 
   useFrame(({ camera, scene }, delta) => {
-    if (movementController.getState().position.isAnimating) {
+    if (movementController.getState().position.isAnimating || isClimbingLadder) {
       return;
     }
 
@@ -187,7 +197,7 @@ const Controls = ({ children, movementController, rotationController }: Controls
   return (
     <group name="character">
       {children}
-      <Box args={[0.02, 0.02, CHARACTER_HEIGHT + 1]} position={[0,0,CHARACTER_HEIGHT / 2]} name="hitbox" visible={isDebugMode}>
+      <Box args={[0.03, 0.03, CHARACTER_HEIGHT] } position={[0,0,CHARACTER_HEIGHT / 2.5]} name="hitbox" visible={isDebugMode}>
         <meshBasicMaterial color="green" opacity={0.9} transparent />
       </Box>
     </group>

@@ -15,6 +15,7 @@ import { Box, Text } from "@react-three/drei";
 import createMovementController from "./MovementController/MovementController";
 import createRotationController from "./RotationController/RotationController";
 import createScriptController from "./ScriptController/ScriptController";
+import createSFXController from "./SFXController/SFXController";
 
 type ScriptProps = {
   doors: FieldData['doors'],
@@ -37,17 +38,19 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
   const headController = useMemo(() => createRotationController(script.groupId, movementController, entityRef), [script.groupId, movementController]);
   const rotationController = useMemo(() => createRotationController(script.groupId, movementController, entityRef), [script.groupId, movementController]);
   const animationController = useMemo(() => createAnimationController(script.groupId, headController), [script.groupId, headController]);
+  const sfxController = useMemo(() => createSFXController(script.groupId), [script.groupId]);
   const scriptController = useMemo(() => createScriptController({
     animationController,
     headController,
     movementController,
     rotationController,
+    sfxController,
     script,
     scene,
     useScriptStateStore,
-    isDebugging: script.groupId === 1
+    isDebugging: script.groupId === 0
   }
-  ), [animationController, headController, movementController, rotationController, script, scene, useScriptStateStore]);
+  ), [animationController, headController, movementController, rotationController,sfxController, script, scene, useScriptStateStore]);
 
   useEffect(() => {
     if (!isActive) {
@@ -160,7 +163,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
       }}
       visible={isVisible}
     >
-      {isDebugMode || true && <Text fontSize={0.1}>{script.groupId}-{partyMemberId}</Text>}
+      {isDebugMode || true && <Text fontSize={0.07}>{script.groupId}-{partyMemberId}</Text>}
       {isSolid && <Box args={[0.05, 0.05, 0.2]} name={`entity--${script.groupId}-hitbox`} visible={false} userData={{ isSolid }} />}
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location scriptController={scriptController} script={script} useScriptStateStore={useScriptStateStore} setActiveMethodId={setActiveMethodId} />}
