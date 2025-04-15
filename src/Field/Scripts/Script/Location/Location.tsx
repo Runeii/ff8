@@ -1,66 +1,58 @@
-import { Line } from "@react-three/drei";
+import { Box, Line } from "@react-three/drei";
 import { Script } from "../../types";
-import { Vector3 } from "three";
-import useLineIntersection from "../useLineIntersection";
+import { Box3, Mesh, Object3D, Vector3 } from "three";
+import useLineIntersection from "../useIntersection";
 import { useEffect, useMemo, useRef } from "react";
 import TalkRadius from "../TalkRadius/TalkRadius";
 import { ScriptStateStore } from "../state";
 import useGlobalStore from "../../../../store";
+import useIntersection from "../useIntersection";
+import LineBlock from "../../../LineBlock/LineBlock";
+import createScriptController from "../ScriptController/ScriptController";
+import { useFrame } from "@react-three/fiber";
 
 type LocationProps = {
-  script: Script;
-  setActiveMethodId: (methodId: string | undefined) => void;
+  scriptController: ReturnType<typeof createScriptController>;
   useScriptStateStore: ScriptStateStore;
 }
 
-const Location = ({ setActiveMethodId, script, scriptController, useScriptStateStore }: LocationProps) => {
+const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
   const isLineOn = useScriptStateStore(state => state.isLineOn);
   const linePoints = useScriptStateStore(state => state.linePoints);
 
+  const lineRef = useRef<Mesh>(null);
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
 
-  useLineIntersection(linePoints ?? undefined, isLineOn && isUserControllable, {
-    onTouchOn: () => scriptController.triggerMethod('touchon', false),
-    onTouch: () => scriptController.triggerMethod('touch', false),
-    onTouchOff: () => scriptController.triggerMethod('touchoff', false),
-    onAcross: () => scriptController.triggerMethod('across', false),
-  }, script.groupId);
-  
-
-  const talkPosition = useMemo(() => {
-    if (!linePoints || !linePoints?.[0] || !linePoints?.[1]) {
-      return new Vector3();
-    }
-    return new Vector3().addVectors(linePoints?.[0], linePoints?.[1]).divideScalar(2);
-  }, [linePoints]);
-
-  const isDebugMode = useGlobalStore(state => state.isDebugMode);
-
-  const talkMethod = script.methods.find(method => method.methodId === 'talk');
+  useIntersection(lineRef.current, isLineOn && isUserControllable, {
+    onTouchOn: () => {
+      console.log('onTouchOn', scriptController.script.groupId)
+       scriptController.triggerMethod('touchon', false);
+    },
+    onTouch: () => {
+      console.log('onTouch', scriptController.script.groupId)
+       scriptController.triggerMethod('touch', false);
+    },
+    onTouchOff: () => {
+      console.log('onTouchOff', scriptController.script.groupId)
+       scriptController.triggerMethod('touchoff', false);
+    },
+    onAcross: () => {
+      console.log('onAcross', scriptController.script.groupId)
+       scriptController.triggerMethod('across', false);
+    },
+  }, linePoints ?? [], scriptController.script.groupId);
 
   if (!linePoints || !isLineOn) {
     return null;
   }
 
   return (
-    <>
-      <Line
-        points={linePoints}
-        lineWidth={5}
-        color="blue"
-        visible={isDebugMode}
+    <LineBlock
+      color="blue"
+      lineBlockRef={lineRef}
+      points={linePoints}
+      renderOrder={0}
       />
-      <group position={talkPosition}>
-        {talkMethod && (
-          <TalkRadius
-            setActiveMethodId={setActiveMethodId}
-            scriptController={scriptController}
-            talkMethod={talkMethod}
-            useScriptStateStore={useScriptStateStore}
-          />
-        )}
-      </group>
-    </>
   );
 }
 

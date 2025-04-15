@@ -261,8 +261,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       pendingFieldId: 'wm00',
     });
   },
-  HALT: ({ currentOpcode, setState }) => {
-    currentOpcode.param // always 0
+  HALT: ({ setState }) => {
     setState({
       isHalted: true,
     })
@@ -270,14 +269,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SETPLACE: ({ STACK }) => {
     const placeName = STACK.pop() as number;
     useGlobalStore.setState({ currentLocationPlaceName: placeName });
-    //const area = AREAS[placeName];
-    //const music = AREA_MUSIC[area];
-    //musicController.preloadMusic(music);
-    //musicController.playMusic();
   },
-  KEYON: async ({ currentOpcodeIndex }) => {
-    //const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
-    const isDown = true;
+  KEYON: async ({ currentOpcodeIndex, STACK }) => {
+    const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
     if (isDown) {
       return currentOpcodeIndex + 2;
     }

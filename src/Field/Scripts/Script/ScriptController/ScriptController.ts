@@ -234,6 +234,13 @@ const createScriptController = ({
       return;
     }
 
+    // Filter out empty methods
+    const isValidActionableMethod = method.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET' && opcode.name !== 'HALT').length > 0;
+
+    if (!isValidActionableMethod) {
+      return;
+    }
+
     const queue = getState().queue;
     if (queue.some(item => item.methodId === methodId)) {
       return;

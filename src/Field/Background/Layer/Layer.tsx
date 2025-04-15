@@ -34,24 +34,6 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
   const [point] = useState<Vector3>(new Vector3());
 
   const {layerID, parameter, state} = layer;
-  const isLayerVisible = useGlobalStore((storeState) => {
-    const { backgroundLayerVisibility, currentParameterStates, currentParameterVisibility} = storeState;
-
-    if (backgroundLayerVisibility[layerID] === false) {
-      return false;
-    }
-
-    if (currentParameterVisibility[parameter] === false) {
-      return false;
-    }
-
-    if (currentParameterStates[parameter] !== undefined && currentParameterStates[parameter] !== state) {
-      return false;
-    }
-
-    return true;
-  });
-
 
   const camera = useThree(state => state.camera as PerspectiveCamera);
 
@@ -65,6 +47,21 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     const {initialTargetPosition, initialPosition} = camera.userData as {
       initialPosition: Vector3,
       initialTargetPosition: Vector3,
+    }
+
+    const { backgroundLayerVisibility, currentParameterStates, currentParameterVisibility} = useGlobalStore.getState();
+
+    let isLayerVisible = true;
+    if (backgroundLayerVisibility[layerID] === false) {
+      isLayerVisible = false;
+    }
+
+    if (currentParameterVisibility[parameter] === false) {
+      isLayerVisible = false;
+    }
+
+    if (currentParameterStates[parameter] !== undefined && currentParameterStates[parameter] !== state) {
+      isLayerVisible = false;
     }
 
     layerRef.current.visible = isLayerVisible;

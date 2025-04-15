@@ -42,7 +42,7 @@ const Gateways = ({ fieldId }: GatewaysProps) => {
   return (
     <>
       {gateways.map(gateway => ( 
-        <Gateway color="green" key={gateway.id} gateway={gateway} onIntersect={handleTransition} />
+        <Gateway key={gateway.id} gateway={gateway} onIntersect={handleTransition} />
       ))}
     </>
   )

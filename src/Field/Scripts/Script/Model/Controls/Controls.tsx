@@ -49,6 +49,7 @@ const Controls = ({ children, movementController, rotationController }: Controls
 
     const initialPosition = new Vector3(initialFieldPosition.x, initialFieldPosition.y, initialFieldPosition.z);
     const newPosition = getPositionOnWalkmesh(initialPosition, walkmesh);
+
     if (newPosition) {
       movementController.setPosition(newPosition);
     } else {

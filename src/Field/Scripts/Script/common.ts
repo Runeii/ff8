@@ -155,7 +155,9 @@ export const KEY_FLAGS = {
   192: ' ', // 'OK/Accept',
 
   4096: 'ArrowUp',
+  32768: 'ArrowLeft',
   16384: 'ArrowDown',
+  8192: 'ArrowRight',
 } as const;
 
 let DOWN: string[] = [];

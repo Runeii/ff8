@@ -30,6 +30,7 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
   }, [walkmesh]);
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
+    console.log(e.point)
     useGlobalStore.setState({
       characterPosition: e.point
     });

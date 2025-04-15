@@ -1,12 +1,13 @@
 import { Line } from "@react-three/drei";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { vectorToFloatingPoint } from "../../../utils";
 import { FieldData } from "../../Field";
 import useGlobalStore from "../../../store";
-import useLineIntersection from "../../Scripts/Script/useLineIntersection";
+import LineBlock from "../../LineBlock/LineBlock";
+import useIntersection from "../../Scripts/Script/useIntersection";
+import { Mesh } from "three";
 
 const Gateway = ({
-  color,
   gateway,
   onIntersect,
 }: {
@@ -14,6 +15,7 @@ const Gateway = ({
   gateway: FieldData['gateways'][0],
   onIntersect: (gateway: FormattedGateway) => void
 }) => {
+  const lineRef = useRef<Mesh>(null);
   const formattedGateway: FormattedGateway = useMemo(() => {
     return {
       destination: vectorToFloatingPoint(gateway.destinationPoint),
@@ -24,24 +26,18 @@ const Gateway = ({
 
   const isMapJumpEnabled = useGlobalStore((state) => state.isMapJumpEnabled);
 
-  useLineIntersection(formattedGateway.sourceLine, isMapJumpEnabled, {
-    onAcross: () => onIntersect(formattedGateway),
-  });
-
-  const isDebugMode = useGlobalStore(state => state.isDebugMode);
+  useIntersection(lineRef.current, isMapJumpEnabled, {
+    onTouchOn: () => onIntersect(formattedGateway),
+  }, formattedGateway.sourceLine);
 
   return (
-    <>
-      <Line
-        points={formattedGateway.sourceLine}
-        color={color}
-        lineWidth={5}
-        transparent
-        opacity={1}
-        visible={isDebugMode}
-      />
-    </>
-  )
+    <LineBlock
+      color="yellow"
+      lineBlockRef={lineRef}
+      points={formattedGateway.sourceLine}
+      renderOrder={0}
+    />
+  );
 }
 
 export default Gateway;
