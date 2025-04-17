@@ -11,13 +11,14 @@ import TalkRadius from "../TalkRadius/TalkRadius";
 import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
 import { clamp } from "three/src/math/MathUtils.js";
+import createScriptController from "../ScriptController/ScriptController";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
   models: string[];
   movementController: ReturnType<typeof createMovementController>;
   rotationController: ReturnType<typeof createRotationController>;
-  setActiveMethodId: (methodId?: string) => void;
+  scriptController: ReturnType<typeof createScriptController>;
   script: Script;
   useScriptStateStore: ScriptStateStore,
 }
@@ -29,7 +30,7 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<JSX.IntrinsicElements['group']>}>)];
 }));
 
-const Model = ({animationController, models, scriptController, movementController, rotationController, script,setActiveMethodId, useScriptStateStore }: ModelProps) => {
+const Model = ({animationController, models, scriptController, movementController, rotationController, script, useScriptStateStore }: ModelProps) => {
   const modelId = useScriptStateStore(state => state.modelId);
 
   const [meshGroup, setMeshGroup] = useState<Group>();
@@ -37,7 +38,7 @@ const Model = ({animationController, models, scriptController, movementControlle
   let modelName = models[modelId];
 
   if (modelName === 'd001') {
-    modelName = 'd000'
+   // modelName = 'd000'
   }
   if (!modelName.includes('d')) {
     modelName = 'd070'
@@ -169,8 +170,6 @@ const Model = ({animationController, models, scriptController, movementControlle
     <group>
       {talkMethod && !isLeadCharacter && !isFollower && meshGroup && (
         <TalkRadius
-          meshGroup={meshGroup}
-          setActiveMethodId={setActiveMethodId}
           scriptController={scriptController}
           talkMethod={talkMethod}
           useScriptStateStore={useScriptStateStore}

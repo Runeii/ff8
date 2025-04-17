@@ -3,6 +3,7 @@ import { openMessage } from "../Field/Scripts/Script/utils";
 import MAP_NAMES from "../constants/maps";
 import { fadeInMap } from "../Field/Scripts/Script/common";
 import useGlobalStore from "../store";
+import { loadGame } from "../Field/fieldUtils";
 
 const points: Record<string, typeof MAP_NAMES[number]> = {
   "Balamb Garden": 'bghall_1',
@@ -72,6 +73,8 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
   }
 
   if (option === 1) {
+    loadGame();
+    
     return;
   }
 

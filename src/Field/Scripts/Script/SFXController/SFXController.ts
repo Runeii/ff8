@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 export const createSFXController = (id: string | number) => {
-  const {getState, setState, subscribe} = create(() => ({
+  const {getState, setState} = create(() => ({
     id,
     generalChannel: [] as Howl[],
     channels: {} as {

@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useRef } from "react";
+import { ReactNode, useRef } from "react";
 import useGlobalStore from "../../../../../store";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Group, Vector3 } from "three";

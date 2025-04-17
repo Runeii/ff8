@@ -167,3 +167,5 @@ export const convertFF8GrayscaleToRGB = (colorValue: number) => {
   // Return RGB string for canvas
   return `rgb(${rgbComponent}, ${rgbComponent}, ${rgbComponent})`;
 }
+
+export const isSavePointMessage = (message: Message) => message.text[0].startsWith(`【Save Point】`)

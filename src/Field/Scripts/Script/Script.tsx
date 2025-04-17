@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Script as ScriptType } from "../types";
 import Background from "./Background/Background";
 import Location from "./Location/Location";
@@ -29,8 +29,6 @@ type ScriptProps = {
 // * Pushable
 const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptProps) => {
   const entityRef = useRef<Group>(null);
-
-  const [activeMethodId, setActiveMethodId] = useState<string>();
   
   const scene = useThree(state => state.scene);
   const useScriptStateStore = useMemo(() => createScriptState(), []);
@@ -48,7 +46,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
     script,
     scene,
     useScriptStateStore,
-    isDebugging: script.groupId === 0
+    isDebugging: false
   }
   ), [animationController, headController, movementController, rotationController,sfxController, script, scene, useScriptStateStore]);
 
@@ -111,7 +109,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
     animationController.stopAnimation();
     position.pause();
     backgroundAnimationSpring.pause();
-  }, [activeMethodId, animationController, isTransitioningMap, movementController, useScriptStateStore]);
+  }, [animationController, isTransitioningMap, movementController, useScriptStateStore]);
 
   const controlDirection = useGlobalStore(state => state.fieldDirection);
   useFrame(({ scene }) => {
@@ -166,9 +164,9 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
       {isDebugMode || true && <Text fontSize={0.07}>{script.groupId}-{partyMemberId}</Text>}
       {isSolid && <Box args={[0.05, 0.05, 0.2]} name={`entity--${script.groupId}-hitbox`} visible={false} userData={{ isSolid }} />}
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
-      {script.type === 'location' && <Location scriptController={scriptController} script={script} useScriptStateStore={useScriptStateStore} setActiveMethodId={setActiveMethodId} />}
-      {script.type === 'model' && <Model scriptController={scriptController} animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} setActiveMethodId={setActiveMethodId} script={script} useScriptStateStore={useScriptStateStore} />}
-      {script.type === 'door' && <Door scriptController={scriptController} doors={doors} script={script} setActiveMethodId={setActiveMethodId} useScriptStateStore={useScriptStateStore} />}
+      {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
+      {script.type === 'model' && <Model scriptController={scriptController} animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} script={script} useScriptStateStore={useScriptStateStore} />}
+      {script.type === 'door' && <Door scriptController={scriptController} doors={doors} script={script} useScriptStateStore={useScriptStateStore} />}
     </animated.group>
   );
 }

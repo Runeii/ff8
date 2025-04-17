@@ -1,4 +1,4 @@
-import { Group, Mesh, Object3D, Scene } from "three";
+import { Group, Object3D, Scene } from "three";
 import useGlobalStore from "../../../../store";
 
 export const getScriptEntity = (scene: Scene, scriptGroupId: number) => {

@@ -1,5 +1,4 @@
-import { Line } from "@react-three/drei";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { vectorToFloatingPoint } from "../../../utils";
 import { FieldData } from "../../Field";
 import useGlobalStore from "../../../store";
@@ -11,7 +10,6 @@ const Gateway = ({
   gateway,
   onIntersect,
 }: {
-  color: string,
   gateway: FieldData['gateways'][0],
   onIntersect: (gateway: FormattedGateway) => void
 }) => {

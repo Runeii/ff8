@@ -4,6 +4,8 @@ import MessageBox from "./MessageBox/MessageBox";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/constants";
 import { Fragment } from "react/jsx-runtime";
 import { Suspense } from "react";
+import { isSavePointMessage } from "./textUtils";
+import { useThree } from "@react-three/fiber";
 
 const Ui = () => {
   const currentMessages = useGlobalStore(state => state.currentMessages);
@@ -19,6 +21,7 @@ const Ui = () => {
 
   const messagesArray = Object.values(messagesByChannel);
 
+  const worldScene = useThree(state => state.scene);
   return (
     <Hud>
       <OrthographicCamera
@@ -32,7 +35,14 @@ const Ui = () => {
       <Suspense>
         {messagesArray.map((messages) => (
           <Fragment key={messages[0].id}>
-            {messages.map(message => <MessageBox key={`message--${message.id}`} message={message} />)}
+            {messages.map(message => (
+              <MessageBox
+                key={`message--${message.id}`}
+                isSavePoint={isSavePointMessage(message)}
+                message={message}
+                worldScene={worldScene}
+              />
+            ))}
           </Fragment>
         ))}
       </Suspense>

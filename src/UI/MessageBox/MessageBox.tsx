@@ -1,16 +1,19 @@
 import {  Plane, useTexture } from "@react-three/drei"
 import { useEffect, useLayoutEffect, useMemo, useState } from "react"
-import { CanvasTexture, ClampToEdgeWrapping, RepeatWrapping, Texture } from "three"
+import { CanvasTexture, ClampToEdgeWrapping, RepeatWrapping, Scene, Texture } from "three"
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants"
 import { useFrame } from "@react-three/fiber"
 import { fontLayout, fontWidths} from "./fontLayout.ts"
-import { convertFF8GrayscaleToRGB, createModifier, formatNameTags } from "../textUtils.ts"
+import { createModifier, formatNameTags } from "../textUtils.ts"
 import useGlobalStore from "../../store.ts"
 import { FontColor, Modifier, Placement } from "../textTypes.ts"
 import { config, useSpring } from "@react-spring/web"
+import { saveGame } from "../../Field/fieldUtils.ts"
 
 type MessageBoxProps = {
+  isSavePoint: boolean
   message: Message
+  worldScene: Scene
 }
 
 const SAFE_BOUNDS = 8;
@@ -50,8 +53,15 @@ const calculatePlacement = (message: Message, width: number, height: number) => 
 }
 
 
-const MessageBox = ({ message }: MessageBoxProps) => {
-  const { id, text, askOptions, isCloseable } = message;
+const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
+  const { id, text, askOptions, isCloseable } = isSavePoint ? {
+    ...message,
+    text: [`【Save Point】\nSave the game?\nYes\nNo`],
+    askOptions: {
+      first: 2,
+      default: 2
+    }
+  } : message;
 
   const textCanvas = useMemo(() => document.createElement('canvas'), []);
 
@@ -132,6 +142,9 @@ const MessageBox = ({ message }: MessageBoxProps) => {
       }
 
       if (event.code === 'Space') {
+        if (isSavePoint && currentIndex === 0) {
+          saveGame(worldScene);
+        }
         if (options[currentIndex].includes('{Gray}')) {
           return;
         }
@@ -153,7 +166,7 @@ const MessageBox = ({ message }: MessageBoxProps) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [currentIndex, id, isCloseable, options, text]);
+  }, [currentIndex, id, isCloseable, isSavePoint, options,worldScene, text]);
 
   const { placements, width: widthWithoutScaling, height: heightWithoutScaling, selectedY } = useMemo(() => {
     let x = LEFT_MARGIN;

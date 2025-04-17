@@ -1,9 +1,8 @@
 import { SpringRef } from "@react-spring/web";
 import useGlobalStore from "../../../store";
-import { Object3D, Scene, Vector3 } from "three";
-import { clamp } from "three/src/math/MathUtils.js";
+import { Scene, Vector3 } from "three";
 import createScriptController from "./ScriptController/ScriptController";
-import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
+import { getPartyMemberModelComponent } from "./Model/modelUtils";
 
 export const KEYS: Record<number, string> = {
   192: 'Space'

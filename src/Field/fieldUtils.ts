@@ -1,6 +1,10 @@
+import { Scene, Vector3 } from "three";
+import useGlobalStore from "../store";
 import { RawFieldData } from "./Field";
 import { OPCODES } from "./Scripts/constants";
+import { MEMORY, restoreMemory } from "./Scripts/Script/handlers";
 import { Opcode, OpcodeObj, ScriptType } from "./Scripts/types";
+import MAP_NAMES from "../constants/maps";
 
 type UnmappedOpcodes = [number, number] | [string, number];
 const getMappedOpcodes = (opcodes: UnmappedOpcodes[]): OpcodeObj[] => {
@@ -56,4 +60,54 @@ export const getFieldData = async (fieldId: string) => {
   };
 
   return withMappedOpcodes;
+}
+
+type SaveData = {
+  MEMORY: typeof MEMORY,
+  fieldId: typeof MAP_NAMES[number],
+  characterPosition: VectorLike,
+  party: number[],
+  availableCharacters: number[],
+}
+
+export const saveGame = (scene: Scene) => {
+  const { fieldId, party, availableCharacters } = useGlobalStore.getState();
+  const player = scene.getObjectByName("character")
+  if (!player) {
+    console.warn('Player not found');
+    return;
+  }
+  const position = new Vector3();
+  player.getWorldPosition(position);
+
+  const saveData: SaveData = {
+    MEMORY: MEMORY,
+    fieldId,
+    characterPosition: position,
+    party,
+    availableCharacters,
+  }
+  console.log('Saving game', saveData);
+  window.localStorage.setItem('saveData', JSON.stringify(saveData));
+}
+
+export const loadGame = () => {
+  const saveData = window.localStorage.getItem('saveData');
+  if (!saveData) {
+    console.warn('No save data found');
+    return;
+  }
+  const parsedData = JSON.parse(saveData) as SaveData;
+  console.log('Loading game', parsedData);
+  const { fieldId, characterPosition, party, availableCharacters } = parsedData;
+
+  useGlobalStore.setState({
+    fieldId: undefined,
+    pendingFieldId: fieldId,
+    pendingCharacterPosition: new Vector3(characterPosition.x, characterPosition.y, characterPosition.z),
+    party,
+    availableCharacters,
+  });
+
+  restoreMemory(parsedData.MEMORY);
 }

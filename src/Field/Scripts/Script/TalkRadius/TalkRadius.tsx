@@ -1,20 +1,20 @@
-import { Box, Cylinder, Sphere } from "@react-three/drei"
-import { Box3, BoxGeometry, DoubleSide, Group, Mesh, Object3D, Vector3 } from "three";
+import { Cylinder } from "@react-three/drei"
+import { Box3, DoubleSide, Mesh } from "three";
 import { ScriptMethod } from "../../types";
 import {  useEffect, useMemo, useRef, useState } from "react";
 import {  useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
 import { CHARACTER_HEIGHT } from "../Model/Controls/Controls";
 import { ScriptStateStore } from "../state";
+import createScriptController from "../ScriptController/ScriptController";
 
 type TalkRadiusProps = {
-  meshGroup: Group;
-  setActiveMethodId: (methodId?: string) => void;
+  scriptController: ReturnType<typeof createScriptController>;
   talkMethod: ScriptMethod,
   useScriptStateStore: ScriptStateStore,
 }
 
-const TalkRadius = ({ meshGroup, setActiveMethodId, scriptController, talkMethod, useScriptStateStore }: TalkRadiusProps) => {
+const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkRadiusProps) => {
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
   const isTalkable = useScriptStateStore(state => state.isTalkable);
   const hasActiveText = useGlobalStore(state => state.currentMessages.length > 0);
@@ -32,7 +32,7 @@ const TalkRadius = ({ meshGroup, setActiveMethodId, scriptController, talkMethod
 
   const [isIntersecting, setIsIntersecting] = useState(false);
   const talkCylinderRef = useRef<Mesh>(null);
-  const talkRadius = useScriptStateStore(state => state.talkRadius / 4096 / 2);
+  const talkRadius = useScriptStateStore(state => state.talkRadius / 4096);
 
   const talkSphereBoxRef = useRef<Box3>(new Box3());
   const characterBoxRef = useRef<Box3>(new Box3());
@@ -75,7 +75,7 @@ const TalkRadius = ({ meshGroup, setActiveMethodId, scriptController, talkMethod
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     }
-  }, [isIntersecting, talkMethod, scriptController, setActiveMethodId, isPlayerAbleToTalk]);
+  }, [isIntersecting, talkMethod, scriptController, isPlayerAbleToTalk]);
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
  

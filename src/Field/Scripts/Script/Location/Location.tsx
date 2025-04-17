@@ -1,15 +1,10 @@
-import { Box, Line } from "@react-three/drei";
-import { Script } from "../../types";
-import { Box3, Mesh, Object3D, Vector3 } from "three";
-import useLineIntersection from "../useIntersection";
-import { useEffect, useMemo, useRef } from "react";
-import TalkRadius from "../TalkRadius/TalkRadius";
+import { Mesh } from "three";
+import { useRef } from "react";
 import { ScriptStateStore } from "../state";
 import useGlobalStore from "../../../../store";
 import useIntersection from "../useIntersection";
 import LineBlock from "../../../LineBlock/LineBlock";
 import createScriptController from "../ScriptController/ScriptController";
-import { useFrame } from "@react-three/fiber";
 
 type LocationProps = {
   scriptController: ReturnType<typeof createScriptController>;
@@ -40,7 +35,7 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
       console.log('onAcross', scriptController.script.groupId)
        scriptController.triggerMethod('across', false);
     },
-  }, linePoints ?? [], scriptController.script.groupId);
+  }, linePoints ?? []);
 
   if (!linePoints || !isLineOn) {
     return null;

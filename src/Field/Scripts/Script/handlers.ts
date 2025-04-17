@@ -42,7 +42,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 // word – 0,65535
 // long – 0,4294967295
 // signed byte – -128,127
-export const MEMORY: Record<number, number> = {
+export let MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
   256: 0, // progress
@@ -55,6 +55,12 @@ export const MEMORY: Record<number, number> = {
   723: 0, // quistis model
   1025: 0,
 };
+
+export const restoreMemory = (savedMemory: typeof MEMORY) => {
+  MEMORY = {
+    ...savedMemory,
+  }
+}
 
 export const MESSAGE_VARS: Record<number, string> = {};
 
@@ -1528,18 +1534,18 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     });
 
     const member1 = getPartyMemberModelComponent(scene, 0)
-    const member2 = getPartyMemberModelComponent(scene, 1)
-    const member3 = getPartyMemberModelComponent(scene, 2)
-    const member3Position = vectorToFloatingPoint(STACK.splice(-3));
-    const member2Position = vectorToFloatingPoint(STACK.splice(-3));
+    const member1MovementController = member1!.userData.movementController as ReturnType<typeof createMovementController>
     const member1Position = vectorToFloatingPoint(STACK.splice(-3));
+    member1MovementController.setMovementSpeed(2560);
 
-    const member1MovementController = member1.userData.movementController as ReturnType<typeof createMovementController>
-    const member2MovementController = member2.userData.movementController as ReturnType<typeof createMovementController>
-    const member3MovementController = member3.userData.movementController as ReturnType<typeof createMovementController>
-  
-    member1MovementController.setMovementSpeed(2560);    
+    const member2 = getPartyMemberModelComponent(scene, 1)
+    const member2MovementController = member2!.userData.movementController as ReturnType<typeof createMovementController>
+    const member2Position = vectorToFloatingPoint(STACK.splice(-3));
     member2MovementController.setMovementSpeed(2560);
+    
+    const member3 = getPartyMemberModelComponent(scene, 2)
+    const member3MovementController = member3!.userData.movementController as ReturnType<typeof createMovementController>
+    const member3Position = vectorToFloatingPoint(STACK.splice(-3));
     member3MovementController.setMovementSpeed(2560);
 
     await Promise.all([

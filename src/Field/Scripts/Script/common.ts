@@ -208,13 +208,13 @@ export const setCameraAndLayerScroll = async (x: number, y: number, duration: nu
 }
 
 // This could probably smooth out resetting any set X/Ys
-export const setCameraAndLayerFocus = (object: Object3D | undefined, duration: number) => {
+export const setCameraAndLayerFocus = (object: Object3D | null, duration: number) => {
   new Array(8).fill(0).forEach((_, i) => {
     setCameraAndLayerScroll(0, 0, duration, i);
   })
 
   useGlobalStore.setState({
-    cameraFocusObject: object,
+    cameraFocusObject: object ?? undefined,
     cameraFocusSpring: new SpringValue({
       from: 0,
       to: 1,

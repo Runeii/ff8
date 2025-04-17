@@ -31,7 +31,7 @@ const useIntersection = (targetMesh: Object3D | null, isActive = true, {
   onTouchOff?: (entrySide: STATES) => void;
   onAcross?: () => void;
   onTouch?: () => void;
-}, line: VectorLike[], id?: number) => {
+}, line: VectorLike[]) => {
   const hasMoved = useGlobalStore(state => state.hasMoved);
 
   const currentStateRef = useRef<STATES>();
