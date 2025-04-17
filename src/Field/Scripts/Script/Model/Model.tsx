@@ -92,15 +92,19 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const framesSinceMovementRef = useRef(0);
   useFrame(() => {
-    const { ladderAnimationId } = animationController.getState();
+    const { idle: {animationId: idleAnimationId}, ladderAnimationId } = animationController.getState();
     const { isAnimationEnabled, isClimbingLadder, movementSpeed, position } = movementController.getState();
 
     if (!isAnimationEnabled) {
       animationController.stopAnimation();
       return;
     }
+    
+    if (!position.isAnimating && idleAnimationId === 0) {
+      return;
+    }
 
-    if (!position.isAnimating && framesSinceMovementRef.current > 5) {
+    if (!position.isAnimating && framesSinceMovementRef.current > 8) {
       animationController.setIdleAnimation(0);
       animationController.requestIdleAnimation();
       return;
@@ -122,7 +126,7 @@ const Model = ({animationController, models, scriptController, movementControlle
       animationController.requestIdleAnimation();
       return;
     }
-
+  
     animationController.setIdleAnimation(movementSpeed > 2695 ? RUN_ANIMATION : WALK_ANIMATION);
     animationController.requestIdleAnimation();
   });

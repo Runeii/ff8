@@ -4,6 +4,7 @@ import { SpringValue } from "@react-spring/web";
 import { numberToFloatingPoint } from "../../../../utils";
 
 export type MoveOptions = {
+  customMovementTarget?: Vector3;
   duration?: number;
   isAnimationEnabled: boolean;
   isFacingTarget: boolean;
@@ -65,6 +66,7 @@ export const createMovementController = (id: string | number) => {
     raf = null;
 
     const defaultOptions: MoveOptions = {
+      customMovementTarget: undefined,
       duration: undefined,
       isAnimationEnabled: true,
       isFacingTarget: true,
@@ -74,12 +76,13 @@ export const createMovementController = (id: string | number) => {
       duration,
       isAnimationEnabled,
       isFacingTarget,
+      customMovementTarget,
     } = {
       ...defaultOptions,
       ...passedOptions,
     }
     
-    setMovementTarget(isFacingTarget ? target : undefined);
+    setMovementTarget(customMovementTarget ?? (isFacingTarget ? target : undefined));
 
     setIsAnimationEnabled(!!isAnimationEnabled);
     const position = getState().position

@@ -55,7 +55,7 @@ const Follower = ({ children, movementController, partyMemberId, rotationControl
     }
     movementController.setMovementSpeed(leaderSpeed);
     movementController.moveToPoint(position, {
-      duration: isFirstHistoryItem ? 0 : 16,
+      duration: isFirstHistoryItem ? 0 : 32,
       isFacingTarget: false,
     });
     groupRef.current.visible = true;

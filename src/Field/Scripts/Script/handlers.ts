@@ -774,9 +774,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     animationController.setLadderAnimation(currentOpcode.param, unknownParam1, unknownParam2);
   },
-  LADDERDOWN2: async ({ animationController, currentOpcode, movementController, STACK }) => {
+  LADDERDOWN2: async ({ animationController, currentOpcode, movementController, rotationController, STACK }) => {
     // Speed? Offset?
-    currentOpcode.param;
+    const angle = currentOpcode.param; //maybe?
 
     const end = vectorToFloatingPoint(STACK.splice(-3));
     const middle = vectorToFloatingPoint(STACK.splice(-3));
@@ -789,6 +789,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     }
     movementController.setIsClimbingLadder(true);
     await movementController.moveToPoint(start);
+    await rotationController.turnToFaceAngle(angle, 16);
     await movementController.moveToPoint(middle, {
       isFacingTarget: false,
     });
