@@ -11,12 +11,10 @@ export const createSFXController = (id: string | number) => {
 
   const setPanForHowl = (howl: Howl, pan: number) => {
     howl.stereo((pan - 256 / 2));
-    console.log('Pan', pan, (pan - 256 / 2));
   }
 
   const setVolumeForHowl = (howl: Howl, volume: number) => {
     howl.volume(volume / 255);
-    console.log('volume', volume / 255)
   }
 
   const fadeVolumeForHowl = (howl: Howl, volume: number, duration: number) => {
@@ -62,8 +60,6 @@ export const createSFXController = (id: string | number) => {
         [channel]: howl,
       } : channels,
     })
-
-    console.log('play', id, channel, volume, pan);
   }
 
   const getExistingHowlsByChannel = (channel?: number) => {

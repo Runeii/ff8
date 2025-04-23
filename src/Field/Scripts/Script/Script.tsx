@@ -47,7 +47,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
     script,
     scene,
     useScriptStateStore,
-    isDebugging: script.groupId === 4
+    isDebugging: false
   }), [animationController, headController, movementController, rotationController,sfxController, script, scene, useScriptStateStore]);
 
   const isVisible = useScriptStateStore(state => state.isVisible);
