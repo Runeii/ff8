@@ -81,7 +81,10 @@ export const saveGame = (scene: Scene) => {
   player.getWorldPosition(position);
 
   const saveData: SaveData = {
-    MEMORY: MEMORY,
+    MEMORY: {
+      ...MEMORY,
+      261: 1
+    },
     fieldId,
     characterPosition: position,
     party,
@@ -104,6 +107,7 @@ export const loadGame = () => {
   useGlobalStore.setState({
     fieldId: undefined,
     pendingFieldId: fieldId,
+    isLoadingSavedGame: true,
     pendingCharacterPosition: new Vector3(characterPosition.x, characterPosition.y, characterPosition.z),
     party,
     availableCharacters,

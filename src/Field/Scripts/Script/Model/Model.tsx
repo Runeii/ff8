@@ -1,6 +1,6 @@
 import { Script } from "../../types";
 import {  ComponentType, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Quaternion, Vector3 } from "three";
+import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
@@ -36,9 +36,9 @@ const Model = ({animationController, models, scriptController, movementControlle
   const [meshGroup, setMeshGroup] = useState<Group>();
 
   let modelName = models[modelId];
-
-  if (modelName === 'd001') {
-   // modelName = 'd000'
+  
+  if (modelName !== 'd000') {
+    modelName = 'd001'
   }
   if (!modelName.includes('d')) {
     modelName = 'd070'
@@ -65,7 +65,7 @@ const Model = ({animationController, models, scriptController, movementControlle
   
     animationController.initialize(ref.animations.mixer, ref.animations.clips, ref.group.current);
     setMeshGroup(ref.group.current);
-    animationController.setHeadBone(ref.nodes.head);
+    animationController.setHeadBone(ref.nodes.head as unknown as Bone);
     convertMaterialsToBasic(ref.group.current);
   }, [convertMaterialsToBasic, animationController]);
 
@@ -137,7 +137,8 @@ const Model = ({animationController, models, scriptController, movementControlle
   const [playerPosition] = useState<Vector3>(new Vector3(0, 0, 0));
   const FOOTSTEP_DELAY_RUNNING = 420;
   const FOOTSTEP_DELAY_WALKING = 500;
-  useFrame(({ camera, scene }) => {
+  useFrame(({ scene }) => {
+    const camera = scene.getObjectByName("sceneCamera") as PerspectiveCamera;
     const isAnimating = movementController.getState().position.isAnimating;
     const hasFootsteps = movementController.getState().footsteps.isActive;
     const isWalking = movementController.getState().movementSpeed < 2695

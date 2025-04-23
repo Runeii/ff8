@@ -45,7 +45,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export let MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 0, // progress
+  256: 7, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -910,14 +910,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const movementSpeed = STACK.pop() as number;
     movementController.setMovementSpeed(movementSpeed);
   },
-  MOVEFLUSH: ({ currentState }) => {
-    currentState.movementTarget = undefined;
-    currentState.position.stop();
+  MOVEFLUSH: ({ movementController }) => {
+    movementController.stop();
   },
-  MOVECANCEL: ({ currentState, STACK }) => {
+  MOVECANCEL: ({ movementController,  STACK }) => {
     STACK.pop() as number; // could this cancel another entity's movement?
-    currentState.movementTarget = undefined;
-    currentState.position.stop();
+    movementController.stop();
   },
   PMOVECANCEL: () => {},
 
@@ -1514,6 +1512,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     setState({
       countdownTimer: undefined,
     })
+    
   },
   GETTIMER: ({ currentState, TEMP_STACK }) => {
     TEMP_STACK[0] = currentState.countdownTime
@@ -1643,8 +1642,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   // SOUND
 
   FOOTSTEP: ({ currentOpcode, movementController, STACK }) => {
-    const unknownArgument = currentOpcode.param; // volume?
-    const unknownStackValue = STACK.pop() as number; //footstep pair ID?
+    currentOpcode.param; // volume?
+    STACK.pop() as number; //footstep pair ID?
 
     movementController.setFootsteps()
   },

@@ -1,11 +1,12 @@
-import { useRef, useState } from "react";
-import { ClampToEdgeWrapping, Line3, NearestFilter, PerspectiveCamera, Sprite, SRGBColorSpace, Vector3 } from "three";
+import { MutableRefObject, useRef, useState } from "react";
+import { ClampToEdgeWrapping, Line3, Mesh, NearestFilter, PerspectiveCamera, Sprite, SRGBColorSpace, Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
 import { getCameraDirections } from "../../Camera/cameraUtils";
 import useGlobalStore from "../../../store";
 import useScrollSpring from "../../useScrollSpring";
 import { clamp } from "three/src/math/MathUtils.js";
+import { Plane } from "@react-three/drei";
 
 
 function getVisibleDimensionsAtDistance(
@@ -28,14 +29,14 @@ type LayerProps = {
 };
 
 const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
-  const layerRef = useRef<Sprite>(null);
+  const layerRef = useRef<Sprite | Mesh>(null);
 
   const [line] = useState<Line3>(new Line3(new Vector3(), new Vector3()));
   const [point] = useState<Vector3>(new Vector3());
 
   const {layerID, parameter, state} = layer;
 
-  const camera = useThree(state => state.camera as PerspectiveCamera);
+  const camera = useThree(({ scene }) => scene.getObjectByName("sceneCamera") as PerspectiveCamera);
 
   const scrollSpring = useScrollSpring(layer.renderID);
 
@@ -154,9 +155,35 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(clampedPanX * widthUnits));
     layerRef.current.position.add(directions.upVector.clone().multiplyScalar(clampedPanY * heightUnits));
   })
+
+  const isDebugMode = useGlobalStore(state => state.isDebugMode);
+
+  if (isDebugMode) {
+    return (
+      <Plane
+        args={[1, 1, 1]}
+        position={[0, 0, 0]}
+        ref={layerRef as MutableRefObject<Mesh>}
+        renderOrder={20 - layer.layerID}
+        >
+        <meshBasicMaterial transparent={true} alphaTest={0.1} color={0xffffff} blending={layer.blendType}>
+          <canvasTexture
+            attach="map"
+            premultiplyAlpha
+            image={layer.canvas}
+            minFilter={NearestFilter}
+            colorSpace={SRGBColorSpace}
+            magFilter={NearestFilter}
+            wrapS={ClampToEdgeWrapping}
+            wrapT={ClampToEdgeWrapping}
+          />
+        </meshBasicMaterial>
+      </Plane>
+    );
+  }
      
   return (
-    <sprite ref={layerRef} position={[0, 0, 0]} scale={[layer.canvas.width, layer.canvas.height, 1]} renderOrder={20 - layer.layerID}>
+    <sprite ref={layerRef as MutableRefObject<Sprite>} position={[0, 0, 0]} scale={[layer.canvas.width, layer.canvas.height, 1]} renderOrder={20 - layer.layerID}>
       <spriteMaterial transparent={true} alphaTest={0.1} color={0xffffff} blending={layer.blendType}>
         <canvasTexture
           attach="map"

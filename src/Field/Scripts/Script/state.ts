@@ -2,6 +2,7 @@ import { SpringValue } from '@react-spring/web';
 import { Vector3 } from 'three';
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import type { Howl} from 'howler';
+import { Script } from '../types';
 
 export type ScriptState = {
   hasRemovedControl: boolean;
@@ -50,7 +51,7 @@ export type ScriptState = {
   }
 }
 
-export const createScriptState = () => {
+export const createScriptState = (script: Script) => {
   return create<ScriptState>()(() => ({ 
     hasRemovedControl: false,
     isHalted: false,
@@ -67,7 +68,7 @@ export const createScriptState = () => {
     linePoints: null,
 
     isVisible: true,
-    isSolid: false,
+    isSolid: script.type === 'model',
     isUnused: false,
 
     modelId: 0,

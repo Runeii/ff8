@@ -1,8 +1,11 @@
 import { useAnimations } from "@react-three/drei";
-import { Blending } from "three";
+import { Blending, SkinnedMesh } from "three";
 import { FieldData } from "../Field/Field";
 
 declare global {
+  interface Window {
+    QUEUES: Record<string, string>
+  }
   interface WindowEventMap {
     // Define your custom event type
     frame: CustomEvent<{
@@ -99,6 +102,7 @@ declare global {
     last?: number;
     default?: number;
     cancel?: number;
+    blocked?: number[];
   }
 
   type useAnimationsReturn = ReturnType<typeof useAnimations>
@@ -106,7 +110,7 @@ declare global {
     animations: useAnimationsReturn
     group: MutableRef<Group>
     nodes: {
-      [key: string]: THREE.SkinnedMesh
+      [key: string]: SkinnedMesh
     }
     materials: {
       [key: string]: MeshStandardMaterial

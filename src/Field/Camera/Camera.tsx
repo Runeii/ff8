@@ -1,14 +1,15 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { PerspectiveCamera, Quaternion, Vector3 } from 'three';
+import { Mesh, PerspectiveCamera, Quaternion, Vector3 } from 'three';
 import { vectorToFloatingPoint, WORLD_DIRECTIONS } from "../../utils";
 import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useMemo, useState } from "react";
-import { calculateAngleForParallax, calculateFOV, calculateParallax, getBoundaries, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
+import { calculateAngleForParallax, calculateFOV, calculateParallax, getBoundaries, getCameraDirections, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
 import { clamp } from "three/src/math/MathUtils.js";
 import { SCREEN_HEIGHT } from "../../constants/constants";
 import useGlobalStore from "../../store";
 import Focus from "./Focus/Focus";
 import useScrollSpring from "../useScrollSpring";
+import { useSpring } from "@react-spring/web";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
@@ -21,12 +22,18 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
   const [initialCameraTargetPosition, setInitialCameraTargetPosition] = useState(new Vector3());
 
   const activeCameraId = useGlobalStore((state) => state.activeCameraId);
-  const camera = useThree(({ camera }) => camera as PerspectiveCamera);
+  const moveableCamera = useThree(({camera}) => camera as PerspectiveCamera);
+  const camera = useThree(({ scene }) => scene.getObjectByName("sceneCamera") as PerspectiveCamera);
 
+  const isDebugMode = useGlobalStore(state => state.isDebugMode);
   useEffect(() => {
     const {camera_axis,camera_position,camera_zoom} = cameras[activeCameraId];
+
     camera.far = 100;
+    moveableCamera.far = 100;
     camera.near = 0.000001;
+    moveableCamera.near = 0.000001;
+
     const camAxisX = vectorToFloatingPoint(camera_axis[0])
     const camAxisY = vectorToFloatingPoint(camera_axis[1]).negate();
     const camAxisZ = vectorToFloatingPoint(camera_axis[2])
@@ -46,12 +53,19 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     );
 
     camera.position.set(tx, ty, tz);
+    moveableCamera.position.set(tx, ty, tz);
+  
     camera.up.set(camAxisY.x, camAxisY.y, camAxisY.z);
+    moveableCamera.up.set(camAxisY.x, camAxisY.y, camAxisY.z);
+  
     camera.lookAt(lookAtTarget);
+    moveableCamera.lookAt(lookAtTarget);
 
     camera.fov = calculateFOV(camera_zoom, SCREEN_HEIGHT);
+    moveableCamera.fov = camera.fov;
 
     camera.updateProjectionMatrix();
+    moveableCamera.updateProjectionMatrix();
 
     const direction = new Vector3(0, 0, -1); // Default forward direction in Three.js
     direction.applyQuaternion(new Quaternion().setFromEuler(camera.rotation));
@@ -63,7 +77,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     }
 
     setInitialCameraTargetPosition(lookAtTarget.clone());
-  }, [activeCameraId, camera, cameras, data]);
+  }, [activeCameraId, camera, cameras, data, isDebugMode, moveableCamera]);
 
   // Precompute boundaries
   const boundaries = useMemo(
@@ -71,7 +85,6 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     [limits]
   );
 
-  const { cameraFocusObject } = useGlobalStore();
 
   const scrollSpring = useScrollSpring(0);
 
@@ -80,6 +93,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     if (activeCameraId !== 0) {
       return
     }
+    const cameraFocusObject = useGlobalStore.getState().cameraFocusObject;
 
     const player = cameraFocusObject ?? scene.getObjectByName("focus");
 
@@ -91,9 +105,9 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     const initialCameraRotation = camera.rotation.clone();
     const initialCameraQuaternion = new Quaternion().setFromEuler(initialCameraRotation);
 
-      const position = player.position.clone();
-      player.getWorldPosition(position);
-      camera.lookAt(position);
+    const position = player.position.clone();
+    player.getWorldPosition(position);
+    camera.lookAt(position);
 
     const currentCameraQuaternion = new Quaternion().setFromEuler(camera.rotation);
     
@@ -146,6 +160,67 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     backgroundPanRef.current.panY = clippedPanY * 256;
   });
 
+  const [isDebugModeActive, setIsDebugModeActive] = useState(false);
+  const spring = useSpring({
+    pullback: isDebugModeActive ? 1 : 0,
+    config: {
+      tension: isDebugModeActive ? 60 : 120,
+      friction: 60,
+      precision: 0.01
+    },
+    onStart: () => {
+      if (isDebugModeActive) {
+        useGlobalStore.setState({ isDebugMode: true });
+      }
+    },
+    onRest: () => {
+      if (!isDebugModeActive) {
+        useGlobalStore.setState({ isDebugMode: false });
+      }
+    }
+  })
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsDebugModeActive(state => !state);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [])
+
+
+  useFrame(({ scene }) => {
+    if (!moveableCamera) {
+      return;
+    }
+    
+    const player = scene.getObjectByName("character") as Mesh;
+    if (!player) {
+      return;
+    }
+    
+    moveableCamera.lookAt(player.position);
+    const lookingAtQuaternion = moveableCamera.quaternion.clone();
+    moveableCamera.quaternion.copy(camera.quaternion.clone().slerp(lookingAtQuaternion, spring.pullback.get()));
+
+    const {upVector, rightVector, forwardVector} = getCameraDirections(camera.clone());
+    
+    const scenePosition = camera.position.clone();
+    const debugPosition = camera.position.clone();
+    debugPosition.sub(forwardVector.clone().multiplyScalar(0.5));
+    debugPosition.sub(rightVector.clone().multiplyScalar(0.5));
+    debugPosition.add(upVector.clone().multiplyScalar(0.5));
+
+    moveableCamera.position.copy(scenePosition.lerp(debugPosition, spring.pullback.get()));
+
+    moveableCamera.fov = camera.fov;
+    moveableCamera.updateProjectionMatrix();
+  })
   return <Focus />;
 }
 

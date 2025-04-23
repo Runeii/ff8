@@ -112,6 +112,10 @@ const createScriptController = ({
   const tick = async () => {
     const { isRunning, queue } = getState();
 
+    if (!window.QUEUES) {
+      window.QUEUES = {};
+    }
+    window.QUEUES[script.groupId] = queue.map(item => item.methodId).join(', ');
     if (isRunning || queue.length === 0) {
       return;
     }

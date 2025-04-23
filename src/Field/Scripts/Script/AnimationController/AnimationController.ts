@@ -37,15 +37,9 @@ export const createAnimationController = (id: string | number, headController: R
       isPlaying: false,
     });
 
-    if (id === 1) {
-      console.log('ended')
-    }
     window.removeEventListener('frame', handleFrame);
 
     if (getState().resumeIdleOnComplete) {
-      if (id === 1) {
-        console.log('resume ended')
-      }
       requestIdleAnimation();
     }
   }
@@ -207,7 +201,7 @@ export const createAnimationController = (id: string | number, headController: R
 
   const getIsPlaying = () => {
     const { isPlaying, isIdle } = getState();
-
+    //console.log(isPlaying, !isIdle)
     return isPlaying && !isIdle;
   }
 

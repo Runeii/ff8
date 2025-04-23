@@ -9,6 +9,8 @@ import Entrypoint from './Entypoint'
 import { useEffect } from 'react'
 import { Perf } from 'r3f-perf'
 import Memory from './Memory/Memory'
+import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
+import Queues from './Queues/Queues'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
@@ -26,18 +28,31 @@ export default function App() {
   return (
     <>
       <div className="container">
-        <Canvas camera={{
-          aspect: ASPECT_RATIO,
-          near: 0.0001,
-          far: 100,
-        }} frameloop='always' className="canvas" gl={{
+        <Canvas camera={undefined} frameloop='always' className="canvas" gl={{
           logarithmicDepthBuffer: true,
         }}>
+          <PerspectiveCamera
+            makeDefault
+            name="moveableCamera"
+            position={[0, 0, 0]}
+            aspect={ASPECT_RATIO}
+            near={0.001}
+            far={1000}
+          />
+          <OrbitControls />
+          <PerspectiveCamera
+            name="sceneCamera"
+            position={[0, 0, 0]}
+            aspect={ASPECT_RATIO}
+            near={0.001}
+            far={1000}
+          />
           <Entrypoint />
           {isDebugMode && <Perf />}
           <Ui />
         </Canvas>
-          {isDebugMode && <Memory />}
+        {isDebugMode && <Queues />}
+        {isDebugMode && <Memory />}
       </div>
       <Controller />
     </>

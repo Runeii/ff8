@@ -32,21 +32,6 @@ const Entrypoint = () => {
     })
   }, [opacity])
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        useGlobalStore.setState({
-          isDebugMode: !useGlobalStore.getState().isDebugMode,
-        })
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    }
-  }, [])
-
   return (
     <>
       <Suspense>

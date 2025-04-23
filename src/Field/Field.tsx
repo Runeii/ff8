@@ -67,10 +67,7 @@ const Field = ({ data }: FieldProps) => {
       <WalkMesh
         walkmesh={data.walkmesh}
       />
-      <Camera
-        backgroundPanRef={backgroundPanRef}
-        data={data}
-      />
+      <Camera backgroundPanRef={backgroundPanRef} data={data} />
       <Scripts
         doors={data.doors}
         models={data.models}
@@ -107,7 +104,7 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
 
   useEffect(() => {
     const handleTransition = async () => {
-      const {isMapFadeEnabled} = useGlobalStore.getState();
+      const {isLoadingSavedGame, isMapFadeEnabled} = useGlobalStore.getState();
 
       if (isMapFadeEnabled && import.meta.env.DEV !== true) {
        await opacitySpring.start(0);
@@ -130,9 +127,14 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
 
       const pendingCharacterPosition = useGlobalStore.getState().pendingCharacterPosition;
 
+      if (!isLoadingSavedGame) {
+        MEMORY[261] = 0;
+      }
+
       useGlobalStore.setState({
         fieldData: data,
         fieldDirection: data.controlDirection,
+        isLoadingSavedGame: false,
 
         characterPosition: pendingCharacterPosition ?? getInitialEntrance(data),
         pendingCharacterPosition: undefined,

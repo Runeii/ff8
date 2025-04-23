@@ -6,12 +6,12 @@ export const createSFXController = (id: string | number) => {
     generalChannel: [] as Howl[],
     channels: {} as {
       [key: number]: Howl;
-    }
+    },
   }));
 
   const setPanForHowl = (howl: Howl, pan: number) => {
-    howl.stereo((pan - 256 / 2) - 1);
-    console.log('Pan', (pan - 256 / 2) - 1);
+    howl.stereo((pan - 256 / 2));
+    console.log('Pan', pan, (pan - 256 / 2));
   }
 
   const setVolumeForHowl = (howl: Howl, volume: number) => {
@@ -21,16 +21,13 @@ export const createSFXController = (id: string | number) => {
 
   const fadeVolumeForHowl = (howl: Howl, volume: number, duration: number) => {
     howl.fade(howl.volume(), volume / 255, duration);
-    console.log('fadeVolume', volume / 255, duration);
   }
 
   const fadePanForHowl = (howl: Howl, pan: number, duration: number) => {
     howl.fade(howl.stereo(), (pan - 256 / 2) - 1, duration);
-    console.log('fadePan', (pan - 256 / 2) - 1, duration);
   }
 
   const stopHowl = (howl: Howl) => {
-    console.log('stop', howl);
     howl.stop();
     howl.unload();
   }
@@ -48,8 +45,9 @@ export const createSFXController = (id: string | number) => {
       preload: true,
       loop: false,
       autoplay: false,
-      volume,
+      volume: 1,
     });
+
     setVolumeForHowl(howl, volume);
     setPanForHowl(howl, pan);
     howl.play();
@@ -84,7 +82,6 @@ export const createSFXController = (id: string | number) => {
   }
 
   const stop = (channel: number) => {
-    console.log('stop', channel);
     const howls = getExistingHowlsByChannel(channel);
 
     howls.forEach((howl) => {
@@ -94,7 +91,6 @@ export const createSFXController = (id: string | number) => {
 
 
   const setVolume = (channel: number | undefined, volume: number, duration?: number) => {
-    console.log('setVolume', channel, volume, duration);
     const howls = getExistingHowlsByChannel(channel);
     howls.forEach((howl) => {
       if (duration) {
@@ -106,7 +102,6 @@ export const createSFXController = (id: string | number) => {
   }
 
   const setPan = (channel: number | undefined, pan: number, duration?: number) => {
-    console.log('setPan', channel, pan, duration);
     const howls = getExistingHowlsByChannel(channel);
     howls.forEach((howl) => {
       if (duration) {

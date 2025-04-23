@@ -151,7 +151,6 @@ const Controls = ({ children, movementController, rotationController }: Controls
         blockages.push(object);
       }
     });
-    
     const isPermitted = checkForIntersections(player, newPosition, blockages, camera);
 
     if (!isPermitted) {
@@ -185,11 +184,12 @@ const Controls = ({ children, movementController, rotationController }: Controls
     });
   }, [isTransitioningMap, hasPlacedCharacter, isUserControllable, handleMovement, rotationController, isRunEnabled, movementFlags.isWalking, movementController, position, controlDirection]);
 
-  useFrame(({ camera, scene }, delta) => {
+  useFrame(({ scene }, delta) => {
     if (movementController.getState().position.isAnimating || isClimbingLadder) {
       return;
     }
 
+    const camera = scene.getObjectByName("sceneCamera") as PerspectiveCamera;
     handleFrame(camera as PerspectiveCamera, scene, delta);
   });
 

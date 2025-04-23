@@ -145,18 +145,28 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
         if (isSavePoint && currentIndex === 0) {
           saveGame(worldScene);
         }
-        if (options[currentIndex].includes('{Gray}')) {
+        if (options[currentIndex].includes('{Grey}')) {
+          useGlobalStore.getState().systemSfxController.play(16, 0, 255, 128);
           return;
         }
 
+        if (askOptions && currentIndex !== askOptions.cancel && !isSavePoint) {
+          useGlobalStore.getState().systemSfxController.play(1, 0, 255, 128);
+        }
+        
+        if (askOptions && currentIndex === askOptions.cancel || isSavePoint && currentIndex === 1) {
+          useGlobalStore.getState().systemSfxController.play(9, 0, 255, 128);
+        }
         setCurrentPage(prev => prev + 1);
       }
 
       if (event.key === 'ArrowUp') {
+        useGlobalStore.getState().systemSfxController.play(1, 0, 255, 128);
         setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
       }
 
       if (event.key === 'ArrowDown') {
+        useGlobalStore.getState().systemSfxController.play(1, 0, 255, 128);
         setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, options.length - 1));
       }
     }
@@ -166,7 +176,7 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [currentIndex, id, isCloseable, isSavePoint, options,worldScene, text]);
+  }, [currentIndex, id, isCloseable, isSavePoint, options, worldScene, text, askOptions]);
 
   const { placements, width: widthWithoutScaling, height: heightWithoutScaling, selectedY } = useMemo(() => {
     let x = LEFT_MARGIN;

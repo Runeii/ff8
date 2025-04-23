@@ -38,7 +38,7 @@ const fieldSelect = async (set = 0) => {
    });
 
    if (selectedOption === options.length + 1) {
-    mainMenuSelect(2);
+    mainMenuSelect(3);
     return;
   }
 
@@ -54,36 +54,19 @@ const fieldSelect = async (set = 0) => {
   })
 }
 
-const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
+const mainMenuSelect = async (defaultValue = hasSavedData ? 2 : 0) => {
   openMessage('welcome', ['Welcome'], { x: 0,  y: 0 }, false);
-  
-  const option = await openMessage('menu', [`New Game\n${hasSavedData ? '' : '{Gray}'}Resume Game{White}\nField Select\nControls`], { x: 100,  y: 80 }, true, {
+
+  const option = await openMessage('menu', [`Controls\nNew Game\n${hasSavedData ? '' : '{Grey}'}Resume Game{White}\nField Select`], { x: 100,  y: 80 }, true, {
     first: 0,
     default: defaultValue,
-    cancel: undefined
+    cancel: undefined,
+    blocked: hasSavedData ? [] : [1],
   });
 
   closeAllWindows();
 
   if (option === 0) {
-    useGlobalStore.setState({
-      pendingFieldId: 'start0',
-    });
-    return;
-  }
-
-  if (option === 1) {
-    loadGame();
-    
-    return;
-  }
-
-  if (option === 2) {
-    fieldSelect();
-    return;
-  }
-
-  if (option === 3) {
     await openMessage('controls', [`Controls
      {Yellow}Move{White} - [Arrows]
      {Yellow}Interact{White} - [Space]
@@ -91,7 +74,27 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
      {Yellow}Dev Mode{White} - [Esc]
      {Yellow}Reset{White} - [Backspace]`], { x: 70,  y: 50 }, true);
 
-    mainMenuSelect(3);
+    mainMenuSelect(0);
+  }
+
+  if (option === 1) {
+    useGlobalStore.getState().systemSfxController.play(37, 0, 255, 128);
+    useGlobalStore.setState({
+      pendingFieldId: 'start0',
+    });
+    return;
+  }
+
+  if (option === 2) {
+    loadGame();
+    useGlobalStore.getState().systemSfxController.play(37, 0, 255, 128);
+    
+    return;
+  }
+
+  if (option === 3) {
+    fieldSelect();
+    return;
   }
 }
 const Onboarding = () => {

@@ -28,15 +28,19 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
 
     return geometries;
   }, [walkmesh]);
+  
+  const isDebugMode = useGlobalStore(state => state.isDebugMode);
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
-    console.log(e.point)
+    if (!isDebugMode) {
+      return;
+    }
+
     useGlobalStore.setState({
       characterPosition: e.point
     });
   }
 
-  const isDebugMode = useGlobalStore(state => state.isDebugMode);
 
   const lockedTriangles = useGlobalStore(state => state.lockedTriangles);
 
@@ -44,7 +48,7 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
     <group name="walkmesh">
       {walkMeshGeometry.map((geometry, index) => (
         <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={isDebugMode}>
-          <meshBasicMaterial color={lockedTriangles.includes(index) ? "black" : 'yellow'} transparent opacity={0.2} side={DoubleSide} />
+          <meshBasicMaterial color={lockedTriangles.includes(index) ? "black" : 'pink'} transparent opacity={0.4} side={DoubleSide} />
         </mesh>
       ))}
     </group>

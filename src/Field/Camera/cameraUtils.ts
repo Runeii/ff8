@@ -64,10 +64,10 @@ export const calculateAngleForParallax = (pan: number, depth: number): number =>
   return (pan * FF8_PERSPECTIVE_DIVISOR) / depth;
 }
 
-const forwardVector = new Vector3();
 export const getCameraDirections = (camera: Camera) => {
   camera.updateMatrixWorld();
-
+  
+  const forwardVector = new Vector3();
   camera.getWorldDirection(forwardVector);
   const rightVector = new Vector3().crossVectors(camera.up, forwardVector).normalize().negate(); // X-axis in camera space
   const upVector = new Vector3().crossVectors(forwardVector, rightVector).normalize().negate(); // Y-axis in camera space

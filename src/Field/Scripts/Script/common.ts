@@ -119,7 +119,6 @@ export const isTouching = (thisId: number, targetName: string, scene: Scene) => 
   const targetMesh = scene.getObjectByName(targetName) as Group;
 
   if (!thisMesh || !targetMesh) {
-    console.warn('Error checking if touching:', thisId, thisMesh, targetMesh);
     return false;
   }
 

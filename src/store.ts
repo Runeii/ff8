@@ -4,11 +4,13 @@ import { SpringValue } from '@react-spring/web';
 import MAP_NAMES from './constants/maps';
 import type { Howl} from 'howler';
 import { FieldData } from './Field/Field';
+import createSFXController from './Field/Scripts/Script/SFXController/SFXController';
 
 interface GlobalState {
   isDebugMode: boolean,
 
   fieldDirection: number,
+  isLoadingSavedGame: boolean,
 
   characterPosition?: Vector3,
   pendingCharacterPosition?: Vector3, // Ensures we can mark user start position before transitioning map
@@ -65,12 +67,15 @@ interface GlobalState {
   dualMusic?: Howl,
 
   fieldData?: FieldData,
+
+  systemSfxController: ReturnType<typeof createSFXController>
 }
 
 export const INITIAL_STATE: GlobalState = {
     isDebugMode: false,
   
     fieldDirection: 0,
+    isLoadingSavedGame: false,
   
     availableMessages: [],
     characterPosition: undefined as unknown as Vector3,
@@ -121,6 +126,8 @@ export const INITIAL_STATE: GlobalState = {
     dualMusic: undefined,
   
     fieldData: undefined,
+
+    systemSfxController: createSFXController('world')
   }
 
 const useGlobalStore = create<GlobalState>()(() => ({...INITIAL_STATE}))
