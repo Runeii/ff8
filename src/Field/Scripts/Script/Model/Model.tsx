@@ -1,6 +1,6 @@
 import { Script } from "../../types";
 import {  ComponentType, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { Bone, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Quaternion, Vector3 } from "three";
+import { Bone, Box3, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
@@ -31,18 +31,12 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
 }));
 
 const Model = ({animationController, models, scriptController, movementController, rotationController, script, useScriptStateStore }: ModelProps) => {
+  const fieldId = useGlobalStore(state => state.fieldId);
   const modelId = useScriptStateStore(state => state.modelId);
 
   const [meshGroup, setMeshGroup] = useState<Group>();
 
-  let modelName = models[modelId];
-  
-  if (modelName !== 'd000') {
-    modelName = 'd001'
-  }
-  if (!modelName.includes('d')) {
-    modelName = 'd070'
-  }
+  const modelName = `${models[modelId]}_${fieldId}`;
 
   const ModelComponent = components[modelName];
 
@@ -70,6 +64,7 @@ const Model = ({animationController, models, scriptController, movementControlle
   }, [convertMaterialsToBasic, animationController]);
 
 
+  const [height] = useState(0);
   useEffect(() => {
     if (!meshGroup) {
       return;
@@ -77,14 +72,19 @@ const Model = ({animationController, models, scriptController, movementControlle
 
     meshGroup.rotation.set(0, 0, 0);
     meshGroup.quaternion.identity();
-  
-    const eulerRotation = new Euler(Math.PI / 2, 0, 0); // Define your Euler rotation
+    
+    const eulerRotation = new Euler(Math.PI / 2, 0, -Math.PI / 2); // Define your Euler rotation
     const quaternionFromEuler = new Quaternion();
     quaternionFromEuler.setFromEuler(eulerRotation);
     meshGroup.applyQuaternion(quaternionFromEuler);
     meshGroup.updateMatrix(); 
     meshGroup.updateMatrixWorld(true);
+    const box = new Box3().setFromObject(meshGroup)
+    const size = box.getSize(new Vector3());
+
+    console.log('size', size);
   }, [modelName, meshGroup]);
+
 
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
@@ -183,7 +183,7 @@ const Model = ({animationController, models, scriptController, movementControlle
       <ModelComponent
         name={`party--${partyMemberId ?? 'none'}`}
         scale={0.06}
-        position={[0, 0, -0.004]}
+        position={[0, 0, height]}
         // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
         ref={setModelRef}
         userData={{

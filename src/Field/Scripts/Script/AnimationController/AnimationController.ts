@@ -101,10 +101,9 @@ export const createAnimationController = (id: string | number, headController: R
   }) => {
     const clip = getState().clips[animationId];
     if (!clip) {
-      console.warn('Animation clip not found', animationId);
+      console.warn('Animation clip not found', animationId, 'Script ID:', getState().id);
       return;
     }
-
 
     const mixer = getState().mixer;
     if (!mixer) {

@@ -88,7 +88,7 @@ export const createMovementController = (id: string | number) => {
     const position = getState().position
     const distance = target.distanceTo(new Vector3().fromArray(position.get()));
 
-    let calculatedDuration = duration ?? (distance * 30000000 / getState().movementSpeed);
+    let calculatedDuration = duration ?? (distance * 40000000 / getState().movementSpeed);
     if (Number.isNaN(calculatedDuration) || Number.isFinite(calculatedDuration) === false) {
       calculatedDuration = 0;
     }
