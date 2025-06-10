@@ -69,6 +69,7 @@ body,
   width: 100% !important;
   height: 100% !important;
   object-fit: contain;
+  opacity: var(--canvas-opacity, 1);
 }
 
 .debug {

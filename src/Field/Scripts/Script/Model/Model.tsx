@@ -86,7 +86,9 @@ const Model = ({animationController, models, scriptController, movementControlle
     const { idle: {animationId: idleAnimationId}, ladderAnimationId } = animationController.getState();
     const { isAnimationEnabled, isClimbingLadder, movementSpeed, position } = movementController.getState();
 
-    if (!isAnimationEnabled) {
+    const isTransitioningMap = !!useGlobalStore.getState().pendingFieldId;
+
+    if (!isAnimationEnabled || isTransitioningMap) {
       animationController.stopAnimation();
       return;
     }
