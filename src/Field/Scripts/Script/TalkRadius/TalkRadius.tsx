@@ -92,7 +92,7 @@ const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkR
       rotation={[Math.PI / 2, 0, 0]}
       visible={isDebugMode}
     >
-      <meshBasicMaterial color={`white`} side={DoubleSide} opacity={0.5} transparent />
+      <meshBasicMaterial color={`white`} side={DoubleSide} opacity={0} transparent />
     </Cylinder>
   );
 }

@@ -135,6 +135,10 @@ declare global {
   }
 
   type Tile = FieldData['tiles'][number];
+
+  type Door = FieldData['doors'][number] & {
+    name: string;
+  };
 }
 
 export { };

@@ -1,6 +1,6 @@
 import { Script } from "../../types";
-import {  ComponentType, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { Bone, Box3, DoubleSide, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Quaternion, Vector3 } from "three";
+import {  ComponentType, lazy, useCallback, useRef, useState } from "react";
+import { Bone, Box3, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
@@ -12,7 +12,6 @@ import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
 import { clamp } from "three/src/math/MathUtils.js";
 import createScriptController from "../ScriptController/ScriptController";
-import { Sphere } from "@react-three/drei";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
@@ -61,6 +60,22 @@ const Model = ({animationController, models, scriptController, movementControlle
     animationController.initialize(ref.animations.mixer, ref.animations.clips, ref.group.current);
     setMeshGroup(ref.group.current);
   }, [convertMaterialsToBasic, animationController]);
+
+
+  const groupRef = useRef<Group>(null);
+  const modelContainerRef = useRef<Group>(null);
+  useFrame(() => {
+    if (!groupRef.current || !modelContainerRef.current) {
+      return;
+    }
+    modelContainerRef.current.updateMatrixWorld(true);
+    modelContainerRef.current.updateMatrix();
+    modelContainerRef.current.updateWorldMatrix(true, false);
+    const boundingBox = new Box3().setFromObject(modelContainerRef.current);
+    const height = (boundingBox.max.z - boundingBox.min.z);
+
+    groupRef.current.position.z = height / 2
+  });
 
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
@@ -148,7 +163,7 @@ const Model = ({animationController, models, scriptController, movementControlle
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
 
   const modelJsx = (
-    <group scale={0.06}>
+    <group ref={groupRef}>
       {talkMethod && !isLeadCharacter && !isFollower && meshGroup && (
         <TalkRadius
           scriptController={scriptController}
@@ -156,9 +171,10 @@ const Model = ({animationController, models, scriptController, movementControlle
           useScriptStateStore={useScriptStateStore}
         />
       )}
+      <group ref={modelContainerRef}>
       <ModelComponent
         name={`party--${partyMemberId ?? 'none'}`}
-        position={[0, 0, 0.5]}
+        scale={0.06}
         mapName={fieldId}
         // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
         ref={setModelRef}
@@ -169,7 +185,8 @@ const Model = ({animationController, models, scriptController, movementControlle
           useScriptStateStore,
           scriptController
         }}
-      />
+        />
+      </group>
     </group>
   );
 

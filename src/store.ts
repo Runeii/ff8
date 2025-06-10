@@ -9,6 +9,10 @@ import createSFXController from './Field/Scripts/Script/SFXController/SFXControl
 interface GlobalState {
   isDebugMode: boolean,
 
+  isFieldLoaded: boolean,
+  isMapSuspended: boolean,
+  hasRenderedBackground: boolean,
+
   fieldDirection: number,
   isLoadingSavedGame: boolean,
 
@@ -73,9 +77,14 @@ interface GlobalState {
 
 export const INITIAL_STATE: GlobalState = {
     isDebugMode: false,
+
+    isFieldLoaded: false,
+    isMapSuspended: false,
+    hasRenderedBackground: false,
   
     fieldDirection: 0,
     isLoadingSavedGame: false,
+
   
     availableMessages: [],
     characterPosition: undefined as unknown as Vector3,

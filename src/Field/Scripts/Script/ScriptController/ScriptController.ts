@@ -196,9 +196,6 @@ const createScriptController = ({
   }
  
   const abortActiveActions = (isNowTalking = false) => {
-    if (isDebugging) {
-      console.log('Aborting active actions', movementController.getState().position.get());
-    }
     headController.stop();
     rotationController.stop();
     movementController.pause();

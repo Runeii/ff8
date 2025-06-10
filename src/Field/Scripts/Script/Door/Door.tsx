@@ -1,6 +1,5 @@
 import { useMemo, useRef, useState } from "react";
 import { Script } from "../../types";
-import { FieldData } from "../../../Field";
 import { Mesh } from "three";
 import { ScriptStateStore } from "../state";
 import LineBlock from "../../../LineBlock/LineBlock";
@@ -9,7 +8,7 @@ import { vectorToFloatingPoint } from "../../../../utils";
 import useIntersection, { STATES } from "../useIntersection";
 
 type DoorProps = {
-  doors: FieldData['doors'];
+  doors: Door[]
   script: Script;
   scriptController: ReturnType<typeof createScriptController>;
   useScriptStateStore: ScriptStateStore;
@@ -21,8 +20,10 @@ const Door = ({ doors, script, scriptController,  useScriptStateStore }: DoorPro
   const [isDoorOpen, setIsDoorOpen] = useState(false);
 
   const door = useMemo(() => {
-    const doorId = parseInt(script.name.toLowerCase().replace('door', '')) - 1
-    const entry = doors.find(door => door.doorID === doorId)!
+    const entry = doors.find(door => door.name === script.name)!
+    if (!entry) {
+      console.warn(`Door with name ${script.name} not found in doors array.`);
+    }
     return entry;
   }, [doors, script.name]);
 

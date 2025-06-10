@@ -19,7 +19,7 @@ import createSFXController from "./SFXController/SFXController";
 import { CHARACTER_HEIGHT } from "./Model/Controls/Controls";
 
 type ScriptProps = {
-  doors: FieldData['doors'],
+  doors: Door[];
   isActive: boolean;
   onSetupCompleted: () => void;
   models: string[];
