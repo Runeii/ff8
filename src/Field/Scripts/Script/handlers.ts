@@ -45,7 +45,7 @@ type HandlerFuncWithPromise = (args: HandlerArgs) => Promise<number | void> | (n
 export let MEMORY: Record<number, number> = {
   72: 9999, // gil
   84: 0, // last area visited
-  256: 7, // progress
+  256: 0, // progress
   491: 0, // touk
   641: 96,
   534: 1, // ?
@@ -1049,6 +1049,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   DIR: ({ rotationController, STACK }) => {
     const angle = STACK.pop() as number;
+    console.log('DIR', angle);
     rotationController.turnToFaceAngle(angle, 0);
   },
   // Forces clockwise turn

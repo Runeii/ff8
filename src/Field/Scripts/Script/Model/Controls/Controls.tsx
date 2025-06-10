@@ -71,16 +71,16 @@ const Controls = ({ children, movementController, rotationController }: Controls
     let y = 0;
     
     if (movementFlags.forward) {
-      y -= 1;
-    }
-    if (movementFlags.backward) {
       y += 1;
     }
+    if (movementFlags.backward) {
+      y -= 1;
+    }
     if (movementFlags.right) {
-      x += 1;
+      x -= 1;
     }
     if (movementFlags.left) {
-      x -= 1;
+      x += 1;
     }
     
     if (x === 0 && y === 0) {
@@ -89,10 +89,10 @@ const Controls = ({ children, movementController, rotationController }: Controls
     
     const radians = Math.atan2(x, y);
 
-    const angle = Math.round(((radians / (2 * Math.PI)) * 256 + 256) % 256);
-    
-    return angle;
-  }, [movementFlags]);
+    const angle = Math.round(radians / Math.PI * 128) - 128 + 256;
+
+    return angle + (controlDirection - 128);
+  }, [movementFlags, controlDirection]);
 
   const handleFrame = useCallback(async (camera: PerspectiveCamera, scene: Scene, delta: number) => {
     const player = scene.getObjectByName("character") as Mesh;
@@ -126,11 +126,10 @@ const Controls = ({ children, movementController, rotationController }: Controls
       return;
     }
 
-    let meshForward = new Vector3(0,1,0).normalize();
+    let meshForward = new Vector3(0,-1,0).clone();
     meshForward.z = 0;
-
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(player.quaternion).normalize();
-    meshForward = meshForward.applyAxisAngle(meshUp, convert256ToRadians(movementAngle + controlDirection));
+    meshForward = meshForward.applyAxisAngle(meshUp, convert256ToRadians(movementAngle));
 
     const directionAdjustmentForSpeed = speed * 600;
     desiredPosition.set(
@@ -182,7 +181,7 @@ const Controls = ({ children, movementController, rotationController }: Controls
         ],
       }
     });
-  }, [isTransitioningMap, hasPlacedCharacter, isUserControllable, handleMovement, rotationController, isRunEnabled, movementFlags.isWalking, movementController, position, controlDirection]);
+  }, [isTransitioningMap, hasPlacedCharacter, isUserControllable, handleMovement, rotationController, isRunEnabled, movementFlags.isWalking, movementController, position]);
 
   useFrame(({ scene }, delta) => {
     if (movementController.getState().position.isAnimating || isClimbingLadder) {

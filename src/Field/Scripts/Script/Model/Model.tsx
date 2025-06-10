@@ -1,6 +1,6 @@
 import { Script } from "../../types";
 import {  ComponentType, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { Bone, Box3, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Quaternion, Vector3 } from "three";
+import { Bone, Box3, DoubleSide, Euler, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
@@ -12,6 +12,7 @@ import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
 import { clamp } from "three/src/math/MathUtils.js";
 import createScriptController from "../ScriptController/ScriptController";
+import { Sphere } from "@react-three/drei";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
@@ -36,8 +37,7 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const [meshGroup, setMeshGroup] = useState<Group>();
 
-  const modelName = `${models[modelId]}_${fieldId}`;
-
+  const modelName = models[modelId]
   const ModelComponent = components[modelName];
 
   const convertMaterialsToBasic = useCallback((group: Group) => {
@@ -46,7 +46,7 @@ const Model = ({animationController, models, scriptController, movementControlle
         const meshBasicMaterial = new MeshBasicMaterial();
         meshBasicMaterial.color = child.material.color;
         meshBasicMaterial.map = child.material.map;
-
+        meshBasicMaterial.side = DoubleSide
         child.material = meshBasicMaterial;
       }
     });
@@ -56,35 +56,11 @@ const Model = ({animationController, models, scriptController, movementControlle
     if (!ref || !ref.group) {
       return;
     }
-  
+    convertMaterialsToBasic(ref.group.current);
+    animationController.setHeadBone(ref.nodes.head as unknown as Bone);
     animationController.initialize(ref.animations.mixer, ref.animations.clips, ref.group.current);
     setMeshGroup(ref.group.current);
-    animationController.setHeadBone(ref.nodes.head as unknown as Bone);
-    convertMaterialsToBasic(ref.group.current);
   }, [convertMaterialsToBasic, animationController]);
-
-
-  const [height] = useState(0);
-  useEffect(() => {
-    if (!meshGroup) {
-      return;
-    }
-
-    meshGroup.rotation.set(0, 0, 0);
-    meshGroup.quaternion.identity();
-    
-    const eulerRotation = new Euler(Math.PI / 2, 0, -Math.PI / 2); // Define your Euler rotation
-    const quaternionFromEuler = new Quaternion();
-    quaternionFromEuler.setFromEuler(eulerRotation);
-    meshGroup.applyQuaternion(quaternionFromEuler);
-    meshGroup.updateMatrix(); 
-    meshGroup.updateMatrixWorld(true);
-    const box = new Box3().setFromObject(meshGroup)
-    const size = box.getSize(new Vector3());
-
-    console.log('size', size);
-  }, [modelName, meshGroup]);
-
 
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
@@ -172,7 +148,7 @@ const Model = ({animationController, models, scriptController, movementControlle
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
 
   const modelJsx = (
-    <group>
+    <group scale={0.06}>
       {talkMethod && !isLeadCharacter && !isFollower && meshGroup && (
         <TalkRadius
           scriptController={scriptController}
@@ -182,8 +158,8 @@ const Model = ({animationController, models, scriptController, movementControlle
       )}
       <ModelComponent
         name={`party--${partyMemberId ?? 'none'}`}
-        scale={0.06}
-        position={[0, 0, height]}
+        position={[0, 0, 0.5]}
+        mapName={fieldId}
         // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
         ref={setModelRef}
         userData={{

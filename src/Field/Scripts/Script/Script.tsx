@@ -113,7 +113,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
     backgroundAnimationSpring.pause();
   }, [animationController, isTransitioningMap, movementController, useScriptStateStore]);
 
-  const controlDirection = useGlobalStore(state => state.fieldDirection);
   useFrame(({ scene }) => {
     if (!entityRef.current || script.type !== 'model') {
       return;
@@ -131,9 +130,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
     }
 
     const raw256Angle = rotationController.getState().angle.get();
-    const faceDownAdjustment = -256 / 4;
-    const adjustedForField = (raw256Angle + controlDirection + faceDownAdjustment) % 256;
-    const radians = (adjustedForField / 256) * 2 * Math.PI;
+    const radians = (raw256Angle * Math.PI) / 128;
 
     entityRef.current.quaternion.setFromAxisAngle(meshUp, radians);
 
