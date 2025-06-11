@@ -89,7 +89,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     const isTransitioningMap = !!useGlobalStore.getState().pendingFieldId;
 
     if (!isAnimationEnabled || isTransitioningMap) {
-      animationController.stopAnimation();
+      animationController.pauseAnimation();
       return;
     }
     

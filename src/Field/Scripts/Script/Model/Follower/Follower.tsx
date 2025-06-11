@@ -24,6 +24,7 @@ const Follower = ({ children, movementController, partyMemberId, rotationControl
   const scene = useThree(state => state.scene);
 
   const groupRef = useRef<Group>(null);
+
   useFrame(() => {
     const member1 = getPartyMemberModelComponent(scene, 0)
     if (!member1) {
@@ -40,10 +41,17 @@ const Follower = ({ children, movementController, partyMemberId, rotationControl
     const isFirstHistoryItem = congaWaypointHistory.length === 1;
     const history = congaWaypointHistory[offset * DISTANCE - 1];
 
-    if (!groupRef.current || !history || !leaderMovementController) {
+    if (!groupRef.current || !leaderMovementController) {
       return;
     }
-    
+
+    if (!history) {
+      const position = leaderMovementController.getPosition();
+      movementController.setPosition(position);
+      groupRef.current.visible = false;
+      return;
+    }
+
     const leaderSpeed = leaderMovementController.getState().movementSpeed;
 
     const { position, angle } = history;

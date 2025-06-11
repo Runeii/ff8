@@ -56,7 +56,9 @@ export const createAnimationController = (id: string | number, headController: R
 
   const handleFrame = ({detail: { delta }}: {detail: {delta: number}}) => {
     const { action, endTime, loop } = getState().playback;
-    if (!action) {
+    const {isPlaying} = getState();
+
+    if (!action || !isPlaying) {
       return;
     }
     const timeScale = getState().speed / FPS;
@@ -151,7 +153,18 @@ export const createAnimationController = (id: string | number, headController: R
   }
 
   const stopAnimation = () => {
-    setState({ isPlaying: false });
+    setState({
+      isPlaying: false,
+    });
+  }
+
+  const pauseAnimation = () => {
+    const { playback } = getState();
+    if (!playback.action) {
+      return;
+    }
+    handleAnimationComplete();
+    playback.action.paused = true;
   }
 
   const setIdleAnimation = (animationId: number, startFrame?: number, endFrame?: number) => {
@@ -232,6 +245,7 @@ export const createAnimationController = (id: string | number, headController: R
     getState,
     initialize,
     playAnimation,
+    pauseAnimation,
     requestIdleAnimation,
     setIdleAnimation,
     setAnimationSpeed,
