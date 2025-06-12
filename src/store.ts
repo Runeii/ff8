@@ -92,7 +92,7 @@ export const INITIAL_STATE: GlobalState = {
     fieldId: '' as typeof MAP_NAMES[number],
     pendingFieldId: undefined as unknown as typeof MAP_NAMES[number],
   
-    currentLocationPlaceName: 0, // we don't currently use this for anything
+    currentLocationPlaceName: 0,
     hasMoved: false,
     isUserControllable: false,
     isRunEnabled: true,

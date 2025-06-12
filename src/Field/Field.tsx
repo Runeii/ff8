@@ -15,6 +15,7 @@ import MAP_NAMES from '../constants/maps';
 import { SpringValue } from '@react-spring/web';
 import { getFieldData } from './fieldUtils';
 import Onboarding from '../Onboarding/Onboarding';
+import { AREA_NAMES } from '../constants/areaNames';
 
 export type RawFieldData = typeof data;
 
@@ -51,6 +52,20 @@ const Field = ({ data }: FieldProps) => {
     panX: 0,
     panY: 0,
   });
+
+  const currentLocationPlaceName = useGlobalStore(state => state.currentLocationPlaceName as number);
+  useEffect(() => {
+    console.log(AREA_NAMES, currentLocationPlaceName, data.id);
+    const name = AREA_NAMES[currentLocationPlaceName as keyof typeof AREA_NAMES]
+    // Remove `{Term [x]}` string but keep the [x] part
+    if (name) {
+      const cleanedString = name.replace(/\{Term ([^}]+)\}/, "$1");
+      document.title = `FF8 GL - ${cleanedString}`;
+    } else {
+      document.title = `FF8 GL - ${data.id}`;
+    }
+    
+  }, [currentLocationPlaceName, data.id]);
 
   // Allow animation controllers to know when the frame is updated outside of R3F
   useFrame(({ clock }) => {

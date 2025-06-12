@@ -432,6 +432,12 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
     if (!options) {
       return;
     }
+
+
+    if (visiblePlacements.length < placements.length) {
+      return;
+    }
+
     const cursorImageRatio = 15 / 24;
     const imageHeight = OUTPUT_TILE_SIZE * cursorImageRatio
     ctx.drawImage(cursor.image, xPos + LEFT_MARGIN, yPos + selectedY + ((OUTPUT_TILE_SIZE - imageHeight) / 2), OUTPUT_TILE_SIZE, imageHeight);
