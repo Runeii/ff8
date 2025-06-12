@@ -68,6 +68,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     if (!groupRef.current || !modelContainerRef.current) {
       return;
     }
+    groupRef.current.position.z = 0;
     modelContainerRef.current.updateMatrixWorld(true);
     modelContainerRef.current.updateMatrix();
     modelContainerRef.current.updateWorldMatrix(true, false);
