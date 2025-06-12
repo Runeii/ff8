@@ -8,6 +8,7 @@
     "dev": "vite",
     "generate-exits": "npx tsx scripts/generateExits.ts",
     "build": "tsc && npm run prepare && vite build",
+    "deploy": "npm run build && netlify deploy --prod",
     "lint": "eslint ./src --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0 --fix",
     "preview": "vite preview"
   },
