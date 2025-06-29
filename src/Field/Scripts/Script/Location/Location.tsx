@@ -21,19 +21,19 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
   useIntersection(lineRef.current, isLineOn && isUserControllable, {
     onTouchOn: () => {
       console.log('onTouchOn', scriptController.script.groupId)
-       scriptController.triggerMethod('touchon', false);
+       scriptController.triggerMethod('touchon');
     },
     onTouch: () => {
       console.log('onTouch', scriptController.script.groupId)
-       scriptController.triggerMethod('touch', false);
+       scriptController.triggerMethod('touch');
     },
     onTouchOff: () => {
       console.log('onTouchOff', scriptController.script.groupId)
-       scriptController.triggerMethod('touchoff', false);
+       scriptController.triggerMethod('touchoff');
     },
     onAcross: () => {
       console.log('onAcross', scriptController.script.groupId)
-       scriptController.triggerMethod('across', false);
+       scriptController.triggerMethod('across');
     },
   }, linePoints ?? []);
 

@@ -83,7 +83,7 @@ export const createMovementController = (id: string | number) => {
     }
     
     setMovementTarget(customMovementTarget ?? (isFacingTarget ? target : undefined));
-
+    
     setIsAnimationEnabled(!!isAnimationEnabled);
     const position = getState().position
     const distance = target.distanceTo(new Vector3().fromArray(position.get()));

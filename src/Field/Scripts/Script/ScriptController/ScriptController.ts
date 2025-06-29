@@ -33,6 +33,7 @@ const createScriptController = ({
   let TEMP_STACK = {};
 
   const { getState, setState } = create(() => ({
+    isAwaitingAnOpcode: false,
     isRunning: false,
     queue: [] as {
       activeIndex: number;
@@ -77,7 +78,7 @@ const createScriptController = ({
     if (isHalting || currentQueueItem.activeIndex === -1 || (currentQueueItem.activeIndex >= opcodes.length)) {
       newQueue.pop();
     }
-    
+
     // Fire the scriptEnd event if the queue has changed
     // This allows us to await the script end in the triggerMethod function
     if (queue.length !== newQueue.length) {
@@ -86,7 +87,18 @@ const createScriptController = ({
       });
       document.dispatchEvent(event);
     }
-  
+
+    window.scriptDump({
+      timestamps: [Date.now()],
+      action: 'Next Opcode: ' + currentQueueItem.activeIndex + ' ' + (isHalting ? 'HALT' : 'NEXT'),
+      methodId: currentQueueItem.methodId,
+      opcode: opcodes[currentQueueItem.activeIndex],
+      payload: uniqueId,
+      index: script.groupId,
+      isAsync: false,
+      scriptLabel: script.groupId,
+    })
+
     setState({
       isRunning: false,
       queue: newQueue
@@ -124,9 +136,6 @@ const createScriptController = ({
     const { activeIndex, methodId, opcodes, uniqueId } = queue.at(-1)!;
     const currentOpcode = opcodes[activeIndex];
 
-    if (isDebugging) {
-      console.log(`ScriptID: ${script.groupId}x${methodId} - Opcode: ${currentOpcode.name} - Index: ${activeIndex}/${opcodes.length} - Queue: ${queue.map(entry => entry.methodId)} - Stack Length: ${STACK.length} - Temp Stack Length: ${Object.keys(TEMP_STACK).length}`);
-    }
     const shouldReturnEarly = handleSpecialCaseOpcodes(currentOpcode, activeIndex);
     if (shouldReturnEarly) {
       return;
@@ -156,6 +165,18 @@ const createScriptController = ({
     const clonedTempStack = {...TEMP_STACK};
 
     // RUN THAT OPCODE
+    setState({ isAwaitingAnOpcode: true });
+
+    window.scriptDump({
+      timestamps: [Date.now()],
+      action: 'Running Opcode',
+      methodId,
+      opcode: currentOpcode,
+      payload: uniqueId,
+      index: script.groupId,
+      isAsync: false,
+      scriptLabel: script.groupId,
+    })
     const nextIndex = await opcodeHandler({
       animationController,
       currentOpcode,
@@ -174,11 +195,34 @@ const createScriptController = ({
       TEMP_STACK: clonedTempStack,
     });
 
+    window.scriptDump({
+      timestamps: [Date.now()],
+      action: 'Completed Opcode',
+      methodId,
+      opcode: currentOpcode,
+      payload: uniqueId,
+      index: script.groupId,
+      isAsync: false,
+      scriptLabel: script.groupId,
+    });
+
+    setState({ isAwaitingAnOpcode: false });
+
     // If there is a new priority item in the queue, we need to abort the current run and discard changes
     // Springs and controllers were already stopped when the new item was added to the queue
     const currentlyTopOfQueue = getState().queue.at(-1)!;
     if (currentlyTopOfQueue.uniqueId !== uniqueId) {
       setState({ isRunning: false });
+      window.scriptDump({
+        timestamps: [Date.now()],
+        action: 'Aborting due to new queue item',
+        methodId,
+        opcode: currentOpcode,
+        payload: uniqueId,
+        index: script.groupId,
+        isAsync: false,
+        scriptLabel: script.groupId,
+      })
       return;
     }
 
@@ -210,14 +254,19 @@ const createScriptController = ({
     const newQueue = [...currentQueue];
 
     const thisItemPriority = newItem.priority;
-    const insertAtIndex = newQueue.findIndex(item => item.priority > thisItemPriority);
+    let insertAtIndex = newQueue.findIndex(item => item.priority > thisItemPriority);
     const isTopPriority = insertAtIndex === -1;
 
-    if (isTopPriority) {
+    const isCurrentItemInterruptable = currentQueue.length > 0 && currentQueue.at(-1)!.isLooping
+
+    if (isTopPriority && isCurrentItemInterruptable) {
       newQueue.push(newItem);
+    } else if (isTopPriority && !isCurrentItemInterruptable) {
+      newQueue.splice(newQueue.length - 1, 0, newItem);
     } else {
       newQueue.splice(insertAtIndex, 0, newItem);
     }
+
     setState({
       isRunning: false,
       queue: newQueue
@@ -228,12 +277,14 @@ const createScriptController = ({
     }
   }
 
-  const triggerMethod = async (methodId: string, isLooping = false, priority = 0) => {
+  const triggerMethod = async (methodId: string, priority = 0) => {
     const method = script.methods.find(method => method.methodId === methodId);
     if (!method) {
       console.trace(`Method with id ${methodId} not found in script for ${script.groupId}`);
       return;
     }
+
+    const isLooping = method.methodId === "default"
 
     // Filter out empty methods
     const isValidActionableMethod = method.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET' && opcode.name !== 'HALT').length > 0;
@@ -249,6 +300,50 @@ const createScriptController = ({
 
     const uniqueId = `${script.groupId}-${methodId}--${priority}-${Date.now()}`;
 
+    if (getState().isAwaitingAnOpcode) {
+      window.scriptDump({
+        timestamps: [Date.now()],
+        action: 'Waiting for script to finish processing an opcode',
+        methodId,
+        opcode: undefined,
+        payload: uniqueId,
+        index: script.groupId,
+        isAsync: false,
+        scriptLabel: script.groupId,
+      })
+      await new Promise<void>(resolve => {
+        const check = () => {
+          if (!getState().isAwaitingAnOpcode) {
+            window.scriptDump({
+              timestamps: [Date.now()],
+              action: 'Finished waiting for script to finish processing an opcode. Triggering method',
+              methodId,
+              opcode: undefined,
+              payload: uniqueId,
+              index: script.groupId,
+              isAsync: false,
+              scriptLabel: script.groupId,
+            })
+
+            resolve();
+          } else {
+            requestAnimationFrame(check);
+          }
+        }
+        check();
+      });
+    }
+
+    window.scriptDump({
+      timestamps: [Date.now()],
+      action: `Adding method ${methodId} to queue with unique ID ${uniqueId}`,
+      methodId,
+      opcode: undefined,
+      payload: uniqueId,
+      index: script.groupId,
+      isAsync: false,
+      scriptLabel: script.groupId,
+    })
     if (isDebugging) {
       console.log(`Triggering method ${methodId} for ${script.groupId}`, method.opcodes, getState().queue);
     }
@@ -262,23 +357,35 @@ const createScriptController = ({
     });
 
     return new Promise<void>((resolve) => {
-      document.addEventListener('scriptEnd', (event) => {
-        const { detail } = event as CustomEvent;
+      const handler = ({ detail }: { detail: string}) => {
         if (detail === uniqueId) {
+          window.scriptDump({
+            timestamps: [Date.now()],
+            action: `Script method ${methodId} completed with unique ID ${uniqueId}`,
+            methodId,
+            opcode: undefined,
+            payload: uniqueId,
+            index: script.groupId,
+            isAsync: false,
+            scriptLabel: script.groupId,
+          })
+
+          document.removeEventListener('scriptEnd', handler);
           resolve();
         }
-      });
+      };
+      document.addEventListener('scriptEnd', handler);
     })
   }
 
-  const triggerMethodByIndex = async (methodIndex: number, isLooping = false, priority = 0) => {
+  const triggerMethodByIndex = async (methodIndex: number, priority = 0) => {
     const method = script.methods[methodIndex]
     if (!method) {
       console.trace(`Method with index ${methodIndex} not found in script for ${script.groupId}`);
       return;
     }
     console.log(`Triggering method ${method.methodId} for ${script.groupId}`,script, method.opcodes, getState().queue);
-    await triggerMethod(method.methodId, isLooping, priority);
+    await triggerMethod(method.methodId, priority);
   }
 
   return {

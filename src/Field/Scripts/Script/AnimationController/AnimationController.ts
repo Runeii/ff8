@@ -1,177 +1,175 @@
 import { AnimationAction, AnimationClip, AnimationMixer, Bone, LoopOnce, LoopRepeat } from "three";
 import { create } from "zustand";
 import { type Object3D } from 'three';
-import { applyBaseAnimationDirectly } from "./animationUtils";
 import createRotationController from "../RotationController/RotationController";
+import { subclip } from "three/src/animation/AnimationUtils.js";
 
 const FPS = 30;
 
-export const createAnimationController = (id: string | number, headController: ReturnType<typeof createRotationController>) => {
+type AnimationPlayOptions = {
+  isIdleAnimation?: boolean;
+  loop?: boolean;
+  keepLastFrame?: boolean;
+  startFrame?: number;
+  endFrame?: number;
+}
+
+export const createAnimationController = (id: string | number, _headController: ReturnType<typeof createRotationController>) => {
   const { getState, setState } = create(() => ({
-    activeAnimationId: undefined as number | undefined,
     clips: [] as AnimationClip[],
-    headBone: undefined as Bone | undefined,
+    mesh: undefined as Object3D | undefined,
+    mixer: undefined as AnimationMixer | undefined,
+
     isPlaying: false,
-    isIdle: false,
+
+    playback: {
+      action: undefined as AnimationAction | undefined,
+      animationId: undefined as number | undefined,
+      options: {} as AnimationPlayOptions | undefined,
+    },
+
+    headBone: undefined as Bone | undefined,
     id,
     idle: {
       animationId: undefined as number | undefined,
       startFrame: undefined as number | undefined,
       endFrame: undefined as number | undefined,
     },
-    ladderAnimationId: undefined as number | undefined,
-    mesh: undefined as Object3D | undefined,
-    mixer: undefined as AnimationMixer | undefined,
-    playback: {
-      action: undefined as AnimationAction | undefined,
-      endTime: 0,
-      loop: false,
-    },
-    resumeIdleOnComplete: false,
     speed: FPS,
+
+    ladderAnimationId: undefined as number | undefined,
   }));
 
-  const handleAnimationComplete = () => {
+  const handleAnimationEnd = (event: { action: AnimationAction }) => {
+    const { action } = event;
+
+    const { idle, playback } = getState();
+
+    if (playback.options?.isIdleAnimation || action.loop === LoopRepeat) {
+      return;
+    }
+    
     setState({
-      activeAnimationId: undefined,
       isPlaying: false,
     });
 
-    window.removeEventListener('frame', handleFrame);
 
-    if (getState().resumeIdleOnComplete) {
-      requestIdleAnimation();
-    }
-  }
-
-  const handleApplyHeadRotation = () => {
-    const {headBone} = getState();
-    if (!headBone) {
-      return;
-    }
-    const {angle} = headController.getState();
-    const radians = (angle.get() / 256) * 2 * Math.PI;
-    headBone.rotation.y = radians;
-  }
-
-  const handleFrame = ({detail: { delta }}: {detail: {delta: number}}) => {
-    const { action, endTime, loop } = getState().playback;
-    const {isPlaying} = getState();
-
-    if (!action || !isPlaying) {
-      return;
-    }
-    const timeScale = getState().speed / FPS;
-    action.time += Math.min(delta * timeScale, 1 / FPS);
-
-    
-    // 0 is the reset pose with 0 duration, we manually apply this to the mesh
-    if (getState().activeAnimationId === 0) {
-      applyBaseAnimationDirectly(getState().mesh!, action.getClip());
-      handleApplyHeadRotation();
-      return;
-    }
-
-    handleApplyHeadRotation();
-    
-    if (action.time >= endTime && !loop) {
+    if (playback.options?.keepLastFrame) {
       action.paused = true;
-      handleAnimationComplete();
       return;
+    }
+
+    if (idle.animationId) {
+      playIdleAnimation();
     }
   }
 
+  const initialize = (mixer: AnimationMixer, clips: AnimationClip[], mesh: Object3D) => {
+    setState({
+      mixer,
+      clips,
+      mesh,
+    })
 
-  const playAnimation = (animationId: number, {
-    loop,
-    keepLastFrame,
-    startFrame,
-    endFrame,
-    isIdle,
-  }: {
-    isIdle?: boolean;
+    mixer.addEventListener('finished', handleAnimationEnd);
+  }
+
+  const playAnimation = (animationId: number, options?: {
+    isIdleAnimation?: boolean;
     loop?: boolean;
     keepLastFrame?: boolean;
     startFrame?: number;
     endFrame?: number;
-  } = {
-    isIdle: false,
-    loop: false,
-    keepLastFrame: false,
-    startFrame: undefined,
-    endFrame: undefined,
   }) => {
-    const clip = getState().clips[animationId];
+    const {
+      isIdleAnimation,
+      loop,
+      keepLastFrame,
+      startFrame,
+      endFrame,
+    } = {
+      isIdleAnimation: false,
+      loop: false,
+      keepLastFrame: false,
+      ...options,
+    }
+
+    const { mixer, clips } = getState();
+    const sourceClip = clips[animationId]
+
+    const uniqueId = `${id}-${animationId}--${Date.now()}`;
+    const clip = subclip(sourceClip, uniqueId, 0, endFrame ?? sourceClip.duration * FPS, FPS);
+
     if (!clip) {
-      console.warn('Animation clip not found', animationId, 'Script ID:', getState().id);
+      console.warn(`Animation with id ${animationId} not found`);
       return;
     }
-
-    const mixer = getState().mixer;
-    if (!mixer) {
-      console.warn('Animation mixer not found');
+    if (mixer === undefined) {
+      console.warn(`Mixer is not initialized for animation with id ${animationId}`);
       return;
     }
-    setState({
-      isPlaying: true,
-    });
-
-    const duration = clip.duration;
-    const totalFrames = Math.ceil(duration * FPS);
-
-    const startOffsetInFrames = (startFrame ?? 0) / totalFrames;
-    const endOffsetInFrames = (endFrame ?? totalFrames) / totalFrames;
-
-    const startTime = duration * startOffsetInFrames;
-    const endTime = duration * endOffsetInFrames;
-
-    const action = mixer.clipAction(clip);
-    action.clampWhenFinished = keepLastFrame ?? false;
-    action.loop = loop ? LoopRepeat : LoopOnce;
-
-    setState({
-      resumeIdleOnComplete: !loop && !keepLastFrame,
-      playback: {
-        action,
-        endTime,
-        loop: !!loop,
-      },
-    });
-
     mixer.stopAllAction();
-
-    action.time = startTime;
-
-    window.addEventListener('frame', handleFrame);
-
+    const action = mixer.clipAction(clip);
+    if (startFrame) {
+      action.time = Math.min(clip.duration, startFrame / FPS)
+    }
+    action.clampWhenFinished = keepLastFrame ?? false;
+    action.setLoop(loop ? LoopRepeat : LoopOnce, loop ? Infinity : 1);
     action.play();
 
     setState({
-      activeAnimationId: animationId,
-      isIdle,
+      isPlaying: true,
+      playback: {
+        action,
+        animationId,
+        options
+      }
+    });
+
+    return new Promise<void>((resolve) => {
+      const checkIsPlaying = () => {
+        const { isPlaying } = getState();
+        if (!isPlaying) {
+          resolve();
+        } else {
+          requestAnimationFrame(checkIsPlaying);
+        }
+      };
+      checkIsPlaying();
     });
   }
 
-  const stopAnimation = () => {
-    setState({
-      isPlaying: false,
-    });
-  }
+  const stopAnimation = () => {}
 
-  const pauseAnimation = () => {
-    const { playback } = getState();
-    if (!playback.action) {
+  const pauseAnimation = () => {}
+
+  const playIdleAnimation = () => {
+    const { idle, playback } = getState();
+    if (idle.animationId === undefined) {
       return;
     }
-    handleAnimationComplete();
-    playback.action.paused = true;
+    if (playback.options?.isIdleAnimation === false) {
+      return;
+    }
+
+    if (
+      idle.animationId === playback.animationId &&
+      idle.startFrame === playback.options?.startFrame &&
+      idle.endFrame === playback.options?.endFrame
+    ) {
+      return;
+    }
+return
+    console.log(`Script ${id}::: Playing idle animation with id ${idle.animationId}`, idle);
+    playAnimation(idle.animationId, {
+      isIdleAnimation: true,
+      startFrame: idle.startFrame,
+      endFrame: idle.endFrame,
+      loop: true,
+    });
   }
 
   const setIdleAnimation = (animationId: number, startFrame?: number, endFrame?: number) => {
-    if (animationId === getState().idle.animationId && startFrame === getState().idle.startFrame && endFrame === getState().idle.endFrame) {
-      return;
-    }
-
     setState({
       idle: {
         animationId,
@@ -180,65 +178,19 @@ export const createAnimationController = (id: string | number, headController: R
       }
     });
 
-    requestIdleAnimation();  
-  }
-
-  const requestIdleAnimation = () => {
-    const { activeAnimationId, idle, isIdle } = getState();
-
-    // If there's no idle animation, do nothing
-    if (idle.animationId === undefined) {
-      return;
-    }
-
-    // If we're already playing the idle animation, do nothing
-    if (isIdle && idle.animationId === activeAnimationId) {
-      return;
-    }
-
-    // If we're playing an animation and it's not the idle animation, do nothing
-    if (!isIdle && activeAnimationId) {
-      return;
-    }
-
-    playAnimation(idle.animationId, {
-      isIdle: true,
-      loop: true,
-      startFrame: idle.startFrame,
-      endFrame: idle.endFrame,
-    });
+    playIdleAnimation();
   }
 
   const setAnimationSpeed = (speed: number) => setState({ speed });
 
   const getIsPlaying = () => {
-    const { isPlaying, isIdle } = getState();
-    //console.log(isPlaying, !isIdle)
-    return isPlaying && !isIdle;
+    const {isPlaying} = getState();
+    return isPlaying || false;
   }
 
-  const initialize = (mixer: AnimationMixer, clips: AnimationClip[], mesh: Object3D) => {
-    if (clips.length === getState().clips.length && mixer === getState().mixer) {
-      return;
-    }
+  const setHeadBone = (headBone: Bone) => setState({ headBone });
 
-    mixer.addEventListener('finished', handleAnimationComplete);
-    setState({ mixer, clips, mesh });
-  }
-
-  const setHeadBone = (headBone: Bone) => {
-    if (headBone === getState().headBone) {
-      return;
-    }
-    setState({ headBone });
-  }
-
-  const setLadderAnimation = (ladderAnimationId: number, _unknownParam1: number, _unknownParam2: number) => {
-    if (ladderAnimationId === getState().ladderAnimationId) {
-      return;
-    }
-    setState({ ladderAnimationId });
-  }
+  const setLadderAnimation = (ladderAnimationId: number, _unknownParam1: number, _unknownParam2: number) => setState({ ladderAnimationId });
 
   return {
     getIsPlaying,
@@ -246,7 +198,6 @@ export const createAnimationController = (id: string | number, headController: R
     initialize,
     playAnimation,
     pauseAnimation,
-    requestIdleAnimation,
     setIdleAnimation,
     setAnimationSpeed,
     stopAnimation,

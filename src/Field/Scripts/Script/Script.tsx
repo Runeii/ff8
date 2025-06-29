@@ -7,10 +7,10 @@ import useGlobalStore from "../../../store";
 import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Group, Vector3 } from "three";
+import { DoubleSide, Group, Vector3 } from "three";
 import createScriptState from "./state";
 import { createAnimationController } from "./AnimationController/AnimationController";
-import { Box, Text } from "@react-three/drei";
+import { Box, Sphere, Text } from "@react-three/drei";
 import createMovementController from "./MovementController/MovementController";
 import createRotationController from "./RotationController/RotationController";
 import createScriptController from "./ScriptController/ScriptController";
@@ -69,7 +69,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
     }
     if (!hasTriggeredDefaultRef.current && entityRef.current && isActive) {
       hasTriggeredDefaultRef.current = true;
-      scriptController.triggerMethod('default', true)
+      scriptController.triggerMethod('default')
     }
     scriptController.tick();
   })
@@ -84,9 +84,29 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
       if (!matchingMethod) {
         return;
       }
-      console.log('Executing script:', key, scriptLabel, priority);
+      window.scriptDump({
+        timestamps: [Date.now()],
+        action: `Heard request to execute script ${scriptLabel} with key ${key}`,
+        methodId: matchingMethod.methodId,
+        opcode: undefined,
+        payload: key,
+        index: script.groupId,
+        isAsync: false,
+        scriptLabel
+      });
       try {
-        await scriptController.triggerMethod(matchingMethod.methodId, false, priority)
+        await scriptController.triggerMethod(matchingMethod.methodId, priority)
+        window.scriptDump({
+          timestamps: [Date.now()],
+          action: `Completed remote execution of script ${scriptLabel} with key ${key}`,
+          methodId: matchingMethod.methodId,
+          opcode: undefined,
+          payload: key,
+          index: script.groupId,
+          isAsync: false,
+          scriptLabel
+        })
+        console.log('Script completed:', key, scriptLabel);
         document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key} }));
       } catch (error) {
         console.error('Error executing script:', error);
@@ -140,7 +160,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
   });
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
-
   if (isUnused) {
     return null;
   }
@@ -158,6 +177,9 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
       }}
       visible={isVisible}
     >
+      {script.groupId === 4 && <Sphere args={[0.02,10,10]} position={[0, 0, 0]} name="entity--4--collision" visible={true} userData={{ isSolid: true }}>
+        <meshBasicMaterial color="purple" transparent opacity={1} side={DoubleSide} />
+      </Sphere>}
       {isDebugMode && <Text fontSize={0.07}>{script.groupId}-{partyMemberId}</Text>}
       {isSolid && (
         <Box 

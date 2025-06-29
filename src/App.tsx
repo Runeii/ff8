@@ -7,9 +7,8 @@ import useGlobalStore from './store'
 import Ui from './UI/UI'
 import Entrypoint from './Entrypoint'
 import { useEffect } from 'react'
-import { Perf } from 'r3f-perf'
 import Memory from './Memory/Memory'
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
+import { PerspectiveCamera } from '@react-three/drei'
 import Queues from './Queues/Queues'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
@@ -39,7 +38,6 @@ export default function App() {
             near={0.001}
             far={1000}
           />
-          <OrbitControls />
           <PerspectiveCamera
             name="sceneCamera"
             position={[0, 0, 0]}
@@ -48,7 +46,6 @@ export default function App() {
             far={1000}
           />
           <Entrypoint />
-          {isDebugMode && <Perf />}
           <Ui />
         </Canvas>
         {isDebugMode && <Queues />}

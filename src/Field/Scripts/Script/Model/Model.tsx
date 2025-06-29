@@ -1,5 +1,5 @@
 import { Script } from "../../types";
-import {  ComponentType, lazy, useCallback, useRef, useState } from "react";
+import {  ComponentType, type JSX, lazy, useCallback, useRef, useState } from "react";
 import { Bone, Box3, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
@@ -25,10 +25,13 @@ type ModelProps = {
 
 const modelFiles = import.meta.glob('./gltf/*.tsx');
 
+type GenericModelProps = JSX.IntrinsicElements['group'] & {
+  mapName: string;
+}
 const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
   const name = path.replace('./gltf/', '').replace('.tsx', '');
-  return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<JSX.IntrinsicElements['group']>}>)];
-}));
+  return [name, lazy(modelFiles[path] as () => Promise<{default: ComponentType<GenericModelProps>}>)];
+}))
 
 const Model = ({animationController, models, scriptController, movementController, rotationController, script, useScriptStateStore }: ModelProps) => {
   const fieldId = useGlobalStore(state => state.fieldId);
@@ -82,9 +85,8 @@ const Model = ({animationController, models, scriptController, movementControlle
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
   const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && state.isPartyFollowing && !isLeadCharacter);
 
-  const framesSinceMovementRef = useRef(0);
+  const lastMovementTimeRef = useRef(0);
   useFrame(() => {
-    const { idle: {animationId: idleAnimationId}, ladderAnimationId } = animationController.getState();
     const { isAnimationEnabled, isClimbingLadder, movementSpeed, position } = movementController.getState();
 
     const isTransitioningMap = !!useGlobalStore.getState().pendingFieldId;
@@ -93,40 +95,33 @@ const Model = ({animationController, models, scriptController, movementControlle
       animationController.pauseAnimation();
       return;
     }
-    
-    if (!position.isAnimating && idleAnimationId === 0) {
-      return;
-    }
 
-    if (!position.isAnimating && framesSinceMovementRef.current > 8) {
+    if (!position.isAnimating && lastMovementTimeRef.current + 60 < Date.now()) {
       animationController.setIdleAnimation(0);
-      animationController.requestIdleAnimation();
       return;
     }
 
     if (!position.isAnimating) {
-      framesSinceMovementRef.current++;
       return;
     }
 
-    framesSinceMovementRef.current = 0;
+    lastMovementTimeRef.current = Date.now();
 
     const WALK_ANIMATION = 1;
     const RUN_ANIMATION = 2;
-    const LADDER_ANIMATION = ladderAnimationId;
+    const LADDER_ANIMATION = 3;
 
     if (isClimbingLadder && LADDER_ANIMATION) {
+      console.log(`Script ${script.groupId} - Climbing ladder, setting ladder animation`);
       animationController.setIdleAnimation(LADDER_ANIMATION);
-      animationController.requestIdleAnimation();
       return;
     }
-  
+
     animationController.setIdleAnimation(movementSpeed > 2695 ? RUN_ANIMATION : WALK_ANIMATION);
-    animationController.requestIdleAnimation();
   });
 
   // Footstep
-  const previousFootstepRef = useRef<'left' | 'right' | undefined>();
+  const previousFootstepRef = useRef<'left' | 'right' | undefined>(undefined);
   const isBetweenFootstepsRef = useRef(false);
   const [playerPosition] = useState<Vector3>(new Vector3(0, 0, 0));
   const FOOTSTEP_DELAY_RUNNING = 420;
@@ -179,7 +174,6 @@ const Model = ({animationController, models, scriptController, movementControlle
         name={`party--${partyMemberId ?? 'none'}`}
         scale={0.06}
         mapName={fieldId}
-        // @ts-expect-error The typing for a lazy import with func ref setter seems obscure and bigger fish
         ref={setModelRef}
         userData={{
           partyMemberId,

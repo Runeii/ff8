@@ -50,11 +50,36 @@ export function asyncSetSpring<T extends object>(setSpring: SpringRef<T>, state:
 export const remoteExecute = async (scriptLabel: number, priority = 0) => new Promise<void>((resolve) => {
   const key = Math.random().toString(36).substring(7);
 
-  document.addEventListener('scriptFinished', ({ detail }) => {
+  const handler = ({ detail }: { detail: { key: string }}) => {
     if (detail.key !== key) {
       return;
     }
+    window.scriptDump({
+      timestamps: [Date.now()],
+      action: `Heard signal that remote execution id ${key} completed, proceeding.`,
+      methodId: 'remoteExecute',
+      scriptLabel,
+      opcode: undefined,
+      payload: key,
+      index: scriptLabel,
+      isAsync: false,
+    });
+
+    document.removeEventListener('scriptFinished', handler);
     resolve();
+  }
+
+  document.addEventListener('scriptFinished', handler);
+
+  window.scriptDump({
+    timestamps: [Date.now()],
+    action: `Remote executing script ${scriptLabel} with id ${key}`,
+    methodId: 'remoteExecute',
+    scriptLabel,
+    opcode: undefined,
+    payload: key,
+    index: scriptLabel,
+    isAsync: false,
   });
 
   document.dispatchEvent(new CustomEvent('executeScript', {
@@ -80,7 +105,7 @@ export const remoteExecutePartyMember = async (scene: Scene, partyMemberIndex: n
     return;
   }
   console.log(`Executing script ${scriptLabel} on party member ${partyMemberIndex} ${partyMemberIndex}`);
-  await scriptController.triggerMethodByIndex(scriptLabel, false, priority);
+  await scriptController.triggerMethodByIndex(scriptLabel, priority);
 }
 
 export const openMessage = (id: string, text: string[], placement: MessagePlacement, isCloseable = true, askOptions?: AskOptions) => new Promise<number>((resolve) => {

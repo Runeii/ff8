@@ -3,8 +3,20 @@ import { Blending, SkinnedMesh } from "three";
 import { FieldData } from "../Field/Field";
 
 declare global {
+  type ScriptDump = {
+    timestamps: number[],
+    action: string,
+    methodId: string,
+    scriptLabel: number,
+    opcode: Opcode,
+    payload: string | number;
+    index: number,
+    isAsync: boolean,
+  }
   interface Window {
-    QUEUES: Record<string, string>
+    QUEUES: Record<string, string>,
+    scriptDump: (dump: ScriptDump) => void,
+    dump: ScriptDump[],
   }
   interface WindowEventMap {
     // Define your custom event type
@@ -30,9 +42,8 @@ declare global {
   // Extend the existing DocumentEventMap interface
   interface DocumentEventMap {
     'executeScript': CustomEvent<ExecuteScriptEventDetail>;
-    'executeScriptOnPartyEntity': CustomEvent<ExecutePartyEntityScriptEventDetail>;
-    handlePartyEntityExecutionRequest
     'scriptFinished': CustomEvent<{ key: string }>;
+    'scriptEnd': CustomEvent<string>;
     'messageClosed': CustomEvent<{ id: string, selectedOption: number }>;
   }
   type MovementFlags = {

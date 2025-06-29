@@ -34,7 +34,7 @@ const useIntersection = (targetMesh: Object3D | null, isActive = true, {
 }, line: VectorLike[]) => {
   const hasMoved = useGlobalStore(state => state.hasMoved);
 
-  const currentStateRef = useRef<STATES>();
+  const currentStateRef = useRef<STATES>(undefined);
   const hasEverExitedRef = useRef(false);
 
   const [playerPosition] = useState(new Vector3());

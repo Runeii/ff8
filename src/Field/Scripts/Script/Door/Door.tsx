@@ -35,7 +35,7 @@ const Door = ({ doors, script, scriptController,  useScriptStateStore }: DoorPro
       return;
     }
     setPlayerOpenedFromSide(entrySide);
-    scriptController.triggerMethod('open', false);
+    scriptController.triggerMethod('open');
     setIsDoorOpen(true);
   }
   
@@ -44,7 +44,7 @@ const Door = ({ doors, script, scriptController,  useScriptStateStore }: DoorPro
       return;
     }
     setPlayerOpenedFromSide(undefined);
-    scriptController.triggerMethod('close', false);
+    scriptController.triggerMethod('close');
     setIsDoorOpen(false);
   }
 

@@ -8,7 +8,7 @@ import { RefObject } from "react";
 export const createRotationController = (
   id: string | number,
   movementController: ReturnType<typeof createMovementController>,
-  entityRef: RefObject<Group>
+  entityRef: RefObject<Group | null>
 ) => {
   const {getState} = create(() => ({
     angle: new SpringValue(0),
@@ -16,7 +16,7 @@ export const createRotationController = (
     target: undefined,
   }));
 
-  const turnToFaceAngle = async (angle: number, duration: number) => {
+  const turnToFaceAngle = async (angle: number, duration: number, _direction: 'left' | 'right' | 'either' = 'either') => {
     const currentAngle = getState().angle
     const targetAngle = getShortestRouteToAngle(angle, currentAngle.get());
 
@@ -42,13 +42,14 @@ export const createRotationController = (
 
     const absoluteAngleFromZero = signedAngleBetweenVectors(zeroUnitDirection, direction, meshUp);
     const targetAngle = radiansToUnit(absoluteAngleFromZero);
-
     await turnToFaceAngle(targetAngle, duration);
   }
 
   const turnToFaceVector = async (target: Vector3, duration: number) => {
+    if (target.equals(movementController.getPosition())) {
+      return;
+    }
     const targetDirection = getDirectionToVector(target, movementController.getPosition());
-
     await turnToFaceDirection(targetDirection, duration);
   }
   

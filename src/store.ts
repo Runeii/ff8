@@ -115,7 +115,7 @@ export const INITIAL_STATE: GlobalState = {
     party: [0, 1, 3],
     congaWaypointHistory: [],
     playerMovementSpeed: 0,
-    isPartyFollowing: true,
+    isPartyFollowing: false,
   
     cameraAndLayerScrollSprings: new Array(8).fill(0).map(() => ({
       x: new SpringValue(0),

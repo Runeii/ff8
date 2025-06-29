@@ -66,7 +66,7 @@ const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkR
       }
 
       useGlobalStore.setState({ hasActiveTalkMethod: true });
-      scriptController.triggerMethod('talk', false).then(() => {
+      scriptController.triggerMethod('talk').then(() => {
         useGlobalStore.setState({ hasActiveTalkMethod: false });
       });
     }

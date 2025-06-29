@@ -35,14 +35,12 @@ const Ui = () => {
       <Suspense>
         {messagesArray.map((messages) => (
           <Fragment key={messages[0].id}>
-            {messages.map(message => (
               <MessageBox
-                key={`message--${message.id}`}
-                isSavePoint={isSavePointMessage(message)}
-                message={message}
+                key={`message--${messages[0].id}`}
+                isSavePoint={isSavePointMessage(messages[0])}
+                message={messages[0]}
                 worldScene={worldScene}
               />
-            ))}
           </Fragment>
         ))}
       </Suspense>

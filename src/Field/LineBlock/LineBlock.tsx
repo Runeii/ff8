@@ -5,7 +5,7 @@ import { RefObject, useMemo } from "react";
 
 type LineBlockProps = {
   color: string;
-  lineBlockRef: RefObject<Mesh>;
+  lineBlockRef: RefObject<Mesh | null>;
   points: VectorLike[] | undefined;
 } & React.ComponentProps<typeof Box>;
 

@@ -91,7 +91,7 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
     if (currentPage < text.length) {
       return;
     }
-
+    console.log('MessageBox mounted with:', { id, text, textLength: text.length, currentPage });
     useGlobalStore.setState(state => {
       const currentMessages = state.currentMessages.filter(message => message.id !== id);
       return {

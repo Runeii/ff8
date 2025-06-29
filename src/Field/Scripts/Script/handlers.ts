@@ -1040,12 +1040,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   CTURNL: ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    rotationController.turnToFaceAngle(angle, duration);
+    rotationController.turnToFaceAngle(angle, duration, 'left');
   },
   CTURNR: ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    rotationController.turnToFaceAngle(angle, duration);
+    rotationController.turnToFaceAngle(angle, duration, 'right');
   },
   DIR: ({ rotationController, STACK }) => {
     const angle = STACK.pop() as number;
@@ -1078,12 +1078,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   LTURNL: async ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    await rotationController.turnToFaceAngle(angle, duration);
+    await rotationController.turnToFaceAngle(angle, duration, 'left');
   },
   LTURNR: async ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    await rotationController.turnToFaceAngle(angle, duration);
+    await rotationController.turnToFaceAngle(angle, duration, 'right');
   },
   LTURN: async ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
