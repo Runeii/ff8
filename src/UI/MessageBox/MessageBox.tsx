@@ -1,5 +1,5 @@
 import {  Plane, useTexture } from "@react-three/drei"
-import { useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { CanvasTexture, ClampToEdgeWrapping, RepeatWrapping, Scene, Texture } from "three"
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../constants/constants"
 import { useFrame } from "@react-three/fiber"

@@ -20,11 +20,11 @@ declare global {
       log: ScriptDump[],
       byScriptLabel: Record<number, {
         methods: ScriptDump[],
-        state: any,
+        state: unknown,
       }>,
       activeRemoteExecutions: Record<string, ScriptDump>
     }
-    getScriptState: (() => any)[],
+    getScriptState: (() => unknown)[],
   }
   interface WindowEventMap {
     // Define your custom event type

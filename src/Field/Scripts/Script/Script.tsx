@@ -54,8 +54,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const isSolid = useScriptStateStore(state => state.isSolid);
   
-  const activeParty = useGlobalStore(storeState => storeState.party);
-  
   const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
 
   const hasTriggeredConstructorRef = useRef<boolean>(false);
