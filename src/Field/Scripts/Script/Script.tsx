@@ -90,7 +90,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
         methodId: matchingMethod.methodId,
         opcode: undefined,
         payload: key,
-        index: script.groupId,
+        index: undefined,
         isAsync: false,
         scriptLabel
       });
@@ -102,11 +102,11 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
           methodId: matchingMethod.methodId,
           opcode: undefined,
           payload: key,
-          index: script.groupId,
+          index: undefined,
           isAsync: false,
           scriptLabel
         })
-        console.log('Script completed:', key, scriptLabel);
+
         document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key} }));
       } catch (error) {
         console.error('Error executing script:', error);
@@ -155,16 +155,17 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
 
     if (useScriptStateStore.getState().isHeadTrackingPlayer) {
       const player = scene.getObjectByName("character") as Group;
+      if (!player) {
+        console.warn('Player character not found for head tracking');
+        return;
+      }
       headController.turnToFaceDirection(player.getWorldPosition(new Vector3()), 0);
     }
   });
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
+
   if (isUnused) {
-    return null;
-  }
-  
-  if (partyMemberId !== undefined && !activeParty.includes(partyMemberId)) {
     return null;
   }
 

@@ -1,5 +1,5 @@
 import { Mesh } from "three";
-import { useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { ScriptStateStore } from "../state";
 import useGlobalStore from "../../../../store";
 import useIntersection from "../useIntersection";
@@ -16,19 +16,51 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
   const linePoints = useScriptStateStore(state => state.linePoints);
 
   const lineRef = useRef<Mesh>(null);
+
+  const talkMethod = scriptController.script.methods.find(method => method.methodId === 'talk');
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
+  const isTalkable = useScriptStateStore(state => state.isTalkable);
+  const hasActiveText = useGlobalStore(state => state.currentMessages.length > 0);
+  const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
+
+  const hasValidTalkMethod = useMemo(() => {
+    if (!talkMethod) {
+      return false;
+    }
+    return talkMethod.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET').length > 0;
+  }, [talkMethod]);
+
+  
+  const isPlayerAbleToTalk = isUserControllable && isTalkable && !hasActiveTalkMethod && hasValidTalkMethod && !hasActiveText;
+
+  const onKeyDown = useCallback((event: KeyboardEvent) => {
+    if (!isPlayerAbleToTalk || !lineRef.current) {
+      return;
+    }
+    event.stopImmediatePropagation();
+    if (event.key !== ' ') {
+      return;
+    }
+
+    useGlobalStore.setState({ hasActiveTalkMethod: true });
+    scriptController.triggerMethod('talk').then(() => {
+      useGlobalStore.setState({ hasActiveTalkMethod: false });
+    });
+  }, [isPlayerAbleToTalk, scriptController]);
 
   useIntersection(lineRef.current, isLineOn && isUserControllable, {
     onTouchOn: () => {
       console.log('onTouchOn', scriptController.script.groupId)
+      window.addEventListener('keydown', onKeyDown);
        scriptController.triggerMethod('touchon');
     },
     onTouch: () => {
-      console.log('onTouch', scriptController.script.groupId)
+     // console.log('onTouch', scriptController.script.groupId)
        scriptController.triggerMethod('touch');
     },
     onTouchOff: () => {
       console.log('onTouchOff', scriptController.script.groupId)
+      window.removeEventListener('keydown', onKeyDown);
        scriptController.triggerMethod('touchoff');
     },
     onAcross: () => {
@@ -43,7 +75,7 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
 
   return (
     <LineBlock
-      color="blue"
+      color={isLineOn ? 'blue' : 'grey'}
       lineBlockRef={lineRef}
       points={linePoints}
       renderOrder={0}

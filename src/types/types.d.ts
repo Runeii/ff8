@@ -10,13 +10,21 @@ declare global {
     scriptLabel: number,
     opcode: Opcode,
     payload: string | number;
-    index: number,
+    index: number | undefined,
     isAsync: boolean,
   }
   interface Window {
     QUEUES: Record<string, string>,
     scriptDump: (dump: ScriptDump) => void,
-    dump: ScriptDump[],
+    dump: {
+      log: ScriptDump[],
+      byScriptLabel: Record<number, {
+        methods: ScriptDump[],
+        state: any,
+      }>,
+      activeRemoteExecutions: Record<string, ScriptDump>
+    }
+    getScriptState: (() => any)[],
   }
   interface WindowEventMap {
     // Define your custom event type

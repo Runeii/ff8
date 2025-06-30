@@ -4,7 +4,7 @@ import { type Object3D } from 'three';
 import createRotationController from "../RotationController/RotationController";
 import { subclip } from "three/src/animation/AnimationUtils.js";
 
-const FPS = 30;
+const FPS = 15;
 
 type AnimationPlayOptions = {
   isIdleAnimation?: boolean;
@@ -108,13 +108,19 @@ export const createAnimationController = (id: string | number, _headController: 
       console.warn(`Mixer is not initialized for animation with id ${animationId}`);
       return;
     }
-    mixer.stopAllAction();
     const action = mixer.clipAction(clip);
     if (startFrame) {
       action.time = Math.min(clip.duration, startFrame / FPS)
     }
     action.clampWhenFinished = keepLastFrame ?? false;
     action.setLoop(loop ? LoopRepeat : LoopOnce, loop ? Infinity : 1);
+
+    const currentAction = getState().playback?.action;
+    if (currentAction && currentAction !== action) {
+      currentAction.crossFadeTo(action, 0.1, true); // 0.1 second crossfade
+    } else {
+      mixer.stopAllAction();
+    }
     action.play();
 
     setState({

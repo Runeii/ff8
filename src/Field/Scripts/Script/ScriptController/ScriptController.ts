@@ -88,17 +88,6 @@ const createScriptController = ({
       document.dispatchEvent(event);
     }
 
-    window.scriptDump({
-      timestamps: [Date.now()],
-      action: 'Next Opcode: ' + currentQueueItem.activeIndex + ' ' + (isHalting ? 'HALT' : 'NEXT'),
-      methodId: currentQueueItem.methodId,
-      opcode: opcodes[currentQueueItem.activeIndex],
-      payload: uniqueId,
-      index: script.groupId,
-      isAsync: false,
-      scriptLabel: script.groupId,
-    })
-
     setState({
       isRunning: false,
       queue: newQueue
@@ -173,7 +162,7 @@ const createScriptController = ({
       methodId,
       opcode: currentOpcode,
       payload: uniqueId,
-      index: script.groupId,
+      index: activeIndex,
       isAsync: false,
       scriptLabel: script.groupId,
     })
@@ -195,17 +184,6 @@ const createScriptController = ({
       TEMP_STACK: clonedTempStack,
     });
 
-    window.scriptDump({
-      timestamps: [Date.now()],
-      action: 'Completed Opcode',
-      methodId,
-      opcode: currentOpcode,
-      payload: uniqueId,
-      index: script.groupId,
-      isAsync: false,
-      scriptLabel: script.groupId,
-    });
-
     setState({ isAwaitingAnOpcode: false });
 
     // If there is a new priority item in the queue, we need to abort the current run and discard changes
@@ -219,7 +197,7 @@ const createScriptController = ({
         methodId,
         opcode: currentOpcode,
         payload: uniqueId,
-        index: script.groupId,
+        index: activeIndex,
         isAsync: false,
         scriptLabel: script.groupId,
       })
@@ -254,7 +232,7 @@ const createScriptController = ({
     const newQueue = [...currentQueue];
 
     const thisItemPriority = newItem.priority;
-    let insertAtIndex = newQueue.findIndex(item => item.priority > thisItemPriority);
+    const insertAtIndex = newQueue.findIndex(item => item.priority > thisItemPriority);
     const isTopPriority = insertAtIndex === -1;
 
     const isCurrentItemInterruptable = currentQueue.length > 0 && currentQueue.at(-1)!.isLooping
@@ -293,11 +271,6 @@ const createScriptController = ({
       return;
     }
 
-    const queue = getState().queue;
-    if (queue.some(item => item.methodId === methodId)) {
-      return;
-    }
-
     const uniqueId = `${script.groupId}-${methodId}--${priority}-${Date.now()}`;
 
     if (getState().isAwaitingAnOpcode) {
@@ -307,7 +280,7 @@ const createScriptController = ({
         methodId,
         opcode: undefined,
         payload: uniqueId,
-        index: script.groupId,
+        index: undefined,
         isAsync: false,
         scriptLabel: script.groupId,
       })
@@ -320,7 +293,7 @@ const createScriptController = ({
               methodId,
               opcode: undefined,
               payload: uniqueId,
-              index: script.groupId,
+              index: undefined,
               isAsync: false,
               scriptLabel: script.groupId,
             })
@@ -340,7 +313,7 @@ const createScriptController = ({
       methodId,
       opcode: undefined,
       payload: uniqueId,
-      index: script.groupId,
+      index: undefined,
       isAsync: false,
       scriptLabel: script.groupId,
     })
@@ -365,7 +338,7 @@ const createScriptController = ({
             methodId,
             opcode: undefined,
             payload: uniqueId,
-            index: script.groupId,
+            index: undefined,
             isAsync: false,
             scriptLabel: script.groupId,
           })
@@ -387,6 +360,11 @@ const createScriptController = ({
     console.log(`Triggering method ${method.methodId} for ${script.groupId}`,script, method.opcodes, getState().queue);
     await triggerMethod(method.methodId, priority);
   }
+
+  if (!window.getScriptState) {
+    window.getScriptState = []
+  }
+  window.getScriptState[script.groupId] = useScriptStateStore.getState;
 
   return {
     script,

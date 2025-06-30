@@ -22,7 +22,7 @@ export const createMovementController = (id: string | number) => {
     movementTarget: undefined as Vector3 | undefined,
     movementSpeed: 2560,
     // @ts-expect-error SpringValue incorrectly typed
-    position: new SpringValue<number[]>([0,0,0]),
+    position: new SpringValue<number[]>([2,2,2]), // default to way out of view
     // @ts-expect-error SpringValue incorrectly typed
     offset: new SpringValue<number[]>([0,0,0]),
     footsteps: {

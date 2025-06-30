@@ -160,16 +160,32 @@ export const KEY_FLAGS = {
 } as const;
 
 let DOWN: string[] = [];
+let KEYS_PRESSED: string[] = [];
 export const isKeyDown = (keyFlag: keyof typeof KEY_FLAGS) => {
   return DOWN.includes(KEY_FLAGS[keyFlag]);
 }
 
+export const wasKeyPressed = (keyFlag: keyof typeof KEY_FLAGS) => {
+  const key = KEY_FLAGS[keyFlag];
+  if (!key) {
+    return false;
+  }
+  const wasPressed = KEYS_PRESSED.includes(key);
+  if (wasPressed) {
+    KEYS_PRESSED = KEYS_PRESSED.filter(k => k !== key);
+  }
+  return wasPressed;
+}
 const keydownListener = (event: KeyboardEvent) => {
   const { currentMessages } = useGlobalStore.getState();
   if (currentMessages.length > 0) {
     return;
   }
   DOWN.push(event.key);
+  if (KEYS_PRESSED.includes(event.key)) {
+    return;
+  }
+  KEYS_PRESSED.push(event.key);
 }
 
 const keyupListener = (event: KeyboardEvent) => {

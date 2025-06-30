@@ -86,12 +86,11 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
 
   const [currentPage, setCurrentPage] = useState(0);
   const [currentIndex, setCurrentIndex] = useState((askOptions?.default ?? 0) - (askOptions?.first ?? 0));
-
   useEffect(() => {
     if (currentPage < text.length) {
       return;
     }
-    console.log('MessageBox mounted with:', { id, text, textLength: text.length, currentPage });
+
     useGlobalStore.setState(state => {
       const currentMessages = state.currentMessages.filter(message => message.id !== id);
       return {
@@ -129,12 +128,13 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
     return [originalText, options];
   }, [text, currentPage, askOptions]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (e: Event) => {
       const event = e as unknown as KeyboardEvent; 
     
       if (!options && event.code === 'Space' && isCloseable) {
         setCurrentPage(prev => prev + 1);
+        return;
       }
 
       if (!options) {

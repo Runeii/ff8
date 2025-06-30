@@ -61,7 +61,7 @@ export const remoteExecute = async (scriptLabel: number, priority = 0) => new Pr
       scriptLabel,
       opcode: undefined,
       payload: key,
-      index: scriptLabel,
+      index: undefined,
       isAsync: false,
     });
 
@@ -78,7 +78,7 @@ export const remoteExecute = async (scriptLabel: number, priority = 0) => new Pr
     scriptLabel,
     opcode: undefined,
     payload: key,
-    index: scriptLabel,
+    index: undefined,
     isAsync: false,
   });
 
@@ -115,7 +115,7 @@ export const openMessage = (id: string, text: string[], placement: MessagePlacem
     if (detail.id !== id) {
       return;
     }
-
+    console.log('Message closed heard:', id, 'selected option:', detail.selectedOption);
     resolve(detail.selectedOption);
   });
 

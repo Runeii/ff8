@@ -55,7 +55,6 @@ const Field = ({ data }: FieldProps) => {
 
   const currentLocationPlaceName = useGlobalStore(state => state.currentLocationPlaceName as number);
   useEffect(() => {
-    console.log(AREA_NAMES, currentLocationPlaceName, data.id);
     const name = AREA_NAMES[currentLocationPlaceName as keyof typeof AREA_NAMES]
     // Remove `{Term [x]}` string but keep the [x] part
     if (name) {
