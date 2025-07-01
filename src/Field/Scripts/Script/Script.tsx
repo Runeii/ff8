@@ -72,6 +72,10 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
     scriptController.tick();
   })
 
+  useFrame((_, delta) => {
+    animationController.tick(delta);
+  });
+
   useEffect(() => {
     if (isUnused) {
       return;

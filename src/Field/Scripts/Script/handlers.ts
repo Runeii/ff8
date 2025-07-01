@@ -694,6 +694,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       endFrame: lastFrame,
       keepLastFrame: true,
     });
+    console.log('CANIMEKEEP DONE!', animationId, firstFrame, lastFrame);
   },
   RANIME: ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;

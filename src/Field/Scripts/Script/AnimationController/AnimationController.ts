@@ -2,16 +2,19 @@ import { AnimationAction, AnimationClip, AnimationMixer, Bone, LoopOnce, LoopRep
 import { create } from "zustand";
 import { type Object3D } from 'three';
 import createRotationController from "../RotationController/RotationController";
-import { subclip } from "three/src/animation/AnimationUtils.js";
 
-const FPS = 15;
+const FPS = 25;
 
 type AnimationPlayOptions = {
-  isIdleAnimation?: boolean;
-  loop?: boolean;
-  keepLastFrame?: boolean;
-  startFrame?: number;
+  action: AnimationAction;
+  animationId: number;
+  direction: number;
+  loop: boolean;
+  key: string;
+  keepLastFrame: boolean;
+  startFrame: number;
   endFrame?: number;
+  type: 'DEFAULT' | 'IDLE' | 'LADDER';
 }
 
 export const createAnimationController = (id: string | number, _headController: ReturnType<typeof createRotationController>) => {
@@ -20,49 +23,16 @@ export const createAnimationController = (id: string | number, _headController: 
     mesh: undefined as Object3D | undefined,
     mixer: undefined as AnimationMixer | undefined,
 
-    isPlaying: false,
-
-    playback: {
-      action: undefined as AnimationAction | undefined,
-      animationId: undefined as number | undefined,
-      options: {} as AnimationPlayOptions | undefined,
-    },
+    activeAction: undefined as AnimationAction | undefined,
+    activeKey: undefined as string | undefined,
+    animation: undefined as AnimationPlayOptions | undefined,
+    idleAnimation: undefined as AnimationPlayOptions | undefined,
+    ladderAnimation: undefined as AnimationPlayOptions | undefined,
 
     headBone: undefined as Bone | undefined,
     id,
-    idle: {
-      animationId: undefined as number | undefined,
-      startFrame: undefined as number | undefined,
-      endFrame: undefined as number | undefined,
-    },
     speed: FPS,
-
-    ladderAnimationId: undefined as number | undefined,
   }));
-
-  const handleAnimationEnd = (event: { action: AnimationAction }) => {
-    const { action } = event;
-
-    const { idle, playback } = getState();
-
-    if (playback.options?.isIdleAnimation || action.loop === LoopRepeat) {
-      return;
-    }
-    
-    setState({
-      isPlaying: false,
-    });
-
-
-    if (playback.options?.keepLastFrame) {
-      action.paused = true;
-      return;
-    }
-
-    if (idle.animationId) {
-      playIdleAnimation();
-    }
-  }
 
   const initialize = (mixer: AnimationMixer, clips: AnimationClip[], mesh: Object3D) => {
     setState({
@@ -70,35 +40,111 @@ export const createAnimationController = (id: string | number, _headController: 
       clips,
       mesh,
     })
+    mixer.update(0);
+  }
 
-    mixer.addEventListener('finished', handleAnimationEnd);
+  const updateByType = (updatedItem: AnimationPlayOptions | undefined, type: 'DEFAULT' | 'IDLE' | 'LADDER') => {
+    if (type === 'DEFAULT') {
+      setState({
+        animation: updatedItem,
+      });
+    } else if (type === 'IDLE') {
+      setState({
+        idleAnimation: updatedItem,
+      });
+    } else if (type === 'LADDER') {
+      setState({
+        ladderAnimation: updatedItem,
+      });
+    }
+  }
+
+  const tick = (delta: number) => {
+    const {
+      activeAction,
+      mixer,
+      animation,
+      idleAnimation,
+      ladderAnimation,
+    } = getState();
+
+    if (mixer === undefined) {
+      return;
+    }
+
+    const queue = [idleAnimation, ladderAnimation, animation].filter(Boolean);
+    const currentQueueItem = queue.at(-1);
+
+    if (!currentQueueItem) {
+      mixer.update(0);
+      return;
+    }
+
+    const action = currentQueueItem.action;
+
+    if (action !== activeAction || currentQueueItem.key !== getState().activeKey ) {
+      mixer.update(0);
+      mixer.stopAllAction();
+      if (activeAction) {
+        activeAction.stop();
+        activeAction.reset();
+      }
+      
+      action.time = currentQueueItem.startFrame / FPS;
+      action.enabled = true;
+
+      setState({
+        activeAction: action,
+        activeKey: currentQueueItem.key,
+      });
+    }
+    
+    if (currentQueueItem.loop) {
+      action.play();
+      action.setLoop(LoopRepeat, Infinity);
+      action.paused = false;;
+      return;
+    }
+
+    const endTime = currentQueueItem.endFrame !== undefined ? currentQueueItem.endFrame / FPS : action.getClip().duration;
+
+    if (action.time >= endTime && !currentQueueItem.loop) {
+      return;
+    }
+
+    action.play();
+    action.setLoop(currentQueueItem.loop ? LoopRepeat : LoopOnce, currentQueueItem.loop ? Infinity : 1);
+    action.paused = true;
+    action.time += delta;
+
+    if (action.time < endTime) {
+      mixer.update(delta);
+      return;
+    }
+
+    action.paused = true;
+
+    if (currentQueueItem.keepLastFrame) {
+      return;
+    }
+    
+    updateByType(undefined, currentQueueItem.type);
+    action.stop();
+    action.reset();
+    mixer.stopAllAction();
   }
 
   const playAnimation = (animationId: number, options?: {
-    isIdleAnimation?: boolean;
+    key?: string;
     loop?: boolean;
     keepLastFrame?: boolean;
     startFrame?: number;
     endFrame?: number;
+    priority?: number;
+    type?: 'DEFAULT' | 'IDLE' | 'LADDER';
   }) => {
-    const {
-      isIdleAnimation,
-      loop,
-      keepLastFrame,
-      startFrame,
-      endFrame,
-    } = {
-      isIdleAnimation: false,
-      loop: false,
-      keepLastFrame: false,
-      ...options,
-    }
-
     const { mixer, clips } = getState();
-    const sourceClip = clips[animationId]
-
-    const uniqueId = `${id}-${animationId}--${Date.now()}`;
-    const clip = subclip(sourceClip, uniqueId, 0, endFrame ?? sourceClip.duration * FPS, FPS);
+    const clip = clips[animationId]
 
     if (!clip) {
       console.warn(`Animation with id ${animationId} not found`);
@@ -108,34 +154,41 @@ export const createAnimationController = (id: string | number, _headController: 
       console.warn(`Mixer is not initialized for animation with id ${animationId}`);
       return;
     }
+
     const action = mixer.clipAction(clip);
-    if (startFrame) {
-      action.time = Math.min(clip.duration, startFrame / FPS)
-    }
-    action.clampWhenFinished = keepLastFrame ?? false;
-    action.setLoop(loop ? LoopRepeat : LoopOnce, loop ? Infinity : 1);
 
-    const currentAction = getState().playback?.action;
-    if (currentAction && currentAction !== action) {
-      currentAction.crossFadeTo(action, 0.1, true); // 0.1 second crossfade
-    } else {
-      mixer.stopAllAction();
+    const uniqueId = `${id}-${animationId}--${Date.now()}`;
+    const playOptions: AnimationPlayOptions = {
+      action,
+      animationId,
+      direction: 1,
+      key: options?.key ?? uniqueId,
+      startFrame: options?.startFrame ?? 0,
+      endFrame: options?.endFrame ?? undefined,
+      loop: options?.loop ?? false,
+      keepLastFrame: options?.keepLastFrame ?? false,
+      type: options?.type ?? 'DEFAULT',
     }
-    action.play();
 
-    setState({
-      isPlaying: true,
-      playback: {
-        action,
-        animationId,
-        options
-      }
-    });
+    if (playOptions.type === 'DEFAULT') {
+      setState({
+        animation: playOptions,
+      })
+    } else if (playOptions.type === 'IDLE') {
+      setState({
+        idleAnimation: playOptions,
+      })
+    } else if (playOptions.type === 'LADDER') {
+      setState({
+        ladderAnimation: playOptions,
+      })
+    }
 
     return new Promise<void>((resolve) => {
       const checkIsPlaying = () => {
-        const { isPlaying } = getState();
-        if (!isPlaying) {
+        const { activeAction } = getState();
+
+        if ((activeAction === action || !activeAction) && (!activeAction || !activeAction.isRunning())) {
           resolve();
         } else {
           requestAnimationFrame(checkIsPlaying);
@@ -149,54 +202,43 @@ export const createAnimationController = (id: string | number, _headController: 
 
   const pauseAnimation = () => {}
 
-  const playIdleAnimation = () => {
-    const { idle, playback } = getState();
-    if (idle.animationId === undefined) {
-      return;
-    }
-    if (playback.options?.isIdleAnimation === false) {
-      return;
+  const setIdleAnimation = (animationId: number, startFrame?: number, endFrame?: number) => {
+    const newPlayOptions: Partial<AnimationPlayOptions> = {
+      loop: true,
+      startFrame: startFrame ?? 0,
+      endFrame: endFrame,
+      type: 'IDLE',
     }
 
+    const { idleAnimation } = getState();
+
     if (
-      idle.animationId === playback.animationId &&
-      idle.startFrame === playback.options?.startFrame &&
-      idle.endFrame === playback.options?.endFrame
+      idleAnimation &&
+      (
+        animationId === idleAnimation.animationId &&
+        idleAnimation.startFrame === newPlayOptions.startFrame &&
+        idleAnimation.endFrame === newPlayOptions.endFrame &&
+        idleAnimation.loop === newPlayOptions.loop
+      )
     ) {
       return;
     }
-return
-    console.log(`Script ${id}::: Playing idle animation with id ${idle.animationId}`, idle);
-    playAnimation(idle.animationId, {
-      isIdleAnimation: true,
-      startFrame: idle.startFrame,
-      endFrame: idle.endFrame,
-      loop: true,
-    });
-  }
-
-  const setIdleAnimation = (animationId: number, startFrame?: number, endFrame?: number) => {
-    setState({
-      idle: {
-        animationId,
-        startFrame: startFrame ?? undefined,
-        endFrame: endFrame ?? undefined,
-      }
-    });
-
-    playIdleAnimation();
+    playAnimation(animationId, newPlayOptions);
   }
 
   const setAnimationSpeed = (speed: number) => setState({ speed });
 
   const getIsPlaying = () => {
-    const {isPlaying} = getState();
-    return isPlaying || false;
+    const { activeAction } = getState();
+    if (!activeAction || !activeAction.isRunning()) {
+      return false;
+    }
+    return true; 
   }
 
   const setHeadBone = (headBone: Bone) => setState({ headBone });
 
-  const setLadderAnimation = (ladderAnimationId: number, _unknownParam1: number, _unknownParam2: number) => setState({ ladderAnimationId });
+  const setLadderAnimation = (ladderAnimationId: number, _unknownParam1: number, _unknownParam2: number) => {}
 
   return {
     getIsPlaying,
@@ -208,6 +250,7 @@ return
     setAnimationSpeed,
     stopAnimation,
     setHeadBone,
-    setLadderAnimation
+    setLadderAnimation,
+    tick
   }
 }
