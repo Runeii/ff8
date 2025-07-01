@@ -246,7 +246,7 @@ export const createAnimationController = (id: string | number, _headController: 
 
   const setHeadBone = (headBone: Bone) => setState({ headBone });
 
-  const setLadderAnimation = (ladderAnimationId: number, _unknownParam1: number, _unknownParam2: number) => {}
+  const setLadderAnimation = (_ladderAnimationId: number, _unknownParam1: number, _unknownParam2: number) => {}
 
   return {
     getIsPlaying,

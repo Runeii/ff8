@@ -31,7 +31,7 @@ const hasSavedData = !!(window.localStorage.getItem('saveData'));
 const fieldSelect = async (set = 0) => {
   const options = Object.keys(points).slice(set * 8, set * 8 + 8);
   const isFirstPage = set === 0;
-  const selectedOption = await openMessage('fieldSelect', [`Field Select\n${options.join('\n')}\n{Blue}${isFirstPage ? 'Next Page' : 'Previous Page'}{White}\nCancel`], { x: 0,  y:15 }, true, {
+  const selectedOption = await openMessage('fieldSelect', [`Field Select\n${options.join('\n')}\n{Blue}${isFirstPage ? 'Next Page' : 'Previous Page'}{White}\nCancel`], { channel: 1, x: 0,  y:15 }, true, {
     first: 1,
     default: 1,
     cancel: Object.keys(points).length - 1
@@ -55,9 +55,9 @@ const fieldSelect = async (set = 0) => {
 }
 
 const mainMenuSelect = async (defaultValue = hasSavedData ? 2 : 0) => {
-  openMessage('welcome', ['Welcome'], { x: 0,  y: 0 }, false);
+  openMessage('welcome', ['Welcome'], { channel: 0, x: 0,  y: 0 }, false);
 
-  const option = await openMessage('menu', [`Controls\nNew Game\n${hasSavedData ? '' : '{Grey}'}Resume Game{White}\nField Select`], { x: 100,  y: 80 }, true, {
+  const option = await openMessage('menu', [`Controls\nNew Game\n${hasSavedData ? '' : '{Grey}'}Resume Game{White}\nField Select`], { channel: 1, x: 100,  y: 80 }, true, {
     first: 0,
     default: defaultValue,
     cancel: undefined,

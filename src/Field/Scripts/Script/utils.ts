@@ -118,7 +118,6 @@ export const openMessage = (id: string, text: string[], placement: MessagePlacem
     console.log('Message closed heard:', id, 'selected option:', detail.selectedOption);
     resolve(detail.selectedOption);
   });
-
   useGlobalStore.setState({
     currentMessages: [
       ...currentMessages,
