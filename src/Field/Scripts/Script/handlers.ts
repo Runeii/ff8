@@ -694,7 +694,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       endFrame: lastFrame,
       keepLastFrame: true,
     });
-    console.log('CANIMEKEEP DONE!', animationId, firstFrame, lastFrame);
   },
   RANIME: ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
@@ -791,8 +790,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     animationController.setAnimationSpeed(STACK.pop() as number)
   },
   ANIMESYNC: async ({ animationController }) => {
-    while (animationController.getIsPlaying()) {
-      await new Promise((resolve) => requestAnimationFrame(resolve));
+    if (!animationController.isPlayingIdle()) {
+      while (animationController.getIsPlaying()) {
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
     }
   },
   ANIMESTOP: ({ animationController }) => {

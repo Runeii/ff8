@@ -236,6 +236,14 @@ export const createAnimationController = (id: string | number, _headController: 
     return true; 
   }
 
+  const isPlayingIdle = () => {
+    const { idleAnimation, activeAction } = getState();
+    if (!idleAnimation || !activeAction) {
+      return false;
+    }
+    return idleAnimation.action === activeAction && activeAction.isRunning();
+  }
+
   const setHeadBone = (headBone: Bone) => setState({ headBone });
 
   const setLadderAnimation = (ladderAnimationId: number, _unknownParam1: number, _unknownParam2: number) => {}
@@ -244,6 +252,7 @@ export const createAnimationController = (id: string | number, _headController: 
     getIsPlaying,
     getState,
     initialize,
+    isPlayingIdle,
     playAnimation,
     pauseAnimation,
     setIdleAnimation,
