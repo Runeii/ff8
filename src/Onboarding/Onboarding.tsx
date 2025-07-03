@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { openMessage } from "../Field/Scripts/Script/utils";
 import MAP_NAMES from "../constants/maps";
-import { fadeInMap } from "../Field/Scripts/Script/common";
 import useGlobalStore from "../store";
 import { loadGame } from "../Field/fieldUtils";
 
@@ -55,6 +54,7 @@ const fieldSelect = async (set = 0) => {
 }
 
 const mainMenuSelect = async (defaultValue = hasSavedData ? 2 : 0) => {
+  const {fadeSpring} = useGlobalStore.getState();
   openMessage('welcome', ['Welcome'], { channel: 0, x: 0,  y: 0 }, false);
 
   const option = await openMessage('menu', [`Controls\nNew Game\n${hasSavedData ? '' : '{Grey}'}Resume Game{White}\nField Select`], { channel: 1, x: 100,  y: 80 }, true, {
@@ -78,6 +78,8 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 2 : 0) => {
   }
 
   if (option === 1) {
+    await fadeSpring.start(0);
+    closeAllWindows();
     useGlobalStore.getState().systemSfxController.play(37, 0, 255, 128);
     useGlobalStore.setState({
       pendingFieldId: 'start0',
@@ -86,6 +88,8 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 2 : 0) => {
   }
 
   if (option === 2) {
+    await fadeSpring.start(0);
+    closeAllWindows();
     loadGame();
     useGlobalStore.getState().systemSfxController.play(37, 0, 255, 128);
     
@@ -99,12 +103,7 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 2 : 0) => {
 }
 const Onboarding = () => {
   useEffect(() => {
-    fadeInMap();
     mainMenuSelect();
-
-    return () => {
-      closeAllWindows();
-    }
   }, []);
 
   return null;

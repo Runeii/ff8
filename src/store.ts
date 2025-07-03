@@ -48,7 +48,18 @@ interface GlobalState {
     yScrollSpeed: number,
   }>,
 
-  canvasOpacitySpring: SpringValue<number>,
+  colorOverlay: {
+    startRed: number,
+    startGreen: number,
+    startBlue: number,
+    endRed: number,
+    endGreen: number,
+    endBlue: number,
+    type: 'additive' | 'subtractive',
+    duration: number,
+  },
+  isTransitioningColorOverlay: boolean,
+  fadeSpring: SpringValue<number>,
   isMapFadeEnabled: boolean,
 
   availableCharacters: number[],
@@ -108,7 +119,18 @@ export const INITIAL_STATE: GlobalState = {
     messageStyles: {},
   
     layerScrollAdjustments: {},
-    canvasOpacitySpring: new SpringValue(0),
+    colorOverlay: {
+      startRed: 0,
+      startGreen: 0,
+      startBlue: 0,
+      endRed: 0,
+      endGreen: 0,
+      endBlue: 0,
+      type: 'additive',
+      duration: 0,
+    },
+    isTransitioningColorOverlay: false,
+    fadeSpring: new SpringValue(1),
     isMapFadeEnabled: true,
   
     availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],

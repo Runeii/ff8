@@ -367,7 +367,7 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
     
     const placement = calculatePlacement(message, widthWithoutScaling / 2, heightWithoutScaling / 2);
     const xPosWithoutScaling = placement.x * 2;
-    const yPosWithoutScaling = placement.y * 2;
+    const yPosWithoutScaling = Math.max(0, placement.y * 2);
 
     const scale = scaleSpring.scale.get();
     const width = widthWithoutScaling * scale;

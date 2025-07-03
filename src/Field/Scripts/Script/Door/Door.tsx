@@ -48,7 +48,7 @@ const Door = ({ doors, script, scriptController,  useScriptStateStore }: DoorPro
     setIsDoorOpen(false);
   }
 
-  const linePoints = useMemo(() => door.line.map(vectorToFloatingPoint), [door]);
+  const linePoints = useMemo(() => door && door.line.map(vectorToFloatingPoint), [door]);
 
   useIntersection(hitboxRef.current, isDoorOn, {
     onTouchOn: handleIntersect,

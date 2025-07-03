@@ -5,12 +5,12 @@ import type data from '../../public/output/escouse2.json';
 import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useThree } from '@react-three/fiber';
 import Scripts from './Scripts/Scripts';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
 import { getInitialEntrance } from '../utils';
-import { MEMORY } from './Scripts/Script/handlers';
+import { MEMORY, OPCODE_HANDLERS } from './Scripts/Script/handlers';
 import MAP_NAMES from '../constants/maps';
 import { SpringValue } from '@react-spring/web';
 import { getFieldData } from './fieldUtils';
@@ -66,16 +66,7 @@ const Field = ({ data }: FieldProps) => {
     
   }, [currentLocationPlaceName, data.id]);
 
-  // Allow animation controllers to know when the frame is updated outside of R3F
-  useFrame(({ clock }) => {
-    const event = new CustomEvent('frame', {
-      detail: {
-        delta: clock.getDelta(),
-      }
-    });
-    window.dispatchEvent(event);
-  });
-
+console.log('Field loaded:', data.id, 'with scripts:', data.scripts.length, 'and doors:', data.doors.length);
   return (
     <group>
       <WalkMesh
@@ -93,11 +84,9 @@ const Field = ({ data }: FieldProps) => {
   );
 }
 
-type FieldLoaderProps = Omit<FieldProps, 'data'> & {
-  opacitySpring: SpringValue<number>,
-}
+type FieldLoaderProps = Omit<FieldProps, 'data'>;
 
-const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
+const FieldLoader = (props: FieldLoaderProps) => {
   const pendingFieldId = useGlobalStore(state => state.pendingFieldId);
 
   const fieldId = useGlobalStore(state => state.fieldId);
@@ -118,10 +107,15 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
 
   useEffect(() => {
     const handleTransition = async () => {
-      const {isLoadingSavedGame, isMapFadeEnabled} = useGlobalStore.getState();
-
-      if (isMapFadeEnabled && import.meta.env.DEV !== true) {
-       await opacitySpring.start(0);
+      const { isLoadingSavedGame, isMapFadeEnabled } = useGlobalStore.getState();
+      
+      const nonReactiveFieldId = useGlobalStore.getState().fieldId;
+      const isSwitchingBetweenMaps = nonReactiveFieldId && pendingFieldId && pendingFieldId !== nonReactiveFieldId;
+      if (isMapFadeEnabled && isSwitchingBetweenMaps) {
+        // @ts-expect-error We don't need args for this function
+        OPCODE_HANDLERS.FADEOUT();
+        // @ts-expect-error We don't need args for this function
+        await OPCODE_HANDLERS.FADESYNC();
       }
 
       setData(null);
@@ -188,7 +182,7 @@ const FieldLoader = ({ opacitySpring, ...props }: FieldLoaderProps) => {
       return;
     }
     handleTransition();
-  }, [gl, pendingFieldId, opacitySpring]);
+  }, [gl, pendingFieldId]);
 
   
   if (fieldId === 'wm00') {

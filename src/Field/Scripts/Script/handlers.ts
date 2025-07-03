@@ -6,7 +6,7 @@ import { dummiedCommand, openMessage, remoteExecute, remoteExecutePartyMember, u
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
-import { displayMessage, fadeOutMap, isKeyDown, KEY_FLAGS, animateBackground, isTouching, setCameraAndLayerScroll, setCameraAndLayerFocus, wasKeyPressed } from "./common";
+import { displayMessage, isKeyDown, KEY_FLAGS, animateBackground, isTouching, setCameraAndLayerScroll, setCameraAndLayerFocus, wasKeyPressed } from "./common";
 import createScriptState, { ScriptState } from "./state";
 import { createAnimationController } from "./AnimationController/AnimationController";
 import { createMovementController } from "./MovementController/MovementController";
@@ -571,25 +571,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const label = STACK.pop() as number;
     const priority = STACK.pop() as number;
     await remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
-  },
-  FADEIN: async () => {
-    const { canvasOpacitySpring } = useGlobalStore.getState();
-    await wait(500)
-    canvasOpacitySpring.start(1);
-  },
-  // i believe this is the same
-  FADENONE: async () => {
-    const { canvasOpacitySpring } = useGlobalStore.getState();
-    await wait(500)
-    canvasOpacitySpring.start(1);
-  },
-  FADEOUT: fadeOutMap,
-  FADEBLACK: fadeOutMap,
-  FADESYNC: async () => {
-    const { canvasOpacitySpring } = useGlobalStore.getState();
-    if (canvasOpacitySpring.get() !== 1) {
-      await canvasOpacitySpring.start(1)
-    }
   },
   ISPARTY: ({ STACK, TEMP_STACK }) => {
     const characterID = STACK.pop() as number;
@@ -1950,25 +1931,166 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   KEY: ({ STACK }) => {
     STACK.pop() as number;
   },
-  DCOLADD: ({ STACK }) => {
-    STACK.splice(-3);
-  },
-  DCOLSUB: ({ STACK }) => {
-    STACK.splice(-3);
-  },
   FCOLADD: ({ STACK }) => {
-    STACK.splice(-7);
+    const duration = STACK.pop() as number;
+    const endBlue = STACK.pop() as number;
+    const endGreen = STACK.pop() as number;
+    const endRed = STACK.pop() as number;
+    const startBlue = STACK.pop() as number;
+    const startGreen = STACK.pop() as number;
+    const startRed = STACK.pop() as number;
+
+    useGlobalStore.setState({
+      colorOverlay: {
+        startRed,
+        startGreen,
+        startBlue,
+        endRed,
+        endGreen,
+        endBlue,
+        duration,
+        type: 'additive'
+      },
+      isTransitioningColorOverlay: true
+    });
   },
   FCOLSUB: ({ STACK }) => {
-    STACK.splice(-7);
+    const duration = STACK.pop() as number;
+    const endBlue = STACK.pop() as number;
+    const endGreen = STACK.pop() as number;
+    const endRed = STACK.pop() as number;
+    const startBlue = STACK.pop() as number;
+    const startGreen = STACK.pop() as number;
+    const startRed = STACK.pop() as number;
+    
+    useGlobalStore.setState({
+      colorOverlay: {
+        startRed,
+        startGreen,
+        startBlue,
+        endRed,
+        endGreen,
+        endBlue,
+        duration,
+        type: 'subtractive'
+      },
+      isTransitioningColorOverlay: true
+    });
   },
+
   TCOLADD: ({ STACK }) => {
-    STACK.splice(-4);
+    const fadeInDuration = STACK.pop() as number;
+    const intensityUnknown = STACK.pop() as number;
+    const modeUnknown = STACK.pop() as number;
+    const fadeOutDuration = STACK.pop() as number;
+    
+    useGlobalStore.setState(state => ({
+      ...state,
+      colorOverlay: {
+        ...state.colorOverlay,
+        fadeInDuration,
+        fadeOutDuration,
+        intensityUnknown,
+        modeUnknown,
+        type: 'additive'
+      },
+      isTransitioningColorOverlay: true
+    }));
   },
   TCOLSUB: ({ STACK }) => {
-    STACK.splice(-4);
+    const fadeInDuration = STACK.pop() as number;
+    const intensityUnknown = STACK.pop() as number;
+    const modeUnknown = STACK.pop() as number;
+    const fadeOutDuration = STACK.pop() as number;
+
+    useGlobalStore.setState(state => ({
+      ...state,
+      colorOverlay: {
+        ...state.colorOverlay,
+        fadeInDuration,
+        fadeOutDuration,
+        intensityUnknown,
+        modeUnknown,
+        type: 'subtractive'
+      },
+      isTransitioningColorOverlay: true
+    }));
   },
-  COLSYNC: () => { },
+
+  DCOLADD: ({ STACK }) => {
+    const red = STACK.pop() as number;
+    const green = STACK.pop() as number;
+    const blue = STACK.pop() as number;
+    
+    useGlobalStore.setState(state => ({
+      colorOverlay: {
+        ...state.colorOverlay,
+        red,
+        green,
+        blue,
+        type: 'additive',
+      },
+      isTransitioningColorOverlay: true
+    }));
+  },
+  DCOLSUB: ({ STACK }) => {
+    const red = STACK.pop() as number;
+    const green = STACK.pop() as number;
+    const blue = STACK.pop() as number;
+    
+    useGlobalStore.setState(state => ({
+      colorOverlay: {
+        ...state.colorOverlay,
+        red,
+        green,
+        blue,
+        type: 'subtractive',
+      },
+      isTransitioningColorOverlay: true
+    }));
+  },
+  COLSYNC: async () => { 
+    while (useGlobalStore.getState().isTransitioningColorOverlay) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+  },
+  FADEIN: () => {
+    const { fadeSpring, isMapFadeEnabled } = useGlobalStore.getState()
+    if (!isMapFadeEnabled) {
+      return;
+    }
+    fadeSpring.start(1, {
+      config: {
+        duration: 250
+      }
+    });
+  },
+  FADEOUT: () => {
+    const { fadeSpring, isMapFadeEnabled } = useGlobalStore.getState()
+    if (!isMapFadeEnabled) {
+      return;
+    }
+    fadeSpring.start(0, {
+      config: {
+        duration: 500
+      }
+    });
+  },
+  FADENONE: () => {
+    const { fadeSpring } = useGlobalStore.getState()
+    fadeSpring.set(1);
+  },
+  FADEBLACK: () => {
+    const { fadeSpring } = useGlobalStore.getState()
+    fadeSpring.set(0);
+  },
+  FADESYNC: async () => {
+    const { fadeSpring } = useGlobalStore.getState();
+    while (fadeSpring.isAnimating) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+  },
+
   MENUTUTO: () => { },
   TUTO: ({ STACK }) => {
     STACK.pop() as number;

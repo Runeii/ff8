@@ -87,14 +87,7 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const lastMovementTimeRef = useRef(0);
   useFrame(() => {
-    const { isAnimationEnabled, isClimbingLadder, movementSpeed, position } = movementController.getState();
-
-    const isTransitioningMap = !!useGlobalStore.getState().pendingFieldId;
-
-    if (!isAnimationEnabled || isTransitioningMap) {
-      animationController.pauseAnimation();
-      return;
-    }
+    const { isClimbingLadder, movementSpeed, position } = movementController.getState();
 
     if (!position.isAnimating && lastMovementTimeRef.current + 60 < Date.now()) {
       animationController.setIdleAnimation(0);

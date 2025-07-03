@@ -10,6 +10,7 @@ import { useEffect } from 'react'
 import Memory from './Memory/Memory'
 import { PerspectiveCamera } from '@react-three/drei'
 import Queues from './Queues/Queues'
+import ColorOverlay from './ColorOverlay/ColorOverlay'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
@@ -46,6 +47,7 @@ export default function App() {
             far={1000}
           />
           <Entrypoint />
+          <ColorOverlay />
           <Ui />
         </Canvas>
         {isDebugMode && <Queues />}

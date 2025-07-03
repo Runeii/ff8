@@ -200,7 +200,12 @@ export const createAnimationController = (id: string | number, _headController: 
 
   const stopAnimation = () => {}
 
-  const pauseAnimation = () => {}
+  const pauseAnimation = () => {
+    const { activeAction } = getState();
+    if (activeAction) {
+      activeAction.paused = true;
+    }
+  }
 
   const setIdleAnimation = (animationId: number, startFrame?: number, endFrame?: number) => {
     const newPlayOptions: Partial<AnimationPlayOptions> = {

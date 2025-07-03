@@ -21,13 +21,14 @@ type ScriptProps = {
   doors: Door[];
   isActive: boolean;
   onSetupCompleted: () => void;
+  onStarted?: () => void;
   models: string[];
   script: ScriptType;
 }
 
 // Not implemented
 // * Pushable
-const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptProps) => {
+const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }: ScriptProps) => {
   const entityRef = useRef<Group>(null);
   
   const scene = useThree(state => state.scene);
@@ -65,14 +66,23 @@ const Script = ({ doors, isActive, models, onSetupCompleted, script }: ScriptPro
         onSetupCompleted();
       })
     }
-    if (!hasTriggeredDefaultRef.current && entityRef.current && isActive) {
+    if (!hasTriggeredDefaultRef.current && isActive) {
       hasTriggeredDefaultRef.current = true;
-      scriptController.triggerMethod('default')
+      scriptController.triggerMethod('default');
+      onStarted?.();
     }
     scriptController.tick();
   })
 
   useFrame((_, delta) => {
+    const isAnimationEnabled = movementController.getState().isAnimationEnabled;
+    const isTransitioningMap = !!useGlobalStore.getState().pendingFieldId;
+
+    if (!isAnimationEnabled || isTransitioningMap) {
+      animationController.pauseAnimation();
+      return;
+    }
+
     animationController.tick(delta);
   });
 

@@ -1,10 +1,10 @@
 import { Suspense, useEffect } from "react"
 import useGlobalStore from "./store";
 import FieldLoader from "./Field/Field";
-import { useSpring } from "@react-spring/web";
 import { attachKeyDownListeners } from "./Field/Scripts/Script/common";
 import { getInitialField } from "./utils";
 import MAP_NAMES from "./constants/maps";
+import { useFrame } from "@react-three/fiber";
 
 
 useGlobalStore.setState({
@@ -16,29 +16,16 @@ const Entrypoint = () => {
     attachKeyDownListeners();
   }, []);
 
-  const isMapFadeEnabled = useGlobalStore(state => state.isMapFadeEnabled);
+  const fadeSpring = useGlobalStore(state => state.fadeSpring);
 
-  const [{opacity}] = useSpring(() => ({
-    opacity: 1,
-    config: {
-      duration: 1000,
-    },
-    immediate: isMapFadeEnabled,
-    onChange: ({ value }) => {
-      document.body.style.setProperty('--canvas-opacity', value.opacity);
-    }
-  }), [isMapFadeEnabled]);
-
-  useEffect(() => {
-    useGlobalStore.setState({
-      canvasOpacitySpring: opacity,
-    })
-  }, [opacity])
+  useFrame(() => {
+    document.body.style.setProperty('--canvas-opacity', fadeSpring.get().toString());
+  })
 
   return (
     <>
       <Suspense>
-        <FieldLoader opacitySpring={opacity} />
+        <FieldLoader />
       </Suspense>
     </>
   )

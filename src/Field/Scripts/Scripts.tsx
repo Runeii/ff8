@@ -13,11 +13,6 @@ export type ScriptsProps = {
 
 const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
   const fieldId = useGlobalStore(state => state.fieldId);
-  const [activeExec, setActiveExec] = useState<number>(0);
-
-  const handleScriptSetupCompleted = useCallback(() => {
-    setActiveExec((prev) => prev + 1);
-  }, []);
 
   const formattedDoors: Door[] = useMemo(() => {
     const doorScripts = scripts.filter(script => script.name.startsWith('Door'));
@@ -28,7 +23,44 @@ const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
     }))
   }, [doors, scripts]);
 
-  return scripts.map(script => <Script doors={formattedDoors} key={`${fieldId}--${script.exec}`} isActive={activeExec === scripts.length} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} /> )
+  const [mainScript, ...otherScripts] = useMemo(() => {
+    const mainScript = scripts.find(script => script.type === 'main');
+    const otherScripts = scripts.filter(script => script.type !== 'main');
+    return [mainScript, ...otherScripts];
+  }, [scripts]);
+
+  const [scriptsMounted, setScriptsMounted] = useState<number>(0);
+  const handleScriptSetupCompleted = useCallback(() => {
+    setScriptsMounted((prev) => prev + 1);
+  }, []);
+  
+  const [runningScripts, setRunningScripts] = useState<number>(0);
+  const onStarted = useCallback(() => {
+    setRunningScripts(prev => prev + 1);
+  }, []);
+
+  const [hasMountedMainScript, setHasMountedMainScript] = useState<boolean>(false);
+
+  const handleMainScriptMounted = useCallback(() => {
+    setHasMountedMainScript(true);
+  }, []);
+
+  const handleStartedMain = useCallback(() => {
+    const {fieldId, fadeSpring} = useGlobalStore.getState();
+    if (fieldId === 'bghoke_2') {
+      fadeSpring.start(1, {
+        config: { duration: 10 },
+        delay: 500
+      });
+    }
+  }, []);
+
+  return (
+    <>
+      {otherScripts.map(script => <Script doors={formattedDoors} key={`${fieldId}--${script.exec}`} isActive={scriptsMounted === otherScripts.length} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} onStarted={onStarted} /> )}
+      {runningScripts === otherScripts.length && mainScript && <Script doors={formattedDoors} isActive={hasMountedMainScript} models={models} script={mainScript} onSetupCompleted={handleMainScriptMounted} onStarted={handleStartedMain} />}
+    </>
+  );
 }
 
 export default Scripts;

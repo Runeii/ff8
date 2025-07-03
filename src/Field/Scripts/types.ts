@@ -1,7 +1,7 @@
 import {  RawFieldData } from "../Field";
 import { OPCODES } from "./constants";
 
-export type ScriptType = 'location' | 'model' | 'background' | 'unknown' | 'door';
+export type ScriptType = 'location' | 'model' | 'background' | 'unknown' | 'door' | 'main';
 
 export type Opcode = typeof OPCODES[number]
 

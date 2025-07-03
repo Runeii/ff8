@@ -5,24 +5,6 @@ import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection, 
 import { Group, Object3D, Scene, Vector3 } from "three";
 import { WORLD_DIRECTIONS } from "../../../utils";
 
-export const fadeInMap = async () => {
-  const { canvasOpacitySpring, isMapFadeEnabled } = useGlobalStore.getState()
-  if (!isMapFadeEnabled) {
-    return;
-  }
-
-  await canvasOpacitySpring.start(1);
-}
-
-export const fadeOutMap = async () => {
-  const { canvasOpacitySpring, isMapFadeEnabled } = useGlobalStore.getState()
-  if (!isMapFadeEnabled) {
-    return;
-  }
-
-  canvasOpacitySpring.start(0);
-}
-
 export const displayMessage = async (id: number, x: number, y: number, channel: number, width?: number, height?: number, isCloseable = true) => {
   const { availableMessages } = useGlobalStore.getState();
 
