@@ -161,6 +161,17 @@ const FieldLoader = (props: FieldLoaderProps) => {
           x: new SpringValue(0),
           y: new SpringValue(0),
         })),
+
+        colorOverlay: {
+          startRed: 0,
+          startGreen: 0,
+          startBlue: 0,
+          endRed: 0,
+          endGreen: 0,
+          endBlue: 0,
+          duration: 0,
+          type: 'additive'
+        },
         
 
         currentMessages: [],

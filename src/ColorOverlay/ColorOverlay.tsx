@@ -1,6 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
-import { AdditiveBlending, Mesh, SpriteMaterial, SubtractiveBlending, Vector3 } from "three";
+import { AdditiveBlending, Mesh, NormalBlending, SpriteMaterial, SubtractiveBlending, Vector3 } from "three";
 import useGlobalStore from "../store";
 import { useSpring } from "@react-spring/web";
 
@@ -39,11 +39,12 @@ const ColorOverlay = () => {
     const cameraPosition = camera.position.clone();
     overlayRef.current.position.copy(cameraPosition.add(cameraDirection.multiplyScalar(0.1)));
 
-    if (!spring.red) {
+    if (spring.red.get() === undefined) {
       return;
     }
 
     const material = overlayRef.current.material as SpriteMaterial;
+    
     material.blending = colorOverlay.type === 'additive' ? AdditiveBlending : SubtractiveBlending;
     material.color.setRGB(
       spring.red.get() / 255,
@@ -54,7 +55,7 @@ const ColorOverlay = () => {
   
   return (
     <sprite scale={[1,1,1]} position={[0, 0, 0.1]} rotation={[0, 0, 0]} ref={overlayRef} renderOrder={25}>
-      <spriteMaterial color="black" opacity={1} blending={AdditiveBlending} transparent />
+      <spriteMaterial color="black" blending={AdditiveBlending} depthTest={false} />
     </sprite>
   )
 }
