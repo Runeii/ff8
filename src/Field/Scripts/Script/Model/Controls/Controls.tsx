@@ -63,7 +63,6 @@ const Controls = ({ children, movementController, rotationController }: Controls
   }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, movementController, walkmesh]);
 
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
-  const isClimbingLadder = movementController.getState().isClimbingLadder;
   const controlDirection = useGlobalStore(state => state.fieldDirection);
 
   const handleMovement = useCallback(() => { 
@@ -184,6 +183,8 @@ const Controls = ({ children, movementController, rotationController }: Controls
   }, [isTransitioningMap, hasPlacedCharacter, isUserControllable, handleMovement, rotationController, isRunEnabled, movementFlags.isWalking, movementController, position]);
 
   useFrame(({ scene }, delta) => {
+    const isClimbingLadder = movementController.getState().isClimbingLadder;
+
     if (movementController.getState().position.isAnimating || isClimbingLadder) {
       return;
     }

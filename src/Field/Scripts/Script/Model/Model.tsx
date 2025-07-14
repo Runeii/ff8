@@ -1,6 +1,6 @@
 import { Script } from "../../types";
 import {  ComponentType, type JSX, lazy, useCallback, useRef, useState } from "react";
-import { Bone, Box3, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Vector3 } from "three";
+import { Bone, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
@@ -64,23 +64,6 @@ const Model = ({animationController, models, scriptController, movementControlle
     setMeshGroup(ref.group.current);
   }, [convertMaterialsToBasic, animationController]);
 
-
-  const groupRef = useRef<Group>(null);
-  const modelContainerRef = useRef<Group>(null);
-  useFrame(() => {
-    if (!groupRef.current || !modelContainerRef.current) {
-      return;
-    }
-    groupRef.current.position.z = 0;
-    modelContainerRef.current.updateMatrixWorld(true);
-    modelContainerRef.current.updateMatrix();
-    modelContainerRef.current.updateWorldMatrix(true, false);
-    const boundingBox = new Box3().setFromObject(modelContainerRef.current);
-    const height = (boundingBox.max.z - boundingBox.min.z);
-
-    groupRef.current.position.z = height / 2
-  });
-
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
   const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && state.isPartyFollowing && !isLeadCharacter);
@@ -88,6 +71,10 @@ const Model = ({animationController, models, scriptController, movementControlle
   const lastMovementTimeRef = useRef(0);
   useFrame(() => {
     const { isClimbingLadder, movementSpeed, position } = movementController.getState();
+
+    if (isClimbingLadder) {
+      return;
+    }
 
     if (!position.isAnimating && lastMovementTimeRef.current + 60 < Date.now()) {
       animationController.setIdleAnimation(0);
@@ -102,13 +89,6 @@ const Model = ({animationController, models, scriptController, movementControlle
 
     const WALK_ANIMATION = 1;
     const RUN_ANIMATION = 2;
-    const LADDER_ANIMATION = 3;
-
-    if (isClimbingLadder && LADDER_ANIMATION) {
-      console.log(`Script ${script.groupId} - Climbing ladder, setting ladder animation`);
-      animationController.setIdleAnimation(LADDER_ANIMATION);
-      return;
-    }
 
     animationController.setIdleAnimation(movementSpeed > 2695 ? RUN_ANIMATION : WALK_ANIMATION);
   });
@@ -120,12 +100,14 @@ const Model = ({animationController, models, scriptController, movementControlle
   const FOOTSTEP_DELAY_RUNNING = 420;
   const FOOTSTEP_DELAY_WALKING = 500;
   useFrame(({ scene }) => {
+    const { isClimbingLadder, footsteps, movementSpeed, position } = movementController.getState();
+
     const camera = scene.getObjectByName("sceneCamera") as PerspectiveCamera;
-    const isAnimating = movementController.getState().position.isAnimating;
-    const hasFootsteps = movementController.getState().footsteps.isActive;
-    const isWalking = movementController.getState().movementSpeed < 2695
+    const isAnimating = position.isAnimating;
+    const hasFootsteps = footsteps.isActive;
+    const isWalking = movementSpeed < 2695
   
-    if (!isAnimating || hasFootsteps || isBetweenFootstepsRef.current) {
+    if (!isAnimating || hasFootsteps || isBetweenFootstepsRef.current || isClimbingLadder) {
       return;
     }
 
@@ -154,7 +136,7 @@ const Model = ({animationController, models, scriptController, movementControlle
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
 
   const modelJsx = (
-    <group ref={groupRef}>
+    <group>
       {talkMethod && !isLeadCharacter && !isFollower && meshGroup && (
         <TalkRadius
           scriptController={scriptController}
@@ -162,7 +144,6 @@ const Model = ({animationController, models, scriptController, movementControlle
           useScriptStateStore={useScriptStateStore}
         />
       )}
-      <group ref={modelContainerRef}>
         <ModelComponent
           name={`party--${partyMemberId ?? 'none'}`}
           scale={0.06}
@@ -176,7 +157,6 @@ const Model = ({animationController, models, scriptController, movementControlle
             scriptController
           }}
           />
-      </group>
     </group>
   );
 

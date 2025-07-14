@@ -1,6 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
-import { AdditiveBlending, Mesh, NormalBlending, SpriteMaterial, SubtractiveBlending, Vector3 } from "three";
+import { AdditiveBlending, Mesh, SpriteMaterial, SubtractiveBlending, Vector3 } from "three";
 import useGlobalStore from "../store";
 import { useSpring } from "@react-spring/web";
 

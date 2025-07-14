@@ -30,22 +30,24 @@ const Door = ({ doors, script, scriptController,  useScriptStateStore }: DoorPro
   const hitboxRef = useRef<Mesh>(null);
 
   const [playerOpenedFromSide, setPlayerOpenedFromSide] = useState<STATES>();
-  const handleIntersect = (entrySide: STATES) => {
+  const handleIntersect = async (entrySide: STATES) => {
     if (playerOpenedFromSide) {
       return;
     }
     setPlayerOpenedFromSide(entrySide);
-    scriptController.triggerMethod('open');
+    await scriptController.triggerMethod('open');
+    console.log(`Door ${script.name} opened from side: ${entrySide}`);
     setIsDoorOpen(true);
   }
   
-  const handleExit = (entrySide: STATES) => {
+  const handleExit = async (entrySide: STATES) => {
     if (entrySide !== playerOpenedFromSide) {
       return;
     }
     setPlayerOpenedFromSide(undefined);
-    scriptController.triggerMethod('close');
     setIsDoorOpen(false);
+    console.log(`Door ${script.name} closed from side: ${entrySide}`);
+    await scriptController.triggerMethod('close');
   }
 
   const linePoints = useMemo(() => door && door.line.map(vectorToFloatingPoint), [door]);

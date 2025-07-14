@@ -207,9 +207,9 @@ export const createMovementController = (id: string | number) => {
       }
     })
   
-  const setIsClimbingLadder = (isClimbingLadder: boolean) =>
+  const setIsClimbingLadder = (isClimbingLadder: boolean, speed?: number) =>
     setState({
-      movementSpeed: isClimbingLadder ? 1250 : getState().speedBeforeClimbingLadder,
+      movementSpeed: isClimbingLadder ? (speed ?? 22) * 100 : getState().speedBeforeClimbingLadder,
       isClimbingLadder,
       speedBeforeClimbingLadder: isClimbingLadder ? getState().movementSpeed : 0,
     })

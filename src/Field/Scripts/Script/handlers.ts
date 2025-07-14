@@ -1,4 +1,4 @@
-import { Scene, Vector3 } from "three";
+import { LoopRepeat, Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script } from "../types";
@@ -713,7 +713,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const animationId = currentOpcode.param;
 
     animationController.playAnimation(animationId, {
-      loop: true,
+      loop: LoopRepeat,
     })
   },
   RCANIMELOOP: ({ animationController, currentOpcode, STACK }) => {
@@ -724,31 +724,29 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     animationController.playAnimation(animationId, {
       startFrame,
       endFrame,
-      loop: true,
+      loop: LoopRepeat,
     })
   },
   LADDERANIME: ({ animationController, currentOpcode, STACK }) => {
-    const unknownParam1 = STACK.pop( ) as number;
-    const unknownParam2 = STACK.pop() as number;
+    const animationId = currentOpcode.param;
+    const startFrame = STACK.pop() as number;
+    const endFrame = STACK.pop() as number;
 
-    animationController.setLadderAnimation(currentOpcode.param, unknownParam1, unknownParam2);
+    animationController.setLadderAnimation(animationId, startFrame, endFrame);
   },
-  LADDERDOWN2: async ({ currentOpcode, movementController, rotationController, STACK }) => {
-    // Speed? Offset?
-    const angle = currentOpcode.param; //maybe?
+  LADDERDOWN2: async ({ animationController, currentOpcode, movementController, STACK }) => {
+    const speed = currentOpcode.param;
 
     const end = vectorToFloatingPoint(STACK.splice(-3));
     const middle = vectorToFloatingPoint(STACK.splice(-3));
     const start = vectorToFloatingPoint(STACK.splice(-3));
 
-   // const animationId = animationController.getState().ladderAnimationId;
-   // if (animationId === undefined) {
-   //   console.warn('Ladder animation not set');
-   //   return;
-   // }
-    movementController.setIsClimbingLadder(true);
-    await movementController.moveToPoint(start);
-    await rotationController.turnToFaceAngle(angle, 16);
+    movementController.setIsClimbingLadder(true, speed);
+    await Promise.all([
+      animationController.playLadderIntroAnimation(),
+      movementController.moveToPoint(start)
+    ])
+    animationController.playLadderAnimation();
     await movementController.moveToPoint(middle, {
       isFacingTarget: false,
     });
@@ -756,7 +754,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       isFacingTarget: false,
     });
     movementController.setIsClimbingLadder(false);
-
   },
   LADDERUP2: args => OPCODE_HANDLERS?.LADDERDOWN2?.(args),
   LADDERUP: ({ currentOpcode, STACK }) => {

@@ -71,6 +71,9 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
       scriptController.triggerMethod('default');
       onStarted?.();
     }
+    if (isUnused && hasTriggeredDefaultRef.current) {
+      return;
+    }
     scriptController.tick();
   })
 
