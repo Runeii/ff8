@@ -78,11 +78,9 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
   })
 
   useFrame((_, delta) => {
-    const isAnimationEnabled = movementController.getState().isAnimationEnabled;
     const isTransitioningMap = !!useGlobalStore.getState().pendingFieldId;
 
-    if (!isAnimationEnabled || isTransitioningMap) {
-      animationController.pauseAnimation();
+    if (isTransitioningMap) {
       return;
     }
 

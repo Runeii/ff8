@@ -26,9 +26,10 @@ interface GlobalState {
   fieldId: typeof MAP_NAMES[number],
   pendingFieldId: typeof MAP_NAMES[number],
 
-  initialAngle: number,
+  initialAngle: number | undefined,
   hasMoved: boolean,
   isUserControllable: boolean,
+  isPlayerClimbingLadder: boolean,
   isRunEnabled: boolean,
 
   isMapJumpEnabled: boolean,
@@ -105,9 +106,10 @@ export const INITIAL_STATE: GlobalState = {
   
     currentLocationPlaceName: 0,
     hasMoved: false,
+    isPlayerClimbingLadder: false,
     isUserControllable: false,
     isRunEnabled: true,
-    initialAngle: 0,
+    initialAngle: undefined,
   
     backgroundLayerVisibility: {},
     currentParameterStates: {},
@@ -134,10 +136,10 @@ export const INITIAL_STATE: GlobalState = {
     isMapFadeEnabled: true,
   
     availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    party: [0],
+    party: [0,1,4],
     congaWaypointHistory: [],
     playerMovementSpeed: 0,
-    isPartyFollowing: false,
+    isPartyFollowing: true,
   
     cameraAndLayerScrollSprings: new Array(8).fill(0).map(() => ({
       x: new SpringValue(0),

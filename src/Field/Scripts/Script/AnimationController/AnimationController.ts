@@ -10,40 +10,40 @@ type AnimationPlayOptions = {
   action: AnimationAction;
   animationId: number;
   direction: number;
+  isCompleted?: boolean;
   loop: AnimationActionLoopStyles;
   key: string;
   keepLastFrame: boolean;
   startFrame: number;
   endFrame?: number;
+  speed: number;
   type: 'DEFAULT' | 'IDLE' | 'LADDER';
 }
 
+type SavedAnimation = {
+  animationId: number;
+  startFrame?: number;
+  endFrame?: number;
+}
+
 export const createAnimationController = (id: string | number, _headController: ReturnType<typeof createRotationController>) => {
+  const { getState: getSavedAnimation, setState: setSavedAnimation } = create(() => ({
+    idleAnimation: undefined as SavedAnimation | undefined,
+    ladderAnimation: undefined as SavedAnimation | undefined,
+  }));
+
   const { getState, setState } = create(() => ({
     clips: [] as AnimationClip[],
     mesh: undefined as Object3D | undefined,
     mixer: undefined as AnimationMixer | undefined,
 
-    savedLadderAnimation: {
-      animationId: 0,
-      startFrame: 0,
-      endFrame: undefined,
-    } as {
-      animationId: number;
-      startFrame: number;
-      endFrame?: number;
-    },
-
     activeAnimationId: undefined as number | undefined,
     activeAction: undefined as AnimationAction | undefined,
     activeKey: undefined as string | undefined,
     animation: undefined as AnimationPlayOptions | undefined,
-    idleAnimation: undefined as AnimationPlayOptions | undefined,
-    ladderAnimation: undefined as AnimationPlayOptions | undefined,
 
     headBone: undefined as Bone | undefined,
     id,
-    speed: FPS,
   }));
 
   const initialize = (mixer: AnimationMixer, clips: AnimationClip[], mesh: Object3D) => {
@@ -55,45 +55,23 @@ export const createAnimationController = (id: string | number, _headController: 
     mixer.update(0);
   }
 
-  const updateByType = (updatedItem: AnimationPlayOptions | undefined, type: 'DEFAULT' | 'IDLE' | 'LADDER') => {
-    if (type === 'DEFAULT') {
-      setState({
-        animation: updatedItem,
-      });
-    } else if (type === 'IDLE') {
-      setState({
-        idleAnimation: updatedItem,
-      });
-    } else if (type === 'LADDER') {
-      setState({
-        ladderAnimation: updatedItem,
-      });
-    }
-  }
-
+  let currentDirection = 1;
   const tick = (delta: number) => {
-    const {
-      activeAction,
-      mixer,
-      mesh,
-      animation,
-      idleAnimation,
-      ladderAnimation,
-    } = getState();
-
+    const { activeAction, mixer, mesh } = getState();
+    
     if (mixer === undefined || mesh === undefined) {
       return;
     }
-
-    const queue = [idleAnimation, ladderAnimation, animation].filter(Boolean);
-    const currentQueueItem = queue.at(-1);
-
+    
+    const { animation: currentQueueItem } = getState();
+    
     if (!currentQueueItem) {
-      mixer.update(0);
       return;
     }
-
     const action = currentQueueItem.action;
+    const startTime = currentQueueItem.startFrame !== undefined ? currentQueueItem.startFrame / FPS : 0;
+    const endTime = currentQueueItem.endFrame !== undefined ? currentQueueItem.endFrame / FPS : action.getClip().duration;
+
     if (action !== activeAction || currentQueueItem.key !== getState().activeKey ) {
       mixer.update(0);
       mixer.stopAllAction();
@@ -102,71 +80,66 @@ export const createAnimationController = (id: string | number, _headController: 
         activeAction.reset();
       }
       
-      action.time = currentQueueItem.startFrame / FPS;
+      action.time = startTime;
       action.enabled = true;
-
+      action.paused = true;
+      currentDirection = currentQueueItem.speed;
       setState({
         activeAction: action,
         activeKey: currentQueueItem.key,
         activeAnimationId: currentQueueItem.animationId,
       });
+      
+      applyAnimationAtTime(mesh, action.getClip(), startTime);
     }
 
-    const endTime = currentQueueItem.endFrame !== undefined ? currentQueueItem.endFrame / FPS : action.getClip().duration;
-
-    if (action.time === endTime || Number.isNaN(action.time) || currentQueueItem.startFrame === currentQueueItem.endFrame) {
-      applyAnimationAtTime(mesh, action.getClip(), (currentQueueItem.endFrame ?? currentQueueItem.startFrame) / FPS);
+    // If the start frame is the same as the end frame, we apply the animation at that frame and do not change again
+    if (startTime === endTime) {
+      return;
     }
 
-    if (currentQueueItem.loop !== LoopOnce) {
-      const startTime = currentQueueItem.startFrame / FPS;
-      const endTime = currentQueueItem.endFrame !== undefined
-        ? currentQueueItem.endFrame / FPS
-        : action.getClip().duration;
+    action.time = action.time + (delta * currentDirection);
 
-      if (!action.isRunning() && action.time !== endTime) {
-        action.play();
-        action.paused = false;
+    // We are at the end of the animation, so we need to check if we should loop or stop
+    if (action.time >= endTime) {
+      if (currentQueueItem.loop === LoopOnce) {
+        action.time = endTime;
+        action.paused = true;
+
+        if (!currentQueueItem.keepLastFrame) {
+          setState({
+            activeAction: undefined,
+            animation: undefined,
+          });
+        } else {
+          setState(state => ({
+            animation: {
+              ...state.animation,
+              isCompleted: true,
+            }
+          }));
+        }
         return;
       }
 
-      const buffer = 0.001;
-      
-      if (action.time <= startTime + buffer) {
-        action.timeScale = 1;
+      if (currentQueueItem.loop === LoopPingPong) {
+        currentDirection *= -1
+        action.time = endTime + (delta * currentDirection);
+      } else if (currentQueueItem.loop === LoopRepeat) {
+        action.time = startTime;
       }
-      
-      if (action.time >= endTime - buffer) {
-        action.timeScale = -1;
-      }
-
-      return;
     }
 
-    if (action.time >= endTime && !currentQueueItem.loop) {
-      return;
-    }
 
-    action.play();
-    action.setLoop(LoopOnce, 1);
-    action.paused = true;
-    action.time += delta;
-
-    if (action.time < endTime) {
-      mixer.update(delta);
-      return;
+    // Always go up from start time
+    if (action.time <= startTime) {
+      currentDirection *= -1;
+      action.time = startTime + (delta * currentDirection);
     }
 
     action.paused = true;
-
-    if (currentQueueItem.keepLastFrame) {
-      return;
-    }
-
-    updateByType(undefined, currentQueueItem.type);
-    action.stop();
-    action.reset();
-    mixer.stopAllAction();
+    action.play()
+    mixer.update(delta);
   }
 
   const playAnimation = (animationId: number, options?: {
@@ -176,6 +149,7 @@ export const createAnimationController = (id: string | number, _headController: 
     startFrame?: number;
     endFrame?: number;
     priority?: number;
+    speed?: number;
     type?: 'DEFAULT' | 'IDLE' | 'LADDER';
   }) => {
     const { mixer, clips } = getState();
@@ -203,21 +177,17 @@ export const createAnimationController = (id: string | number, _headController: 
       loop: options?.loop ?? LoopOnce,
       keepLastFrame: options?.keepLastFrame ?? false,
       type: options?.type ?? 'DEFAULT',
+      speed: options?.speed ?? 1,
     }
 
-    if (playOptions.type === 'DEFAULT') {
-      setState({
-        animation: playOptions,
-      })
-    } else if (playOptions.type === 'IDLE') {
-      setState({
-        idleAnimation: playOptions,
-      })
-    } else if (playOptions.type === 'LADDER') {
-      setState({
-        ladderAnimation: playOptions,
-      })
+    // Exception here. I'm not entirely sure how FF8 handles cases where it is looping the standing animation
+    if (animationId === 0) {
+      playOptions.loop = LoopOnce
     }
+
+    setState({
+      animation: playOptions,
+    });
 
     return new Promise<void>((resolve) => {
       const checkIsPlaying = () => {
@@ -233,7 +203,23 @@ export const createAnimationController = (id: string | number, _headController: 
     });
   }
 
-  const stopAnimation = () => {}
+  const stopAnimation = () => {
+    const { activeAction, mixer } = getState();
+    if (!activeAction || !mixer) {
+      return;
+    }
+    
+    activeAction.stop();
+    activeAction.reset();
+    mixer.stopAllAction();
+    
+    setState({
+      activeAction: undefined,
+      animation: undefined,
+      activeKey: undefined,
+      activeAnimationId: undefined,
+    });
+  }
 
   const pauseAnimation = () => {
     const { activeAction } = getState();
@@ -250,20 +236,32 @@ export const createAnimationController = (id: string | number, _headController: 
       type: 'IDLE',
     }
 
-    const { idleAnimation } = getState();
+    setSavedAnimation({
+      idleAnimation: {
+        animationId,
+        ...newPlayOptions,
+      }
+    })
 
-    if (
-      idleAnimation &&
-      (
-        animationId === idleAnimation.animationId &&
-        idleAnimation.startFrame === newPlayOptions.startFrame &&
-        idleAnimation.endFrame === newPlayOptions.endFrame &&
-        idleAnimation.loop === newPlayOptions.loop
-      )
-    ) {
+    playAnimation(animationId, newPlayOptions);
+  }
+
+  const playIdleAnimation = (animationId?: number) => {
+    if (animationId !== undefined) {
+      setIdleAnimation(animationId);
+    }
+
+    const { idleAnimation } = getSavedAnimation();
+    if (!idleAnimation) {
+      console.warn('Idle animation not set');
       return;
     }
-    playAnimation(animationId, newPlayOptions);
+    return playAnimation(idleAnimation.animationId, {
+      startFrame: idleAnimation.startFrame,
+      endFrame: idleAnimation.endFrame,
+      loop: LoopRepeat,
+      type: 'IDLE',
+    });
   }
 
   const setAnimationSpeed = (speed: number) => setState({ speed });
@@ -275,20 +273,13 @@ export const createAnimationController = (id: string | number, _headController: 
     }
     return true; 
   }
-
-  const isPlayingIdle = () => {
-    const { idleAnimation, activeAction } = getState();
-    if (!idleAnimation || !activeAction) {
-      return false;
-    }
-    return idleAnimation.action === activeAction && activeAction.isRunning();
-  }
+ 
 
   const setHeadBone = (headBone: Bone) => setState({ headBone });
 
   const setLadderAnimation = (ladderAnimationId: number, unknownParam1: number, unknownParam2: number) => {
-    setState({
-      savedLadderAnimation: {
+    setSavedAnimation({
+      ladderAnimation: {
         animationId: ladderAnimationId,
         startFrame: unknownParam1,
         endFrame: unknownParam2 !== 0 ? unknownParam2 : undefined,
@@ -297,10 +288,14 @@ export const createAnimationController = (id: string | number, _headController: 
   }
 
   const playLadderIntroAnimation = () => {
-    const { savedLadderAnimation } = getState();
-    playAnimation(savedLadderAnimation.animationId, {
+    const { ladderAnimation } = getSavedAnimation();
+    if (!ladderAnimation) {
+      console.warn('Ladder animation not set');
+      return;
+    }
+    return playAnimation(ladderAnimation.animationId, {
       startFrame: 0,
-      endFrame: savedLadderAnimation.startFrame,
+      endFrame: 16,
       loop: LoopOnce,
       keepLastFrame: true,
       type: 'LADDER',
@@ -308,27 +303,41 @@ export const createAnimationController = (id: string | number, _headController: 
   }
 
   const playLadderAnimation = () => {
-    const { savedLadderAnimation } = getState();
-    playAnimation(savedLadderAnimation.animationId, {
-      startFrame: savedLadderAnimation.startFrame,
-      endFrame: savedLadderAnimation.endFrame,
+    const { ladderAnimation } = getSavedAnimation();
+    if (!ladderAnimation) {
+      console.warn('Ladder animation not set');
+      return;
+    }
+    return playAnimation(ladderAnimation.animationId, {
+      startFrame: 16,
+      endFrame: undefined,
       loop: LoopPingPong,
       type: 'LADDER',
+      speed: 0.6
     });
+  }
+
+  const stopLadderAnimation = () => {
+    const { animation } = getState();
+    if (animation?.type !== 'LADDER') {
+      return;
+    }
+    stopAnimation();
   }
 
   return {
     getIsPlaying,
     getState,
     initialize,
-    isPlayingIdle,
     playAnimation,
     pauseAnimation,
+    playIdleAnimation,
     setIdleAnimation,
     setAnimationSpeed,
     stopAnimation,
     setHeadBone,
     setLadderAnimation,
+    stopLadderAnimation,
     playLadderIntroAnimation,
     playLadderAnimation,
     tick

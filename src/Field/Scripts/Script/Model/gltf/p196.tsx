@@ -13,7 +13,7 @@ import { useAnimations } from '@react-three/drei';
 import { useFragmentedGLTFLoader } from '../useFragmentedGLTFLoader'
 import { GLTF, SkeletonUtils } from 'three-stdlib'
 
-type ActionName = 'p196_action_0' | 'p196_action_1' | 'p196_action_2' | 'p196_action_3' | 'p196_action_4' | 'p196_action_5' | 'p196_action_6' | 'p196_action_7' | 'p196_action_8'
+type ActionName = 'p196_action_000' | 'p196_action_001' | 'p196_action_002' | 'p196_action_003' | 'p196_action_004' | 'p196_action_005' | 'p196_action_006' | 'p196_action_007' | 'p196_action_008'
 
 interface GLTFAction extends THREE.AnimationClip {
   name: ActionName

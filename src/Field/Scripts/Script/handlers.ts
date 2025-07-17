@@ -734,17 +734,25 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     animationController.setLadderAnimation(animationId, startFrame, endFrame);
   },
-  LADDERDOWN2: async ({ animationController, currentOpcode, movementController, STACK }) => {
-    const speed = currentOpcode.param;
+  LADDERDOWN2: async ({ animationController, movementController, STACK }) => {
+   // const speed = currentOpcode.param;
 
     const end = vectorToFloatingPoint(STACK.splice(-3));
     const middle = vectorToFloatingPoint(STACK.splice(-3));
     const start = vectorToFloatingPoint(STACK.splice(-3));
 
-    movementController.setIsClimbingLadder(true, speed);
+    useGlobalStore.setState({
+      isUserControllable: false,
+    });
+    movementController.setIsClimbingLadder(true, 22);
+
+    useGlobalStore.setState({ isPlayerClimbingLadder: true });
+
     await Promise.all([
       animationController.playLadderIntroAnimation(),
-      movementController.moveToPoint(start)
+      movementController.moveToPoint(start, {
+        isFacingTarget: false,
+      })
     ])
     animationController.playLadderAnimation();
     await movementController.moveToPoint(middle, {
@@ -753,7 +761,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await movementController.moveToPoint(end, {
       isFacingTarget: false,
     });
+    animationController.stopLadderAnimation();
     movementController.setIsClimbingLadder(false);
+    useGlobalStore.setState({
+      isPlayerClimbingLadder: false,
+      isUserControllable: true,
+    });
   },
   LADDERUP2: args => OPCODE_HANDLERS?.LADDERDOWN2?.(args),
   LADDERUP: ({ currentOpcode, STACK }) => {
@@ -768,10 +781,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     animationController.setAnimationSpeed(STACK.pop() as number)
   },
   ANIMESYNC: async ({ animationController }) => {
-    if (!animationController.isPlayingIdle()) {
-      while (animationController.getIsPlaying()) {
-        await new Promise((resolve) => requestAnimationFrame(resolve));
-      }
+    while (animationController.getIsPlaying()) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
   ANIMESTOP: ({ animationController }) => {

@@ -4,13 +4,14 @@ import { create } from "zustand";
 import createMovementController from "../MovementController/MovementController";
 import { getDirectionToVector, getShortestRouteToAngle, radiansToUnit, signedAngleBetweenVectors } from "./rotationUtils";
 import { RefObject } from "react";
+import useGlobalStore from "../../../../store";
 
 export const createRotationController = (
   id: string | number,
   movementController: ReturnType<typeof createMovementController>,
   entityRef: RefObject<Group | null>
 ) => {
-  const {getState} = create(() => ({
+  const { getState } = create(() => ({
     angle: new SpringValue(0),
     id,
     target: undefined,

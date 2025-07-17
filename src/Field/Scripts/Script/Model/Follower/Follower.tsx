@@ -53,6 +53,7 @@ const Follower = ({ children, movementController, partyMemberId, rotationControl
     }
 
     const leaderSpeed = leaderMovementController.getState().movementSpeed;
+    movementController.setMovementSpeed(leaderSpeed);
 
     const { position, angle } = history;
   
@@ -61,7 +62,6 @@ const Follower = ({ children, movementController, partyMemberId, rotationControl
     if (distance < 0.004) {
       return;
     }
-    movementController.setMovementSpeed(leaderSpeed);
     movementController.moveToPoint(position, {
       duration: isFirstHistoryItem ? 0 : 32,
       isFacingTarget: false,

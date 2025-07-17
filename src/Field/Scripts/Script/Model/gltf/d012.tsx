@@ -13,7 +13,7 @@ import { useAnimations } from '@react-three/drei';
 import { useFragmentedGLTFLoader } from '../useFragmentedGLTFLoader'
 import { GLTF, SkeletonUtils } from 'three-stdlib'
 
-type ActionName = 'd012_action_0' | 'd012_action_1' | 'd012_action_10' | 'd012_action_11' | 'd012_action_12' | 'd012_action_13' | 'd012_action_14' | 'd012_action_15' | 'd012_action_16' | 'd012_action_17' | 'd012_action_18' | 'd012_action_19' | 'd012_action_2' | 'd012_action_20' | 'd012_action_21' | 'd012_action_22' | 'd012_action_23' | 'd012_action_3' | 'd012_action_4' | 'd012_action_5' | 'd012_action_6' | 'd012_action_7' | 'd012_action_8' | 'd012_action_9'
+type ActionName = 'd012_action_000' | 'd012_action_001' | 'd012_action_002' | 'd012_action_003' | 'd012_action_004' | 'd012_action_005' | 'd012_action_006' | 'd012_action_007' | 'd012_action_008' | 'd012_action_009' | 'd012_action_010' | 'd012_action_011' | 'd012_action_012' | 'd012_action_013' | 'd012_action_014' | 'd012_action_015' | 'd012_action_016' | 'd012_action_017' | 'd012_action_018' | 'd012_action_019' | 'd012_action_020' | 'd012_action_021' | 'd012_action_022' | 'd012_action_023'
 
 interface GLTFAction extends THREE.AnimationClip {
   name: ActionName

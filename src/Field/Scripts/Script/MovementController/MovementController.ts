@@ -20,7 +20,7 @@ export const createMovementController = (id: string | number) => {
     id,
     isAnimationEnabled: true,
     movementTarget: undefined as Vector3 | undefined,
-    movementSpeed: 2560,
+    movementSpeed: 0,
     // @ts-expect-error SpringValue incorrectly typed
     position: new SpringValue<number[]>([2,2,2]), // default to way out of view
     // @ts-expect-error SpringValue incorrectly typed

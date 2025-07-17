@@ -1,5 +1,5 @@
 import { Script } from "../../types";
-import {  ComponentType, type JSX, lazy, useCallback, useRef, useState } from "react";
+import {  ComponentType, type JSX, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { Bone, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
 import Controls from "./Controls/Controls";
@@ -68,29 +68,69 @@ const Model = ({animationController, models, scriptController, movementControlle
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
   const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && state.isPartyFollowing && !isLeadCharacter);
 
-  const lastMovementTimeRef = useRef(0);
+  useEffect(() => {
+    if (!isLeadCharacter) {
+      return;
+    }
+    const {fieldDirection, initialAngle} = useGlobalStore.getState();
+    rotationController.turnToFaceAngle(initialAngle ?? fieldDirection, 1)
+  }, [isLeadCharacter, rotationController]);
+
+  const [currentAngle, setCurrentAngle] = useState<number>(0);
+  useEffect(() => {
+    if (!isLeadCharacter) {
+      return;
+    }
+    useGlobalStore.setState({
+      initialAngle: currentAngle,
+    });
+  }, [isLeadCharacter, currentAngle]);
+
+  const isMovingRef = useRef(false);
   useFrame(() => {
-    const { isClimbingLadder, movementSpeed, position } = movementController.getState();
+    const angle = rotationController.getState().angle.get();
+    if (angle !== currentAngle) {
+      setCurrentAngle(angle);
+    }
+    const {isPlayerClimbingLadder} = useGlobalStore.getState();
+    const { isClimbingLadder, isAnimationEnabled, movementSpeed } = movementController.getState();
+    const { animation } = animationController.getState();
 
-    if (isClimbingLadder) {
+    if (isClimbingLadder || !isAnimationEnabled || isPlayerClimbingLadder) {
       return;
     }
 
-    if (!position.isAnimating && lastMovementTimeRef.current + 60 < Date.now()) {
-      animationController.setIdleAnimation(0);
+    if (animation && animation.type !== 'IDLE' && animation.isCompleted !== true) {
       return;
     }
 
-    if (!position.isAnimating) {
+    const getNextAnimation = () => {
+      if (movementSpeed > 2695) {
+        return 2; // RUN_ANIMATION
+      } else if (movementSpeed > 0) {
+        return 1; // WALK_ANIMATION
+      } else {
+        return 0; // IDLE_ANIMATION
+      }
+    }
+
+    const isNowMoving = movementSpeed > 0;
+    const currentAnimation = animation?.animationId ?? -1;
+    const nextAnimation = getNextAnimation();
+
+    if (currentAnimation === nextAnimation) {
       return;
     }
 
-    lastMovementTimeRef.current = Date.now();
+    if (isNowMoving && !isMovingRef.current && nextAnimation !== 0) {
+      animationController.playIdleAnimation(nextAnimation);
+    }
 
-    const WALK_ANIMATION = 1;
-    const RUN_ANIMATION = 2;
+    if (!isNowMoving && isMovingRef.current && nextAnimation === 0) {
+      animationController.playIdleAnimation(nextAnimation);
+    }
 
-    animationController.setIdleAnimation(movementSpeed > 2695 ? RUN_ANIMATION : WALK_ANIMATION);
+    isMovingRef.current = isNowMoving;
   });
 
   // Footstep

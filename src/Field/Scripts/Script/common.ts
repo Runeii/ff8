@@ -107,7 +107,7 @@ export const isTouching = (thisId: number, targetName: string, scene: Scene) => 
   const thisPosition = thisMesh.getWorldPosition(new Vector3());
   const targetPosition = targetMesh.getWorldPosition(new Vector3());
 
-  return thisPosition.distanceTo(targetPosition) < 0.25;
+  return thisPosition.distanceTo(targetPosition) < 0.05;
 }
 
 

@@ -18,10 +18,6 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
   const lineRef = useRef<Mesh>(null);
 
   const talkMethod = scriptController.script.methods.find(method => method.methodId === 'talk');
-  const isUserControllable = useGlobalStore(state => state.isUserControllable);
-  const isTalkable = useScriptStateStore(state => state.isTalkable);
-  const hasActiveText = useGlobalStore(state => state.currentMessages.length > 0);
-  const hasActiveTalkMethod = useGlobalStore(state => state.hasActiveTalkMethod);
 
   const hasValidTalkMethod = useMemo(() => {
     if (!talkMethod) {
@@ -31,12 +27,18 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
   }, [talkMethod]);
 
   
-  const isPlayerAbleToTalk = isUserControllable && isTalkable && !hasActiveTalkMethod && hasValidTalkMethod && !hasActiveText;
-
+  
   const onKeyDown = useCallback((event: KeyboardEvent) => {
+    const { currentMessages, isUserControllable, hasActiveTalkMethod  } = useGlobalStore.getState();
+    const isTalkable = useScriptStateStore.getState().isTalkable;
+    const hasActiveText = currentMessages.length > 0;
+
+    const isPlayerAbleToTalk = isUserControllable && isTalkable && !hasActiveTalkMethod && hasValidTalkMethod && !hasActiveText;
+    console.log('isPlayerAbleToTalk', isPlayerAbleToTalk, 'hasValidTalkMethod', hasValidTalkMethod, 'hasActiveText', hasActiveText);
     if (!isPlayerAbleToTalk || !lineRef.current) {
       return;
     }
+
     event.stopImmediatePropagation();
     if (event.key !== ' ') {
       return;
@@ -46,16 +48,18 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
     scriptController.triggerMethod('talk').then(() => {
       useGlobalStore.setState({ hasActiveTalkMethod: false });
     });
-  }, [isPlayerAbleToTalk, scriptController]);
+  }, [hasValidTalkMethod, scriptController, useScriptStateStore]);
+
+  const isUserControllable = useGlobalStore(state => state.isUserControllable);
 
   useIntersection(lineRef.current, isLineOn && isUserControllable, {
     onTouchOn: () => {
       console.log('onTouchOn', scriptController.script.groupId)
       window.addEventListener('keydown', onKeyDown);
-       scriptController.triggerMethod('touchon');
+      scriptController.triggerMethod('touchon');
     },
     onTouch: () => {
-     // console.log('onTouch', scriptController.script.groupId)
+      console.log('onTouch', scriptController.script.groupId)
        scriptController.triggerMethod('touch');
     },
     onTouchOff: () => {

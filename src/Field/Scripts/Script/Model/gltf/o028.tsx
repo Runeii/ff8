@@ -13,7 +13,7 @@ import { useAnimations } from '@react-three/drei';
 import { useFragmentedGLTFLoader } from '../useFragmentedGLTFLoader'
 import { GLTF, SkeletonUtils } from 'three-stdlib'
 
-type ActionName = 'o028_action_0' | 'o028_action_1' | 'o028_action_10' | 'o028_action_11' | 'o028_action_12' | 'o028_action_13' | 'o028_action_14' | 'o028_action_15' | 'o028_action_2' | 'o028_action_3' | 'o028_action_4' | 'o028_action_5' | 'o028_action_6' | 'o028_action_7' | 'o028_action_8' | 'o028_action_9'
+type ActionName = 'o028_action_000' | 'o028_action_001' | 'o028_action_002' | 'o028_action_003' | 'o028_action_004' | 'o028_action_005' | 'o028_action_006' | 'o028_action_007' | 'o028_action_008' | 'o028_action_009' | 'o028_action_010' | 'o028_action_011' | 'o028_action_012' | 'o028_action_013' | 'o028_action_014' | 'o028_action_015'
 
 interface GLTFAction extends THREE.AnimationClip {
   name: ActionName
@@ -42,7 +42,7 @@ export default React.forwardRef(function o028(props: JSX.IntrinsicElements['grou
    return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
-        <group name="o028_armature" position={[0, 0, 0.039]}>
+        <group name="o028_armature" position={[0, 0, 0.037]}>
           <primitive object={nodes.bone_0} />
           <skinnedMesh name="o028" geometry={nodes.o028.geometry} material={materials.o028_texture_0} skeleton={nodes.o028.skeleton} />
         </group>

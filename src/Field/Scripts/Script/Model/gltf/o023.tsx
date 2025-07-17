@@ -13,7 +13,7 @@ import { useAnimations } from '@react-three/drei';
 import { useFragmentedGLTFLoader } from '../useFragmentedGLTFLoader'
 import { GLTF, SkeletonUtils } from 'three-stdlib'
 
-type ActionName = 'o023_action_0'
+type ActionName = 'o023_action_000'
 
 interface GLTFAction extends THREE.AnimationClip {
   name: ActionName
@@ -42,7 +42,7 @@ export default React.forwardRef(function o023(props: JSX.IntrinsicElements['grou
    return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
-        <group name="o023_armature" position={[0, 0, 0.067]}>
+        <group name="o023_armature">
           <primitive object={nodes.bone_0} />
           <skinnedMesh name="o023" geometry={nodes.o023.geometry} material={materials.o023_texture_0} skeleton={nodes.o023.skeleton} />
         </group>

@@ -100,8 +100,8 @@ const Controls = ({ children, movementController, rotationController }: Controls
     }
 
     const walkmesh = scene.getObjectByName("walkmesh");
-    
-    if (!player || !walkmesh || !isUserControllable) {
+    const isTurning = rotationController.getState().angle.isAnimating;
+    if (!player || !walkmesh || !isUserControllable || isTurning) {
       return;
     }
 
@@ -137,7 +137,7 @@ const Controls = ({ children, movementController, rotationController }: Controls
       currentPosition[2]
     ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
 
-    const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT);
+    const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT / 4);
     
     if (!newPosition) {
       return

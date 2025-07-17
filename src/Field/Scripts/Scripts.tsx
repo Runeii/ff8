@@ -23,10 +23,10 @@ const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
     }))
   }, [doors, scripts]);
 
-  const [mainScript, ...otherScripts] = useMemo(() => {
-    const mainScript = scripts.find(script => script.type === 'main');
+  const [mainScripts, ...otherScripts] = useMemo(() => {
+    const mainScripts = scripts.filter(script => script.type === 'main');
     const otherScripts = scripts.filter(script => script.type !== 'main');
-    return [mainScript, ...otherScripts];
+    return [mainScripts, ...otherScripts];
   }, [scripts]);
 
   const [scriptsMounted, setScriptsMounted] = useState<number>(0);
@@ -39,10 +39,10 @@ const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
     setRunningScripts(prev => prev + 1);
   }, []);
 
-  const [hasMountedMainScript, setHasMountedMainScript] = useState<boolean>(false);
+  const [hasMountedMainScripts, setHasMountedMainScripts] = useState<boolean>(false);
 
   const handleMainScriptMounted = useCallback(() => {
-    setHasMountedMainScript(true);
+    setHasMountedMainScripts(true);
   }, []);
 
   const handleStartedMain = useCallback(() => {
@@ -58,7 +58,7 @@ const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
   return (
     <>
       {otherScripts.map(script => <Script doors={formattedDoors} key={`${fieldId}--${script.exec}`} isActive={scriptsMounted === otherScripts.length} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} onStarted={onStarted} /> )}
-      {runningScripts === otherScripts.length && mainScript && <Script doors={formattedDoors} isActive={hasMountedMainScript} models={models} script={mainScript} onSetupCompleted={handleMainScriptMounted} onStarted={handleStartedMain} />}
+      {runningScripts === otherScripts.length && mainScripts.map(mainScript => <Script doors={formattedDoors} key={`${fieldId}--${mainScript.exec}`} isActive={hasMountedMainScripts} models={models} script={mainScript} onSetupCompleted={handleMainScriptMounted} onStarted={handleStartedMain} />)}
     </>
   );
 }
