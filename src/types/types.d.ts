@@ -139,6 +139,7 @@ declare global {
   type CongaHistory = {
     position: Vector3;
     angle: number;
+    speed: number;
   }
 
 

@@ -2,6 +2,7 @@ import { Scene, Vector3 } from "three";
 import { create } from "zustand";
 import { SpringValue } from "@react-spring/web";
 import { numberToFloatingPoint } from "../../../../utils";
+import { createAnimationController } from "../AnimationController/AnimationController";
 
 export type MoveOptions = {
   customMovementTarget?: Vector3;
@@ -15,10 +16,9 @@ export const SPEED = {
   RUNNING: 0.5,
 }
 
-export const createMovementController = (id: string | number) => {
+export const createMovementController = (id: string | number, animationController: ReturnType<typeof createAnimationController>) => {
   const {getState, setState, subscribe} = create(() => ({
     id,
-    isAnimationEnabled: true,
     movementTarget: undefined as Vector3 | undefined,
     movementSpeed: 0,
     // @ts-expect-error SpringValue incorrectly typed
@@ -40,12 +40,6 @@ export const createMovementController = (id: string | number) => {
     });
   }
 
-  const setIsAnimationEnabled = (isAnimationEnabled: boolean) => {
-    setState({
-      isAnimationEnabled,
-    });
-  }
-
   const setMovementSpeed = (speed: number) => {
     setState({
       movementSpeed: speed,
@@ -60,11 +54,10 @@ export const createMovementController = (id: string | number) => {
     ]);
   }
 
-  let raf: number | null = null;
+  let currentRunTimestamp = 0;
   const moveToPoint = async (target: Vector3, passedOptions?: Partial<MoveOptions>) => {
-    window.cancelAnimationFrame(raf as number);
-    raf = null;
-
+    const timestamp = Date.now();
+    currentRunTimestamp = timestamp;
     const defaultOptions: MoveOptions = {
       customMovementTarget: undefined,
       duration: undefined,
@@ -84,7 +77,12 @@ export const createMovementController = (id: string | number) => {
     
     setMovementTarget(customMovementTarget ?? (isFacingTarget ? target : undefined));
     
-    setIsAnimationEnabled(!!isAnimationEnabled);
+    const movementSpeed = getState().movementSpeed;
+
+    if (isAnimationEnabled) {
+      animationController.playMovementAnimation(movementSpeed > 2695 ? 2 : 1)
+    }
+
     const position = getState().position
     const distance = target.distanceTo(new Vector3().fromArray(position.get()));
 
@@ -92,6 +90,7 @@ export const createMovementController = (id: string | number) => {
     if (Number.isNaN(calculatedDuration) || Number.isFinite(calculatedDuration) === false) {
       calculatedDuration = 0;
     }
+
     await position.start([target.x, target.y, target.z], {
       config: {
         duration: calculatedDuration
@@ -99,7 +98,14 @@ export const createMovementController = (id: string | number) => {
       immediate: calculatedDuration === 0,
     });
 
-    setIsAnimationEnabled(true);
+    if (timestamp !== currentRunTimestamp) {
+      return;
+    }
+
+    if (isAnimationEnabled) {
+      animationController.playIdleAnimation()
+    }
+
     setMovementTarget(undefined)
   }
 

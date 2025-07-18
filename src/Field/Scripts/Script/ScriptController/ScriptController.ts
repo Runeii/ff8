@@ -273,40 +273,6 @@ const createScriptController = ({
 
     const uniqueId = `${script.groupId}-${methodId}--${priority}-${Date.now()}`;
 
-    if (getState().isAwaitingAnOpcode) {
-      window.scriptDump({
-        timestamps: [Date.now()],
-        action: 'Waiting for script to finish processing an opcode',
-        methodId,
-        opcode: undefined,
-        payload: uniqueId,
-        index: undefined,
-        isAsync: false,
-        scriptLabel: script.groupId,
-      })
-      await new Promise<void>(resolve => {
-        const check = () => {
-          if (!getState().isAwaitingAnOpcode) {
-            window.scriptDump({
-              timestamps: [Date.now()],
-              action: 'Finished waiting for script to finish processing an opcode. Triggering method',
-              methodId,
-              opcode: undefined,
-              payload: uniqueId,
-              index: undefined,
-              isAsync: false,
-              scriptLabel: script.groupId,
-            })
-
-            resolve();
-          } else {
-            requestAnimationFrame(check);
-          }
-        }
-        check();
-      });
-    }
-
     window.scriptDump({
       timestamps: [Date.now()],
       action: `Adding method ${methodId} to queue with unique ID ${uniqueId}`,

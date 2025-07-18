@@ -86,51 +86,11 @@ const Model = ({animationController, models, scriptController, movementControlle
     });
   }, [isLeadCharacter, currentAngle]);
 
-  const isMovingRef = useRef(false);
   useFrame(() => {
     const angle = rotationController.getState().angle.get();
     if (angle !== currentAngle) {
       setCurrentAngle(angle);
     }
-    const {isPlayerClimbingLadder} = useGlobalStore.getState();
-    const { isClimbingLadder, isAnimationEnabled, movementSpeed } = movementController.getState();
-    const { animation } = animationController.getState();
-
-    if (isClimbingLadder || !isAnimationEnabled || isPlayerClimbingLadder) {
-      return;
-    }
-
-    if (animation && animation.type !== 'IDLE' && animation.isCompleted !== true) {
-      return;
-    }
-
-    const getNextAnimation = () => {
-      if (movementSpeed > 2695) {
-        return 2; // RUN_ANIMATION
-      } else if (movementSpeed > 0) {
-        return 1; // WALK_ANIMATION
-      } else {
-        return 0; // IDLE_ANIMATION
-      }
-    }
-
-    const isNowMoving = movementSpeed > 0;
-    const currentAnimation = animation?.animationId ?? -1;
-    const nextAnimation = getNextAnimation();
-
-    if (currentAnimation === nextAnimation) {
-      return;
-    }
-
-    if (isNowMoving && !isMovingRef.current && nextAnimation !== 0) {
-      animationController.playIdleAnimation(nextAnimation);
-    }
-
-    if (!isNowMoving && isMovingRef.current && nextAnimation === 0) {
-      animationController.playIdleAnimation(nextAnimation);
-    }
-
-    isMovingRef.current = isNowMoving;
   });
 
   // Footstep

@@ -752,14 +752,17 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       animationController.playLadderIntroAnimation(),
       movementController.moveToPoint(start, {
         isFacingTarget: false,
+        isAnimationEnabled: false
       })
     ])
     animationController.playLadderAnimation();
     await movementController.moveToPoint(middle, {
       isFacingTarget: false,
+      isAnimationEnabled: false
     });
     await movementController.moveToPoint(end, {
       isFacingTarget: false,
+      isAnimationEnabled: false
     });
     animationController.stopLadderAnimation();
     movementController.setIsClimbingLadder(false);

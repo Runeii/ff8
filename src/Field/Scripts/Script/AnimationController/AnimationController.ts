@@ -1,7 +1,6 @@
 import { AnimationAction, AnimationActionLoopStyles, AnimationClip, AnimationMixer, Bone, LoopOnce, LoopPingPong, LoopRepeat } from "three";
 import { create } from "zustand";
 import { type Object3D } from 'three';
-import createRotationController from "../RotationController/RotationController";
 import { applyAnimationAtTime } from "./animationUtils";
 
 const FPS = 25;
@@ -26,7 +25,7 @@ type SavedAnimation = {
   endFrame?: number;
 }
 
-export const createAnimationController = (id: string | number, _headController: ReturnType<typeof createRotationController>) => {
+export const createAnimationController = (id: string | number) => {
   const { getState: getSavedAnimation, setState: setSavedAnimation } = create(() => ({
     idleAnimation: undefined as SavedAnimation | undefined,
     ladderAnimation: undefined as SavedAnimation | undefined,
@@ -44,6 +43,7 @@ export const createAnimationController = (id: string | number, _headController: 
 
     headBone: undefined as Bone | undefined,
     id,
+    speed: 16, // Default speed, can be adjusted later
   }));
 
   const initialize = (mixer: AnimationMixer, clips: AnimationClip[], mesh: Object3D) => {
@@ -152,7 +152,7 @@ export const createAnimationController = (id: string | number, _headController: 
     speed?: number;
     type?: 'DEFAULT' | 'IDLE' | 'LADDER';
   }) => {
-    const { mixer, clips } = getState();
+    const { mixer, clips, speed } = getState();
     const clip = clips[animationId]
 
     if (!clip) {
@@ -177,9 +177,12 @@ export const createAnimationController = (id: string | number, _headController: 
       loop: options?.loop ?? LoopOnce,
       keepLastFrame: options?.keepLastFrame ?? false,
       type: options?.type ?? 'DEFAULT',
-      speed: options?.speed ?? 1,
+      speed: speed / 16
     }
-
+    playOptions.speed *= options?.speed ?? 1;
+    if (id === 1) {
+      console.log('Speed',  speed / FPS, 'Adjustment', options?.speed ?? 1, 'Final Speed', playOptions.speed);
+    }
     // Exception here. I'm not entirely sure how FF8 handles cases where it is looping the standing animation
     if (animationId === 0) {
       playOptions.loop = LoopOnce
@@ -246,16 +249,34 @@ export const createAnimationController = (id: string | number, _headController: 
     playAnimation(animationId, newPlayOptions);
   }
 
-  const playIdleAnimation = (animationId?: number) => {
-    if (animationId !== undefined) {
-      setIdleAnimation(animationId);
+  const playMovementAnimation = (animationId: number) => {
+    const { animation } = getState();
+    if (animation?.type === 'IDLE' && animation.animationId === animationId) {
+      return;
     }
 
+    if (animation?.type === 'IDLE') {
+      stopAnimation();
+    }
+
+    return playAnimation(animationId, {
+      loop: LoopRepeat,
+      type: 'IDLE',
+    });
+  }
+
+  const playIdleAnimation = () => {
     const { idleAnimation } = getSavedAnimation();
+
     if (!idleAnimation) {
       console.warn('Idle animation not set');
       return;
     }
+    const { animation } = getState();
+    if (animation?.type === 'IDLE') {
+      stopAnimation();
+    }
+
     return playAnimation(idleAnimation.animationId, {
       startFrame: idleAnimation.startFrame,
       endFrame: idleAnimation.endFrame,
@@ -332,6 +353,7 @@ export const createAnimationController = (id: string | number, _headController: 
     playAnimation,
     pauseAnimation,
     playIdleAnimation,
+    playMovementAnimation,
     setIdleAnimation,
     setAnimationSpeed,
     stopAnimation,

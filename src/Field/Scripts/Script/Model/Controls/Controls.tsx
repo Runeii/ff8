@@ -117,8 +117,9 @@ const Controls = ({ children, movementController, rotationController }: Controls
     const isWalking = !isRunEnabled || movementFlags.isWalking;
     const speed = isWalking ? SPEED.WALKING : SPEED.RUNNING
     direction.normalize().multiplyScalar(speed).multiplyScalar(delta);
+    const movementSpeed = isWalking ? 2560 : 7560
 
-    movementController.setMovementSpeed(isWalking ? 2560 : 7560);
+    movementController.setMovementSpeed(movementSpeed);
 
     const currentPosition = position.get();
     if (!currentPosition) {
@@ -160,25 +161,22 @@ const Controls = ({ children, movementController, rotationController }: Controls
       isFacingTarget: false,
     });
 
-    useGlobalStore.setState({
-      hasMoved: true,
-    });
-    useGlobalStore.setState((storeState) => {
-      const latestCongaWaypoint = storeState.congaWaypointHistory[0];
+    useGlobalStore.setState(state => {
+      state.hasMoved = true;
+
+      const latestCongaWaypoint = state.congaWaypointHistory[0];
       if (latestCongaWaypoint && latestCongaWaypoint.position.distanceTo(newPosition) < 0.005) {
-        return storeState;
+        return state;
       }
-      return {
-        ...storeState,
-        hasMoved: true,
-        congaWaypointHistory: [
-          {
-            position: newPosition.clone(),
-            angle: movementAngle,
-          },
-          ...storeState.congaWaypointHistory,
-        ],
+      state.congaWaypointHistory.push({
+        position: newPosition.clone(),
+        angle: movementAngle,
+        speed: movementSpeed
+      })
+      if (state.congaWaypointHistory.length > 100) {
+        state.congaWaypointHistory.shift();
       }
+      return state;
     });
   }, [isTransitioningMap, hasPlacedCharacter, isUserControllable, handleMovement, rotationController, isRunEnabled, movementFlags.isWalking, movementController, position]);
 
