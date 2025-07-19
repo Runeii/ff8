@@ -168,7 +168,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     );
   } else if (isFollower) {
     return (
-      <Follower movementController={movementController} partyMemberId={partyMemberId} rotationController={rotationController} useScriptStateStore={useScriptStateStore}>
+      <Follower animationController={animationController} movementController={movementController} partyMemberId={partyMemberId} rotationController={rotationController} useScriptStateStore={useScriptStateStore}>
         {modelJsx}
       </Follower>
     )

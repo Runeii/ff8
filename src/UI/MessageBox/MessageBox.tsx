@@ -9,6 +9,7 @@ import useGlobalStore from "../../store.ts"
 import { FontColor, Modifier, Placement } from "../textTypes.ts"
 import { config, useSpring } from "@react-spring/web"
 import { saveGame } from "../../Field/fieldUtils.ts"
+import { closeMessage } from "../../Field/Scripts/Script/utils.ts"
 
 type MessageBoxProps = {
   isSavePoint: boolean
@@ -91,20 +92,7 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
       return;
     }
 
-    useGlobalStore.setState(state => {
-      const currentMessages = state.currentMessages.filter(message => message.id !== id);
-      return {
-        ...state,
-        currentMessages
-      };
-    });
-
-    document.dispatchEvent(new CustomEvent('messageClosed', {
-      detail: {
-        id,
-        selectedOption: currentIndex,
-      }
-    }));
+    closeMessage(id, currentIndex);
   }, [currentIndex, currentPage, id, text.length]);
 
   const [formattedText, options] = useMemo(() => {

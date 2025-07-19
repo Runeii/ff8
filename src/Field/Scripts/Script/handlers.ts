@@ -2,7 +2,7 @@ import { LoopRepeat, Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script } from "../types";
-import { dummiedCommand, openMessage, remoteExecute, remoteExecutePartyMember, unusedCommand, wait } from "./utils";
+import { closeMessage, dummiedCommand, openMessage, remoteExecute, remoteExecutePartyMember, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
@@ -406,12 +406,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     displayMessage(id, x, y, channel, undefined, undefined, false);
   },
-  AMESW: async ({ STACK }) => {
+  AMESW: async ({ script, currentOpcode, currentOpcodeIndex, opcodes, STACK }) => {
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
     const id = STACK.pop() as number;
     const channel = STACK.pop() as number;
 
+    console.log('AMESW', id, x, y, channel, currentOpcode.param, currentOpcodeIndex, script, currentOpcode, opcodes);
     await displayMessage(id, x, y, channel);
   },
   RAMESW: async ({ STACK }) => {
@@ -493,10 +494,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       console.warn('No message to close');
       return;
     }
-    const closedMessages = currentMessages.filter(message => message.id !== lastOpenedMessage.id);
-    useGlobalStore.setState({
-      currentMessages: closedMessages,
-    });
+    closeMessage(lastOpenedMessage.id, undefined);
   },
   ISTOUCH: ({ scene, script, STACK, TEMP_STACK }) => {
     const actorId = STACK.pop() as number;
@@ -2116,6 +2114,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
   },
 
+  
+  LBL: dummiedCommand,
 
   UNKNOWN12: dummiedCommand,
   CLOSEEYES: dummiedCommand,
@@ -2170,5 +2170,4 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   BLINKEYES: unusedCommand,
   SETPARTY2: unusedCommand,
 
-  LBL: unusedCommand,
 }

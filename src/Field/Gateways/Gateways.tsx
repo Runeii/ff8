@@ -17,14 +17,12 @@ const Gateways = ({ fieldId }: GatewaysProps) => {
     }
 
     if (gateway.target.startsWith('wm')) {
-      console.log('Transitioning to world map', gateway.target);
       useGlobalStore.setState({
         pendingFieldId: 'wm00',
       });
       return
     }
 
-    console.log('Transitioning to', gateway.target, 'via gateway', gateway, 'at', gateway.destination);
     useGlobalStore.setState({
       pendingFieldId: gateway.target as typeof MAP_NAMES[number],
       pendingCharacterPosition: gateway.destination

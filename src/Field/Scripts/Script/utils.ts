@@ -132,6 +132,24 @@ export const openMessage = (id: string, text: string[], placement: MessagePlacem
   });
 })
 
+export const closeMessage = (id: string, selectedOptionIndex?: number) => {
+  useGlobalStore.setState(state => {
+    const currentMessages = state.currentMessages.filter(message => message.id !== id);
+    return {
+      ...state,
+      currentMessages
+    };
+  });
+
+  document.dispatchEvent(new CustomEvent('messageClosed', {
+    detail: {
+      id,
+      selectedOption: selectedOptionIndex,
+    }
+  }));
+}
+
+
 export const getRotationAngleToDirection = (
   currentDirection: Vector3,
   targetDirection: Vector3,

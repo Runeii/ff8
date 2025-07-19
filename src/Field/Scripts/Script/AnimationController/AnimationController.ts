@@ -180,11 +180,8 @@ export const createAnimationController = (id: string | number) => {
       speed: speed / 16
     }
     playOptions.speed *= options?.speed ?? 1;
-    if (id === 1) {
-      console.log('Speed',  speed / FPS, 'Adjustment', options?.speed ?? 1, 'Final Speed', playOptions.speed);
-    }
     // Exception here. I'm not entirely sure how FF8 handles cases where it is looping the standing animation
-    if (animationId === 0) {
+    if (animationId === 0 && playOptions.type !== 'IDLE') {
       playOptions.loop = LoopOnce
     }
 
@@ -231,11 +228,10 @@ export const createAnimationController = (id: string | number) => {
     }
   }
 
-  const setIdleAnimation = (animationId: number, startFrame?: number, endFrame?: number) => {
+  const setIdleAnimation = (animationId: number, startFrame?: number, _endFrame?: number) => {
     const newPlayOptions: Partial<AnimationPlayOptions> = {
       loop: LoopRepeat,
       startFrame: startFrame ?? 0,
-      endFrame: endFrame,
       type: 'IDLE',
     }
 
@@ -279,7 +275,6 @@ export const createAnimationController = (id: string | number) => {
 
     return playAnimation(idleAnimation.animationId, {
       startFrame: idleAnimation.startFrame,
-      endFrame: idleAnimation.endFrame,
       loop: LoopRepeat,
       type: 'IDLE',
     });
