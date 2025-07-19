@@ -11,6 +11,7 @@ import Memory from './Memory/Memory'
 import { PerspectiveCamera } from '@react-three/drei'
 import Queues from './Queues/Queues'
 import ColorOverlay from './ColorOverlay/ColorOverlay'
+import { EffectComposer } from '@react-three/postprocessing'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
@@ -31,24 +32,26 @@ export default function App() {
         <Canvas camera={undefined} frameloop='always' className="canvas" gl={{
           logarithmicDepthBuffer: true,
         }}>
-          <PerspectiveCamera
-            makeDefault
-            name="moveableCamera"
-            position={[0, 0, 0]}
-            aspect={ASPECT_RATIO}
-            near={0.001}
-            far={1000}
-          />
-          <PerspectiveCamera
-            name="sceneCamera"
-            position={[0, 0, 0]}
-            aspect={ASPECT_RATIO}
-            near={0.001}
-            far={1000}
-          />
-          <Entrypoint />
-          <ColorOverlay />
-          <Ui />
+          <EffectComposer>
+            <PerspectiveCamera
+              makeDefault
+              name="moveableCamera"
+              position={[0, 0, 0]}
+              aspect={ASPECT_RATIO}
+              near={0.001}
+              far={1000}
+            />
+            <PerspectiveCamera
+              name="sceneCamera"
+              position={[0, 0, 0]}
+              aspect={ASPECT_RATIO}
+              near={0.001}
+              far={1000}
+            />
+            <Entrypoint />
+            <ColorOverlay />
+            <Ui />
+          </EffectComposer>
         </Canvas>
         {isDebugMode && <Queues />}
         {isDebugMode && <Memory />}

@@ -1,12 +1,11 @@
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
-import { AdditiveBlending, Mesh, SpriteMaterial, SubtractiveBlending, Vector3 } from "three";
+import { useState } from "react";
 import useGlobalStore from "../store";
 import { useSpring } from "@react-spring/web";
+import { ColorBlendEffectImpl } from "./ColorBlendEffect";
+
 
 const ColorOverlay = () => {
-  const overlayRef = useRef<Mesh>(null);
-  
   const colorOverlay = useGlobalStore(state => state.colorOverlay)
   const [spring] = useSpring(() => ({
     from: {
@@ -20,44 +19,34 @@ const ColorOverlay = () => {
       blue: colorOverlay.endBlue,
     },
     config: {
-      duration: (1000 / 30) * colorOverlay.duration,
+      duration: (1000 / 25) * colorOverlay.duration,
     },
     onRest: () => {
-      console.log('Color overlay transition finished');
       useGlobalStore.setState({
         isTransitioningColorOverlay: false,
       });
     }
   }), [colorOverlay])
 
-  useFrame(({ camera }) => {
-    if (!overlayRef.current) {
-      return;
-    }
-    
-    const cameraDirection = camera.getWorldDirection(new Vector3());
-    const cameraPosition = camera.position.clone();
-    overlayRef.current.position.copy(cameraPosition.add(cameraDirection.multiplyScalar(0.1)));
+  const [effect] = useState(new ColorBlendEffectImpl())
 
-    if (spring.red.get() === undefined) {
+  useFrame(() => {
+    const red = spring.red.get();
+    const green = spring.green.get();
+    const blue = spring.blue.get();
+
+    if (red === undefined) {
       return;
     }
 
-    const material = overlayRef.current.material as SpriteMaterial;
-    
-    material.blending = colorOverlay.type === 'additive' ? AdditiveBlending : SubtractiveBlending;
-    material.color.setRGB(
-      spring.red.get() / 255,
-      spring.green.get() / 255,
-      spring.blue.get() / 255
-    );
+    effect.updateValues({
+      color: [red / 255, green / 255, blue / 255],
+      blendMode: colorOverlay.type,
+      intensity: 1.0
+    })
   });
-  
-  return (
-    <sprite scale={[1,1,1]} position={[0, 0, 0.1]} rotation={[0, 0, 0]} ref={overlayRef} renderOrder={25}>
-      <spriteMaterial color="black" blending={AdditiveBlending} depthTest={false} />
-    </sprite>
-  )
+
+  return <primitive object={effect} dispose={null} />
 }
 
 export default ColorOverlay;

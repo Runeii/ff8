@@ -189,7 +189,7 @@ const createScriptController = ({
     // If there is a new priority item in the queue, we need to abort the current run and discard changes
     // Springs and controllers were already stopped when the new item was added to the queue
     const currentlyTopOfQueue = getState().queue.at(-1)!;
-    if (currentlyTopOfQueue.uniqueId !== uniqueId) {
+    if (!currentlyTopOfQueue || currentlyTopOfQueue.uniqueId !== uniqueId) {
       setState({ isRunning: false });
       window.scriptDump({
         timestamps: [Date.now()],
