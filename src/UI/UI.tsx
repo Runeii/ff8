@@ -22,6 +22,11 @@ const Ui = () => {
   const messagesArray = Object.values(messagesByChannel);
 
   const worldScene = useThree(state => state.scene);
+
+  if (messagesArray.length === 0) {
+    return null;
+  }
+
   return (
     <Hud>
       <OrthographicCamera
