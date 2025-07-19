@@ -1,4 +1,3 @@
-import { forwardRef, useMemo, Ref } from 'react'
 import { Uniform, Vector3 } from 'three'
 import { Effect } from 'postprocessing'
 

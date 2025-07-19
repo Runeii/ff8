@@ -4,7 +4,6 @@ import { create } from "zustand";
 import createMovementController from "../MovementController/MovementController";
 import { getDirectionToVector, getShortestRouteToAngle, radiansToUnit, signedAngleBetweenVectors } from "./rotationUtils";
 import { RefObject } from "react";
-import useGlobalStore from "../../../../store";
 
 export const createRotationController = (
   id: string | number,

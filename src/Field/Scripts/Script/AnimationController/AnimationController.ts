@@ -112,11 +112,13 @@ export const createAnimationController = (id: string | number) => {
             animation: undefined,
           });
         } else {
+          const updatedAnimation = {
+            ...currentQueueItem,
+            isCompleted: true,
+          };
           setState(state => ({
-            animation: {
-              ...state.animation,
-              isCompleted: true,
-            }
+            ...state,
+            animation: updatedAnimation
           }));
         }
         return;
