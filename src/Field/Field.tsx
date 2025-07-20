@@ -143,6 +143,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
         fieldData: data,
         fieldDirection: data.controlDirection,
         isLoadingSavedGame: false,
+        isMapFadeEnabled: true,
 
         characterPosition: pendingCharacterPosition ?? getInitialEntrance(data),
         pendingCharacterPosition: undefined,
@@ -155,6 +156,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
         currentParameterVisibility: {},
         layerScrollAdjustments: {},
 
+        cameraFocusHeight: data.cameraFocusHeight,
         cameraFocusObject: undefined,
         cameraFocusSpring: undefined,
         cameraAndLayerScrollSprings: new Array(8).fill(0).map(() => ({

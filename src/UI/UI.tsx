@@ -3,7 +3,7 @@ import useGlobalStore from "../store";
 import MessageBox from "./MessageBox/MessageBox";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/constants";
 import { Fragment } from "react/jsx-runtime";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { isSavePointMessage } from "./textUtils";
 import { useThree } from "@react-three/fiber";
 
@@ -22,6 +22,16 @@ const Ui = () => {
   const messagesArray = Object.values(messagesByChannel);
 
   const worldScene = useThree(state => state.scene);
+  useEffect(() => {
+    window.getMessagesState = () => {
+      return {
+        currentMessages: structuredClone(currentMessages),
+        messagesByChannel: structuredClone(messagesByChannel),
+        messagesArray: structuredClone(messagesArray)
+      };
+    }
+  }, [currentMessages, messagesArray, messagesByChannel]);
+
 
   if (messagesArray.length === 0) {
     return null;

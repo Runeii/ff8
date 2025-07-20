@@ -69,6 +69,7 @@ interface GlobalState {
   playerMovementSpeed: number,
   isPartyFollowing: boolean,
 
+  cameraFocusHeight: number,
   cameraAndLayerScrollSprings: {x: SpringValue<number>, y: SpringValue<number>}[],
   cameraFocusObject: Object3D | undefined,
   cameraFocusSpring: SpringValue<number> | undefined,
@@ -141,6 +142,7 @@ export const INITIAL_STATE: GlobalState = {
     playerMovementSpeed: 0,
     isPartyFollowing: true,
   
+    cameraFocusHeight: 0,
     cameraAndLayerScrollSprings: new Array(8).fill(0).map(() => ({
       x: new SpringValue(0),
       y: new SpringValue(0),

@@ -50,7 +50,7 @@ export let MEMORY: Record<number, number> = {
   
   
   84: 0, // last area visited
-  256: 200, // progress
+  256: 0, // progress
   720: 0, // squall model
   721: 2, // zell model
   722: 1, // selphie model
@@ -489,7 +489,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const currentMessages = useGlobalStore.getState().currentMessages;
     
     const matchingMessages = currentMessages.filter(message => message.placement.channel === channel);
-    const lastOpenedMessage = matchingMessages[matchingMessages.length - 1];
+    const lastOpenedMessage = matchingMessages[0]
     if (!lastOpenedMessage) {
       console.warn('No message to close');
       return;

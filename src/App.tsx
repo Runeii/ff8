@@ -12,10 +12,13 @@ import { PerspectiveCamera } from '@react-three/drei'
 import Queues from './Queues/Queues'
 import ColorOverlay from './ColorOverlay/ColorOverlay'
 import { EffectComposer } from '@react-three/postprocessing'
+import useIsTabActive from './useIsTabActive'
 
 const hasNamedField = new URLSearchParams(window.location.search).get('field');
 
 export default function App() {
+  const isTabActive = useIsTabActive();
+
   const fieldId = useGlobalStore(state => state.fieldId);
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
 
@@ -28,10 +31,10 @@ export default function App() {
 
   return (
     <>
-      <div className="container">
-        <Canvas camera={undefined} frameloop='always' className="canvas" gl={{
+      <div className="container"> 
+        <Canvas camera={undefined} className="canvas" gl={{
           logarithmicDepthBuffer: true,
-        }}>
+        }} frameloop={isTabActive ? 'always' : 'never'}>
           <EffectComposer>
             <PerspectiveCamera
               makeDefault
