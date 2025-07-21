@@ -2064,10 +2064,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     }
   },
   FADEIN: () => {
-    const { fadeSpring, isMapFadeEnabled } = useGlobalStore.getState()
-    if (!isMapFadeEnabled) {
-      return;
-    }
+    const { fadeSpring } = useGlobalStore.getState()
     fadeSpring.start(1, {
       config: {
         duration: 250
@@ -2075,10 +2072,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     });
   },
   FADEOUT: () => {
-    const { fadeSpring, isMapFadeEnabled } = useGlobalStore.getState()
-    if (!isMapFadeEnabled) {
-      return;
-    }
+    const { fadeSpring } = useGlobalStore.getState()
     fadeSpring.start(0, {
       config: {
         duration: 500
