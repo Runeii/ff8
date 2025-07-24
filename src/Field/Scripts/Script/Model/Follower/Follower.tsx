@@ -23,6 +23,7 @@ const Follower = ({ animationController, children, movementController, partyMemb
   const groupRef = useRef<Group>(null);
 
   useFrame(() => {
+    return
     const {isPartyFollowing } = useGlobalStore.getState();
     if (!isPartyFollowing) {
       return;
