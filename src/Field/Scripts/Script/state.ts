@@ -5,6 +5,7 @@ import type { Howl} from 'howler';
 import { Script } from '../types';
 
 export type ScriptState = {
+  characterHeight: number;
   hasRemovedControl: boolean;
   isHalted: boolean;
 
@@ -53,6 +54,8 @@ export type ScriptState = {
 
 export const createScriptState = (script: Script) => {
   return create<ScriptState>()(() => ({ 
+    characterHeight: 0.6, // default to a reasonable height
+
     hasRemovedControl: false,
     isHalted: false,
 

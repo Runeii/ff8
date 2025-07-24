@@ -1,18 +1,20 @@
-import { Box } from "@react-three/drei";
 import { useCallback, useEffect, useState } from "react";
-import { Group, Mesh, Object3D, PerspectiveCamera, Scene, Vector3 } from "three";
+import { Group, Object3D, PerspectiveCamera, Scene, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
 import { useFrame, useThree } from "@react-three/fiber";
-import { checkForIntersections, getPositionOnWalkmesh } from "../../../../../utils";
-import useGlobalStore from "../../../../../store";
-import { convert256ToRadians } from "../../utils";
-import createMovementController, { SPEED } from "../../MovementController/MovementController";
-import createRotationController from "../../RotationController/RotationController";
+import { checkForIntersections, getPositionOnWalkmesh } from "../../../../utils";
+import useGlobalStore from "../../../../store";
+import { convert256ToRadians } from "../utils";
+import createMovementController, { SPEED } from "../MovementController/MovementController";
+import createRotationController from "../RotationController/RotationController";
+import { Script } from "../../types";
+import { getPlayerEntity } from "./modelUtils";
 
-type ControlsProps = {
-  children: React.ReactNode;
+type useControlsProps = {
+  isActive: boolean;
   movementController: ReturnType<typeof createMovementController>;
   rotationController: ReturnType<typeof createRotationController>;
+  script: Script;
 }
 
 export const CHARACTER_HEIGHT = 0.08
@@ -20,7 +22,7 @@ export const CHARACTER_HEIGHT = 0.08
 const direction = new Vector3();
 const desiredPosition = new Vector3(0, 0, 0);
 
-const Controls = ({ children, movementController, rotationController }: ControlsProps) => {
+const useControls = ({ isActive, movementController, rotationController, script }: useControlsProps) => {
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();
@@ -43,6 +45,9 @@ const Controls = ({ children, movementController, rotationController }: Controls
   }, [movementController]);
 
   useEffect(() => {
+    if (!isActive) {
+      return;
+    }
     if (!walkmesh || !initialFieldPosition || isTransitioningMap) {
       return;
     }
@@ -60,7 +65,7 @@ const Controls = ({ children, movementController, rotationController }: Controls
     return () => {
       setHasPlacedCharacter(false);
     }
-  }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, movementController, walkmesh]);
+  }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, movementController, walkmesh, isActive]);
 
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
   const controlDirection = useGlobalStore(state => state.fieldDirection);
@@ -94,7 +99,11 @@ const Controls = ({ children, movementController, rotationController }: Controls
   }, [movementFlags, controlDirection]);
 
   const handleFrame = useCallback(async (camera: PerspectiveCamera, scene: Scene, delta: number) => {
-    const player = scene.getObjectByName("character") as Mesh;
+    if (!isActive) {
+      return;
+    }
+
+    const player = getPlayerEntity(scene);
     if (isTransitioningMap || !hasPlacedCharacter) {
       return
     }
@@ -178,9 +187,12 @@ const Controls = ({ children, movementController, rotationController }: Controls
       }
       return state;
     });
-  }, [isTransitioningMap, hasPlacedCharacter, isUserControllable, handleMovement, rotationController, isRunEnabled, movementFlags.isWalking, movementController, position]);
+  }, [isActive, script.groupId, isTransitioningMap, hasPlacedCharacter, rotationController, isUserControllable, handleMovement, isRunEnabled, movementFlags.isWalking, movementController, position]);
 
   useFrame(({ scene }, delta) => {
+    if (!isActive) {
+      return;
+    }
     const isClimbingLadder = movementController.getState().isClimbingLadder;
 
     if (movementController.getState().position.isAnimating || isClimbingLadder) {
@@ -190,17 +202,6 @@ const Controls = ({ children, movementController, rotationController }: Controls
     const camera = scene.getObjectByName("sceneCamera") as PerspectiveCamera;
     handleFrame(camera as PerspectiveCamera, scene, delta);
   });
-
-  const isDebugMode = useGlobalStore(state => state.isDebugMode);
-
-  return (
-    <group name="character">
-      {children}
-      <Box args={[0.03, 0.03, CHARACTER_HEIGHT] } position={[0,0,CHARACTER_HEIGHT / 2.5]} name="hitbox" visible={isDebugMode}>
-        <meshBasicMaterial color="green" opacity={0.9} transparent />
-      </Box>
-    </group>
-  );
 }
 
-export default Controls;
+export default useControls;

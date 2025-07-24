@@ -5,6 +5,7 @@ import { OPCODES } from "./Scripts/constants";
 import { MEMORY, restoreMemory } from "./Scripts/Script/handlers";
 import { Opcode, OpcodeObj, ScriptType } from "./Scripts/types";
 import MAP_NAMES from "../constants/maps";
+import { getPlayerEntity } from "./Scripts/Script/Model/modelUtils";
 
 type UnmappedOpcodes = [number, number] | [string, number];
 const getMappedOpcodes = (opcodes: UnmappedOpcodes[]): OpcodeObj[] => {
@@ -72,7 +73,8 @@ type SaveData = {
 
 export const saveGame = (scene: Scene) => {
   const { fieldId, party, availableCharacters } = useGlobalStore.getState();
-  const player = scene.getObjectByName("character")
+  const player = getPlayerEntity(scene);
+
   if (!player) {
     console.warn('Player not found');
     return;

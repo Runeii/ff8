@@ -1,17 +1,18 @@
 import { Script } from "../../types";
 import {  ComponentType, type JSX, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { Bone, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Vector3 } from "three";
+import { Bone, Box3, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
-import Controls from "./Controls/Controls";
 import { useFrame } from "@react-three/fiber";
-import Follower from "./Follower/Follower";
 import { ScriptStateStore } from "../state";
 import { createAnimationController } from "../AnimationController/AnimationController";
 import TalkRadius from "../TalkRadius/TalkRadius";
 import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
-import { clamp } from "three/src/math/MathUtils.js";
 import createScriptController from "../ScriptController/ScriptController";
+import { getPositionOnWalkmesh } from "../../../../utils";
+import { Sphere } from "@react-three/drei";
+import useControls from "./useControls";
+import useFootsteps from "./useFootsteps";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
@@ -64,7 +65,71 @@ const Model = ({animationController, models, scriptController, movementControlle
     setMeshGroup(ref.group.current);
   }, [convertMaterialsToBasic, animationController]);
 
+  const animationGroupRef = useRef<Group>(null);
+  const [boundingbox, setBoundingBox] = useState(new Box3());
+  const [centre] = useState(new Vector3(0, 0, 0));
+
+  const sphereRef = useRef<Mesh>(null);
+  useFrame(({ scene }) => {
+    if (!meshGroup || !animationGroupRef.current) {
+      return;
+    }
+    const walkmesh = scene.getObjectByName("walkmesh") as Mesh;
+    animationGroupRef.current.position.z = 0;
+    
+    // Get reference to the scaled group
+    const scaledGroup = animationGroupRef.current.children[0] as Group;
+    if (!scaledGroup) return;
+    
+    // Update world matrices before calculating bounding box
+    scaledGroup.updateMatrixWorld(true);
+    
+  const topGroup = isLeadCharacter ? 
+    animationGroupRef.current.parent : // Start from wrapper for lead
+    animationGroupRef.current;         // Start from animation group for others
+  
+  topGroup.updateMatrixWorld(true);
+    // Update the animations on the scaled model group
+  scaledGroup.traverse((child) => {
+    if (child instanceof Mesh && child.isSkinnedMesh) {
+      // Force skeleton to recalculate bone matrices with correct world matrices
+      child.skeleton.update();
+    }
+  });
+    
+  // Instead of setFromObject() which uses world coordinates:
+const newBoundingBox = new Box3();
+scaledGroup.children.forEach(child => {
+  if (child.type !== 'Box3Helper' && child.geometry) {
+    const childBox = new Box3();
+    // Calculate in the child's LOCAL space, then apply only the child's matrix
+    childBox.setFromBufferAttribute(child.geometry.attributes.position);
+    
+    // Apply the child's local transform (but NOT parent transforms)
+    childBox.applyMatrix4(child.matrix);
+    newBoundingBox.union(childBox);
+  }
+});
+
+// Now newBoundingBox is already in scaledGroup's coordinate space
+setBoundingBox(newBoundingBox);
+
+    
+    return;
+    const localCentre = sphereRef.current?.parent.worldToLocal(centre.clone());
+    sphereRef.current?.position.copy(localCentre);
+    const pointOnWalkmesh = getPositionOnWalkmesh(centre, walkmesh)
+    if (!pointOnWalkmesh) {
+      console.warn("Model is not on walkmesh, resetting position to (0, 0, 0)");
+      return;
+    }
+    console.log(modelId, "Model position on walkmesh:", pointOnWalkmesh);
+    const zDistance = pointOnWalkmesh.z - centre.z;
+    animationGroupRef.current.position.z = -zDistance;
+  })
+
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
+  const isUserControllable = useGlobalStore(state => state.isUserControllable);
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
   const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && state.isPartyFollowing && !isLeadCharacter);
 
@@ -93,49 +158,18 @@ const Model = ({animationController, models, scriptController, movementControlle
     }
   });
 
-  // Footstep
-  const previousFootstepRef = useRef<'left' | 'right' | undefined>(undefined);
-  const isBetweenFootstepsRef = useRef(false);
-  const [playerPosition] = useState<Vector3>(new Vector3(0, 0, 0));
-  const FOOTSTEP_DELAY_RUNNING = 420;
-  const FOOTSTEP_DELAY_WALKING = 500;
-  useFrame(({ scene }) => {
-    const { isClimbingLadder, footsteps, movementSpeed, position } = movementController.getState();
-
-    const camera = scene.getObjectByName("sceneCamera") as PerspectiveCamera;
-    const isAnimating = position.isAnimating;
-    const hasFootsteps = footsteps.isActive;
-    const isWalking = movementSpeed < 2695
-  
-    if (!isAnimating || hasFootsteps || isBetweenFootstepsRef.current || isClimbingLadder) {
-      return;
-    }
-
-    const { leftSound, rightSound } = movementController.getState().footsteps;
-
-    if (!leftSound || !rightSound) {
-      return;
-    }
-    
-    const player = scene.getObjectByName("character") as Mesh;
-    player.getWorldPosition(playerPosition);
-    const distance = playerPosition.distanceTo(camera.position);
-
-    const nextFootstep = previousFootstepRef.current === 'right' ? leftSound : rightSound;
-    isBetweenFootstepsRef.current = true;
-    nextFootstep.seek(0);
-    nextFootstep.volume(clamp(0.2, (isWalking ? 0.5 : 1) * (2 - distance), 1));
-    nextFootstep.play();
-    previousFootstepRef.current = previousFootstepRef.current === 'right' ? 'left' : 'right';
-
-    window.setTimeout(() => {
-      isBetweenFootstepsRef.current = false;
-    }, isWalking ? FOOTSTEP_DELAY_WALKING : FOOTSTEP_DELAY_RUNNING);
-  });
-
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
 
-  const modelJsx = (
+  useFootsteps({ movementController });
+
+  useControls({
+    isActive: isUserControllable && isLeadCharacter,
+    movementController,
+    rotationController,
+    script
+  });
+
+  return (
     <group>
       {talkMethod && !isLeadCharacter && !isFollower && meshGroup && (
         <TalkRadius
@@ -144,37 +178,28 @@ const Model = ({animationController, models, scriptController, movementControlle
           useScriptStateStore={useScriptStateStore}
         />
       )}
-        <ModelComponent
-          name={`party--${partyMemberId ?? 'none'}`}
-          scale={0.06}
-          mapName={fieldId}
-          ref={setModelRef}
-          userData={{
-            partyMemberId,
-            movementController,
-            rotationController,
-            useScriptStateStore,
-            scriptController
-          }}
-          />
+      <Sphere args={[0.01, 16, 16]} ref={sphereRef}>
+        <meshBasicMaterial color="green" side={DoubleSide} />
+      </Sphere>
+      <group name="animation-adjustment-group" ref={animationGroupRef}>
+        <group scale={0.06}>
+          <box3Helper args={[boundingbox, 'pink']} />
+          <ModelComponent
+            name={`party--${partyMemberId ?? 'none'}`}
+            mapName={fieldId}
+            ref={setModelRef}
+            userData={{
+              partyMemberId,
+              movementController,
+              rotationController,
+              useScriptStateStore,
+              scriptController
+            }}
+            />
+        </group>
+      </group>
     </group>
   );
-
-  if (isLeadCharacter) {
-    return (
-      <Controls movementController={movementController} rotationController={rotationController}>
-        {modelJsx}
-      </Controls>
-    );
-  } else if (isFollower) {
-    return (
-      <Follower animationController={animationController} movementController={movementController} partyMemberId={partyMemberId} rotationController={rotationController} useScriptStateStore={useScriptStateStore}>
-        {modelJsx}
-      </Follower>
-    )
-  } else {
-    return modelJsx;
-  }
 };
 
 export default Model;

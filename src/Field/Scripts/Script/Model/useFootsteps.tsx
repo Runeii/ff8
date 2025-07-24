@@ -1,0 +1,55 @@
+import { useRef, useState } from "react";
+import createMovementController from "../MovementController/MovementController";
+import { getPlayerEntity } from "./modelUtils";
+import { PerspectiveCamera, Vector3 } from "three";
+import { useFrame } from "@react-three/fiber";
+import { clamp } from "three/src/math/MathUtils.js";
+
+type useFootstepsProps = {
+  movementController: ReturnType<typeof createMovementController>;
+}
+
+const useFootsteps = ({ movementController }: useFootstepsProps) => {
+    // Footstep
+  const previousFootstepRef = useRef<'left' | 'right' | undefined>(undefined);
+  const isBetweenFootstepsRef = useRef(false);
+  const [playerPosition] = useState<Vector3>(new Vector3(0, 0, 0));
+  const FOOTSTEP_DELAY_RUNNING = 420;
+  const FOOTSTEP_DELAY_WALKING = 500;
+
+  useFrame(({ scene }) => {
+    const { isClimbingLadder, footsteps, movementSpeed, position } = movementController.getState();
+
+    const camera = scene.getObjectByName("sceneCamera") as PerspectiveCamera;
+    const isAnimating = position.isAnimating;
+    const hasFootsteps = footsteps.isActive;
+    const isWalking = movementSpeed < 2695
+  
+    if (!isAnimating || hasFootsteps || isBetweenFootstepsRef.current || isClimbingLadder) {
+      return;
+    }
+
+    const { leftSound, rightSound } = movementController.getState().footsteps;
+
+    if (!leftSound || !rightSound) {
+      return;
+    }
+
+    const player = getPlayerEntity(scene);
+    player.getWorldPosition(playerPosition);
+    const distance = playerPosition.distanceTo(camera.position);
+
+    const nextFootstep = previousFootstepRef.current === 'right' ? leftSound : rightSound;
+    isBetweenFootstepsRef.current = true;
+    nextFootstep.seek(0);
+    nextFootstep.volume(clamp(0.2, (isWalking ? 0.5 : 1) * (2 - distance), 1));
+    nextFootstep.play();
+    previousFootstepRef.current = previousFootstepRef.current === 'right' ? 'left' : 'right';
+
+    window.setTimeout(() => {
+      isBetweenFootstepsRef.current = false;
+    }, isWalking ? FOOTSTEP_DELAY_WALKING : FOOTSTEP_DELAY_RUNNING);
+  });
+}
+
+export default useFootsteps;

@@ -15,7 +15,7 @@ import createMovementController from "./MovementController/MovementController";
 import createRotationController from "./RotationController/RotationController";
 import createScriptController from "./ScriptController/ScriptController";
 import createSFXController from "./SFXController/SFXController";
-import { CHARACTER_HEIGHT } from "./Model/Controls/Controls";
+import { getPlayerEntity } from "./Model/modelUtils";
 
 type ScriptProps = {
   doors: Door[];
@@ -54,6 +54,8 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
   const isUnused = useScriptStateStore(state => state.isUnused);
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const isSolid = useScriptStateStore(state => state.isSolid);
+
+  const characterHeight = useScriptStateStore(state => state.characterHeight);
   
   const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
 
@@ -167,7 +169,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
     entityRef.current.quaternion.setFromAxisAngle(meshUp, radians);
 
     if (useScriptStateStore.getState().isHeadTrackingPlayer) {
-      const player = scene.getObjectByName("character") as Group;
+      const player = getPlayerEntity(scene);
       if (!player) {
         console.warn('Player character not found for head tracking');
         return;
@@ -197,10 +199,10 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
       {isDebugMode && <Text fontSize={0.07}>{script.groupId}-{partyMemberId}</Text>}
       {isSolid && (
         <Box 
-          args={[0.04,0.04, CHARACTER_HEIGHT * 1.5]}
-          position={[0, 0, (CHARACTER_HEIGHT / 3)]}
+          args={[0.04,0.04, characterHeight * 1.5]}
+          position={[0, 0, (characterHeight / 3)]}
           name={`entity--${script.groupId}-hitbox`}
-          visible={isDebugMode}
+          visible={false}
           userData={{ isSolid: true }}
           >
           <meshBasicMaterial color="red" transparent opacity={0.5} />

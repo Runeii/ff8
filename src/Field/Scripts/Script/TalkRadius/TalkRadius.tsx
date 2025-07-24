@@ -4,11 +4,11 @@ import { ScriptMethod } from "../../types";
 import {  useEffect, useMemo, useRef, useState } from "react";
 import {  useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
-import { CHARACTER_HEIGHT } from "../Model/Controls/Controls";
 import { ScriptStateStore } from "../state";
 import createScriptController from "../ScriptController/ScriptController";
 
 type TalkRadiusProps = {
+  characterHeight: number,
   scriptController: ReturnType<typeof createScriptController>;
   talkMethod: ScriptMethod,
   useScriptStateStore: ScriptStateStore,
@@ -33,6 +33,7 @@ const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkR
   const [isIntersecting, setIsIntersecting] = useState(false);
   const talkCylinderRef = useRef<Mesh>(null);
   const talkRadius = useScriptStateStore(state => state.talkRadius / 4096);
+  const characterHeight = useScriptStateStore(state => state.characterHeight);
 
   const talkSphereBoxRef = useRef<Box3>(new Box3());
   const characterBoxRef = useRef<Box3>(new Box3());
@@ -86,8 +87,8 @@ const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkR
 
   return (
     <Cylinder
-      args={[talkRadius,talkRadius, CHARACTER_HEIGHT * 1.5]}
-      position={[0, 0, (CHARACTER_HEIGHT / 3)]}
+      args={[talkRadius,talkRadius, characterHeight * 1.5]}
+      position={[0, 0, (characterHeight / 3)]}
       ref={talkCylinderRef}
       rotation={[Math.PI / 2, 0, 0]}
       visible={isDebugMode}

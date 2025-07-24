@@ -15,3 +15,8 @@ export const getPartyMemberModelComponent = (scene: Scene, partyMemberIndex: num
   }
   return partyMemberModel;
 }
+
+export const getPlayerEntity = (scene: Scene) => {
+  const playerId = useGlobalStore.getState().party[0];
+  return scene.getObjectByName(`entity--${playerId}`) as Group;
+}

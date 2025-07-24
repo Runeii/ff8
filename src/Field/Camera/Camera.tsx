@@ -10,6 +10,7 @@ import useGlobalStore from "../../store";
 import Focus from "./Focus/Focus";
 import useScrollSpring from "../useScrollSpring";
 import { useSpring } from "@react-spring/web";
+import { getPlayerEntity } from "../Scripts/Script/Model/modelUtils";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
@@ -199,7 +200,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
       return;
     }
     
-    const player = scene.getObjectByName("character") as Mesh;
+    const player = getPlayerEntity(scene);
     if (!player) {
       return;
     }
