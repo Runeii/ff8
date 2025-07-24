@@ -14,6 +14,7 @@ import { MUSIC_IDS } from "../../../constants/audio";
 import MusicController from "./MusicController";
 import createRotationController from "./RotationController/RotationController";
 import createSFXController from "./SFXController/SFXController";
+import { useGLTF } from "@react-three/drei";
 
 const musicController = MusicController();
 
@@ -50,7 +51,7 @@ export let MEMORY: Record<number, number> = {
   
   
   84: 0, // last area visited
-  256: 0, // progress
+  256: 501, // progress
   720: 0, // squall model
   721: 2, // zell model
   722: 1, // selphie model
@@ -146,6 +147,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   POPM_W: ({ currentOpcode, STACK }) => {
     MEMORY[currentOpcode.param] = STACK.pop() as number;
+  },
+  CLEAR: () => {
+    MEMORY = {};
   },
   PSHAC: ({ currentOpcode, STACK }) => {
     STACK.push(currentOpcode.param);
@@ -1002,6 +1006,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number; // const distance = 
     STACK.pop() as number; // const partyMemberId = 
   },
+  UNKNOWN11: async ({ rotationController, STACK }) => {
+    const startAngle = STACK.pop() as number;
+    const endAngle = STACK.pop() as number;
+    await rotationController.turnToFaceAngle(startAngle, 0)
+    await rotationController.turnToFaceAngle(endAngle, 0)
+  }, // "PIVOT"
+  UNKNOWN12: () => {}, // "PIVOT_SYNC"
 
   // Turn to angle
   CTURNL: ({ rotationController, STACK }) => {
@@ -1704,10 +1715,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     sfxController.setVolume(undefined, volume, duration);
   },
-  // Never used ingame
-  ALLSEPOSTRANS: ({ STACK }) => {
-    STACK.splice(-3);
-  },
 
 
   MENUSHOP: ({ STACK }) => {
@@ -1752,6 +1759,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   RBGSHADELOOP: ({ STACK }) => {
     STACK.splice(-10);
   },
+  BGSHADEOFF: dummiedCommand,
   CARDGAME: ({ STACK }) => {
     STACK.splice(-7);
   },
@@ -1761,8 +1769,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   PREMAPJUMP2: ({ STACK }) => {
     STACK.pop() as number;
   },
-  BATTLE: ({ STACK }) => {
+  BATTLE: async ({ STACK }) => {
     STACK.splice(-2);
+    await new Promise(resolve => setTimeout(resolve, 500000)); // simulate battle
   },
   BATTLEMODE: ({ STACK }) => {
     STACK.pop() as number;
@@ -1829,44 +1838,21 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SHADEFORM: ({ STACK }) => {
     STACK.splice(-8)
   },
+  HOWMANYCARD: ({ STACK }) => {
+    STACK.pop() as number;
+  },
 
   // Completely unknown. Mainly used in cmwood maps?
   BROKEN: ({ STACK }) => {
     STACK.splice(-8);
   },
-
-  // Set: unused, but manipulate stack. here for completeness
-  ALLSEPOS: ({ STACK }) => {
-    STACK.splice(-1);
-  },
-  MESW: ({ STACK }) => {
-    STACK.splice(-2);
-  },
-  // @ts-expect-error Not in opcodes list
-  UNKNOWN1: ({ STACK }) => {
-    STACK.pop() as number;
-  },
-  // @ts-expect-error Not in opcodes list
-  UNKNOWN17: ({ STACK }) => {
-    STACK.pop() as number;
-  },
-  // @ts-expect-error Not in opcodes list
-  UNKNOWN18: ({ STACK }) => {
-    STACK.pop() as number;
-  },
-  HOWMANYCARD: ({ STACK }) => {
-    STACK.pop() as number;
-  },
   DISC: ({ STACK }) => {
     STACK.pop() as number;
   },
-  UNKNOWN13: ({ STACK }) => {
+  LASTIN: ({ STACK }) => {
     STACK.pop() as number;
   },
   MENUNAME: ({ STACK }) => {
-    STACK.pop() as number;
-  },
-  LASTIN: ({ STACK }) => {
     STACK.pop() as number;
   },
   COPYINFO: ({ STACK }) => {
@@ -1910,8 +1896,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   PARTICLEOFF: ({ STACK }) => {
     STACK.pop() as number;
   },
-  UNKNOWN11: ({ STACK }) => {
-    STACK.splice(-2);
+  // @ts-expect-error Not in opcodes list
+  UNKNOWN1: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  UNKNOWN13: ({ STACK }) => {
+    STACK.pop() as number;
   },
   UNKNOWN14: ({ STACK }) => {
     STACK.pop() as number;
@@ -2111,34 +2101,59 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   
   LBL: dummiedCommand,
 
-  UNKNOWN12: dummiedCommand,
-  CLOSEEYES: dummiedCommand,
-  DYING: dummiedCommand,
-  UNKNOWN10: dummiedCommand,
+  // Do not touch stack
+  MOVIESYNC: dummiedCommand, // used to sync with a movie, we do not show movies so this is dummied and returns done immediately
+  REST: dummiedCommand, // heal party and GFs
+  REFRESHPARTY: dummiedCommand, // used to ensure party changes are reflected everywhere, afaik
+  SWAP: dummiedCommand, // swap party members, works across whole party so probably for Laguna scenes
+
+  // Do not touch stack, not relevant to field
   BATTLEON: dummiedCommand,
   BATTLEOFF: dummiedCommand,
-  BATTLERESULT: dummiedCommand,
-  BATTLECUT: dummiedCommand,
   MENUENABLE: dummiedCommand,
   MENUDISABLE: dummiedCommand,
-  MOVIESYNC: dummiedCommand,
-  REST: dummiedCommand,
-  FOLLOWOFF: dummiedCommand,
-  FOLLOWON: dummiedCommand,
-  REFRESHPARTY: dummiedCommand,
-  MOVIECUT: dummiedCommand,
+  BATTLECUT: dummiedCommand,
   MENUSAVE: dummiedCommand,
   SETODIN: dummiedCommand,
-  MENUPHS: dummiedCommand,
-  MENUNORMAL: dummiedCommand,
   SARALYDISPON: dummiedCommand,
   SARALYDISPOFF: dummiedCommand,
   SARALYON: dummiedCommand,
   SARALYOFF: dummiedCommand,
-  CLEAR: dummiedCommand,
-  SWAP: dummiedCommand,
-  BGSHADEOFF: dummiedCommand,
+  MENUPHS: dummiedCommand,
+  MENUNORMAL: dummiedCommand,
+  DYING: dummiedCommand, // resurrects dead members to 1hp
 
+  // Touch stack
+  CLOSEEYES: dummiedCommand,
+  UNKNOWN10: dummiedCommand,
+  FOLLOWON: () => {
+    useGlobalStore.setState({ isPartyFollowing: true });
+  },
+  FOLLOWOFF: () => {
+    useGlobalStore.setState({ isPartyFollowing: false });
+  },
+  BATTLERESULT: dummiedCommand,
+
+  // Never used ingame (excluding test and bgmast_6 (a weird unused level))
+  MOVIECUT: unusedCommand,
+  ALLSEPOSTRANS: ({ STACK }) => {
+    STACK.splice(-3);
+  },
+  // Set: unused, but manipulate stack. here for completeness
+  ALLSEPOS: ({ STACK }) => {
+    STACK.splice(-1);
+  },
+  MESW: ({ STACK }) => {
+    STACK.splice(-2);
+  },
+  // @ts-expect-error Not in opcodes list
+  UNKNOWN17: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  // @ts-expect-error Not in opcodes list
+  UNKNOWN18: ({ STACK }) => {
+    STACK.pop() as number;
+  },
   NOP: unusedCommand,
   GJMP: unusedCommand,
   DEBUG: unusedCommand,

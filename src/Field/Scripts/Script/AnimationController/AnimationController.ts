@@ -89,12 +89,13 @@ export const createAnimationController = (id: string | number) => {
         activeKey: currentQueueItem.key,
         activeAnimationId: currentQueueItem.animationId,
       });
-      
+
       applyAnimationAtTime(mesh, action.getClip(), startTime);
     }
-
+    
     // If the start frame is the same as the end frame, we apply the animation at that frame and do not change again
-    if (startTime === endTime) {
+    if (startTime === endTime || action.getClip().duration === 0) {
+      applyAnimationAtTime(mesh, action.getClip(), startTime);
       return;
     }
 
