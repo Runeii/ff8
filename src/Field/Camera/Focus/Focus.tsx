@@ -1,4 +1,4 @@
-import { Box, Sphere } from "@react-three/drei";
+import { Sphere } from "@react-three/drei";
 import useGlobalStore from "../../../store";
 import { useFrame } from "@react-three/fiber";
 import {  useRef, useState } from "react";

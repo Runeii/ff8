@@ -186,7 +186,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       }
       return state;
     });
-  }, [isActive, isTransitioningMap, hasPlacedCharacter, rotationController, isUserControllable, handleMovement, isRunEnabled, movementFlags.isWalking, movementController, position]);
+  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, rotationController, handleMovement, isRunEnabled, movementFlags.isWalking, movementController, position, characterHeight]);
 
   useFrame(({ scene }, delta) => {
     if (!isActive) {

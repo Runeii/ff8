@@ -14,7 +14,6 @@ import { MUSIC_IDS } from "../../../constants/audio";
 import MusicController from "./MusicController";
 import createRotationController from "./RotationController/RotationController";
 import createSFXController from "./SFXController/SFXController";
-import { useGLTF } from "@react-three/drei";
 
 const musicController = MusicController();
 

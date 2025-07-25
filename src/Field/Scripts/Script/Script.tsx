@@ -10,7 +10,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { DoubleSide, Group, Vector3 } from "three";
 import createScriptState from "./state";
 import { createAnimationController } from "./AnimationController/AnimationController";
-import { Box, Sphere, Text } from "@react-three/drei";
+import { Sphere, Text } from "@react-three/drei";
 import createMovementController from "./MovementController/MovementController";
 import createRotationController from "./RotationController/RotationController";
 import createScriptController from "./ScriptController/ScriptController";
@@ -53,9 +53,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
   const isVisible = useScriptStateStore(state => state.isVisible);
   const isUnused = useScriptStateStore(state => state.isUnused);
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
-  const isSolid = useScriptStateStore(state => state.isSolid);
-
-  const characterHeight = useScriptStateStore(state => state.characterHeight);
   
   const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
 
