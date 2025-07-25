@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { checkForIntersectingMeshes } from "../../Gateways/gatewayUtils";
 import { Object3D, Vector3 } from "three";
 import useGlobalStore from "../../../store";
+import { getPlayerEntity } from "./Model/modelUtils";
 
 export type STATES = 'LEFT' | 'INTERSECTING' | 'RIGHT' | undefined;
 
@@ -40,17 +41,23 @@ const useIntersection = (targetMesh: Object3D | null, isActive = true, {
   const [playerPosition] = useState(new Vector3());
 
   useFrame(({ scene }) => {
-    if (!hasMoved || !targetMesh) {
+    if (!hasMoved || !targetMesh || !isActive) {
       return;
     }
 
-    const player = scene.getObjectByName("hitbox") as Object3D;
+    const player = getPlayerEntity(scene);
 
-    if (!player || !isActive) {
-      return false;
+    if (!player) {
+      return;
     }
 
-    const isIntersecting = checkForIntersectingMeshes(player, targetMesh);
+    const hitbox = player.getObjectByName("hitbox") as Object3D | null;
+    if (!hitbox) {
+      console.warn("Hitbox not found on player entity.");
+      return;
+    }
+
+    const isIntersecting = checkForIntersectingMeshes(hitbox, targetMesh);
 
     if (isIntersecting && !hasEverExitedRef.current) {
       return;

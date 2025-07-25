@@ -197,17 +197,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
         <meshBasicMaterial color="purple" transparent opacity={1} side={DoubleSide} />
       </Sphere>}
       {isDebugMode && <Text fontSize={0.07}>{script.groupId}-{partyMemberId}</Text>}
-      {isSolid && (
-        <Box 
-          args={[0.04,0.04, characterHeight * 1.5]}
-          position={[0, 0, (characterHeight / 3)]}
-          name={`entity--${script.groupId}-hitbox`}
-          visible={false}
-          userData={{ isSolid: true }}
-          >
-          <meshBasicMaterial color="red" transparent opacity={0.5} />
-        </Box>
-      )}
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'model' && <Model scriptController={scriptController} animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} script={script} useScriptStateStore={useScriptStateStore} />}

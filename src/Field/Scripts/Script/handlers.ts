@@ -51,7 +51,7 @@ export let MEMORY: Record<number, number> = {
   
   
   84: 0, // last area visited
-  256: 501, // progress
+  256: 3000, // progress
   720: 0, // squall model
   721: 2, // zell model
   722: 1, // selphie model

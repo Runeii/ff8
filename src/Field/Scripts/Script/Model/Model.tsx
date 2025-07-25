@@ -10,7 +10,7 @@ import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
 import createScriptController from "../ScriptController/ScriptController";
 import { getPositionOnWalkmesh } from "../../../../utils";
-import { Sphere } from "@react-three/drei";
+import { Box, Sphere } from "@react-three/drei";
 import useControls from "./useControls";
 import useFootsteps from "./useFootsteps";
 
@@ -36,7 +36,6 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
 
 const Model = ({animationController, models, scriptController, movementController, rotationController, script, useScriptStateStore }: ModelProps) => {
   const fieldId = useGlobalStore(state => state.fieldId);
-  const isUserControllable = useGlobalStore(state => state.isUserControllable);
 
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const modelId = useScriptStateStore(state => state.modelId);
@@ -45,7 +44,7 @@ const Model = ({animationController, models, scriptController, movementControlle
   const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && state.isPartyFollowing && !isLeadCharacter);
 
 
-    const modelName = models[modelId]
+  const modelName = models[modelId]
   const ModelComponent = components[modelName];
   
   const [meshGroup, setMeshGroup] = useState<Group>();
@@ -101,11 +100,13 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   useFootsteps({ movementController });
 
+  const [characterHeight, setCharacterHeight] = useState(0);
+
   useControls({
-    isActive: isUserControllable && isLeadCharacter,
+    characterHeight,
+    isActive: isLeadCharacter,
     movementController,
     rotationController,
-    script
   });
 
   const animationGroupRef = useRef<Group>(null);
@@ -122,6 +123,7 @@ const Model = ({animationController, models, scriptController, movementControlle
       }
     })
   }, [animationController]);
+
   useFrame(({scene}) => {
     if (!animationGroupRef.current || hasAdjustedZ.current) {
       return;
@@ -143,11 +145,13 @@ const Model = ({animationController, models, scriptController, movementControlle
       return;
     }
     const z = walkmeshPoint.z - boundingbox.min.z;
+    setCharacterHeight(boundingbox.max.z - boundingbox.min.z);
     animationGroupRef.current.position.z = z;
     hasAdjustedZ.current = true;
   })
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
+  const isSolid = useScriptStateStore(state => state.isSolid);
 
   return (
     <group>
@@ -161,6 +165,14 @@ const Model = ({animationController, models, scriptController, movementControlle
       <Sphere args={[0.01, 16, 16]} ref={sphereRef} visible={isDebugMode}>
         <meshBasicMaterial color="green" side={DoubleSide} />
       </Sphere>
+      <Box
+        args={[0.04,0.04, characterHeight * 1.5]}
+        position={[0, 0, (characterHeight / 3)]}
+        name="hitbox"
+        userData={{ isSolid }}
+        >
+        <meshBasicMaterial color="red" transparent opacity={0.5} />
+      </Box>
       <group name="animation-adjustment-group" ref={animationGroupRef}>
           <ModelComponent
             name={`party--${partyMemberId ?? 'none'}`}

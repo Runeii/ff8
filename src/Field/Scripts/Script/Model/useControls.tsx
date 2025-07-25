@@ -7,22 +7,19 @@ import useGlobalStore from "../../../../store";
 import { convert256ToRadians } from "../utils";
 import createMovementController, { SPEED } from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
-import { Script } from "../../types";
 import { getPlayerEntity } from "./modelUtils";
 
 type useControlsProps = {
+  characterHeight: number;
   isActive: boolean;
   movementController: ReturnType<typeof createMovementController>;
   rotationController: ReturnType<typeof createRotationController>;
-  script: Script;
 }
-
-export const CHARACTER_HEIGHT = 0.08
 
 const direction = new Vector3();
 const desiredPosition = new Vector3(0, 0, 0);
 
-const useControls = ({ isActive, movementController, rotationController, script }: useControlsProps) => {
+const useControls = ({ characterHeight, isActive, movementController, rotationController }: useControlsProps) => {
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();
@@ -30,6 +27,8 @@ const useControls = ({ isActive, movementController, rotationController, script 
   const scene = useThree(({ scene }) => scene);
 
   const [hasPlacedCharacter, setHasPlacedCharacter] = useState(false);
+  
+  const isUserControllable = useGlobalStore(state => state.isUserControllable);
   const initialFieldPosition = useGlobalStore((state) => state.characterPosition);
   const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
   const walkmesh = scene.getObjectByName("walkmesh") as Group;
@@ -67,7 +66,6 @@ const useControls = ({ isActive, movementController, rotationController, script 
     }
   }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, movementController, walkmesh, isActive]);
 
-  const isUserControllable = useGlobalStore(state => state.isUserControllable);
   const controlDirection = useGlobalStore(state => state.fieldDirection);
 
   const handleMovement = useCallback(() => { 
@@ -99,18 +97,19 @@ const useControls = ({ isActive, movementController, rotationController, script 
   }, [movementFlags, controlDirection]);
 
   const handleFrame = useCallback(async (camera: PerspectiveCamera, scene: Scene, delta: number) => {
-    if (!isActive) {
+    if (!isActive || !isUserControllable || !hasPlacedCharacter || isTransitioningMap) {
       return;
     }
 
     const player = getPlayerEntity(scene);
-    if (isTransitioningMap || !hasPlacedCharacter) {
-      return
+    if (!player) {
+      console.warn("No player entity found in scene");
+      return;
     }
 
     const walkmesh = scene.getObjectByName("walkmesh");
     const isTurning = rotationController.getState().angle.isAnimating;
-    if (!player || !walkmesh || !isUserControllable || isTurning) {
+    if (!walkmesh || !isUserControllable || isTurning) {
       return;
     }
 
@@ -147,7 +146,7 @@ const useControls = ({ isActive, movementController, rotationController, script 
       currentPosition[2]
     ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
 
-    const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, CHARACTER_HEIGHT / 4);
+    const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, characterHeight / 4);
     
     if (!newPosition) {
       return
@@ -187,7 +186,7 @@ const useControls = ({ isActive, movementController, rotationController, script 
       }
       return state;
     });
-  }, [isActive, script.groupId, isTransitioningMap, hasPlacedCharacter, rotationController, isUserControllable, handleMovement, isRunEnabled, movementFlags.isWalking, movementController, position]);
+  }, [isActive, isTransitioningMap, hasPlacedCharacter, rotationController, isUserControllable, handleMovement, isRunEnabled, movementFlags.isWalking, movementController, position]);
 
   useFrame(({ scene }, delta) => {
     if (!isActive) {

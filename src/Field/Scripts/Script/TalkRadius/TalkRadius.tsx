@@ -6,6 +6,7 @@ import {  useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
 import { ScriptStateStore } from "../state";
 import createScriptController from "../ScriptController/ScriptController";
+import { getPlayerEntity } from "../Model/modelUtils";
 
 type TalkRadiusProps = {
   scriptController: ReturnType<typeof createScriptController>;
@@ -41,7 +42,12 @@ const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkR
     if (!isPlayerAbleToTalk || !talkCylinderRef.current) {
       return;
     }
-    const meshHitbox = scene.getObjectByName("hitbox") as Mesh;
+
+    const player = getPlayerEntity(scene);
+    if (!player) {
+      return;
+    }
+    const meshHitbox = player.getObjectByName("hitbox") as Mesh;
 
     if (!meshHitbox) {
       return;

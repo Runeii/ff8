@@ -90,7 +90,6 @@ export const createMovementController = (id: string | number, animationControlle
     if (Number.isNaN(calculatedDuration) || Number.isFinite(calculatedDuration) === false) {
       calculatedDuration = 0;
     }
-
     await position.start([target.x, target.y, target.z], {
       config: {
         duration: calculatedDuration
