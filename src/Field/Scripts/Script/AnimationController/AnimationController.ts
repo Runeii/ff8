@@ -31,7 +31,7 @@ export const createAnimationController = (id: string | number) => {
     ladderAnimation: undefined as SavedAnimation | undefined,
   }));
 
-  const { getState, setState } = create(() => ({
+  const { getState, setState, subscribe } = create(() => ({
     clips: [] as AnimationClip[],
     mesh: undefined as Object3D | undefined,
     mixer: undefined as AnimationMixer | undefined,
@@ -347,6 +347,7 @@ export const createAnimationController = (id: string | number) => {
   return {
     getIsPlaying,
     getState,
+    subscribe,
     initialize,
     playAnimation,
     pauseAnimation,

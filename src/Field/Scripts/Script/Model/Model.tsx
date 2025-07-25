@@ -110,10 +110,20 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const animationGroupRef = useRef<Group>(null);
   const [boundingbox, setBoundingBox] = useState(new Box3());
-
+  const hasAdjustedZ = useRef(false);
   const sphereRef = useRef<Mesh>(null);
+  
+  useEffect(() => {
+    let currentKey: string | undefined = undefined;
+    animationController.subscribe(state => {
+      if (state.activeKey !== currentKey) {
+        hasAdjustedZ.current = false;
+        currentKey = state.activeKey;
+      }
+    })
+  }, [animationController]);
   useFrame(({scene}) => {
-    if (!animationGroupRef.current) {
+    if (!animationGroupRef.current || hasAdjustedZ.current) {
       return;
     }
     animationGroupRef.current.position.z = 0;
@@ -134,6 +144,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     }
     const z = walkmeshPoint.z - boundingbox.min.z;
     animationGroupRef.current.position.z = z;
+    hasAdjustedZ.current = true;
   })
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
