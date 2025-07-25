@@ -8,7 +8,6 @@ import { ScriptStateStore } from "../state";
 import createScriptController from "../ScriptController/ScriptController";
 
 type TalkRadiusProps = {
-  characterHeight: number,
   scriptController: ReturnType<typeof createScriptController>;
   talkMethod: ScriptMethod,
   useScriptStateStore: ScriptStateStore,

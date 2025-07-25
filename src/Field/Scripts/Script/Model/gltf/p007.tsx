@@ -44,7 +44,7 @@ export default React.forwardRef(function p007(props: JSX.IntrinsicElements['grou
    return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
-        <group name="p007_armature" position={[0, 0, 0.885]}>
+        <group name="p007_armature">
           <primitive object={nodes.bone_0} />
           <group name="p007">
             <skinnedMesh name="p007_mesh" geometry={nodes.p007_mesh.geometry} material={materials.p007_texture_0} skeleton={nodes.p007_mesh.skeleton} />

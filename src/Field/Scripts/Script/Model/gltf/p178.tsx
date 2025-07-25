@@ -42,7 +42,7 @@ export default React.forwardRef(function p178(props: JSX.IntrinsicElements['grou
    return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
-        <group name="p178_armature" position={[0, 0, 0.862]}>
+        <group name="p178_armature">
           <primitive object={nodes.bone_0} />
           <skinnedMesh name="p178" geometry={nodes.p178.geometry} material={materials.p178_texture_0} skeleton={nodes.p178.skeleton} />
         </group>

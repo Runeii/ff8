@@ -36,6 +36,9 @@ const useFootsteps = ({ movementController }: useFootstepsProps) => {
     }
 
     const player = getPlayerEntity(scene);
+    if (!player) {
+      return;
+    }
     player.getWorldPosition(playerPosition);
     const distance = playerPosition.distanceTo(camera.position);
 
