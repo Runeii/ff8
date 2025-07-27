@@ -170,8 +170,9 @@ const Model = ({animationController, models, scriptController, movementControlle
         position={[0, 0, (characterHeight / 3)]}
         name="hitbox"
         userData={{ isSolid }}
+        visible={isDebugMode}
         >
-        <meshBasicMaterial color="red" transparent opacity={0.5} />
+        <meshBasicMaterial color={isSolid ? 'red' : 'green'} transparent opacity={0.5} />
       </Box>
       <group name="animation-adjustment-group" ref={animationGroupRef}>
           <ModelComponent
