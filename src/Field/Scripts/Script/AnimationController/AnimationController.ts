@@ -27,7 +27,11 @@ type SavedAnimation = {
 
 export const createAnimationController = (id: string | number) => {
   const { getState: getSavedAnimation, setState: setSavedAnimation } = create(() => ({
-    idleAnimation: undefined as SavedAnimation | undefined,
+    idleAnimationIds: {
+      standAnimationId: 0,
+      walkAnimationId: 0,
+      runAnimationId: 0,
+    },
     ladderAnimation: undefined as SavedAnimation | undefined,
   }));
 
@@ -35,6 +39,8 @@ export const createAnimationController = (id: string | number) => {
     clips: [] as AnimationClip[],
     mesh: undefined as Object3D | undefined,
     mixer: undefined as AnimationMixer | undefined,
+
+    needsZAdjustment: false,
 
     activeAnimationId: undefined as number | undefined,
     activeAction: undefined as AnimationAction | undefined,
@@ -84,7 +90,16 @@ export const createAnimationController = (id: string | number) => {
       action.enabled = true;
       action.paused = true;
       currentDirection = currentQueueItem.speed;
+
+      let needsZAdjustment = true;
+      if (currentQueueItem.type === 'IDLE') {
+        needsZAdjustment = false;
+      }
+      if (id === 1) {
+        console.log('Playing animation for character 0', currentQueueItem.animationId, needsZAdjustment);
+      }
       setState({
+        needsZAdjustment,
         activeAction: action,
         activeKey: currentQueueItem.key,
         activeAnimationId: currentQueueItem.animationId,
@@ -231,25 +246,31 @@ export const createAnimationController = (id: string | number) => {
     }
   }
 
-  const setIdleAnimation = (animationId: number, startFrame?: number, _endFrame?: number) => {
-    const newPlayOptions: Partial<AnimationPlayOptions> = {
-      loop: LoopRepeat,
-      startFrame: startFrame ?? 0,
-      type: 'IDLE',
-    }
-
+  const setIdleAnimations = (standAnimationId: number, walkAnimationId: number, runAnimationId: number) => {
     setSavedAnimation({
-      idleAnimation: {
-        animationId,
-        ...newPlayOptions,
+      idleAnimationIds: {
+        standAnimationId,
+        walkAnimationId,
+        runAnimationId,
       }
     })
 
-    playAnimation(animationId, newPlayOptions);
+    playMovementAnimation('stand')
   }
 
-  const playMovementAnimation = (animationId: number) => {
+  const playMovementAnimation = (type: 'stand' | 'walk' | 'run') => {
     const { animation } = getState();
+
+    const { idleAnimationIds } = getSavedAnimation();
+    let animationId = 0;
+    if (type === 'stand') {
+      animationId = idleAnimationIds.standAnimationId;
+    } else if (type === 'walk') {
+      animationId = idleAnimationIds.walkAnimationId;
+    } else if (type === 'run') {
+      animationId = idleAnimationIds.runAnimationId;
+    }
+
     if (animation?.type === 'IDLE' && animation.animationId === animationId) {
       return;
     }
@@ -259,25 +280,6 @@ export const createAnimationController = (id: string | number) => {
     }
 
     return playAnimation(animationId, {
-      loop: LoopRepeat,
-      type: 'IDLE',
-    });
-  }
-
-  const playIdleAnimation = () => {
-    const { idleAnimation } = getSavedAnimation();
-
-    if (!idleAnimation) {
-      console.warn('Idle animation not set');
-      return;
-    }
-    const { animation } = getState();
-    if (animation?.type === 'IDLE') {
-      stopAnimation();
-    }
-
-    return playAnimation(idleAnimation.animationId, {
-      startFrame: idleAnimation.startFrame,
       loop: LoopRepeat,
       type: 'IDLE',
     });
@@ -344,6 +346,12 @@ export const createAnimationController = (id: string | number) => {
     stopAnimation();
   }
 
+  const setHasAdjustedZ = (hasAdjustedZ: boolean) => {
+    setState({
+      needsZAdjustment: !hasAdjustedZ,
+    });
+  }
+
   return {
     getIsPlaying,
     getState,
@@ -351,9 +359,8 @@ export const createAnimationController = (id: string | number) => {
     initialize,
     playAnimation,
     pauseAnimation,
-    playIdleAnimation,
     playMovementAnimation,
-    setIdleAnimation,
+    setIdleAnimations,
     setAnimationSpeed,
     stopAnimation,
     setHeadBone,
@@ -361,6 +368,7 @@ export const createAnimationController = (id: string | number) => {
     stopLadderAnimation,
     playLadderIntroAnimation,
     playLadderAnimation,
-    tick
+    tick,
+    setHasAdjustedZ
   }
 }

@@ -138,26 +138,24 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
       return;
     }
     const { backgroundAnimationSpring} = useScriptStateStore.getState();
-    const { position } = movementController.getState();
     animationController.stopAnimation();
-    position.pause();
+    movementController.pause();
     backgroundAnimationSpring.pause();
   }, [animationController, isTransitioningMap, movementController, useScriptStateStore]);
 
-  useFrame(({ scene }) => {
+  useFrame(({ scene }, delta) => {
     if (!entityRef.current || script.type !== 'model') {
       return;
     }
 
-    const position = movementController.getPosition();
-    entityRef.current.position.set(position.x, position.y, position.z);
+    movementController.tick(entityRef.current, delta);
 
     entityRef.current.quaternion.identity();
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
 
-    const { movementTarget } = movementController.getState();
-    if (movementTarget) {
-      rotationController.turnToFaceVector(movementTarget, 0);      
+    const { goal } = movementController.getState().position
+    if (goal) {
+      rotationController.turnToFaceVector(goal, 0);
     }
 
     const raw256Angle = rotationController.getState().angle.get();
@@ -188,8 +186,9 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
       userData={{
         scriptController
       }}
+      position={script.type === 'model' ? [10,10,10] : [0,0,0]}
       visible={isVisible}
-    >
+  >
       {script.groupId === 4 && <Sphere args={[0.02,10,10]} position={[0, 0, 0]} name="entity--4--collision" visible={true} userData={{ isSolid: true }}>
         <meshBasicMaterial color="purple" transparent opacity={1} side={DoubleSide} />
       </Sphere>}

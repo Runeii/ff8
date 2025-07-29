@@ -5,9 +5,14 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { checkForIntersections, getPositionOnWalkmesh } from "../../../../utils";
 import useGlobalStore from "../../../../store";
 import { convert256ToRadians } from "../utils";
-import createMovementController, { SPEED } from "../MovementController/MovementController";
+import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
 import { getPlayerEntity } from "./modelUtils";
+
+const SPEED = {
+  WALKING: 1.2,
+  RUNNING: 0.6,
+}
 
 type useControlsProps = {
   characterHeight: number;
@@ -32,8 +37,6 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
   const initialFieldPosition = useGlobalStore((state) => state.characterPosition);
   const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
   const walkmesh = scene.getObjectByName("walkmesh") as Group;
-
-  const { position } = movementController.getState();
 
   useEffect(() => {
     if (movementController.getState().footsteps.leftSound) {
@@ -129,7 +132,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
 
     movementController.setMovementSpeed(movementSpeed);
 
-    const currentPosition = position.get();
+    const currentPosition = movementController.getPosition();
     if (!currentPosition) {
       return;
     }
@@ -139,11 +142,11 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(player.quaternion).normalize();
     meshForward = meshForward.applyAxisAngle(meshUp, convert256ToRadians(movementAngle));
 
-    const directionAdjustmentForSpeed = speed * 600;
+    const directionAdjustmentForSpeed = speed * 1000;
     desiredPosition.set(
-      currentPosition[0],
-      currentPosition[1],
-      currentPosition[2]
+      currentPosition.x,
+      currentPosition.y,
+      currentPosition.z
     ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
 
     const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, characterHeight / 4);
@@ -163,10 +166,9 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     if (!isPermitted) {
       return;
     }
-    
+
     await movementController.moveToPoint(newPosition, {
-      duration: 16,
-      isFacingTarget: false,
+      isAnimationEnabled: true,
     });
 
     useGlobalStore.setState(state => {
@@ -186,7 +188,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       }
       return state;
     });
-  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, rotationController, handleMovement, isRunEnabled, movementFlags.isWalking, movementController, position, characterHeight]);
+  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, rotationController, handleMovement, isRunEnabled, movementFlags.isWalking, movementController, characterHeight]);
 
   useFrame(({ scene }, delta) => {
     if (!isActive) {
@@ -194,7 +196,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     }
     const isClimbingLadder = movementController.getState().isClimbingLadder;
 
-    if (movementController.getState().position.isAnimating || isClimbingLadder) {
+    if (isClimbingLadder) {
       return;
     }
 

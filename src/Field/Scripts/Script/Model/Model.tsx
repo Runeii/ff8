@@ -43,7 +43,6 @@ const Model = ({animationController, models, scriptController, movementControlle
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
   const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && state.isPartyFollowing && !isLeadCharacter);
 
-
   const modelName = models[modelId]
   const ModelComponent = components[modelName];
   
@@ -111,30 +110,21 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const animationGroupRef = useRef<Group>(null);
   const [boundingbox, setBoundingBox] = useState(new Box3());
-  const hasAdjustedZ = useRef(false);
   const sphereRef = useRef<Mesh>(null);
-  
-  useEffect(() => {
-    let currentKey: string | undefined = undefined;
-    animationController.subscribe(state => {
-      if (state.activeKey !== currentKey) {
-        hasAdjustedZ.current = false;
-        currentKey = state.activeKey;
-      }
-    })
-  }, [animationController]);
 
   useFrame(({scene}) => {
-    if (!animationGroupRef.current || hasAdjustedZ.current) {
+    const needsZAdjustment = animationController.getState().needsZAdjustment || movementController.getState().needsZAdjustment;
+
+    if (!animationGroupRef.current || !needsZAdjustment) {
       return;
     }
+
     animationGroupRef.current.position.z = 0;
     animationGroupRef.current.updateMatrixWorld(true);
     boundingbox.makeEmpty();
     boundingbox.expandByObject(animationGroupRef.current, true);
-
     setBoundingBox(boundingbox);
-
+    
     const walkmesh = scene.getObjectByName('walkmesh');
     if (!walkmesh) {
       return;
@@ -147,7 +137,9 @@ const Model = ({animationController, models, scriptController, movementControlle
     const z = walkmeshPoint.z - boundingbox.min.z;
     setCharacterHeight(boundingbox.max.z - boundingbox.min.z);
     animationGroupRef.current.position.z = z;
-    hasAdjustedZ.current = true;
+
+    movementController.setHasAdjustedZ(true);
+    animationController.setHasAdjustedZ(true);
   })
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);

@@ -1,30 +1,38 @@
-import { Scene, Vector3 } from "three";
+import { Object3D, Scene, Vector3 } from "three";
 import { create } from "zustand";
-import { SpringValue } from "@react-spring/web";
 import { numberToFloatingPoint } from "../../../../utils";
 import { createAnimationController } from "../AnimationController/AnimationController";
+import PromiseSignal from "../../../../PromiseSignal";
 
 export type MoveOptions = {
   customMovementTarget?: Vector3;
   duration?: number;
   isAnimationEnabled: boolean;
   isFacingTarget: boolean;
-}
-
-export const SPEED = {
-  WALKING: 0.9,
-  RUNNING: 0.5,
-}
+} 
 
 export const createMovementController = (id: string | number, animationController: ReturnType<typeof createAnimationController>) => {
+  let isStopping = false;
+
   const {getState, setState, subscribe} = create(() => ({
     id,
-    movementTarget: undefined as Vector3 | undefined,
-    movementSpeed: 0,
-    // @ts-expect-error SpringValue incorrectly typed
-    position: new SpringValue<number[]>([2,2,2]), // default to way out of view
-    // @ts-expect-error SpringValue incorrectly typed
-    offset: new SpringValue<number[]>([0,0,0]),
+    movementSpeed: 2560,
+    isPaused: false,
+    needsZAdjustment: true,
+    position: {
+      current: new Vector3(0, 0, 0),
+      duration: 0 as number | undefined,
+      isAnimationEnabled: true,
+      isFacingTarget: true,
+      goal: undefined as Vector3 | undefined,
+      signal: undefined as PromiseSignal| undefined,
+    },
+    offset: {
+      current: new Vector3(0,0,0),
+      duration: 0,
+      goal: undefined as Vector3 | undefined,
+      signal: undefined as PromiseSignal | undefined,
+    },
     footsteps: {
       isActive: false,
       leftSound: undefined as Howl | undefined,
@@ -34,10 +42,30 @@ export const createMovementController = (id: string | number, animationControlle
     speedBeforeClimbingLadder: 0,
   }));
 
-  const setMovementTarget = (target?: Vector3) => {
-    setState({
-      movementTarget: target,
-    });
+  const resolvePendingPositionSignal = () => {
+    const { position } = getState();
+    if (position.signal) {
+      position.signal.resolve();
+      setState({
+        position: {
+          ...position,
+          signal: undefined,
+        }
+      });
+    }
+  }
+
+  const resolvePendingOffsetSignal = () => {
+    const { offset } = getState();
+    if (offset.signal) {
+      offset.signal.resolve();
+      setState({
+        offset: {
+          ...offset,
+          signal: undefined,
+        }
+      });
+    }
   }
 
   const setMovementSpeed = (speed: number) => {
@@ -46,18 +74,38 @@ export const createMovementController = (id: string | number, animationControlle
     });
   }
 
-  const setPosition = (position: VectorLike) => {
-    getState().position.set([
-      position.x,
-      position.y,
-      position.z,
-    ]);
+  const setPosition = (position: Vector3) => {
+    resolvePendingPositionSignal();
+    setState({
+      isPaused: false,
+      needsZAdjustment: true,
+      position: {
+        ...getState().position,
+        goal: position,
+        duration: 0,
+        isAnimationEnabled: false,
+        isFacingTarget: false,
+        signal: undefined,
+      },
+    });
   }
 
-  let currentRunTimestamp = 0;
+  const setOffset = (x: number, y: number, z: number) => {
+    const target = new Vector3(...[x, y, z].map(numberToFloatingPoint));
+
+    resolvePendingOffsetSignal();
+    setState({
+      isPaused: false,
+      offset: {
+        ...getState().offset,
+        goal: target,
+        duration: 0,
+        signal: undefined,
+      },
+    });
+  }
+
   const moveToPoint = async (target: Vector3, passedOptions?: Partial<MoveOptions>) => {
-    const timestamp = Date.now();
-    currentRunTimestamp = timestamp;
     const defaultOptions: MoveOptions = {
       customMovementTarget: undefined,
       duration: undefined,
@@ -69,43 +117,32 @@ export const createMovementController = (id: string | number, animationControlle
       duration,
       isAnimationEnabled,
       isFacingTarget,
-      customMovementTarget,
     } = {
       ...defaultOptions,
       ...passedOptions,
     }
     
-    setMovementTarget(customMovementTarget ?? (isFacingTarget ? target : undefined));
-    
-    const movementSpeed = getState().movementSpeed;
-
-    if (isAnimationEnabled) {
-      animationController.playMovementAnimation(movementSpeed > 2695 ? 2 : 1)
-    }
-
-    const position = getState().position
-    const distance = target.distanceTo(new Vector3().fromArray(position.get()));
-
-    let calculatedDuration = duration ?? (distance * 40000000 / getState().movementSpeed);
-    if (Number.isNaN(calculatedDuration) || Number.isFinite(calculatedDuration) === false) {
-      calculatedDuration = 0;
-    }
-    await position.start([target.x, target.y, target.z], {
-      config: {
-        duration: calculatedDuration
+    resolvePendingPositionSignal();
+    const signal = new PromiseSignal();
+    setState({
+      isPaused: false,
+      position: {
+        current: getState().position.current,
+        goal: target,
+        duration: duration && duration > 0 ? duration : undefined,
+        isAnimationEnabled,
+        isFacingTarget,
+        signal
       },
-      immediate: calculatedDuration === 0,
     });
 
-    if (timestamp !== currentRunTimestamp) {
-      return;
-    }
-
+    isStopping = false;
+    const movementSpeed = getState().movementSpeed;
     if (isAnimationEnabled) {
-      animationController.playIdleAnimation()
+      animationController.playMovementAnimation(movementSpeed > 2695 ? 'run' : 'walk');
     }
 
-    setMovementTarget(undefined)
+    await signal.promise;
   }
 
   const moveToObject = async (name: string, scene: Scene, passedOptions?: Partial<MoveOptions>) => {
@@ -124,43 +161,49 @@ export const createMovementController = (id: string | number, animationControlle
   const moveToOffset = async (x: number, y: number, z:number, duration: number) => {
     const target = new Vector3(...[x,y,z].map(numberToFloatingPoint));
 
-    getState().offset.resume();
-    await getState().offset.start([
-      target.x,
-      target.y,
-      target.z,
-    ], {
-      config: {
-        duration: duration / 30 * 1000,
-      },
-      immediate: duration === 0,
-    })
+    resolvePendingOffsetSignal();
+    const signal = new PromiseSignal();
+    setState({
+      offset: {
+        current: getState().offset.current,
+        goal: target,
+        duration,
+        signal
+      }
+    });
+
+    await signal.promise;
   }
 
   const getPosition = () => {
     const { position, offset } = getState();
-    const positionValue = position.get();
-    const offsetValue = offset.get();
+    const positionValue = position.current
+    const offsetValue = offset.current
 
     return {
-      x: positionValue[0] + offsetValue[0],
-      y: positionValue[1] + offsetValue[1],
-      z: positionValue[2] + offsetValue[2],
+      x: positionValue.x + offsetValue.x,
+      y: positionValue.y + offsetValue.y,
+      z: positionValue.z + offsetValue.z,
     }
   }
 
   const stop = () => {
-    const { position, offset } = getState();
-    position.stop();
-    offset.stop();
-    setMovementTarget(undefined);
+    setState({
+      position: {
+        ...getState().position,
+        goal: undefined
+      },
+      offset: {
+        ...getState().offset,
+        goal: undefined
+      }
+    });
   }
 
   const pause = () => {
-    const { position, offset } = getState();
-    position.set(position.get());
-    position.finish();
-    offset.set(offset.get());
+    setState({
+      isPaused: true,
+    });
   }
 
   ///
@@ -219,23 +262,100 @@ export const createMovementController = (id: string | number, animationControlle
       speedBeforeClimbingLadder: isClimbingLadder ? getState().movementSpeed : 0,
     })
 
+  const tick = (entity: Object3D, delta: number) => {
+    const { position, offset, isPaused, movementSpeed } = getState();
+
+    const { isAnimationEnabled } = position;
+    if (isStopping && isAnimationEnabled) {
+      animationController.playMovementAnimation('stand');
+      isStopping = false;
+    }
+
+    if (isPaused) {
+      return;
+    }
+    
+    if (!position.goal && !offset.goal) {
+      return;
+    }
+    
+    const { current: currentPosition, duration, goal: positionGoal } = position;
+    if (positionGoal) {
+      const speed = movementSpeed / 2560; // units per second
+      const maxDistance = speed * delta * (duration > 0 ? duration : 1);
+
+      const remainingDistance = currentPosition.distanceTo(positionGoal);
+
+      if (remainingDistance <= maxDistance || duration === 0) {
+        currentPosition.copy(positionGoal);
+        resolvePendingPositionSignal();
+        setState({
+          isPaused: true,
+          position: {
+            ...getState().position,
+            goal: undefined,
+          }
+        });
+
+        isStopping = true;
+      } else {
+        const direction = positionGoal.clone().sub(currentPosition).normalize();
+        currentPosition.add(direction.multiplyScalar(maxDistance).divideScalar(10));
+      }
+    }
+
+    const { current: currentOffset, goal: offsetGoal, duration: offsetDuration } = offset;
+    if (offsetGoal) {
+      const speed = movementSpeed / 2560; // units per second
+      const maxDistance = speed * delta * (offsetDuration > 0 ? offsetDuration : 1);
+
+      const remainingDistance = currentOffset.distanceTo(offsetGoal);
+
+      if (remainingDistance <= maxDistance || offsetDuration === 0) {
+        currentOffset.copy(offsetGoal);
+        console.log('Applied offset', currentOffset);
+        resolvePendingOffsetSignal();
+        setState({
+          isPaused: true,
+          offset: {
+            ...getState().offset,
+            goal: undefined,
+          }
+        });
+      } else {
+        const direction = offsetGoal.clone().sub(currentOffset).normalize();
+        currentOffset.add(direction.multiplyScalar(maxDistance).divideScalar(10));
+      }
+    }
+
+    entity.position.set(getPosition().x, getPosition().y, getPosition().z);
+  }
+
+  const setHasAdjustedZ = (hasAdjustedZ: boolean) => {
+    setState({
+      needsZAdjustment: !hasAdjustedZ,
+    });
+  }
+
   return {
     getState,
     getPosition,
     moveToObject,
     moveToOffset,
     moveToPoint,
-    pause,
-    setMovementTarget,
-    setMovementSpeed,
+    setOffset,
     setPosition,
+    pause,
+    setMovementSpeed,
     subscribe,
     stop,
     setFootsteps,
     enableFootsteps,
     disableFootsteps,
     resetFootsteps,
-    setIsClimbingLadder
+    setIsClimbingLadder,
+    tick,
+    setHasAdjustedZ,
   }
 }
 

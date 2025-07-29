@@ -50,7 +50,7 @@ export let MEMORY: Record<number, number> = {
   
   
   84: 0, // last area visited
-  256: 3000, // progress
+  256: 0, // progress
   720: 0, // squall model
   721: 2, // zell model
   722: 1, // selphie model
@@ -608,14 +608,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SETPC: ({ setState, STACK }) => {
     const partyMemberId = STACK.pop() as number;
     setState({
-      partyMemberId
+      partyMemberId,
     })
-
-    if (useGlobalStore.getState().party.length < 1) {
-      useGlobalStore.setState({
-        party: [...useGlobalStore.getState().party, partyMemberId]
-      });
-    }
   },
   ADDMEMBER: ({ STACK }) => {
     const characterID = STACK.pop() as number;
@@ -638,11 +632,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     })
   },
   BASEANIME: ({ animationController, currentOpcode, STACK }) => {
-    const animationId = currentOpcode.param;
-    const firstFrame = STACK.pop() as number;
-    const lastFrame = STACK.pop() as number;
+    const standAnimationId = currentOpcode.param;
+    const runAnimationId = STACK.pop() as number;
+    const walkAnimationId = STACK.pop() as number;
 
-    animationController.setIdleAnimation(animationId, firstFrame, lastFrame);
+    animationController.setIdleAnimations(standAnimationId, runAnimationId, walkAnimationId);
   },
   ANIME: async ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
@@ -890,7 +884,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   PMOVECANCEL: () => {},
 
   MOVESYNC: async ({ movementController }) => {
-    while (movementController.getState().position.isAnimating) {
+    while (movementController.getState().position.goal) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -1558,7 +1552,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
 
-    await movementController.moveToOffset(x, y, z, 0);
+    await movementController.setOffset(x, y, z);
   },
   COFFSET: ({ movementController, STACK }) => {
     const duration = STACK.pop() as number;
@@ -1601,7 +1595,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     movementController.moveToOffset(endX, endY, endZ, duration);
   },
   OFFSETSYNC: async ({ movementController }) => {
-    while (movementController.getState().offset.isAnimating) {
+    while (movementController.getState().offset.goal) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },

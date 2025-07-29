@@ -43,13 +43,25 @@ const useKeyboardControls = () => {
   useEffect(() => {
     const handleKeyDown = onMovementKeyPress(invalidate, setMovementFlags, true);
     const handleKeyUp = onMovementKeyPress(invalidate, setMovementFlags, false);
-
+    const clearMovementFlags = () => {
+      setMovementFlags({
+        forward: false,
+        backward: false,
+        left: false,
+        right: false,
+        isWalking: false,
+      });
+    };
+    window.addEventListener("blur", clearMovementFlags);
+    window.addEventListener("focus", clearMovementFlags);
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", clearMovementFlags);
+      window.removeEventListener("focus", clearMovementFlags);
     };
   }, [invalidate]);
 
