@@ -10,7 +10,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { DoubleSide, Group, Vector3 } from "three";
 import createScriptState from "./state";
 import { createAnimationController } from "./AnimationController/AnimationController";
-import { Sphere, Text } from "@react-three/drei";
+import { Sphere } from "@react-three/drei";
 import createMovementController from "./MovementController/MovementController";
 import createRotationController from "./RotationController/RotationController";
 import createScriptController from "./ScriptController/ScriptController";
@@ -52,7 +52,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
 
   const isVisible = useScriptStateStore(state => state.isVisible);
   const isUnused = useScriptStateStore(state => state.isUnused);
-  const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   
   const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
 
@@ -173,8 +172,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
     }
   });
 
-  const isDebugMode = useGlobalStore(state => state.isDebugMode);
-
   if (isUnused) {
     return null;
   }
@@ -192,7 +189,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
       {script.groupId === 4 && <Sphere args={[0.02,10,10]} position={[0, 0, 0]} name="entity--4--collision" visible={true} userData={{ isSolid: true }}>
         <meshBasicMaterial color="purple" transparent opacity={1} side={DoubleSide} />
       </Sphere>}
-      {isDebugMode && <Text fontSize={0.07}>{script.groupId}-{partyMemberId}</Text>}
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'model' && <Model scriptController={scriptController} animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} script={script} useScriptStateStore={useScriptStateStore} />}

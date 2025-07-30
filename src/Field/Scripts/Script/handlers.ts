@@ -1563,10 +1563,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     movementController.moveToOffset(x, y, z, duration);
   },
   COFFSETS: async ({ movementController, STACK }) => {
-    const endX = STACK.pop() as number;
+    const duration = STACK.pop() as number;
     const endZ = STACK.pop() as number;
     const endY = STACK.pop() as number;
-    const duration = STACK.pop() as number;
+    const endX = STACK.pop() as number;
     const startZ = STACK.pop() as number;
     const startY = STACK.pop() as number;
     const startX = STACK.pop() as number;
@@ -1583,16 +1583,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     movementController.moveToOffset(x, y, z, duration);
   },
   LOFFSETS: async ({ movementController, STACK }) => {
+    const duration = STACK.pop() as number;
     const endX = STACK.pop() as number;
     const endZ = STACK.pop() as number;
     const endY = STACK.pop() as number;
-    const duration = STACK.pop() as number;
     const startZ = STACK.pop() as number;
     const startY = STACK.pop() as number;
     const startX = STACK.pop() as number;
-    
-    await movementController.moveToOffset(startX, startY, startZ, 0)
-    movementController.moveToOffset(endX, endY, endZ, duration);
+
+    await movementController.loopOffsets(startX, startY, startZ, endX, endY, endZ, duration)
   },
   OFFSETSYNC: async ({ movementController }) => {
     while (movementController.getState().offset.goal) {

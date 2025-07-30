@@ -1,5 +1,5 @@
 import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
-import {  useMemo } from "react";
+import {  useCallback, useMemo } from "react";
 import useGlobalStore from "../../store";
 import { FieldData } from "../Field";
 import { vectorToFloatingPoint } from "../../utils";
@@ -31,7 +31,7 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
   
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
 
-  const handleClick = (e: ThreeEvent<MouseEvent>) => {
+  const handleClick = useCallback((e: ThreeEvent<MouseEvent>) => {
     if (!isDebugMode) {
       return;
     }
@@ -39,7 +39,7 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
     useGlobalStore.setState({
       characterPosition: e.point
     });
-  }
+  }, [isDebugMode]);
 
   const lockedTriangles = useGlobalStore(state => state.lockedTriangles);
 

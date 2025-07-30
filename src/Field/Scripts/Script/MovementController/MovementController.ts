@@ -9,6 +9,7 @@ export type MoveOptions = {
   duration?: number;
   isAnimationEnabled: boolean;
   isFacingTarget: boolean;
+  isUserControls: boolean;
 } 
 
 export const createMovementController = (id: string | number, animationController: ReturnType<typeof createAnimationController>) => {
@@ -19,11 +20,13 @@ export const createMovementController = (id: string | number, animationControlle
     movementSpeed: 2560,
     isPaused: false,
     needsZAdjustment: true,
+    loopSignal: undefined as PromiseSignal | undefined,
     position: {
       current: new Vector3(0, 0, 0),
       duration: 0 as number | undefined,
       isAnimationEnabled: true,
       isFacingTarget: true,
+      isUserControls: false,
       goal: undefined as Vector3 | undefined,
       signal: undefined as PromiseSignal| undefined,
     },
@@ -111,12 +114,14 @@ export const createMovementController = (id: string | number, animationControlle
       duration: undefined,
       isAnimationEnabled: true,
       isFacingTarget: true,
+      isUserControls: false,
     }
 
     const {
       duration,
       isAnimationEnabled,
       isFacingTarget,
+      isUserControls,
     } = {
       ...defaultOptions,
       ...passedOptions,
@@ -132,6 +137,7 @@ export const createMovementController = (id: string | number, animationControlle
         duration: duration && duration > 0 ? duration : undefined,
         isAnimationEnabled,
         isFacingTarget,
+        isUserControls,
         signal
       },
     });
@@ -160,10 +166,10 @@ export const createMovementController = (id: string | number, animationControlle
 
   const moveToOffset = async (x: number, y: number, z:number, duration: number) => {
     const target = new Vector3(...[x,y,z].map(numberToFloatingPoint));
-
     resolvePendingOffsetSignal();
     const signal = new PromiseSignal();
     setState({
+      isPaused: false,
       offset: {
         current: getState().offset.current,
         goal: target,
@@ -173,6 +179,29 @@ export const createMovementController = (id: string | number, animationControlle
     });
 
     await signal.promise;
+  }
+
+  const loopOffsets = async (startX: number, startY: number, startZ: number, endX: number, endY: number, endZ: number, duration: number) => {
+    const loopSignal = new PromiseSignal();
+    setState({
+      loopSignal,
+    });
+    let isLooping = true;
+    console.log('Looping offsets', startX, startY, startZ, endX, endY, endZ, duration);
+    const loop = async () => {
+      console.log(duration)
+      await moveToOffset(startX, startY, startZ, duration);
+      if (!isLooping) {
+        return;
+      }
+      await moveToOffset(endX, endY, endZ, duration);
+      if (isLooping) {
+        window.requestAnimationFrame(loop);
+      }
+    }
+    window.requestAnimationFrame(loop);
+    await loopSignal.promise;
+    isLooping = false;
   }
 
   const getPosition = () => {
@@ -272,6 +301,7 @@ export const createMovementController = (id: string | number, animationControlle
     }
 
     if (isPaused) {
+
       return;
     }
     
@@ -282,10 +312,10 @@ export const createMovementController = (id: string | number, animationControlle
     const { current: currentPosition, duration, goal: positionGoal } = position;
     if (positionGoal) {
       const speed = movementSpeed / 2560; // units per second
-      const maxDistance = speed * delta * (duration > 0 ? duration : 1);
+      const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
 
       const remainingDistance = currentPosition.distanceTo(positionGoal);
-
+      
       if (remainingDistance <= maxDistance || duration === 0) {
         currentPosition.copy(positionGoal);
         resolvePendingPositionSignal();
@@ -293,6 +323,7 @@ export const createMovementController = (id: string | number, animationControlle
           isPaused: true,
           position: {
             ...getState().position,
+            isUserControls: false,
             goal: undefined,
           }
         });
@@ -305,15 +336,14 @@ export const createMovementController = (id: string | number, animationControlle
     }
 
     const { current: currentOffset, goal: offsetGoal, duration: offsetDuration } = offset;
-    if (offsetGoal) {
-      const speed = movementSpeed / 2560; // units per second
-      const maxDistance = speed * delta * (offsetDuration > 0 ? offsetDuration : 1);
 
+    if (offsetGoal) {
+      const durationInSeconds = offsetDuration / 25; // convert tenths to seconds
       const remainingDistance = currentOffset.distanceTo(offsetGoal);
 
-      if (remainingDistance <= maxDistance || offsetDuration === 0) {
+      if (remainingDistance < 0.0005 || durationInSeconds <= 0) {
+        // Snap to goal if we're basically there
         currentOffset.copy(offsetGoal);
-        console.log('Applied offset', currentOffset);
         resolvePendingOffsetSignal();
         setState({
           isPaused: true,
@@ -323,10 +353,15 @@ export const createMovementController = (id: string | number, animationControlle
           }
         });
       } else {
+        // Fraction of total path to move this frame
+        const fractionThisFrame = delta / durationInSeconds; 
+        const step = remainingDistance * fractionThisFrame;
+
         const direction = offsetGoal.clone().sub(currentOffset).normalize();
-        currentOffset.add(direction.multiplyScalar(maxDistance).divideScalar(10));
+        currentOffset.add(direction.multiplyScalar(step));
       }
     }
+
 
     entity.position.set(getPosition().x, getPosition().y, getPosition().z);
   }
@@ -340,6 +375,7 @@ export const createMovementController = (id: string | number, animationControlle
   return {
     getState,
     getPosition,
+    loopOffsets,
     moveToObject,
     moveToOffset,
     moveToPoint,

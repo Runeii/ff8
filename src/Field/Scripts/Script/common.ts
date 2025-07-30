@@ -193,13 +193,13 @@ export const setCameraAndLayerScroll = async (x: number, y: number, duration: nu
 
   xSpring.start({
     from: previousGoalX,
-    to: x,
+    to: -x,
     ...standardScrollConfig(duration),
   })
 
   ySpring.start({
     from: previousGoalY,
-    to: y,
+    to: -y,
     ...standardScrollConfig(duration),
   })
 }

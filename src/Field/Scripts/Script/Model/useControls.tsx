@@ -104,6 +104,10 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       return;
     }
 
+    if (movementController.getState().position.goal && !movementController.getState().position.isUserControls) {
+      return;
+    }
+    
     const player = getPlayerEntity(scene);
     if (!player) {
       console.warn("No player entity found in scene");
@@ -169,6 +173,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
 
     await movementController.moveToPoint(newPosition, {
       isAnimationEnabled: true,
+      isUserControls: true,
     });
 
     useGlobalStore.setState(state => {

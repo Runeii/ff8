@@ -1,5 +1,4 @@
-import { Cylinder } from "@react-three/drei"
-import { Box3, DoubleSide, Mesh } from "three";
+import { Box3, DoubleSide, Mesh, Object3D } from "three";
 import { ScriptMethod } from "../../types";
 import {  useEffect, useMemo, useRef, useState } from "react";
 import {  useFrame } from "@react-three/fiber";
@@ -8,13 +7,15 @@ import { ScriptStateStore } from "../state";
 import createScriptController from "../ScriptController/ScriptController";
 import { getPlayerEntity } from "../Model/modelUtils";
 
-type TalkRadiusProps = {
+type useTalkRadiusProps = {
+  isActive: boolean;
   scriptController: ReturnType<typeof createScriptController>;
-  talkMethod: ScriptMethod,
+  talkMethod?: ScriptMethod,
+  talkTargetRef: React.RefObject<Object3D | null>;
   useScriptStateStore: ScriptStateStore,
 }
 
-const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkRadiusProps) => {
+const useTalkRadius = ({ isActive, scriptController, talkMethod, useScriptStateStore, talkTargetRef }: useTalkRadiusProps) => {
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
   const isTalkable = useScriptStateStore(state => state.isTalkable);
   const hasActiveText = useGlobalStore(state => state.currentMessages.length > 0);
@@ -31,15 +32,12 @@ const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkR
   const isPlayerAbleToTalk = isUserControllable && isTalkable && !hasActiveTalkMethod && hasValidTalkMethod && !hasActiveText;
 
   const [isIntersecting, setIsIntersecting] = useState(false);
-  const talkCylinderRef = useRef<Mesh>(null);
-  const talkRadius = useScriptStateStore(state => state.talkRadius / 4096);
-  const characterHeight = useScriptStateStore(state => state.characterHeight);
 
   const talkSphereBoxRef = useRef<Box3>(new Box3());
   const characterBoxRef = useRef<Box3>(new Box3());
 
   useFrame(({scene}) => {
-    if (!isPlayerAbleToTalk || !talkCylinderRef.current) {
+    if (!isActive || !isPlayerAbleToTalk || !talkTargetRef.current) {
       return;
     }
 
@@ -53,7 +51,7 @@ const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkR
       return;
     }
   
-    talkSphereBoxRef.current.setFromObject(talkCylinderRef.current);
+    talkSphereBoxRef.current.setFromObject(talkTargetRef.current);
     characterBoxRef.current.setFromObject(meshHitbox);
 
     const isIntersecting = talkSphereBoxRef.current.intersectsBox(characterBoxRef.current);
@@ -61,7 +59,7 @@ const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkR
   });
 
   useEffect(() => {
-    if (!isIntersecting || !isPlayerAbleToTalk) {
+    if (!isActive || !isIntersecting || !isPlayerAbleToTalk) {
       return;
     }
 
@@ -81,26 +79,7 @@ const TalkRadius = ({ scriptController, talkMethod, useScriptStateStore }: TalkR
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     }
-  }, [isIntersecting, talkMethod, scriptController, isPlayerAbleToTalk]);
-
-  const isDebugMode = useGlobalStore(state => state.isDebugMode);
- 
-
-  if (!isPlayerAbleToTalk) {
-    return null;
-  }
-
-  return (
-    <Cylinder
-      args={[talkRadius,talkRadius, characterHeight * 1.5]}
-      position={[0, 0, (characterHeight / 3)]}
-      ref={talkCylinderRef}
-      rotation={[Math.PI / 2, 0, 0]}
-      visible={isDebugMode}
-    >
-      <meshBasicMaterial color={`white`} side={DoubleSide} opacity={0} transparent />
-    </Cylinder>
-  );
+  }, [isActive,isIntersecting, talkMethod, scriptController, isPlayerAbleToTalk]);
 }
 
-export default TalkRadius;
+export default useTalkRadius;

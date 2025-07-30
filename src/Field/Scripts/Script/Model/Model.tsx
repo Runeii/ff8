@@ -5,7 +5,6 @@ import useGlobalStore from "../../../../store";
 import { useFrame } from "@react-three/fiber";
 import { ScriptStateStore } from "../state";
 import { createAnimationController } from "../AnimationController/AnimationController";
-import TalkRadius from "../TalkRadius/TalkRadius";
 import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
 import createScriptController from "../ScriptController/ScriptController";
@@ -13,6 +12,7 @@ import { getPositionOnWalkmesh } from "../../../../utils";
 import { Box, Sphere } from "@react-three/drei";
 import useControls from "./useControls";
 import useFootsteps from "./useFootsteps";
+import useTalkRadius from "../TalkRadius/useTalkRadius";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
@@ -99,10 +99,10 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   useFootsteps({ movementController });
 
-  const [characterHeight, setCharacterHeight] = useState(0);
+  const [characterDimensions, setCharacterDimensions] = useState<Vector3>(new Vector3());
 
   useControls({
-    characterHeight,
+    characterHeight: characterDimensions.y,
     isActive: isLeadCharacter,
     movementController,
     rotationController,
@@ -134,12 +134,28 @@ const Model = ({animationController, models, scriptController, movementControlle
     if (!walkmeshPoint) {
       return;
     }
+
     const z = walkmeshPoint.z - boundingbox.min.z;
-    setCharacterHeight(boundingbox.max.z - boundingbox.min.z);
-    animationGroupRef.current.position.z = z;
+   // animationGroupRef.current.position.z = z;
+
+    setCharacterDimensions(new Vector3(
+      boundingbox.max.x - boundingbox.min.x,
+      boundingbox.max.y - boundingbox.min.y,
+      boundingbox.max.z - boundingbox.min.z
+    ));
 
     movementController.setHasAdjustedZ(true);
     animationController.setHasAdjustedZ(true);
+  })
+
+  const hitboxRef = useRef<Mesh>(null);
+
+  useTalkRadius({
+    isActive: !!talkMethod && !isLeadCharacter && !isFollower && !!meshGroup,
+    scriptController,
+    talkMethod,
+    useScriptStateStore,
+    talkTargetRef: hitboxRef
   })
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
@@ -147,20 +163,14 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   return (
     <group>
-      {talkMethod && !isLeadCharacter && !isFollower && meshGroup && (
-        <TalkRadius
-          scriptController={scriptController}
-          talkMethod={talkMethod}
-          useScriptStateStore={useScriptStateStore}
-        />
-      )}
       <Sphere args={[0.01, 16, 16]} ref={sphereRef} visible={isDebugMode}>
         <meshBasicMaterial color="green" side={DoubleSide} />
       </Sphere>
       <Box
-        args={[0.04,0.04, characterHeight * 1.5]}
-        position={[0, 0, (characterHeight / 3)]}
+        args={characterDimensions.toArray()}
+        position={[0, 0, characterDimensions.z / 2]}
         name="hitbox"
+        ref={hitboxRef}
         userData={{ isSolid }}
         visible={isDebugMode}
         >
