@@ -103,8 +103,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     if (!isActive || !isUserControllable || !hasPlacedCharacter || isTransitioningMap) {
       return;
     }
-
-    if (movementController.getState().position.goal && !movementController.getState().position.isUserControls) {
+    if (movementController.getState().position.goal && movementController.getState().position.userControlledSpeed !== undefined) {
       return;
     }
     
@@ -123,7 +122,6 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     const movementAngle = handleMovement();
 
     if (movementAngle === null) {
-      movementController.setMovementSpeed(0);
       return;
     }
 
@@ -133,8 +131,6 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     const speed = isWalking ? SPEED.WALKING : SPEED.RUNNING
     direction.normalize().multiplyScalar(speed).multiplyScalar(delta);
     const movementSpeed = isWalking ? 2560 : 7560
-
-    movementController.setMovementSpeed(movementSpeed);
 
     const currentPosition = movementController.getPosition();
     if (!currentPosition) {
@@ -165,15 +161,15 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
         blockages.push(object);
       }
     });
+
     const isPermitted = checkForIntersections(player, newPosition, blockages, camera);
 
     if (!isPermitted) {
       return;
     }
-
     await movementController.moveToPoint(newPosition, {
       isAnimationEnabled: true,
-      isUserControls: true,
+      userControlledSpeed: movementSpeed,
     });
 
     useGlobalStore.setState(state => {

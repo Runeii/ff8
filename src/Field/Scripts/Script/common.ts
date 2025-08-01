@@ -185,8 +185,19 @@ const standardScrollConfig = (duration: number) => ({
   },
   immediate: duration === 0,
 })
-export const setCameraAndLayerScroll = async (x: number, y: number, duration: number, layerIndex: number = 0) => {
-  const {x: xSpring, y: ySpring} = useGlobalStore.getState().cameraAndLayerScrollSprings[layerIndex];
+export const setCameraAndLayerScroll = async (x: number, y: number, duration: number, layerIndex?: number) => {
+  let xSpring: SpringValue<number>;
+  let ySpring: SpringValue<number>;
+
+  if (layerIndex === undefined) {
+    const { cameraScrollSpring } = useGlobalStore.getState();
+    xSpring = cameraScrollSpring.x;
+    ySpring = cameraScrollSpring.y;
+  } else {
+    const { layerScrollSprings } = useGlobalStore.getState();
+    xSpring = layerScrollSprings[layerIndex].x;
+    ySpring = layerScrollSprings[layerIndex].y;
+  }
 
   const previousGoalX = xSpring.goal;
   const previousGoalY = ySpring.goal;

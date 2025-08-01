@@ -178,18 +178,10 @@ const Model = ({animationController, models, scriptController, movementControlle
       </Box>
       <group name="animation-adjustment-group" ref={animationGroupRef}>
           <ModelComponent
-            name={`party--${partyMemberId ?? 'none'}`}
             mapName={fieldId}
             ref={setModelRef}
             scale={0.06}
-            userData={{
-              partyMemberId,
-              movementController,
-              rotationController,
-              useScriptStateStore,
-              scriptController
-            }}
-            />
+          />
       </group>
     </group>
   );

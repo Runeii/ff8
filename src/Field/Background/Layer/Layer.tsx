@@ -138,9 +138,6 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
       panY = -yOffset + adjustedY;
     }
 
-    panX += scrollSpring.get().x;
-    panY += scrollSpring.get().y;
-
     if (Number.isNaN(panX) || !Number.isFinite(panX)) {
       panX = 0;
     }
@@ -149,8 +146,11 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     }
 
     const {left, right, top, bottom} = backgroundPanRef.current.boundaries;
-    const clampedPanX = clamp(panX, left * 256, right * 256);
-    const clampedPanY = clamp(panY, top * 256, bottom * 256);
+    let clampedPanX = clamp(panX, left * 256, right * 256);
+    let clampedPanY = clamp(panY, top * 256, bottom * 256);
+
+    clampedPanX += scrollSpring.get().x;
+    clampedPanY += scrollSpring.get().y;
 
     const directions = getCameraDirections(camera);
 
@@ -162,6 +162,7 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
         hasRenderedBackground: true,
       });
     }
+
   })
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);

@@ -16,7 +16,7 @@ const Focus = () => {
 
   const [playerBoundingBox] = useState<Box3>(new Box3());
   useFrame(({scene}) => {
-    const playerMesh = getPartyMemberModelComponent(scene, 0) as Mesh;
+    const playerMesh = getPartyMemberModelComponent(scene, 0);
     if (!playerMesh) {
       return;
     }

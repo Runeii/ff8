@@ -70,7 +70,14 @@ interface GlobalState {
   isPartyFollowing: boolean,
 
   cameraFocusHeight: number,
-  cameraAndLayerScrollSprings: {x: SpringValue<number>, y: SpringValue<number>}[],
+  cameraScrollSpring: {
+    x: SpringValue<number>,
+    y: SpringValue<number>,
+  },
+  layerScrollSprings: {
+    x: SpringValue<number>,
+    y: SpringValue<number>,
+  }[],
   cameraFocusObject: Object3D | undefined,
   cameraFocusSpring: SpringValue<number> | undefined,
 
@@ -137,13 +144,17 @@ export const INITIAL_STATE: GlobalState = {
     isMapFadeEnabled: true,
   
     availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    party: [0,1,4],
+    party: [0,4],
     congaWaypointHistory: [],
     playerMovementSpeed: 0,
     isPartyFollowing: true,
   
     cameraFocusHeight: 0,
-    cameraAndLayerScrollSprings: new Array(8).fill(0).map(() => ({
+    cameraScrollSpring: {
+      x: new SpringValue(0),
+      y: new SpringValue(0),
+    },
+    layerScrollSprings: new Array(8).fill(0).map(() => ({
       x: new SpringValue(0),
       y: new SpringValue(0),
     })),

@@ -87,7 +87,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
   );
 
 
-  const scrollSpring = useScrollSpring(0);
+  const scrollSpring = useScrollSpring();
 
   // This is the main logic for the camera movement
   useFrame(({ scene }) => {

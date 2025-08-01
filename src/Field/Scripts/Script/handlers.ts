@@ -46,6 +46,7 @@ export let MEMORY: Record<number, number> = {
   491: 0, // touk
   641: 96,
   534: 1, // ?
+  1024: 1,
   1025: 0,
   
   
@@ -559,6 +560,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const partyMemberIndex = currentOpcode.param as number;
     const label = STACK.pop() as number;
     const priority = STACK.pop() as number;
+    console.log('PREQ', partyMemberIndex, label, priority, scene);
     remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
   },
   PREQSW: ({ currentOpcode, scene, STACK }) => {
@@ -1094,8 +1096,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   // Retrieves the current angle of player
   PDIRA: ({ scene, STACK }) => {
     const partyMemberId = STACK.pop() as number;
-    const player = scene.getObjectByName(`party--${partyMemberId}`) as Group;
-    console.log(partyMemberId)
+    const player = getPartyMemberModelComponent(scene, partyMemberId);
+    if (!player) {
+      console.warn('No player found for party member ID', partyMemberId);
+      return;
+    }
     STACK.push((player.userData.rotationController as HandlerArgs['rotationController']).getState().angle.get())
   },
 
@@ -1285,7 +1290,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const duration = STACK.pop() as number;
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
-    console.log(x, y, duration)
+
     setCameraAndLayerScroll(x, y, duration);
   },
   DSCROLL2: async ({ STACK }) => {
@@ -1293,7 +1298,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const x = STACK.pop() as number;
 
     const layerID = STACK.pop() as number;
-
+    console.log('DSCROLL2', layerID, x, y)
     setCameraAndLayerScroll(x, y, 0, layerID);
   },
   LSCROLL2: ({ STACK }) => {
@@ -1359,6 +1364,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const partyMemberId = STACK.pop() as number;
 
     const mesh = getPartyMemberModelComponent(scene, partyMemberId);
+    console.log('CSROLLP', partyMemberId, duration)
     setCameraAndLayerFocus(mesh, duration);
   },
   DSCROLLA: async ({ scene, STACK }) => {
@@ -1406,16 +1412,19 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   SCROLLSYNC: async () => {
     while (
-      useGlobalStore.getState().cameraAndLayerScrollSprings.some(spring => spring.x.isAnimating || spring.y.isAnimating)
+      useGlobalStore.getState().cameraScrollSpring.x.isAnimating || useGlobalStore.getState().cameraScrollSpring.y.isAnimating
+      || useGlobalStore.getState().layerScrollSprings.some(spring => spring.x.isAnimating || spring.y.isAnimating)
       || useGlobalStore.getState().cameraFocusSpring?.isAnimating
     ) {
+      console.log('Waiting for camera and layer scroll to finish');
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
   SCROLLSYNC2: async ({ STACK }) => {
     const layerID = STACK.pop() as number;
 
-    while (useGlobalStore.getState().cameraAndLayerScrollSprings[layerID].y.isAnimating || useGlobalStore.getState().cameraAndLayerScrollSprings[layerID].x.isAnimating) {
+    while (useGlobalStore.getState().layerScrollSprings[layerID].y.isAnimating || useGlobalStore.getState().layerScrollSprings[layerID].x.isAnimating) {
+      console.log('Waiting for layer scroll to finish', layerID);
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },

@@ -52,6 +52,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
 
   const isVisible = useScriptStateStore(state => state.isVisible);
   const isUnused = useScriptStateStore(state => state.isUnused);
+  const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   
   const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
 
@@ -181,11 +182,16 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
       ref={entityRef}
       name={`entity--${script.groupId}`}
       userData={{
-        scriptController
+        scriptController,
+        partyMemberId,
+        movementController,
+        rotationController,
+        useScriptStateStore,
       }}
       position={script.type === 'model' ? [10,10,10] : [0,0,0]}
       visible={isVisible}
   >
+    <group name={`party--${partyMemberId}`}>
       {script.groupId === 4 && <Sphere args={[0.02,10,10]} position={[0, 0, 0]} name="entity--4--collision" visible={true} userData={{ isSolid: true }}>
         <meshBasicMaterial color="purple" transparent opacity={1} side={DoubleSide} />
       </Sphere>}
@@ -193,6 +199,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
       {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'model' && <Model scriptController={scriptController} animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'door' && <Door scriptController={scriptController} doors={doors} script={script} useScriptStateStore={useScriptStateStore} />}
+    </group>
     </animated.group>
   );
 }

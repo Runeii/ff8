@@ -9,9 +9,6 @@ window.dump = {
   activeRemoteExecutions: {},
 }
 window.scriptDump = (scriptDump: ScriptDump) => {
-  if (scriptDump.scriptLabel === 13) {
-    return;
-  }
   window.dump.log.push(scriptDump);
   const isRemoteExecution = scriptDump.methodId === 'remoteExecute';
   if (isRemoteExecution) {

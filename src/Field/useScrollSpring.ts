@@ -1,23 +1,22 @@
 import useGlobalStore from "../store";
 
-const useScrollSpring = (layerIndex: number) => {
+const useScrollSpring = (layerIndex?: number) => {
   return {
     get: () => {
-      const {cameraAndLayerScrollSprings} = useGlobalStore.getState();
+      const {cameraScrollSpring, layerScrollSprings} = useGlobalStore.getState();
 
-      const { x: xSpring, y: ySpring } = cameraAndLayerScrollSprings[layerIndex];
-      if (layerIndex === 0) {
+      if (layerIndex === undefined) {
         return {
-          x: xSpring.get(),
-          y: ySpring.get(),
+          x: cameraScrollSpring.x.get(),
+          y: cameraScrollSpring.y.get(),
         }
       }
-      
-      const cameraSpring = cameraAndLayerScrollSprings[0];
+
+      const { x: xSpring, y: ySpring } = layerScrollSprings[layerIndex];
 
       return {
-        x: xSpring.get() + cameraSpring.x.get(),
-        y: ySpring.get() + cameraSpring.y.get(),
+        x: xSpring.get() + cameraScrollSpring.x.get(),
+        y: ySpring.get() + cameraScrollSpring.y.get(),
       }
     }
   }

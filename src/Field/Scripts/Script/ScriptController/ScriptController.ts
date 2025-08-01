@@ -17,7 +17,6 @@ const createScriptController = ({
   movementController,
   sfxController,
   useScriptStateStore,
-  isDebugging = false,
 }: {
   script: Script;
   scene: Scene;
@@ -283,9 +282,7 @@ const createScriptController = ({
       isAsync: false,
       scriptLabel: script.groupId,
     })
-    if (isDebugging) {
-      console.log(`Triggering method ${methodId} for ${script.groupId}`, method.opcodes, getState().queue);
-    }
+
     updateQueue({
       activeIndex: 0,
       opcodes: method.opcodes,
@@ -323,14 +320,16 @@ const createScriptController = ({
       console.trace(`Method with index ${methodIndex} not found in script for ${script.groupId}`);
       return;
     }
-    console.log(`Triggering method ${method.methodId} for ${script.groupId}`,script, method.opcodes, getState().queue);
     await triggerMethod(method.methodId, priority);
   }
 
   if (!window.getScriptState) {
     window.getScriptState = []
   }
-  window.getScriptState[script.groupId] = useScriptStateStore.getState;
+  window.getScriptState[script.groupId] = () => ({
+    state: useScriptStateStore.getState(),
+    script
+  });
 
   return {
     script,

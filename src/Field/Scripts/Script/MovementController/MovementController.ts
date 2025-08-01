@@ -9,7 +9,7 @@ export type MoveOptions = {
   duration?: number;
   isAnimationEnabled: boolean;
   isFacingTarget: boolean;
-  isUserControls: boolean;
+  userControlledSpeed: number | undefined;
 } 
 
 export const createMovementController = (id: string | number, animationController: ReturnType<typeof createAnimationController>) => {
@@ -26,7 +26,7 @@ export const createMovementController = (id: string | number, animationControlle
       duration: 0 as number | undefined,
       isAnimationEnabled: true,
       isFacingTarget: true,
-      isUserControls: false,
+      userControlledSpeed: undefined as number | undefined,
       goal: undefined as Vector3 | undefined,
       signal: undefined as PromiseSignal| undefined,
     },
@@ -114,14 +114,14 @@ export const createMovementController = (id: string | number, animationControlle
       duration: undefined,
       isAnimationEnabled: true,
       isFacingTarget: true,
-      isUserControls: false,
+      userControlledSpeed: undefined,
     }
 
     const {
       duration,
       isAnimationEnabled,
       isFacingTarget,
-      isUserControls,
+      userControlledSpeed,
     } = {
       ...defaultOptions,
       ...passedOptions,
@@ -137,13 +137,14 @@ export const createMovementController = (id: string | number, animationControlle
         duration: duration && duration > 0 ? duration : undefined,
         isAnimationEnabled,
         isFacingTarget,
-        isUserControls,
+        userControlledSpeed,
         signal
       },
     });
 
     isStopping = false;
-    const movementSpeed = getState().movementSpeed;
+
+    const movementSpeed = userControlledSpeed !== undefined ? userControlledSpeed : getState().movementSpeed;
     if (isAnimationEnabled) {
       animationController.playMovementAnimation(movementSpeed > 2695 ? 'run' : 'walk');
     }
@@ -187,9 +188,8 @@ export const createMovementController = (id: string | number, animationControlle
       loopSignal,
     });
     let isLooping = true;
-    console.log('Looping offsets', startX, startY, startZ, endX, endY, endZ, duration);
+
     const loop = async () => {
-      console.log(duration)
       await moveToOffset(startX, startY, startZ, duration);
       if (!isLooping) {
         return;
@@ -309,9 +309,9 @@ export const createMovementController = (id: string | number, animationControlle
       return;
     }
     
-    const { current: currentPosition, duration, goal: positionGoal } = position;
+    const { current: currentPosition, duration, goal: positionGoal, userControlledSpeed } = position;
     if (positionGoal) {
-      const speed = movementSpeed / 2560; // units per second
+      const speed = (userControlledSpeed !== undefined ? userControlledSpeed : movementSpeed) / 2560; // units per second
       const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
 
       const remainingDistance = currentPosition.distanceTo(positionGoal);
@@ -323,7 +323,7 @@ export const createMovementController = (id: string | number, animationControlle
           isPaused: true,
           position: {
             ...getState().position,
-            isUserControls: false,
+            userControlledSpeed: undefined,
             goal: undefined,
           }
         });

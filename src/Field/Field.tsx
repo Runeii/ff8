@@ -159,7 +159,11 @@ const FieldLoader = (props: FieldLoaderProps) => {
         cameraFocusHeight: data.cameraFocusHeight,
         cameraFocusObject: undefined,
         cameraFocusSpring: undefined,
-        cameraAndLayerScrollSprings: new Array(8).fill(0).map(() => ({
+        cameraScrollSpring: {
+          x: new SpringValue(0),
+          y: new SpringValue(0),
+        },
+        layerScrollSprings: new Array(8).fill(0).map(() => ({
           x: new SpringValue(0),
           y: new SpringValue(0),
         })),

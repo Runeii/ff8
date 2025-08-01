@@ -5,18 +5,26 @@ export const getScriptEntity = (scene: Scene, scriptGroupId: number) => {
   return scene.getObjectByName(`entity--${scriptGroupId}`) as Group;
 }
 
-export const getPartyMemberModelComponent = (scene: Scene, partyMemberIndex: number) => {
+export const getPartyMemberModelComponent = (scene: Scene, partyMemberIndex: number): Group | null => {
   const { party } = useGlobalStore.getState();
   const partyMemberId = party[partyMemberIndex];
-  const partyMemberModel = scene.getObjectByName(`party--${partyMemberId}`) as Object3D;
-  if (!partyMemberModel) {
+  if (partyMemberId === undefined) {
+    return null;
+  }
+  const partyMemberGroup= scene.getObjectByName(`party--${partyMemberId}`) as Object3D;
+  if (!partyMemberGroup) {
     //console.warn(`Party member model ${partyMemberId}/${partyMemberIndex} not found`);
     return null;
   }
-  return partyMemberModel;
+
+  return partyMemberGroup.parent as Group;
 }
 
-export const getPlayerEntity = (scene: Scene) => {
-  const playerId = useGlobalStore.getState().party[0];
-  return scene.getObjectByName(`entity--${playerId}`) as Group;
+export const getPlayerEntity = (scene: Scene): Group | null => {
+  const groupWrapper = scene.getObjectByName(`party--0`) as Group;
+  if (!groupWrapper) {
+    console.warn("Player entity not found in scene");
+    return null;
+  }
+  return groupWrapper.parent as Group;
 }
