@@ -4,6 +4,7 @@ import useGlobalStore from "../../store";
 import { FieldData } from "../Field";
 import { vectorToFloatingPoint } from "../../utils";
 import { ThreeEvent } from "@react-three/fiber";
+import { Sphere } from "@react-three/drei";
 
 type WalkMeshProps = {
   walkmesh: FieldData['walkmesh'];

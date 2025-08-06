@@ -149,7 +149,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       currentPosition.z
     ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
 
-    const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, characterHeight / 4);
+    const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, characterHeight / 2);
     
     if (!newPosition) {
       return

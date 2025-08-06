@@ -34,7 +34,7 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
     const hasActiveText = currentMessages.length > 0;
 
     const isPlayerAbleToTalk = isUserControllable && isTalkable && !hasActiveTalkMethod && hasValidTalkMethod && !hasActiveText;
-    console.log('isPlayerAbleToTalk', isPlayerAbleToTalk, 'hasValidTalkMethod', hasValidTalkMethod, 'hasActiveText', hasActiveText);
+
     if (!isPlayerAbleToTalk || !lineRef.current) {
       return;
     }

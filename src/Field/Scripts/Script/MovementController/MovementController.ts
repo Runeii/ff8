@@ -372,6 +372,34 @@ export const createMovementController = (id: string | number, animationControlle
     });
   }
 
+  const reset = () => {
+    resolvePendingOffsetSignal();
+    resolvePendingPositionSignal();
+
+    setState(state => ({
+      isPaused: false,
+      movementSpeed: 2560,
+      needsZAdjustment: true,
+      isClimbingLadder: false,
+      speedBeforeClimbingLadder: 0,
+      position: {
+        ...state.position,
+        duration: 0,
+        isAnimationEnabled: true,
+        isFacingTarget: true,
+        userControlledSpeed: undefined,
+        goal: undefined,
+        signal: undefined,
+      },
+      offset: {
+        ...state.offset,
+        duration: 0,
+        goal: undefined,
+        signal: undefined,
+      },
+    }))
+  }
+
   return {
     getState,
     getPosition,
@@ -392,6 +420,7 @@ export const createMovementController = (id: string | number, animationControlle
     setIsClimbingLadder,
     tick,
     setHasAdjustedZ,
+    reset,
   }
 }
 

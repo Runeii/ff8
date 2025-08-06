@@ -13,6 +13,7 @@ import { Box, Sphere } from "@react-three/drei";
 import useControls from "./useControls";
 import useFootsteps from "./useFootsteps";
 import useTalkRadius from "../TalkRadius/useTalkRadius";
+import useFollower from "./useFollower";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
@@ -157,6 +158,14 @@ const Model = ({animationController, models, scriptController, movementControlle
     useScriptStateStore,
     talkTargetRef: hitboxRef
   })
+  
+  useFollower({
+    isActive: !!isFollower,
+    animationController,
+    movementController,
+    rotationController,
+    partyMemberId
+  })
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
   const isSolid = useScriptStateStore(state => state.isSolid);
@@ -168,7 +177,7 @@ const Model = ({animationController, models, scriptController, movementControlle
       </Sphere>
       <Box
         args={characterDimensions.toArray()}
-        position={[0, 0, characterDimensions.z / 2]}
+        position={[0, 0, characterDimensions.z / 2.5]}
         name="hitbox"
         ref={hitboxRef}
         userData={{ isSolid }}
@@ -177,11 +186,11 @@ const Model = ({animationController, models, scriptController, movementControlle
         <meshBasicMaterial color={isSolid ? 'red' : 'green'} transparent opacity={0.5} />
       </Box>
       <group name="animation-adjustment-group" ref={animationGroupRef}>
-          <ModelComponent
-            mapName={fieldId}
-            ref={setModelRef}
-            scale={0.06}
-          />
+        <ModelComponent
+          mapName={fieldId}
+          ref={setModelRef}
+          scale={0.06}
+        />
       </group>
     </group>
   );
