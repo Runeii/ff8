@@ -17,6 +17,7 @@ const createScriptController = ({
   movementController,
   sfxController,
   useScriptStateStore,
+  isDebugging = false,
 }: {
   script: Script;
   scene: Scene;
@@ -165,6 +166,10 @@ const createScriptController = ({
       isAsync: false,
       scriptLabel: script.groupId,
     })
+
+    if (isDebugging) {
+      console.log(`Running opcode ${currentOpcode.name} at index ${activeIndex} for method ${methodId} in script ${script.groupId}`);
+    }
     const nextIndex = await opcodeHandler({
       animationController,
       currentOpcode,
@@ -200,6 +205,9 @@ const createScriptController = ({
         isAsync: false,
         scriptLabel: script.groupId,
       })
+      if (isDebugging) {
+        console.log(`Aborting script run for ${script.groupId} due to new queue item`);
+      }
       return;
     }
 
@@ -282,6 +290,10 @@ const createScriptController = ({
       isAsync: false,
       scriptLabel: script.groupId,
     })
+
+    if (isDebugging) {
+      console.log(`Adding method ${methodId} to queue with unique ID ${uniqueId}`);
+    }
 
     updateQueue({
       activeIndex: 0,

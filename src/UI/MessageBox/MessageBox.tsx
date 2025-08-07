@@ -431,7 +431,7 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
     ctx.drawImage(cursor.image, xPos + LEFT_MARGIN, yPos + selectedY + ((OUTPUT_TILE_SIZE - imageHeight) / 2), OUTPUT_TILE_SIZE, imageHeight);
   });
 
-  const texture = new CanvasTexture(textCanvas);
+  const texture = useMemo(() => new CanvasTexture(textCanvas), [textCanvas]);
   texture.wrapS = ClampToEdgeWrapping;
   texture.wrapT = ClampToEdgeWrapping;
   texture.needsUpdate = true;

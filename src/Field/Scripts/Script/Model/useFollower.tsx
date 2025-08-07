@@ -2,7 +2,6 @@ import { useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
 import { createMovementController } from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
-import { getPartyMemberModelComponent } from "./modelUtils";
 import { useState } from "react";
 import { Vector3 } from "three";
 import { createAnimationController } from "../AnimationController/AnimationController";

@@ -3,6 +3,7 @@ import { openMessage } from "../Field/Scripts/Script/utils";
 import MAP_NAMES from "../constants/maps";
 import useGlobalStore from "../store";
 import { loadGame } from "../Field/fieldUtils";
+import { offlineController } from "../OfflineController";
 
 const points: Record<string, typeof MAP_NAMES[number]> = {
   "Balamb Garden": 'bghall_1',
@@ -53,11 +54,52 @@ const fieldSelect = async (set = 0) => {
   })
 }
 
-const mainMenuSelect = async (defaultValue = hasSavedData ? 2 : 0) => {
+const optionsSelect = async () => {
+  openMessage('optionsTitle', ['Options'], { channel: 0, x: 0,  y: 0 }, false);
+  const { isOfflineEnabled, isEnablingOffline } = offlineController.getState()
+
+  let offlineOptionMessage = `{Red}Disabled{White}`;
+  if (isEnablingOffline) {
+    offlineOptionMessage = `{YellowBlink}Enabling{White}`;
+  }
+  if (isOfflineEnabled) {
+    offlineOptionMessage = `{Green}Enabled{White}`;
+  }
+
+  const optionsOption = await openMessage('options', [`Controls\nOffline:${offlineOptionMessage}\nBack`], { channel: 1, x: 100,  y: 80 }, true, {
+    first: 0,
+    default: 0,
+    cancel: 2,
+    blocked: [],
+  });
+
+  if (optionsOption === 0) {
+    await openMessage('controls', [`Controls
+      {Yellow}Move{White} - [Arrows]
+      {Yellow}Interact{White} - [Space]
+
+      {Yellow}Dev Mode{White} - [Esc]
+      {Yellow}Reset{White} - [Backspace]`], { x: 70,  y: 50 }, true);
+      closeAllWindows();
+      optionsSelect();
+  }
+
+  if (optionsOption === 1) {
+    if (isOfflineEnabled) {
+      await offlineController.disableOfflineMode();
+    } else {
+      await offlineController.enableOfflineMode();
+    }
+    closeAllWindows();
+    await optionsSelect();
+  }
+}
+
+const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
   const {fadeSpring} = useGlobalStore.getState();
   openMessage('welcome', ['Welcome'], { channel: 0, x: 0,  y: 0 }, false);
 
-  const option = await openMessage('menu', [`Controls\nNew Game\n${hasSavedData ? '' : '{Grey}'}Resume Game{White}\nField Select`], { channel: 1, x: 100,  y: 80 }, true, {
+  const option = await openMessage('menu', [`New Game\n${hasSavedData ? '' : '{Grey}'}Resume Game{White}\nField Select\nOptions`], { channel: 1, x: 100,  y: 80 }, true, {
     first: 0,
     default: defaultValue,
     cancel: undefined,
@@ -67,17 +109,6 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 2 : 0) => {
   closeAllWindows();
 
   if (option === 0) {
-    await openMessage('controls', [`Controls
-     {Yellow}Move{White} - [Arrows]
-     {Yellow}Interact{White} - [Space]
-
-     {Yellow}Dev Mode{White} - [Esc]
-     {Yellow}Reset{White} - [Backspace]`], { x: 70,  y: 50 }, true);
-
-    mainMenuSelect(0);
-  }
-
-  if (option === 1) {
     await fadeSpring.start(0);
     closeAllWindows();
     useGlobalStore.getState().systemSfxController.play(37, 0, 255, 128);
@@ -87,7 +118,7 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 2 : 0) => {
     return;
   }
 
-  if (option === 2) {
+  if (option === 1) {
     await fadeSpring.start(0);
     closeAllWindows();
     loadGame();
@@ -96,9 +127,14 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 2 : 0) => {
     return;
   }
 
-  if (option === 3) {
+  if (option === 2) {
     fieldSelect();
     return;
+  }
+
+  if (option === 3) {
+    await optionsSelect();
+    mainMenuSelect(0);
   }
 }
 const Onboarding = () => {

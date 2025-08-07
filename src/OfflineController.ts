@@ -1,114 +1,78 @@
 import { createStore } from "zustand";
 
-const OfflineController = () => {
-  const { getState, setState, subscribe } = createStore(()  => ({
-    isOfflineEnabled: false,
-    isOfflineSupported: false,
-    cachedAssets: 0,
-    cacheProgress: {
-      current: 0,
-      total: 0
-    }
-  }));
+export const SERVICE_WORKER_STATE = {
+  isEnablingOffline: false,
+  isOfflineEnabled: false,
+  progress: {
+    current: 0,
+    total: 0,
+  },
+}
 
-  const registerServiceWorker = async () => {
-    if ('serviceWorker' in navigator) {
-      try {
-        await navigator.serviceWorker.register('/sw.js');
-        console.log('Service worker registered');
-      } catch (error) {
-        console.error('Service worker registration failed:', error);
-      }
+export type ServiceWorkerState = typeof SERVICE_WORKER_STATE;
+
+const OfflineController = () => {
+  const { getState, setState, subscribe } = createStore(() => structuredClone(SERVICE_WORKER_STATE));
+
+  const recoverState = () => {
+    const controller = navigator.serviceWorker?.controller;
+    if (!controller) {
+      console.warn('Service worker not ready, cannot enable offline mode');
+      return;
     }
-  }
-  
-  const setupMessageHandler = () => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        const { type, current, total, cachedAssets, error } = event.data;
-        
-        switch (type) {
-          case 'CACHE_PROGRESS':
-            if (current === total) {
-              console.log('Caching complete.');
-            }
-            setState({
-              cachedAssets: current,
-              cacheProgress: {
-                current,
-                total,
-              }
-            });
-            break;
-          case 'OFFLINE_ENABLED':
-            setState({
-              isOfflineEnabled: true,
-              isOfflineSupported: true,
-              cachedAssets
-            });
-            console.log(`Offline mode enabled. ${cachedAssets} assets cached.`);
-            break;
-          case 'OFFLINE_DISABLED':
-            setState({
-              isOfflineEnabled: false,
-              isOfflineSupported: false,
-              cachedAssets: 0
-            });
-            console.log('Offline mode disabled.');
-            break;
-          case 'OFFLINE_ENABLE_FAILED':
-            console.error('Failed to enable offline mode:', error);
-            break;
-        }
-      });
-    }
+
+    controller.postMessage({ type: 'RECOVER_STATE' });
   }
 
   const enableOfflineMode = async () => {
-    console.log('Enabling offline mode...', navigator, navigator.serviceWorker, navigator.serviceWorker.controller);
-    if (!navigator.serviceWorker.controller) {
-      throw new Error('Service worker not ready');
+    const controller = navigator.serviceWorker?.controller;
+    if (!controller) {
+      console.warn('Service worker not ready, cannot enable offline mode');
+      return;
     }
 
-    setState({
-      isOfflineEnabled: true
-    });
-    
-    navigator.serviceWorker.controller.postMessage({
-      type: 'ENABLE_OFFLINE'
-    });
-  }
+    controller.postMessage({ type: 'ENABLE_OFFLINE' });
+  };
 
   const disableOfflineMode = async () => {
-    if (!navigator.serviceWorker.controller) {
-      throw new Error('Service worker not ready');
+    const controller = navigator.serviceWorker?.controller;
+    if (!controller) {
+      console.warn('Service worker not ready, cannot disable offline mode');
+      return;
     }
-    
-    setState({
-      isOfflineEnabled: false,
-      isOfflineSupported: false,
-    });
 
-    navigator.serviceWorker.controller.postMessage({
-      type: 'DISABLE_OFFLINE'
-    });
-  }
-  
+    controller.postMessage({ type: 'DISABLE_OFFLINE' });
+  };
+
   const initialize = async () => {
-    await registerServiceWorker();
-    await setupMessageHandler();
-  }
+    try {
+      const registration = await navigator.serviceWorker.register('/_sw.js');
+      console.log('Service worker registered:', registration.scope);
 
-  initialize();
+      navigator.serviceWorker.addEventListener('message', (event: MessageEvent<typeof SERVICE_WORKER_STATE>) => {
+        setState(event.data);
+      });
+
+      const readiness = await navigator.serviceWorker.ready;
+      console.log('Service worker is ready:', readiness.active?.state);
+      await recoverState();
+    } catch (error) {
+      console.error('OfflineController initialization failed:', error);
+    }
+  };
+
+  // Start initialization
+  if ('serviceWorker' in navigator) {
+    initialize();
+  }
 
   return {
     getState,
     subscribe,
     enableOfflineMode,
-    disableOfflineMode
-  }
-}
+    disableOfflineMode,
+  };
+};
 
 export const offlineController = OfflineController();
-
-export default OfflineController
+export default OfflineController;

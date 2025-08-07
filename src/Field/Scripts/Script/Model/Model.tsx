@@ -137,7 +137,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     }
 
     const z = walkmeshPoint.z - boundingbox.min.z;
-   // animationGroupRef.current.position.z = z;
+    animationGroupRef.current.position.z = z;
 
     setCharacterDimensions(new Vector3(
       boundingbox.max.x - boundingbox.min.x,

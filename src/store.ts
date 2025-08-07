@@ -8,6 +8,7 @@ import createSFXController from './Field/Scripts/Script/SFXController/SFXControl
 
 interface GlobalState {
   isDebugMode: boolean,
+  isOfflineSupported: boolean,
 
   isFieldLoaded: boolean,
   isMapSuspended: boolean,
@@ -97,6 +98,7 @@ interface GlobalState {
 
 export const INITIAL_STATE: GlobalState = {
     isDebugMode: false,
+    isOfflineSupported: false,
 
     isFieldLoaded: false,
     isMapSuspended: false,

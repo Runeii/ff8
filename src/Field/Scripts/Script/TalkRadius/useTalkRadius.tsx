@@ -1,4 +1,4 @@
-import { Box3, DoubleSide, Mesh, Object3D } from "three";
+import { Box3, Mesh, Object3D } from "three";
 import { ScriptMethod } from "../../types";
 import {  useEffect, useMemo, useRef, useState } from "react";
 import {  useFrame } from "@react-three/fiber";

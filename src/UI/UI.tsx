@@ -3,9 +3,11 @@ import useGlobalStore from "../store";
 import MessageBox from "./MessageBox/MessageBox";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/constants";
 import { Fragment } from "react/jsx-runtime";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { isSavePointMessage } from "./textUtils";
 import { useThree } from "@react-three/fiber";
+import { offlineController } from "../OfflineController";
+import OfflineProgress from "./OfflineProgress/OfflineProgress";
 
 const Ui = () => {
   const currentMessages = useGlobalStore(state => state.currentMessages);
@@ -22,6 +24,16 @@ const Ui = () => {
   const messagesArray = Object.values(messagesByChannel);
 
   const worldScene = useThree(state => state.scene);
+
+  const [isCachingOffline, setIsCachingOffline] = useState(false);
+  useEffect(() => {
+    const unsubscribe = offlineController.subscribe((state) => {
+      setIsCachingOffline(state.isEnablingOffline);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   if (messagesArray.length === 0) {
     return null;
@@ -49,6 +61,7 @@ const Ui = () => {
           </Fragment>
         ))}
       </Suspense>
+      {isCachingOffline && <OfflineProgress />}
     </Hud>
   );
 }
