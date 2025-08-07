@@ -1,6 +1,5 @@
 import { SERVICE_WORKER_STATE } from "../OfflineController";
 import { getPreservedState, setPreservedState } from "./db";
-import { enableOfflineMode } from "./main";
 
 const sw = self as unknown as ServiceWorkerGlobalScope
 
@@ -23,11 +22,4 @@ export const recoverState = async () => {
   console.log('Recovering Service Worker State:', STATE);
   const preservedState = await getPreservedState();
   await updateState(preservedState);
-
-  const recoveredState = getState();
-  setTimeout(() => {
-    if (recoveredState.isEnablingOffline && !recoveredState.isOfflineEnabled) {
-      enableOfflineMode();
-    }
-  }, 1000);
 }

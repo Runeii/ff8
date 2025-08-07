@@ -57,7 +57,7 @@ const fieldSelect = async (set = 0) => {
 const optionsSelect = async () => {
   openMessage('optionsTitle', ['Options'], { channel: 0, x: 0,  y: 0 }, false);
   const { isOfflineEnabled, isEnablingOffline } = offlineController.getState()
-
+  console.log('isOfflineEnabled', isOfflineEnabled, 'isEnablingOffline', isEnablingOffline);
   let offlineOptionMessage = `{Red}Disabled{White}`;
   if (isEnablingOffline) {
     offlineOptionMessage = `{YellowBlink}Enabling{White}`;
@@ -85,13 +85,13 @@ const optionsSelect = async () => {
   }
 
   if (optionsOption === 1) {
-    if (isOfflineEnabled) {
+    if (isOfflineEnabled || isEnablingOffline) {
       await offlineController.disableOfflineMode();
     } else {
       await offlineController.enableOfflineMode();
     }
     closeAllWindows();
-    await optionsSelect();
+    mainMenuSelect();
   }
 }
 

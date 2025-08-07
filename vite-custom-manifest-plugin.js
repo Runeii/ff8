@@ -41,6 +41,10 @@ async function collectFilePaths(dir, baseDir) {
     const entries = await readdir(dir, { withFileTypes: true });
     
     for (const entry of entries) {
+      if (entry.name.startsWith('.')) {
+        continue;
+      }
+
       const fullPath = join(dir, entry.name);
       
       if (entry.isDirectory()) {

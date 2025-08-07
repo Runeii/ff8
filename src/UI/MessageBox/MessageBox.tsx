@@ -293,13 +293,16 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
   }, [formattedText, currentPage]);
 
   const [scaleSpring] = useSpring(() => ({ 
-    scale: 1,
-    from: { scale: 0 },
+    scale: 0,
     config: {
       clamp: true,
       ...config.stiff
     }
   }), []);
+
+  useEffect(() => {
+    scaleSpring.scale.start(1);
+  }, [scaleSpring]);
 
   useEffect(() => {
     if (!placements) {

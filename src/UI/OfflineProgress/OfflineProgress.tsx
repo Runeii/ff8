@@ -19,11 +19,9 @@ const TOP_MARGIN = OUTPUT_TILE_SIZE / 2;
 const OfflineProgress = () => {
   const [line, setLine] = useState('');
   useEffect(() => {
-    const unsubscribe = offlineController.subscribe((state, prevState) => {
+    const unsubscribe = offlineController.subscribe((state) => {
       const { progress: { current, total } } = state;
-      if (Math.round((current / total) * 100) >= Math.round((prevState.progress.current / prevState.progress.total) * 100)) {
-        setLine(`Downloading: ${Math.round((current / total) * 100)}%`);
-      }
+      setLine(`${current} / ${total}`);
     });
     return () => {
       unsubscribe();
@@ -38,36 +36,38 @@ const OfflineProgress = () => {
 
 
     const placements: Placement[] = [];
-    line.split('').forEach((char) => {
+    ['Downloading:', line].forEach((line) => {
+      line.split('').forEach((char) => {
 
-      const rowIndex = fontLayout.findIndex((layoutRow) => layoutRow.includes(char));
-      if (rowIndex < 0) {
-        console.error(`Character not found in font layout: ${char}`);
-        return;
-      }
+        const rowIndex = fontLayout.findIndex((layoutRow) => layoutRow.includes(char));
+        if (rowIndex < 0) {
+          console.error(`Character not found in font layout: ${char}`);
+          return;
+        }
 
-      const columnIndex = fontLayout[rowIndex].indexOf(char);
+        const columnIndex = fontLayout[rowIndex].indexOf(char);
 
-      const isUppercase = char === char.toUpperCase();
-      let baseWidth = isUppercase ? 0.8 : 0.6;
-      if (Number.isInteger(parseInt(char))) {
-        baseWidth = 0.7;
-      }
+        const isUppercase = char === char.toUpperCase();
+        let baseWidth = isUppercase ? 0.8 : 0.6;
+        if (Number.isInteger(parseInt(char))) {
+          baseWidth = 0.7;
+        }
 
-      const character_width = OUTPUT_TILE_SIZE * (fontWidths[char as keyof typeof fontWidths] ?? baseWidth);
+        const character_width = OUTPUT_TILE_SIZE * (fontWidths[char as keyof typeof fontWidths] ?? baseWidth);
 
-      placements.push({
-        rowIndex,
-        columnIndex,
-        x,
-        y,
-      });
+        placements.push({
+          rowIndex,
+          columnIndex,
+          x,
+          y,
+        });
 
-      x += character_width;
-      highestX = Math.max(highestX, x);
-    })
-    y += OUTPUT_LINE_HEIGHT;
-    x = LEFT_MARGIN;
+        x += character_width;
+        highestX = Math.max(highestX, x);
+      })
+      y += OUTPUT_LINE_HEIGHT;
+      x = LEFT_MARGIN;
+    });
 
     return placements
   }, [line]);
@@ -84,11 +84,11 @@ const OfflineProgress = () => {
 
     ctx.imageSmoothingEnabled = false;
 
-    const xPosWithoutScaling = 300
-    const yPosWithoutScaling = 400
+    const xPosWithoutScaling = 410
+    const yPosWithoutScaling = 360
 
-    const width = 290;
-    const height = 40;
+    const width = 220;
+    const height = 80;
     const xPos = xPosWithoutScaling + width / 2 - width / 2;
     const yPos = yPosWithoutScaling + height / 2 - height / 2;
 
