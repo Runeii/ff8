@@ -58,15 +58,16 @@ const optionsSelect = async () => {
   openMessage('optionsTitle', ['Options'], { channel: 0, x: 0,  y: 0 }, false);
   const { isOfflineEnabled, isEnablingOffline } = offlineController.getState()
   console.log('isOfflineEnabled', isOfflineEnabled, 'isEnablingOffline', isEnablingOffline);
-  let offlineOptionMessage = `{Red}Disabled{White}`;
+
+  let offlineOptionMessage = `{Green}Enable Offline (2GB){White}`;
   if (isEnablingOffline) {
-    offlineOptionMessage = `{YellowBlink}Enabling{White}`;
+    offlineOptionMessage = `{YellowBlink}Enabling offline{White}`;
   }
   if (isOfflineEnabled) {
-    offlineOptionMessage = `{Green}Enabled{White}`;
+    offlineOptionMessage = `{Red}Disable offline{White}`;
   }
 
-  const optionsOption = await openMessage('options', [`Controls\nOffline:${offlineOptionMessage}\nBack`], { channel: 1, x: 100,  y: 80 }, true, {
+  const optionsOption = await openMessage('options', [`Controls\n${offlineOptionMessage}\nBack`], { channel: 1, x: 100,  y: 80 }, true, {
     first: 0,
     default: 0,
     cancel: 2,
