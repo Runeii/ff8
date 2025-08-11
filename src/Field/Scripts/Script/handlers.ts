@@ -1183,10 +1183,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   ADDMAGIC: ({ STACK }) => {
     STACK.splice(-3);
   },
-  POLYCOLORALL: ({ STACK }) => {
-    // const lastThree = 
-    STACK.splice(-3);
-  },
   SHADELEVEL: ({ STACK }) => {
     // const shadeLevel = 
     STACK.pop() as number;
@@ -1577,7 +1573,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const startZ = STACK.pop() as number;
     const startY = STACK.pop() as number;
     const startX = STACK.pop() as number;
-    
     await movementController.moveToOffset(startX, startY, startZ, 0)
     movementController.moveToOffset(endX, endY, endZ, duration);
   },
@@ -1770,7 +1765,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   BATTLE: async ({ STACK }) => {
     STACK.splice(-2);
-    await new Promise(resolve => setTimeout(resolve, 500000)); // simulate battle
   },
   BATTLEMODE: ({ STACK }) => {
     STACK.pop() as number;
@@ -1915,8 +1909,23 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
     STACK.pop() as number;
   },
-  POLYCOLOR: ({ STACK }) => {
-    STACK.splice(-3);
+  POLYCOLORALL: ({ STACK }) => {
+    const blue = STACK.pop() as number;
+    const green = STACK.pop() as number;
+    const red = STACK.pop() as number;
+
+    useGlobalStore.setState({
+      globalMeshTint: [red, green, blue],
+    });
+  },
+  POLYCOLOR: ({ setState, STACK }) => {
+    const blue = STACK.pop() as number;
+    const green = STACK.pop() as number;
+    const red = STACK.pop() as number;
+
+    setState({
+      meshTintColor: [red, green, blue],
+    });
   },
   SCROLLRATIO2: ({ STACK }) => {
     STACK.splice(-3);

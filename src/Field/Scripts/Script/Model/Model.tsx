@@ -1,6 +1,6 @@
 import { Script } from "../../types";
 import {  ComponentType, type JSX, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { Bone, Box3, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Vector3 } from "three";
+import { Bone, Box3, Color, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Vector3 } from "three";
 import useGlobalStore from "../../../../store";
 import { useFrame } from "@react-three/fiber";
 import { ScriptStateStore } from "../state";
@@ -54,12 +54,27 @@ const Model = ({animationController, models, scriptController, movementControlle
       if (child instanceof Mesh && child.material instanceof MeshStandardMaterial) {
         const meshBasicMaterial = new MeshBasicMaterial();
         meshBasicMaterial.color = child.material.color;
+        meshBasicMaterial.userData.originalColor = child.material.color.clone();
         meshBasicMaterial.map = child.material.map;
         meshBasicMaterial.side = DoubleSide
         child.material = meshBasicMaterial;
       }
     });
   }, []);
+
+  const globalMeshTint = useGlobalStore(state => state.globalMeshTint);
+  const meshTintColor = useScriptStateStore(state => state.meshTintColor);
+  useEffect(() => {
+    if (!meshGroup) {
+      return;
+    }
+    const color = new Color(...(meshTintColor ?? globalMeshTint ?? [0, 0, 0]).map((c) => c / 255));
+    meshGroup.traverse((child) => {
+      if (child instanceof Mesh && child.material instanceof MeshBasicMaterial) {
+        child.material.color = child.material.userData.originalColor.clone().add(color);
+      }
+    });
+  }, [globalMeshTint, meshGroup, meshTintColor]);
 
   const setModelRef = useCallback((ref: GltfHandle) => {
     if (!ref || !ref.group) {
@@ -110,7 +125,7 @@ const Model = ({animationController, models, scriptController, movementControlle
   });
 
   const animationGroupRef = useRef<Group>(null);
-  const [boundingbox, setBoundingBox] = useState(new Box3());
+  const [boundingbox] = useState(new Box3());
   const sphereRef = useRef<Mesh>(null);
 
   useFrame(({scene}) => {
@@ -122,9 +137,7 @@ const Model = ({animationController, models, scriptController, movementControlle
 
     animationGroupRef.current.position.z = 0;
     animationGroupRef.current.updateMatrixWorld(true);
-    boundingbox.makeEmpty();
-    boundingbox.expandByObject(animationGroupRef.current, true);
-    setBoundingBox(boundingbox);
+    boundingbox.setFromObject(animationGroupRef.current, true);
     
     const walkmesh = scene.getObjectByName('walkmesh');
     if (!walkmesh) {
@@ -185,7 +198,9 @@ const Model = ({animationController, models, scriptController, movementControlle
         >
         <meshBasicMaterial color={isSolid ? 'red' : 'green'} transparent opacity={0.5} />
       </Box>
-      <group name="animation-adjustment-group" ref={animationGroupRef}>
+      <group name="animation-adjustment-group" ref={animationGroupRef} userData={{
+        boundingbox
+      }}>
         <ModelComponent
           mapName={fieldId}
           ref={setModelRef}

@@ -82,6 +82,8 @@ interface GlobalState {
   cameraFocusObject: Object3D | undefined,
   cameraFocusSpring: SpringValue<number> | undefined,
 
+  globalMeshTint: [number, number, number],
+
   hasActiveTalkMethod: boolean,
   lockedTriangles: number[],
 
@@ -162,6 +164,8 @@ export const INITIAL_STATE: GlobalState = {
     })),
     cameraFocusObject: undefined,
     cameraFocusSpring: undefined,
+
+    globalMeshTint: [0, 0, 0],
   
     hasActiveTalkMethod: false,
   

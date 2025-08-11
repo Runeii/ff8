@@ -24,6 +24,7 @@ export type ScriptState = {
 
   modelId: number;
   partyMemberId?: number;
+  meshTintColor?: number[]
 
   pushRadius: number;
   talkRadius: number;
@@ -76,6 +77,7 @@ export const createScriptState = (script: Script) => {
 
     modelId: 0,
     partyMemberId: undefined,
+    meshTintColor: undefined,
 
     pushRadius: 0,
     talkRadius: 200,
