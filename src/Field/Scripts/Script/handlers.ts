@@ -320,7 +320,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   BGCLEAR: ({ STACK }) => {
     // Maybe?
     const unknown = STACK.pop() as number;
-    return;
+  
     useGlobalStore.setState({
       backgroundLayerVisibility: {
         ...useGlobalStore.getState().backgroundLayerVisibility,
@@ -1654,15 +1654,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const sfxId = STACK.pop() as number; // Is SFXID + 7850
     sfxController.play(sfxId, channel, volume, pan)
   },
-  EFFECTPLAY2: ({ currentOpcode, sfxController, STACK }) => {
+  EFFECTPLAY2: ({ currentOpcode, STACK }) => {
     const channel = STACK.pop() as number; 
     const volume = STACK.pop() as number; 
     const pan = STACK.pop() as number; 
     const sfxId = currentOpcode.param; 
-
+    console.log('EFFECTPLAY2', sfxId, channel, volume, pan);
     // For now we don't play these because we need to somehow get the SFX list for a field
-    return;
-    sfxController.play(sfxId, channel, volume, pan)
+    //return;
+    //sfxController.play(sfxId, channel, volume, pan)
   },
   EFFECTLOAD: ({ sfxController, STACK }) => {
     const loopingBackgroundEffectId = STACK.pop() as number; // note: check docs, apparently not normal
