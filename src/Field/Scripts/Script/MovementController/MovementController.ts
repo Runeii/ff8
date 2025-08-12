@@ -338,7 +338,7 @@ export const createMovementController = (id: string | number, animationControlle
     const { current: currentOffset, goal: offsetGoal, duration: offsetDuration } = offset;
 
     if (offsetGoal) {
-      const durationInSeconds = offsetDuration / 25; // convert tenths to seconds
+      const durationInSeconds = offsetDuration / 100; // convert tenths to seconds
       const remainingDistance = currentOffset.distanceTo(offsetGoal);
 
       if (remainingDistance < 0.0005 || durationInSeconds <= 0) {

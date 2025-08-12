@@ -1,5 +1,5 @@
 import { MutableRefObject, useRef, useState } from "react";
-import { ClampToEdgeWrapping, Line3, Mesh, NearestFilter, PerspectiveCamera, Sprite, SRGBColorSpace, Vector3 } from "three";
+import { ClampToEdgeWrapping, Line3, Mesh, NearestFilter, PerspectiveCamera, RepeatWrapping, Sprite, SRGBColorSpace, Vector2, Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
 import { getCameraDirections } from "../../Camera/cameraUtils";
@@ -108,7 +108,7 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     const heightScale = layer.canvas.height / layer.canvas.width;
     const height = width * heightScale
 
-    layerRef.current.scale.set(width, height, 1)
+    layerRef.current.scale.set(width * 3, height * 3, 1)
 
     /*
     // Panning
@@ -201,8 +201,9 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
           minFilter={NearestFilter}
           colorSpace={SRGBColorSpace}
           magFilter={NearestFilter}
-          wrapS={ClampToEdgeWrapping}
-          wrapT={ClampToEdgeWrapping}
+          wrapS={RepeatWrapping}
+          wrapT={RepeatWrapping}
+          repeat={new Vector2(3, 3) }
         />
       </spriteMaterial>
     </sprite>
