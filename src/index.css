@@ -34,8 +34,6 @@ body,
 }
 
 .container {
-  container-type: inline-size;
-  container-name: canvas;
   position: relative;
   display: flex;
   place-content: center;
@@ -43,17 +41,20 @@ body,
   width: 100vw;
   height: auto;
   aspect-ratio: 320 / 224;
+  background-color: black;
 
-  @media (orientation: landscape) {
+  @media(min-aspect-ratio: 320/224) {
     height: 100vh;
     width: auto;
   }
 }
 
 .canvas {
-  height: auto !important;
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
   aspect-ratio: 320 / 224;
-  background-color: black;
 }
 
 .canvas,

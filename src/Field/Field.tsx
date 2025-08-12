@@ -66,7 +66,6 @@ const Field = ({ data }: FieldProps) => {
     
   }, [currentLocationPlaceName, data.id]);
 
-console.log('Field loaded:', data.id, 'with scripts:', data.scripts.length, 'and doors:', data.doors.length);
   return (
     <group>
       <WalkMesh

@@ -10,6 +10,7 @@ export type Placement = {
 export type Modifier = {
   type: 'color'
   color?: FontColor;
+  isBlinking: boolean;
 } | {
   type: 'wait';
   duration: number;

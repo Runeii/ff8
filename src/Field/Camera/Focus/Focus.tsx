@@ -1,7 +1,7 @@
 import { Sphere } from "@react-three/drei";
 import useGlobalStore from "../../../store";
 import { useFrame } from "@react-three/fiber";
-import {  useRef, useState } from "react";
+import { useRef } from "react";
 import { Box3, Group, Mesh, Vector3 } from "three";
 import { getPartyMemberModelComponent } from "../../Scripts/Script/Model/modelUtils";
 

@@ -162,14 +162,14 @@ const Model = ({animationController, models, scriptController, movementControlle
     animationController.setHasAdjustedZ(true);
   })
 
-  const hitboxRef = useRef<Mesh>(null);
+  const talkRadiusRef = useRef<Mesh>(null);
 
   useTalkRadius({
     isActive: !!talkMethod && !isLeadCharacter && !isFollower && !!meshGroup,
     scriptController,
     talkMethod,
     useScriptStateStore,
-    talkTargetRef: hitboxRef
+    talkTargetRef: talkRadiusRef
   })
   
   useFollower({
@@ -183,16 +183,26 @@ const Model = ({animationController, models, scriptController, movementControlle
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
   const isSolid = useScriptStateStore(state => state.isSolid);
 
+  const talkRadius = useScriptStateStore(state => state.talkRadius);
   return (
     <group>
       <Sphere args={[0.01, 16, 16]} ref={sphereRef} visible={isDebugMode}>
         <meshBasicMaterial color="green" side={DoubleSide} />
       </Sphere>
       <Box
+        args={characterDimensions.toArray().map(i => i * talkRadius/ 50) as [number, number, number]}
+        position={[0, 0, characterDimensions.z / 2.5]}
+        name="talkRadius"
+        ref={talkRadiusRef}
+        userData={{ isSolid: false }}
+        visible={isDebugMode}
+        >
+        <meshBasicMaterial color="white" opacity={1} wireframe />
+      </Box>
+      <Box
         args={characterDimensions.toArray()}
         position={[0, 0, characterDimensions.z / 2.5]}
         name="hitbox"
-        ref={hitboxRef}
         userData={{ isSolid }}
         visible={isDebugMode}
         >

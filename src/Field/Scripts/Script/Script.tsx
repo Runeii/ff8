@@ -47,7 +47,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
     script,
     scene,
     useScriptStateStore,
-    isDebugging: script.groupId === 12
+    isDebugging: false
   }), [animationController, headController, movementController, rotationController,sfxController, script, scene, useScriptStateStore]);
 
   const isVisible = useScriptStateStore(state => state.isVisible);
@@ -173,7 +173,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
     }
   });
 
-  if (isUnused) {
+  if (isUnused || !isVisible) {
     return null;
   }
 
@@ -192,9 +192,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
       visible={isVisible}
   >
     <group name={`party--${partyMemberId}`}>
-      {script.groupId === 4 && <Sphere args={[0.02,10,10]} position={[0, 0, 0]} name="entity--4--collision" visible={true} userData={{ isSolid: true }}>
-        <meshBasicMaterial color="purple" transparent opacity={1} side={DoubleSide} />
-      </Sphere>}
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'model' && <Model scriptController={scriptController} animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} script={script} useScriptStateStore={useScriptStateStore} />}

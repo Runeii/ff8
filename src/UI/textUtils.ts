@@ -1,7 +1,6 @@
 import { MESSAGE_VARS } from "../Field/Scripts/Script/handlers";
 import { Modifier } from "./textTypes";
 
-// Missing: wait, "general"
 export const createModifier = (tag: string) => {
   let result: Modifier = {
     type: 'general',
@@ -13,6 +12,7 @@ export const createModifier = (tag: string) => {
       result = {
         type: 'color',
         color: 'red',
+        isBlinking: tag.includes('Blink')
       }
       break;
     case 'Green':
@@ -20,6 +20,7 @@ export const createModifier = (tag: string) => {
       result = {
         type: 'color',
         color: 'green',
+        isBlinking: tag.includes('Blink')
       }
       break;
     case 'Blue':
@@ -27,6 +28,7 @@ export const createModifier = (tag: string) => {
       result = {
         type: 'color',
         color: 'blue',
+        isBlinking: tag.includes('Blink')
       }
       break;
     case 'Yellow':
@@ -34,6 +36,7 @@ export const createModifier = (tag: string) => {
       result = {
         type: 'color',
         color: 'yellow',
+        isBlinking: tag.includes('Blink')
       }
       break;
     case 'Purple':
@@ -41,6 +44,7 @@ export const createModifier = (tag: string) => {
       result = {
         type: 'color',
         color: 'magenta',
+        isBlinking: tag.includes('Blink')
       }
       break;
     case 'Grey':
@@ -48,6 +52,7 @@ export const createModifier = (tag: string) => {
       result = {
         type: 'color',
         color: 'gray',
+        isBlinking: tag.includes('Blink')
       }
       break;
     case 'Darkgrey':
@@ -55,6 +60,7 @@ export const createModifier = (tag: string) => {
       result = {
         type: 'color',
         color: 'shadow',
+        isBlinking: tag.includes('Blink')
       }
       break;
     case 'White':
@@ -62,6 +68,7 @@ export const createModifier = (tag: string) => {
       result = {
         type: 'color',
         color: 'white',
+        isBlinking: tag.includes('Blink')
       }
       break;
       default:

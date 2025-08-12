@@ -80,7 +80,7 @@ export const createScriptState = (script: Script) => {
     meshTintColor: undefined,
 
     pushRadius: 0,
-    talkRadius: 200,
+    talkRadius: 100,
     isPushable: false,
     isTalkable: true,
 

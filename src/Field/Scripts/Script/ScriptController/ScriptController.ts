@@ -168,7 +168,7 @@ const createScriptController = ({
     })
 
     if (isDebugging) {
-      console.log(`Running opcode ${currentOpcode.name} at index ${activeIndex} for method ${methodId} in script ${script.groupId}`);
+      console.log(`Running opcode ${currentOpcode.name} at index ${activeIndex} for method ${methodId} in script ${script.groupId}. Param: ${currentOpcode.param}`);
     }
     const nextIndex = await opcodeHandler({
       animationController,

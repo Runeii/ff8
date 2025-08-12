@@ -31,7 +31,7 @@ export default function App() {
 
   return (
     <>
-      <div className="container"> 
+      <div className="container">
         <Canvas camera={undefined} className="canvas" gl={{
           logarithmicDepthBuffer: true,
         }} frameloop={isTabActive ? 'always' : 'never'}>
@@ -53,8 +53,12 @@ export default function App() {
             />
             <Entrypoint />
             <ColorOverlay />
-            <Ui />
           </EffectComposer>
+        </Canvas>
+        <Canvas camera={undefined} className="canvas" gl={{
+          logarithmicDepthBuffer: true,
+        }} frameloop="demand">
+          <Ui />
         </Canvas>
         {isDebugMode && <Queues />}
         {isDebugMode && <Memory />}
