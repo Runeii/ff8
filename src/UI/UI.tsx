@@ -1,4 +1,4 @@
-import { Hud, OrthographicCamera } from "@react-three/drei";
+import { OrthographicCamera } from "@react-three/drei";
 import useGlobalStore from "../store";
 import MessageBox from "./MessageBox/MessageBox";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/constants";
@@ -40,7 +40,7 @@ const Ui = () => {
   }
 
   return (
-    <Hud>
+    <>
       <OrthographicCamera
         makeDefault
         left={-(SCREEN_WIDTH / 2)}
@@ -62,7 +62,7 @@ const Ui = () => {
         ))}
       </Suspense>
       {isCachingOffline && <OfflineProgress />}
-    </Hud>
+    </>
   );
 }
 

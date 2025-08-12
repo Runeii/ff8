@@ -38,6 +38,10 @@ const useFollower = ({ animationController, isActive, movementController, partyM
     const { position, angle, speed } = history;
 
     const followerPosition = movementController.getPosition();
+    if (followerPosition.x === 9999) {
+      movementController.setPosition(position)
+      return;
+    }
     currentPosition.set(followerPosition.x, followerPosition.y, followerPosition.z);
     targetPosition.set(position.x, position.y, position.z);
 
