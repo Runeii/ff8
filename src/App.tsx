@@ -13,21 +13,35 @@ import Queues from './Queues/Queues'
 import ColorOverlay from './ColorOverlay/ColorOverlay'
 import { EffectComposer } from '@react-three/postprocessing'
 import useIsTabActive from './useIsTabActive'
+import { MEMORY } from './Field/Scripts/Script/handlers'
+import MAP_NAMES from './constants/maps'
 
-const hasNamedField = new URLSearchParams(window.location.search).get('field');
+const requestedProgress = new URLSearchParams(window.location.search).get('progress');
+if (requestedProgress) {
+  MEMORY[256] = parseInt(requestedProgress, 10);
+}
 
+const namedField = new URLSearchParams(window.location.search).get('field');
+if (namedField) {
+  useGlobalStore.setState({
+    pendingFieldId: namedField as typeof MAP_NAMES[number]
+  })
+}
 export default function App() {
   const isTabActive = useIsTabActive();
 
   const fieldId = useGlobalStore(state => state.fieldId);
+  const progress = MEMORY[256];
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
 
   useEffect(() => {
-    if (!hasNamedField) {
-      return;
-    }
-    window.history.pushState({}, '', `?field=${fieldId}`);
-  }, [fieldId])
+    const url = new URL(window.location.href);
+    url.searchParams.set('field', fieldId);
+    const progress = MEMORY[256]
+    console.log(progress, fieldId)
+    url.searchParams.set('progress', progress.toString());
+    window.history.replaceState({}, '', url.toString());
+  }, [fieldId, progress])
 
   return (
     <>

@@ -87,13 +87,14 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [currentIndex, setCurrentIndex] = useState((askOptions?.default ?? 0) - (askOptions?.first ?? 0));
   const [hasDisplayedAllText, setHasDisplayedAllText] = useState(false);
+  
+  const isActive = currentPage < text.length;
   useEffect(() => {
-    if (currentPage < text.length) {
+    if (isActive) {
       return;
     }
-
     closeMessage(id, currentIndex);
-  }, [currentIndex, currentPage, id, text.length]);
+  }, [currentIndex, id, isActive]);
 
   const [formattedText, options] = useMemo(() => {
     if (currentPage >= text.length) {

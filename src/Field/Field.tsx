@@ -9,13 +9,15 @@ import { useThree } from '@react-three/fiber';
 import Scripts from './Scripts/Scripts';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
-import { getInitialEntrance } from '../utils';
+import { getInitialEntrance, numberToFloatingPoint, vectorToFloatingPoint } from '../utils';
 import { MEMORY, OPCODE_HANDLERS } from './Scripts/Script/handlers';
 import MAP_NAMES from '../constants/maps';
 import { SpringValue } from '@react-spring/web';
 import { getFieldData } from './fieldUtils';
 import Onboarding from '../Onboarding/Onboarding';
 import { AREA_NAMES } from '../constants/areaNames';
+import { Sphere } from '@react-three/drei';
+import { DoubleSide } from 'three';
 
 export type RawFieldData = typeof data;
 
@@ -68,9 +70,7 @@ const Field = ({ data }: FieldProps) => {
 
   return (
     <group>
-      <WalkMesh
-        walkmesh={data.walkmesh}
-      />
+      <WalkMesh walkmesh={data.walkmesh} />
       <Camera backgroundPanRef={backgroundPanRef} data={data} />
       <Scripts
         doors={data.doors}
@@ -79,6 +79,9 @@ const Field = ({ data }: FieldProps) => {
       />
       <Background backgroundPanRef={backgroundPanRef} data={data} />
       <Gateways fieldId={data.id}  />
+      <Sphere args={[0.011, 10, 10]} position={[0, 0, 0]}>
+        <meshStandardMaterial color="orange" side={DoubleSide} />
+      </Sphere>
     </group>
   );
 }

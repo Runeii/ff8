@@ -103,7 +103,8 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     if (!isActive || !isUserControllable || !hasPlacedCharacter || isTransitioningMap) {
       return;
     }
-    if (movementController.getState().position.goal && movementController.getState().position.userControlledSpeed !== undefined) {
+
+    if (movementController.getState().position.goal && movementController.getState().position.userControlledSpeed !== undefined && !movementController.getState().position.isPaused) {
       return;
     }
     

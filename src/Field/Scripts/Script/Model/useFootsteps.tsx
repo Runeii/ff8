@@ -45,7 +45,7 @@ const useFootsteps = ({ movementController }: useFootstepsProps) => {
     const nextFootstep = previousFootstepRef.current === 'right' ? leftSound : rightSound;
     isBetweenFootstepsRef.current = true;
     nextFootstep.seek(0);
-    nextFootstep.volume(clamp(0.2, (isWalking ? 0.5 : 1) * (2 - distance), 1));
+    nextFootstep.volume(clamp(0.1, (isWalking ? 0.5 : 1) * (2 - distance), 0.3));
     nextFootstep.play();
     previousFootstepRef.current = previousFootstepRef.current === 'right' ? 'left' : 'right';
 

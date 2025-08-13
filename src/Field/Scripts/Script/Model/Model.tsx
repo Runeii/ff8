@@ -44,9 +44,8 @@ const Model = ({animationController, models, scriptController, movementControlle
   const isLeadCharacter = useGlobalStore(state => state.party[0] === partyMemberId);
   const isFollower = useGlobalStore(state => partyMemberId && state.party.includes(partyMemberId) && state.isPartyFollowing && !isLeadCharacter);
 
-  const modelName = models[modelId]
-  const ModelComponent = components[modelName];
-  
+  const modelName = models[modelId];
+  const ModelComponent = components[modelName] ?? components['d000'];
   const [meshGroup, setMeshGroup] = useState<Group>();
 
   const convertMaterialsToBasic = useCallback((group: Group) => {
@@ -190,7 +189,7 @@ const Model = ({animationController, models, scriptController, movementControlle
         <meshBasicMaterial color="green" side={DoubleSide} />
       </Sphere>
       <Box
-        args={characterDimensions.toArray().map(i => i * talkRadius/ 50) as [number, number, number]}
+        args={characterDimensions.toArray().map(i => i * talkRadius) as [number, number, number]}
         position={[0, 0, characterDimensions.z / 2.5]}
         name="talkRadius"
         ref={talkRadiusRef}
@@ -200,7 +199,7 @@ const Model = ({animationController, models, scriptController, movementControlle
         <meshBasicMaterial color="white" opacity={1} wireframe />
       </Box>
       <Box
-        args={characterDimensions.toArray()}
+        args={characterDimensions.toArray().map(i => i * 2)}
         position={[0, 0, characterDimensions.z / 2.5]}
         name="hitbox"
         userData={{ isSolid }}

@@ -10,7 +10,8 @@ export type MoveOptions = {
   isAnimationEnabled: boolean;
   isFacingTarget: boolean;
   userControlledSpeed: number | undefined;
-} 
+  distanceToStopAnimationFromTarget: number;
+}
 
 export const createMovementController = (id: string | number, animationController: ReturnType<typeof createAnimationController>) => {
   let isStopping = false;
@@ -18,14 +19,15 @@ export const createMovementController = (id: string | number, animationControlle
   const {getState, setState, subscribe} = create(() => ({
     id,
     movementSpeed: 2560,
-    isPaused: false,
     needsZAdjustment: true,
     loopSignal: undefined as PromiseSignal | undefined,
     position: {
       current: new Vector3(9999, 0, 0),
       duration: 0 as number | undefined,
+      distanceToStopAnimationFromTarget: 0,
       isAnimationEnabled: true,
       isFacingTarget: true,
+      isPaused: false,
       userControlledSpeed: undefined as number | undefined,
       goal: undefined as Vector3 | undefined,
       signal: undefined as PromiseSignal| undefined,
@@ -34,6 +36,7 @@ export const createMovementController = (id: string | number, animationControlle
       current: new Vector3(0,0,0),
       duration: 0,
       goal: undefined as Vector3 | undefined,
+      isPaused: false,
       signal: undefined as PromiseSignal | undefined,
     },
     footsteps: {
@@ -80,7 +83,6 @@ export const createMovementController = (id: string | number, animationControlle
   const setPosition = (position: Vector3) => {
     resolvePendingPositionSignal();
     setState({
-      isPaused: false,
       needsZAdjustment: true,
       position: {
         ...getState().position,
@@ -88,6 +90,7 @@ export const createMovementController = (id: string | number, animationControlle
         duration: 0,
         isAnimationEnabled: false,
         isFacingTarget: false,
+        isPaused: false,
         signal: undefined,
       },
     });
@@ -98,10 +101,10 @@ export const createMovementController = (id: string | number, animationControlle
 
     resolvePendingOffsetSignal();
     setState({
-      isPaused: false,
       offset: {
         ...getState().offset,
         goal: target,
+        isPaused: false,
         duration: 0,
         signal: undefined,
       },
@@ -115,9 +118,11 @@ export const createMovementController = (id: string | number, animationControlle
       isAnimationEnabled: true,
       isFacingTarget: true,
       userControlledSpeed: undefined,
+      distanceToStopAnimationFromTarget: 0
     }
 
     const {
+      distanceToStopAnimationFromTarget,
       duration,
       isAnimationEnabled,
       isFacingTarget,
@@ -130,13 +135,14 @@ export const createMovementController = (id: string | number, animationControlle
     resolvePendingPositionSignal();
     const signal = new PromiseSignal();
     setState({
-      isPaused: false,
       position: {
         current: getState().position.current,
         goal: target,
         duration: duration && duration > 0 ? duration : undefined,
+        distanceToStopAnimationFromTarget,
         isAnimationEnabled,
         isFacingTarget,
+        isPaused: false,
         userControlledSpeed,
         signal
       },
@@ -170,11 +176,11 @@ export const createMovementController = (id: string | number, animationControlle
     resolvePendingOffsetSignal();
     const signal = new PromiseSignal();
     setState({
-      isPaused: false,
       offset: {
         current: getState().offset.current,
         goal: target,
         duration,
+        isPaused: false,
         signal
       }
     });
@@ -231,7 +237,14 @@ export const createMovementController = (id: string | number, animationControlle
 
   const pause = () => {
     setState({
-      isPaused: true,
+      position: {
+        ...getState().position,
+        isPaused: true,
+      },
+      offset: {
+        ...getState().offset,
+        isPaused: true,
+      }
     });
   }
 
@@ -292,7 +305,7 @@ export const createMovementController = (id: string | number, animationControlle
     })
 
   const tick = (entity: Object3D, delta: number) => {
-    const { position, offset, isPaused, movementSpeed } = getState();
+    const { position, offset, movementSpeed } = getState();
 
     const { isAnimationEnabled } = position;
     if (isStopping && isAnimationEnabled) {
@@ -300,8 +313,7 @@ export const createMovementController = (id: string | number, animationControlle
       isStopping = false;
     }
 
-    if (isPaused) {
-
+    if (position.isPaused && offset.isPaused) {
       return;
     }
     
@@ -320,11 +332,11 @@ export const createMovementController = (id: string | number, animationControlle
         currentPosition.copy(positionGoal);
         resolvePendingPositionSignal();
         setState({
-          isPaused: true,
           position: {
             ...getState().position,
             userControlledSpeed: undefined,
             goal: undefined,
+            isPaused: true,
           }
         });
 
@@ -346,10 +358,10 @@ export const createMovementController = (id: string | number, animationControlle
         currentOffset.copy(offsetGoal);
         resolvePendingOffsetSignal();
         setState({
-          isPaused: true,
           offset: {
             ...getState().offset,
             goal: undefined,
+            isPaused: true,
           }
         });
       } else {
@@ -377,7 +389,6 @@ export const createMovementController = (id: string | number, animationControlle
     resolvePendingPositionSignal();
 
     setState(state => ({
-      isPaused: false,
       movementSpeed: 2560,
       needsZAdjustment: true,
       isClimbingLadder: false,
@@ -387,6 +398,7 @@ export const createMovementController = (id: string | number, animationControlle
         duration: 0,
         isAnimationEnabled: true,
         isFacingTarget: true,
+        isPaused: false,
         userControlledSpeed: undefined,
         goal: undefined,
         signal: undefined,
@@ -394,6 +406,7 @@ export const createMovementController = (id: string | number, animationControlle
       offset: {
         ...state.offset,
         duration: 0,
+        isPaused: false,
         goal: undefined,
         signal: undefined,
       },

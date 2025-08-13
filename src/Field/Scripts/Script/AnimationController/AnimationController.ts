@@ -41,15 +41,17 @@ export const createAnimationController = (id: string | number) => {
     mixer: undefined as AnimationMixer | undefined,
 
     needsZAdjustment: false,
-
-    activeAnimationId: undefined as number | undefined,
-    activeAction: undefined as AnimationAction | undefined,
-    activeKey: undefined as string | undefined,
-    animation: undefined as AnimationPlayOptions | undefined,
-
-    headBone: undefined as Bone | undefined,
     id,
     speed: 16, // Default speed, can be adjusted later
+
+    activeAction: undefined as AnimationAction | undefined,
+
+    animations: {
+      currentAnimation: undefined as AnimationPlayOptions | undefined,
+      queuedAnimation: undefined as AnimationPlayOptions | undefined,
+    },
+
+    headBone: undefined as Bone | undefined,
   }));
 
   const initialize = (mixer: AnimationMixer, clips: AnimationClip[], mesh: Object3D) => {
@@ -62,6 +64,30 @@ export const createAnimationController = (id: string | number) => {
   }
 
   let currentDirection = 1;
+  const handleAnimationEnded = (activeAnimation: AnimationPlayOptions) => {
+    if (!activeAnimation.keepLastFrame) {
+      setState(state => ({
+        ...state,
+        animations: {
+          ...state.animations,
+          currentAnimation: undefined
+        }
+      }));
+      return;
+    }
+    const updatedAnimation = {
+      ...activeAnimation,
+      isCompleted: true,
+    };
+    setState(state => ({
+      ...state,
+      animations: {
+        ...state.animations,
+        currentAnimation: updatedAnimation
+      }
+    }));
+  }
+
   const tick = (delta: number) => {
     const { activeAction, mixer, mesh } = getState();
     
@@ -69,16 +95,22 @@ export const createAnimationController = (id: string | number) => {
       return;
     }
     
-    const { animation: currentQueueItem } = getState();
-    
-    if (!currentQueueItem) {
+    const { animations: {
+      currentAnimation,
+      queuedAnimation
+    } } = getState();
+
+    const activeAnimation = [queuedAnimation, currentAnimation].find(anim => anim !== undefined);
+
+    if (!activeAnimation) {
       return;
     }
-    const action = currentQueueItem.action;
-    const startTime = currentQueueItem.startFrame !== undefined ? currentQueueItem.startFrame / FPS : 0;
-    const endTime = currentQueueItem.endFrame !== undefined ? currentQueueItem.endFrame / FPS : action.getClip().duration;
 
-    if (action !== activeAction || currentQueueItem.key !== getState().activeKey ) {
+    const action = activeAnimation?.action;
+    const startTime = activeAnimation?.startFrame !== undefined ? activeAnimation.startFrame / FPS : 0;
+    const endTime = activeAnimation?.endFrame !== undefined ? activeAnimation.endFrame / FPS : action.getClip().duration;
+
+    if (action !== activeAction) {
       mixer.update(0);
       mixer.stopAllAction();
       if (activeAction) {
@@ -89,20 +121,20 @@ export const createAnimationController = (id: string | number) => {
       action.time = startTime;
       action.enabled = true;
       action.paused = true;
-      currentDirection = currentQueueItem.speed;
+      currentDirection = activeAnimation.speed;
 
       let needsZAdjustment = true;
-      if (currentQueueItem.type === 'IDLE') {
+      if (activeAnimation.type === 'IDLE') {
         needsZAdjustment = false;
       }
-      if (id === 1) {
-        console.log('Playing animation for character 0', currentQueueItem.animationId, needsZAdjustment);
-      }
+
       setState({
         needsZAdjustment,
         activeAction: action,
-        activeKey: currentQueueItem.key,
-        activeAnimationId: currentQueueItem.animationId,
+        animations: {
+          currentAnimation: activeAnimation,
+          queuedAnimation: undefined
+        }
       });
 
       applyAnimationAtTime(mesh, action.getClip(), startTime);
@@ -111,39 +143,28 @@ export const createAnimationController = (id: string | number) => {
     // If the start frame is the same as the end frame, we apply the animation at that frame and do not change again
     if (startTime === endTime || action.getClip().duration === 0) {
       applyAnimationAtTime(mesh, action.getClip(), startTime);
+      handleAnimationEnded(activeAnimation)
       return;
     }
 
+    if (activeAnimation.isCompleted && id === 1) {
+      console.log('Is compelted!')
+    }
     action.time = action.time + (delta * currentDirection);
 
     // We are at the end of the animation, so we need to check if we should loop or stop
     if (action.time >= endTime) {
-      if (currentQueueItem.loop === LoopOnce) {
+      if (activeAnimation.loop === LoopOnce) {
         action.time = endTime;
         action.paused = true;
-
-        if (!currentQueueItem.keepLastFrame) {
-          setState({
-            activeAction: undefined,
-            animation: undefined,
-          });
-        } else {
-          const updatedAnimation = {
-            ...currentQueueItem,
-            isCompleted: true,
-          };
-          setState(state => ({
-            ...state,
-            animation: updatedAnimation
-          }));
-        }
+        handleAnimationEnded(activeAnimation)
         return;
       }
 
-      if (currentQueueItem.loop === LoopPingPong) {
+      if (activeAnimation.loop === LoopPingPong) {
         currentDirection *= -1
         action.time = endTime + (delta * currentDirection);
-      } else if (currentQueueItem.loop === LoopRepeat) {
+      } else if (activeAnimation.loop === LoopRepeat) {
         action.time = startTime;
       }
     }
@@ -204,14 +225,24 @@ export const createAnimationController = (id: string | number) => {
     }
 
     setState({
-      animation: playOptions,
+      animations: {
+        ...getState().animations,
+        queuedAnimation: playOptions,
+      }
     });
 
+    let hasStartedPlaying = false;
     return new Promise<void>((resolve) => {
       const checkIsPlaying = () => {
-        const { activeAction } = getState();
+        const { animations: { currentAnimation } } = getState();
 
-        if ((activeAction === action || !activeAction) && (!activeAction || !activeAction.isRunning())) {
+        if (!hasStartedPlaying && currentAnimation?.key === uniqueId) {
+          hasStartedPlaying = true;
+          requestAnimationFrame(checkIsPlaying);
+          return;
+        }
+
+        if (hasStartedPlaying && (currentAnimation?.key !== uniqueId || currentAnimation?.isCompleted)) {
           resolve();
         } else {
           requestAnimationFrame(checkIsPlaying);
@@ -231,12 +262,14 @@ export const createAnimationController = (id: string | number) => {
     activeAction.reset();
     mixer.stopAllAction();
     
-    setState({
+    setState(state => ({
+      ...state,
       activeAction: undefined,
-      animation: undefined,
-      activeKey: undefined,
-      activeAnimationId: undefined,
-    });
+      animations: {
+        ...state.animations,
+        currentAnimation: undefined,
+      }
+    }));
   }
 
   const pauseAnimation = () => {
@@ -259,7 +292,9 @@ export const createAnimationController = (id: string | number) => {
   }
 
   const playMovementAnimation = (type: 'stand' | 'walk' | 'run') => {
-    const { animation } = getState();
+    const { animations: {
+      currentAnimation
+    } } = getState();
 
     const { idleAnimationIds } = getSavedAnimation();
     let animationId = 0;
@@ -271,11 +306,11 @@ export const createAnimationController = (id: string | number) => {
       animationId = idleAnimationIds.runAnimationId;
     }
 
-    if (animation?.type === 'IDLE' && animation.animationId === animationId) {
+    if (currentAnimation?.type === 'IDLE' && currentAnimation.animationId === animationId) {
       return;
     }
 
-    if (animation?.type === 'IDLE') {
+    if (currentAnimation?.type === 'IDLE') {
       stopAnimation();
     }
 
@@ -339,8 +374,11 @@ export const createAnimationController = (id: string | number) => {
   }
 
   const stopLadderAnimation = () => {
-    const { animation } = getState();
-    if (animation?.type !== 'LADDER') {
+    const { animations: {
+      currentAnimation
+    } } = getState();
+
+    if (currentAnimation?.type !== 'LADDER') {
       return;
     }
     stopAnimation();

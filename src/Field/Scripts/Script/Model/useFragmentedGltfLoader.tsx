@@ -9,14 +9,19 @@ type GLTFIndex = {
 }
 export const useFragmentedGLTFLoader = (baseGltf: string, fieldName: string) => {
   const gltfFilename = typedGltfIndex[fieldName]?.[baseGltf];
-  const [baseName, hashedName] = gltfFilename.split('_')
+
+  if (!gltfFilename) {
+    console.warn(`GLTF file not found for baseGltf: ${baseGltf} in field: ${fieldName}. Using Squall`);
+  }
+
+  // Fallback to a random Squall model if there isn't a model. This only happens on bad maps.
+  const [baseName, hashedName] = gltfFilename?.split('_') ?? [
+    'd000',
+    '0ec20e06.gltf'
+  ];
 
   const result = useGLTF(`/models/optimized/${baseName}/${hashedName}`);
 
-  if (!gltfFilename) {
-    console.warn(`GLTF file not found for baseGltf: ${baseGltf} in field: ${fieldName}`);
-    return null;
-  }
   return result;
 }
 

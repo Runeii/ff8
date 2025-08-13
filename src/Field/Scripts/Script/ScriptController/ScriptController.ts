@@ -8,6 +8,14 @@ import createRotationController from "../RotationController/RotationController";
 import createScriptState from "../state";
 import createSFXController from "../SFXController/SFXController";
 
+type QueueItem = {
+  activeIndex: number;
+  opcodes: OpcodeObj[];
+  methodId: string;
+  isLooping: boolean;
+  priority: number;
+  uniqueId: string;
+}
 const createScriptController = ({
   script,
   scene,
@@ -35,21 +43,16 @@ const createScriptController = ({
   const { getState, setState } = create(() => ({
     isAwaitingAnOpcode: false,
     isRunning: false,
-    queue: [] as {
-      activeIndex: number;
-      opcodes: OpcodeObj[],
-      methodId: string;
-      isLooping: boolean;
-      priority: number;
-      uniqueId: string;
-    }[],
+    queue: [] as QueueItem[],
     script,
   }));
 
   const goToNextOpcode = ({
+    activeQueueItem,
     isHalting = false,
     nextIndex,
   }: {
+    activeQueueItem: QueueItem,
     nextIndex?: number | void;
     isHalting?: boolean;
   }) => {
@@ -57,9 +60,8 @@ const createScriptController = ({
 
     const newQueue = [...queue];
     const { isLooping, opcodes, uniqueId } = newQueue.at(-1)!;
-    
-    const currentQueueItem = newQueue.at(-1)!;
 
+    let currentQueueItem: QueueItem | undefined = activeQueueItem;
     // If we returned (-1) and this script loops, we need to go back to the start
     if (nextIndex === -1 && isLooping) {
       currentQueueItem.activeIndex = 0;
@@ -76,27 +78,29 @@ const createScriptController = ({
 
     // Should we remove this item from the queue and stop the script?
     if (isHalting || currentQueueItem.activeIndex === -1 || (currentQueueItem.activeIndex >= opcodes.length)) {
-      newQueue.pop();
+      currentQueueItem = undefined;
     }
+
+    const updatedQueue = newQueue.map(item => item.uniqueId === activeQueueItem?.uniqueId ? currentQueueItem : item).filter(item => item) as QueueItem[];
 
     // Fire the scriptEnd event if the queue has changed
     // This allows us to await the script end in the triggerMethod function
-    if (queue.length !== newQueue.length) {
+    if (queue.length !== updatedQueue.length) {
       const event = new CustomEvent('scriptEnd', {
         detail: uniqueId
       });
       document.dispatchEvent(event);
     }
-
     setState({
       isRunning: false,
-      queue: newQueue
+      queue: updatedQueue,
     });
   }
 
-  const handleSpecialCaseOpcodes = (currentOpcode: OpcodeObj, activeIndex: number) => {
+  const handleSpecialCaseOpcodes = (currentOpcode: OpcodeObj, activeQueueItem: QueueItem, activeIndex: number) => {
     if (currentOpcode.name.startsWith('LABEL')) {
       goToNextOpcode({
+        activeQueueItem,
         nextIndex: activeIndex + 1
       });
       return true;
@@ -104,6 +108,7 @@ const createScriptController = ({
 
     if (currentOpcode.name === 'HALT') {
       goToNextOpcode({
+        activeQueueItem,
         isHalting: true,
       });
       return true;
@@ -122,10 +127,11 @@ const createScriptController = ({
     }
     setState({ isRunning: true });
     
-    const { activeIndex, methodId, opcodes, uniqueId } = queue.at(-1)!;
+    const topQueueItem = queue.at(-1)!;
+    const { activeIndex, methodId, opcodes, uniqueId } = topQueueItem;
     const currentOpcode = opcodes[activeIndex];
 
-    const shouldReturnEarly = handleSpecialCaseOpcodes(currentOpcode, activeIndex);
+    const shouldReturnEarly = handleSpecialCaseOpcodes(currentOpcode, topQueueItem, activeIndex);
     if (shouldReturnEarly) {
       return;
     }
@@ -154,8 +160,6 @@ const createScriptController = ({
     const clonedTempStack = {...TEMP_STACK};
 
     // RUN THAT OPCODE
-    setState({ isAwaitingAnOpcode: true });
-
     window.scriptDump({
       timestamps: [Date.now()],
       action: 'Running Opcode',
@@ -170,7 +174,8 @@ const createScriptController = ({
     if (isDebugging) {
       console.log(`Running opcode ${currentOpcode.name} at index ${activeIndex} for method ${methodId} in script ${script.groupId}. Param: ${currentOpcode.param}`);
     }
-    const nextIndex = await opcodeHandler({
+
+    const promise = opcodeHandler({
       animationController,
       currentOpcode,
       currentOpcodeIndex: activeIndex,
@@ -188,13 +193,12 @@ const createScriptController = ({
       TEMP_STACK: clonedTempStack,
     });
 
-    setState({ isAwaitingAnOpcode: false });
+    const nextIndex = await promise;
 
     // If there is a new priority item in the queue, we need to abort the current run and discard changes
     // Springs and controllers were already stopped when the new item was added to the queue
     const currentlyTopOfQueue = getState().queue.at(-1)!;
     if (!currentlyTopOfQueue || currentlyTopOfQueue.uniqueId !== uniqueId) {
-      setState({ isRunning: false });
       window.scriptDump({
         timestamps: [Date.now()],
         action: 'Aborting due to new queue item',
@@ -206,8 +210,12 @@ const createScriptController = ({
         scriptLabel: script.groupId,
       })
       if (isDebugging) {
-        console.log(`Aborting script run for ${script.groupId} due to new queue item`);
+        console.log(`Aborting script run for ${script.groupId} due to new queue item:`, currentlyTopOfQueue, uniqueId);
       }
+      goToNextOpcode({
+        activeQueueItem: currentlyTopOfQueue,
+        nextIndex,
+      });
       return;
     }
 
@@ -220,6 +228,7 @@ const createScriptController = ({
     TEMP_STACK = clonedTempStack;
 
     goToNextOpcode({
+      activeQueueItem: currentlyTopOfQueue,
       nextIndex,
     });
   }

@@ -1,4 +1,4 @@
-import { LoopRepeat, Scene, Vector3 } from "three";
+import { LoopRepeat, Mesh, Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script } from "../types";
@@ -46,6 +46,7 @@ export let MEMORY: Record<number, number> = {
   491: 0, // touk
   641: 96,
   534: 0, // ?
+  1023: 2,
   1024: 0,
   1025: 0,
   
@@ -464,6 +465,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const channel = STACK.pop() as number;
 
     while (useGlobalStore.getState().currentMessages.some(message => message.placement.channel === channel)) {
+      const messagesOnChannel = useGlobalStore.getState().currentMessages.filter(message => message.placement.channel === channel);
+      if (!messagesOnChannel[0].isCloseable) {
+        closeMessage(messagesOnChannel[0].id);
+      }
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -645,12 +650,18 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     await animationController.playAnimation(animationId);
   },
-  ANIMEKEEP: async ({ animationController, currentOpcode }) => {
+  ANIMEKEEP: async ({ animationController, currentOpcode, script }) => {
     const animationId = currentOpcode.param;
 
+    if (script.groupId === 3) {
+      console.log('ANIMEKEEP START', animationId)
+    }
     await animationController.playAnimation(animationId, {
       keepLastFrame: true,
     });
+    if (script.groupId === 3) {
+      console.log('ANIMEKEEP END', animationId)
+    }
   },
   CANIME: async ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
@@ -662,11 +673,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       endFrame: lastFrame,
     });
   },
-  CANIMEKEEP: async ({ animationController, currentOpcode, STACK }) => {
+  CANIMEKEEP: async ({ animationController, currentOpcode, currentOpcodeIndex, script, opcodes, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
+    if (script.groupId === 1) {
+      console.log('CANIMEKEEP', currentOpcode, currentOpcodeIndex, opcodes, script)
+    }
     await animationController.playAnimation(animationId, {
       startFrame: firstFrame,
       endFrame: lastFrame,
@@ -824,7 +838,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SET3: async ({ movementController, STACK }) => {
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
-
     movementController.setPosition(position);
   },
   TALKRADIUS: ({ setState, STACK }) => {
@@ -893,76 +906,79 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
 
   MOVE: async ({ movementController, STACK }) => {
-    // const distanceToStopAnimationFromTarget =
-    STACK.pop() as number;
+    const distanceToStopAnimationFromTarget = STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
-    await movementController.moveToPoint(target);
+    await movementController.moveToPoint(target, {
+      distanceToStopAnimationFromTarget
+    });
   },
 
   // MOVEA: move to actor
   MOVEA: async ({ movementController, scene, STACK }) => {
-    // const distanceToStopAnimationFromTarget =
-    STACK.pop() as number;
+    const distanceToStopAnimationFromTarget = STACK.pop() as number;
     const actorId = STACK.pop() as number;
 
-    await movementController.moveToObject(`entity--${actorId}`, scene);
+    await movementController.moveToObject(`entity--${actorId}`, scene, {
+      distanceToStopAnimationFromTarget
+    });
   },
 
   // PMOVEA: move to party member
   PMOVEA: async ({ movementController, scene, STACK }) => {
-    // const distanceToStopAnimationFromTarget =
-    STACK.pop() as number;
+    const distanceToStopAnimationFromTarget = STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
 
-    await movementController.moveToObject(`party--${partyMemberId}`, scene)
+    await movementController.moveToObject(`party--${partyMemberId}`, scene, {
+      distanceToStopAnimationFromTarget
+    })
   },
 
 
   // CMOVE: no turn, no animation
   CMOVE: async ({ movementController, STACK }) => {
-    // const distanceToStopAnimationFromTarget =
-    STACK.pop() as number;
+    const distanceToStopAnimationFromTarget = STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
     await movementController.moveToPoint(target, {
       isAnimationEnabled: false,
       isFacingTarget: false,
+      distanceToStopAnimationFromTarget
     });
   },
 
   // FMOVE: turn, no animation
   FMOVE: async ({ movementController, STACK }) => {
-    // const distanceToStopAnimationFromTarget =
-    STACK.pop() as number;
+    const distanceToStopAnimationFromTarget = STACK.pop() as number;
     const lastThree = STACK.splice(-3);
     const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
     await movementController.moveToPoint(target, {
       isAnimationEnabled: false,
       isFacingTarget: true,
+      distanceToStopAnimationFromTarget
     });
   },
   FMOVEA: async ({ movementController, STACK, scene }) => {
-    // const distanceToStopAnimationFromTarget =
-    STACK.pop() as number;
+    const distanceToStopAnimationFromTarget = STACK.pop() as number;
     const actorId = STACK.pop() as number;
 
     await movementController.moveToObject(`entity--${actorId}`, scene, {
       isAnimationEnabled: false,
       isFacingTarget: true,
+      distanceToStopAnimationFromTarget
     });
   },
   FMOVEP: async ({ movementController, scene, STACK }) => {
-    // const distanceToStopAnimationFromTarget =
-    STACK.pop() as number;
+    const distanceToStopAnimationFromTarget = STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
 
     await movementController.moveToObject(`party--${partyMemberId}`, scene, {
       isAnimationEnabled: false,
       isFacingTarget: true,
+      distanceToStopAnimationFromTarget
     });
   },
 
@@ -1213,8 +1229,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   // Initialises music system, not needed
   INITSOUND: () => { },
   MUSICVOLSYNC: () => { },
-  MUSICLOAD: ({ currentOpcode, STACK }) => {
-    console.log(currentOpcode)
+  MUSICLOAD: ({ STACK }) => {
     const id = STACK.pop() as keyof typeof MUSIC_IDS;
     musicController.preloadMusic(MUSIC_IDS[id]);
   },
@@ -2148,6 +2163,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   ALLSEPOSTRANS: ({ STACK }) => {
     STACK.splice(-3);
   },
+  // This changes the key of background music. It lives on in the test menu, never ingame.
+  // We use MP3s so not implementable anyway
+  KEYSIGHNCHANGE: ({ STACK }) => {
+    STACK.pop() as number;
+  },
   // Set: unused, but manipulate stack. here for completeness
   ALLSEPOS: ({ STACK }) => {
     STACK.splice(-1);
@@ -2183,7 +2203,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   DSCROLL3: unusedCommand,
   GETHP: unusedCommand,
   KEYON2: unusedCommand,
-  KEYSIGHNCHANGE: unusedCommand,
   OPENEYES: unusedCommand,
   BLINKEYES: unusedCommand,
   SETPARTY2: unusedCommand,
