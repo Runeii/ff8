@@ -1,4 +1,4 @@
-import { LoopRepeat, Mesh, Scene, Vector3 } from "three";
+import { LoopRepeat, Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script } from "../types";
@@ -45,8 +45,7 @@ export let MEMORY: Record<number, number> = {
   72: 9999, // gil
   491: 0, // touk
   641: 96,
-  534: 0, // ?
-  1023: 2,
+  534: 1, // ?
   1024: 0,
   1025: 0,
   

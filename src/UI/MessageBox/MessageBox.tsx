@@ -311,6 +311,9 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
   const scaleRef = useRef(0);
   const textProgressRef = useRef(0);
   const hasDisplayedAllTextRef = useRef(false);
+  const pauseStartRef = useRef<number | undefined>(undefined);
+  const pauseIndexRef = useRef(0);
+
   const OPEN_SPEED = 3;
   const TEXT_SPEED = 200;
   const BLINK_DELAY = 240;
@@ -319,6 +322,8 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
     return () => {
       scaleRef.current = 0;
       textProgressRef.current = 0;
+      pauseStartRef.current = undefined;
+      pauseIndexRef.current = 0;
       hasDisplayedAllTextRef.current = false;
       texture.needsUpdate = true;
       invalidate();
@@ -374,11 +379,33 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
     return scale
   }, [messageStyle.mode, textCanvas]);
 
+  const handleWait = useCallback((placement: Extract<Modifier, { type: 'wait' }>, placementIndex: number) => {
+    const pausedAtTime = pauseStartRef.current;
+    if (pauseIndexRef.current > placementIndex) {
+      return false;
+    }
+
+    if (pausedAtTime && Date.now() - pausedAtTime < (placement.duration / 25 * 1000)) {
+      return true;
+    }
+    if (!pausedAtTime) {
+      pauseStartRef.current = Date.now();
+      pauseIndexRef.current = placementIndex;
+      return true;
+    }
+    pauseStartRef.current = undefined;
+    return false;
+  }, []);
+
   const drawAnimatedText = useCallback((ctx: CanvasRenderingContext2D, xPos: number, yPos: number, delta: number) => {
     let currentColor: FontColor = 'white';
     let isBlinkingOff = false;
 
+    let isPaused = false;
     placements.forEach((placement, index) => {
+      if (isPaused) {
+        return;
+      }
       if (index > textProgressRef.current && !hasDisplayedAllTextRef.current) {
         return;
       }
@@ -389,6 +416,10 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
         if (placement.isBlinking) {
           invalidate();
         }
+        return;
+      }
+      if ('type' in placement && placement.type === 'wait') {
+        isPaused = handleWait(placement, index);
         return;
       }
       const { rowIndex, columnIndex, x, y } = placement as Placement;

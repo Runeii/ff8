@@ -199,7 +199,7 @@ const Model = ({animationController, models, scriptController, movementControlle
         <meshBasicMaterial color="white" opacity={1} wireframe />
       </Box>
       <Box
-        args={characterDimensions.toArray().map(i => i * 2)}
+        args={characterDimensions.toArray().map(i => i * 2) as [number, number]}
         position={[0, 0, characterDimensions.z / 2.5]}
         name="hitbox"
         userData={{ isSolid }}
