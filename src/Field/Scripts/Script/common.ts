@@ -201,7 +201,7 @@ export const setCameraAndLayerScroll = async (x: number, y: number, duration: nu
 
   const previousGoalX = xSpring.goal;
   const previousGoalY = ySpring.goal;
-
+  console.log('From', previousGoalX, previousGoalY, 'To', -x, -y);
   xSpring.start({
     from: previousGoalX,
     to: -x,
@@ -210,7 +210,7 @@ export const setCameraAndLayerScroll = async (x: number, y: number, duration: nu
 
   ySpring.start({
     from: previousGoalY,
-    to: -y,
+    to: y,
     ...standardScrollConfig(duration),
   })
 }
@@ -220,7 +220,11 @@ export const setCameraAndLayerFocus = (object: Object3D | null, duration: number
   new Array(8).fill(0).forEach((_, i) => {
     setCameraAndLayerScroll(0, 0, duration, i);
   })
-
+  const { layerScrollSprings } = useGlobalStore.getState();
+  layerScrollSprings.forEach((_, i) => {
+    setCameraAndLayerScroll(0, 0, duration, i);
+  });
+  console.log('Layer focus reset', object);
   useGlobalStore.setState({
     cameraFocusObject: object ?? undefined,
     cameraFocusSpring: new SpringValue({

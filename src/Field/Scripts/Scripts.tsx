@@ -8,10 +8,11 @@ export type ScriptsProps = {
   doors: FieldData['doors'],
   models: string[],
   scripts: ScriptType[]
+  sounds: FieldData['sounds'],
 };
 
 
-const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
+const Scripts = ({ doors, models, scripts, sounds }: ScriptsProps) => {
   const fieldId = useGlobalStore(state => state.fieldId);
 
   const formattedDoors: Door[] = useMemo(() => {
@@ -57,8 +58,8 @@ const Scripts = ({ doors, models, scripts }: ScriptsProps) => {
 
   return (
     <>
-      {otherScripts.map(script => <Script doors={formattedDoors} key={`${fieldId}--${script.exec}`} isActive={scriptsMounted === otherScripts.length} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} onStarted={onStarted} /> )}
-      {runningScripts === otherScripts.length && mainScripts.map(mainScript => <Script doors={formattedDoors} key={`${fieldId}--${mainScript.exec}`} isActive={hasMountedMainScripts} models={models} script={mainScript} onSetupCompleted={handleMainScriptMounted} onStarted={handleStartedMain} />)}
+      {otherScripts.map((script, index) => <Script doors={formattedDoors} key={`${fieldId}--${script.exec}`} isActive={scriptsMounted === otherScripts.length} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} onStarted={onStarted} sounds={index === 0 ? sounds : []} /> )}
+      {runningScripts === otherScripts.length && mainScripts.map(mainScript => <Script doors={formattedDoors} key={`${fieldId}--${mainScript.exec}`} isActive={hasMountedMainScripts} models={models} script={mainScript} onSetupCompleted={handleMainScriptMounted} onStarted={handleStartedMain} sounds={[]} />)}
     </>
   );
 }

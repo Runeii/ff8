@@ -143,7 +143,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     MEMORY[currentOpcode.param] = STACK.pop() as number;
   },
   POPM_B: ({ currentOpcode, STACK }) => {
-    MEMORY[currentOpcode.param] = STACK.pop() as number;
+    const value = STACK.pop() as number;
+    console.log('Changing', currentOpcode.param, 'from', MEMORY[currentOpcode.param], 'to', value);
+    MEMORY[currentOpcode.param] = value;
   },
   POPM_W: ({ currentOpcode, STACK }) => {
     MEMORY[currentOpcode.param] = STACK.pop() as number;
@@ -294,17 +296,19 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
-  BGDRAW: ({ currentState, setState, STACK }) => {
+  BGDRAW: ({ currentState, script, setState, STACK }) => {
     const frame = STACK.pop() as number;
     setState({
       isBackgroundVisible: true,
     })
+    console.log('BGDRAW', script, frame)
     currentState.backgroundAnimationSpring.set(frame);
   },
-  BGOFF: ({ setState }) => {
+  BGOFF: ({ script, setState }) => {
     setState({
       isBackgroundVisible: false,
     })
+    console.log('BGOFF', script)
   },
   BGANIMESPEED: ({ setState, STACK }) => {
     const speed = STACK.pop() as number;
@@ -558,6 +562,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   REQEW: async ({ STACK }) => {
     const label = STACK.pop() as number;
     const priority = STACK.pop();
+    console.log('REQEW', label, priority);
     await remoteExecute(label, priority)
   },
   PREQ: ({ currentOpcode, scene, STACK }) => {
@@ -1666,22 +1671,22 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const volume = STACK.pop() as number;
     const pan = STACK.pop() as number;
     const channel = STACK.pop() as number;
-    const sfxId = STACK.pop() as number; // Is SFXID + 7850
+    const sfxId = STACK.pop() as number;
     sfxController.play(sfxId, channel, volume, pan)
   },
-  EFFECTPLAY2: ({ currentOpcode, STACK }) => {
+  EFFECTPLAY2: ({ currentOpcode, sfxController, STACK }) => {
     const channel = STACK.pop() as number; 
     const volume = STACK.pop() as number; 
     const pan = STACK.pop() as number; 
-    const sfxId = currentOpcode.param; 
-    console.log('EFFECTPLAY2', sfxId, channel, volume, pan);
-    // For now we don't play these because we need to somehow get the SFX list for a field
-    //return;
-    //sfxController.play(sfxId, channel, volume, pan)
+    const sfxId = currentOpcode.param;
+    sfxController.playFieldSound(sfxId, channel, volume, pan)
   },
-  EFFECTLOAD: ({ sfxController, STACK }) => {
-    const loopingBackgroundEffectId = STACK.pop() as number; // note: check docs, apparently not normal
-    sfxController.playLoopingEffect(loopingBackgroundEffectId)
+  // I think the documentation here is incorrect. I believe this loads banks of sounds. It's used in
+  // test maps with long sound lists before triggering effectplay2.
+  EFFECTLOAD: ({ STACK }) => {
+    const soundBankId = STACK.pop() as number; // note: check docs, apparently not normal
+    console.log('EFFECTLOAD', soundBankId); 
+    //sfxController.playLoopingEffect(loopingBackgroundEffectId)
   },
   SESTOP: ({ sfxController, STACK }) => {
     const channel = STACK.pop() as number;

@@ -402,6 +402,7 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
     let isBlinkingOff = false;
 
     let isPaused = false;
+    let displayedCount = 0;
     placements.forEach((placement, index) => {
       if (isPaused) {
         return;
@@ -416,10 +417,12 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
         if (placement.isBlinking) {
           invalidate();
         }
+        displayedCount++;
         return;
       }
       if ('type' in placement && placement.type === 'wait') {
         isPaused = handleWait(placement, index);
+        displayedCount++;
         return;
       }
       const { rowIndex, columnIndex, x, y } = placement as Placement;
@@ -431,15 +434,17 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
         columnIndex * SOURCE_TILE_SIZE, rowIndex * SOURCE_TILE_SIZE, SOURCE_TILE_SIZE, SOURCE_TILE_SIZE,
         xPos + x, yPos + y, OUTPUT_TILE_SIZE, OUTPUT_TILE_SIZE
       )
-      if (index === placements.length - 1) {
-        hasDisplayedAllTextRef.current = true;
-        setHasDisplayedAllText(true);
-      }
+      displayedCount++;
     });
+
+    if (displayedCount === placements.length) {
+      hasDisplayedAllTextRef.current = true;
+      setHasDisplayedAllText(true);
+    }
 
     textProgressRef.current += delta * TEXT_SPEED
     return hasDisplayedAllTextRef.current
-  }, [fontTextures, messageStyle.color, placements])
+  }, [fontTextures, handleWait, messageStyle.color, placements])
 
   const drawCursor = useCallback((ctx: CanvasRenderingContext2D, xPos: number, yPos: number) => {
     const cursorImageRatio = 15 / 24;

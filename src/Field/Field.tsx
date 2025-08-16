@@ -74,6 +74,7 @@ const Field = ({ data }: FieldProps) => {
         doors={data.doors}
         models={data.models}
         scripts={data.scripts}
+        sounds={data.sounds}
       />
       <Background backgroundPanRef={backgroundPanRef} data={data} />
       <Gateways fieldId={data.id}  />

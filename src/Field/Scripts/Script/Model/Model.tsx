@@ -12,8 +12,9 @@ import { getPositionOnWalkmesh } from "../../../../utils";
 import { Box, Sphere } from "@react-three/drei";
 import useControls from "./useControls";
 import useFootsteps from "./useFootsteps";
-import useTalkRadius from "../TalkRadius/useTalkRadius";
+import useTalkRadius from "./useTalkRadius";
 import useFollower from "./useFollower";
+import usePushRadius from "./usePushRadius";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
@@ -67,7 +68,8 @@ const Model = ({animationController, models, scriptController, movementControlle
     if (!meshGroup) {
       return;
     }
-    const color = new Color(...(meshTintColor ?? globalMeshTint ?? [0, 0, 0]).map((c) => c / 255));
+    const color = new Color(...(meshTintColor ?? globalMeshTint ?? [128, 128, 128]).map((c) => ((c / 256) - 0.5) * 2));
+
     meshGroup.traverse((child) => {
       if (child instanceof Mesh && child.material instanceof MeshBasicMaterial) {
         child.material.color = child.material.userData.originalColor.clone().add(color);
@@ -111,6 +113,7 @@ const Model = ({animationController, models, scriptController, movementControlle
   });
 
   const talkMethod = script.methods.find(method => method.methodId === 'talk');
+  const pushMethod = script.methods.find(method => method.methodId === 'push');
 
   useFootsteps({ movementController });
 
@@ -125,7 +128,7 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const animationGroupRef = useRef<Group>(null);
   const [boundingbox] = useState(new Box3());
-  const sphereRef = useRef<Mesh>(null);
+  const pushableSphereRef = useRef<Mesh>(null);
 
   useFrame(({scene}) => {
     const needsZAdjustment = animationController.getState().needsZAdjustment || movementController.getState().needsZAdjustment;
@@ -157,18 +160,28 @@ const Model = ({animationController, models, scriptController, movementControlle
       boundingbox.max.z - boundingbox.min.z
     ));
 
-    movementController.setHasAdjustedZ(true);
-    animationController.setHasAdjustedZ(true);
+//    movementController.setHasAdjustedZ(true);
+//    animationController.setHasAdjustedZ(true);
   })
 
   const talkRadiusRef = useRef<Mesh>(null);
 
+  const hasTalkableSphere = !!talkMethod && !isLeadCharacter && !isFollower && !!meshGroup;
   useTalkRadius({
-    isActive: !!talkMethod && !isLeadCharacter && !isFollower && !!meshGroup,
+    isActive: hasTalkableSphere,
     scriptController,
     talkMethod,
     useScriptStateStore,
     talkTargetRef: talkRadiusRef
+  })
+
+  const hasPushableSphere = !!pushMethod && !isLeadCharacter && !isFollower && !!meshGroup;
+  usePushRadius({
+    isActive: hasPushableSphere,
+    scriptController,
+    pushMethod,
+    useScriptStateStore,
+    pushTargetRef: pushableSphereRef
   })
   
   useFollower({
@@ -183,21 +196,31 @@ const Model = ({animationController, models, scriptController, movementControlle
   const isSolid = useScriptStateStore(state => state.isSolid);
 
   const talkRadius = useScriptStateStore(state => state.talkRadius);
+  const pushRadius = useScriptStateStore(state => state.pushRadius);
+  
   return (
     <group>
-      <Sphere args={[0.01, 16, 16]} ref={sphereRef} visible={isDebugMode}>
-        <meshBasicMaterial color="green" side={DoubleSide} />
-      </Sphere>
-      <Box
-        args={characterDimensions.toArray().map(i => i * talkRadius) as [number, number, number]}
-        position={[0, 0, characterDimensions.z / 2.5]}
-        name="talkRadius"
-        ref={talkRadiusRef}
-        userData={{ isSolid: false }}
-        visible={isDebugMode}
-        >
-        <meshBasicMaterial color="white" opacity={1} wireframe />
-      </Box>
+      {
+        hasPushableSphere && (
+          <Sphere args={[0.1 / 500 * pushRadius, 16, 16]} ref={pushableSphereRef} visible={isDebugMode}>
+            <meshBasicMaterial color="green" side={DoubleSide} opacity={0.2} transparent />
+          </Sphere>
+        )
+      }
+      {
+        hasTalkableSphere && (
+          <Box
+            args={characterDimensions.toArray().map(i => i * talkRadius / 50) as [number, number, number]}
+            position={[0, 0, characterDimensions.z / 2.5]}
+            name="talkRadius"
+            ref={talkRadiusRef}
+            userData={{ isSolid: false }}
+            visible={isDebugMode}
+            >
+            <meshBasicMaterial color="white" opacity={1} wireframe />
+          </Box>
+        )
+      }
       <Box
         args={characterDimensions.toArray().map(i => i * 2) as [number, number]}
         position={[0, 0, characterDimensions.z / 2.5]}
@@ -207,7 +230,7 @@ const Model = ({animationController, models, scriptController, movementControlle
         >
         <meshBasicMaterial color={isSolid ? 'red' : 'green'} transparent opacity={0.5} />
       </Box>
-      <group name="animation-adjustment-group" ref={animationGroupRef} userData={{
+      <group name="model" ref={animationGroupRef} userData={{
         boundingbox
       }}>
         <ModelComponent

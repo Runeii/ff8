@@ -5,7 +5,7 @@ import {  useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
 import { ScriptStateStore } from "../state";
 import createScriptController from "../ScriptController/ScriptController";
-import { getPlayerEntity } from "../Model/modelUtils";
+import { getPlayerEntity } from "./modelUtils";
 
 type useTalkRadiusProps = {
   isActive: boolean;

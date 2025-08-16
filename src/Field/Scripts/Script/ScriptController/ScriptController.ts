@@ -56,6 +56,7 @@ const createScriptController = ({
     nextIndex?: number | void;
     isHalting?: boolean;
   }) => {
+    try {
     const { queue } = getState();
 
     const newQueue = [...queue];
@@ -95,7 +96,11 @@ const createScriptController = ({
       isRunning: false,
       queue: updatedQueue,
     });
+  } catch(error) {
+    console.error('Error in goToNextOpcode:', script, getState(), structuredClone(getState().queue));
+    throw error;
   }
+}
 
   const handleSpecialCaseOpcodes = (currentOpcode: OpcodeObj, activeQueueItem: QueueItem, activeIndex: number) => {
     if (currentOpcode.name.startsWith('LABEL')) {
@@ -131,6 +136,7 @@ const createScriptController = ({
     const { activeIndex, methodId, opcodes, uniqueId } = topQueueItem;
     const currentOpcode = opcodes[activeIndex];
 
+    //console.log('Outside', getState().queue, queue)
     const shouldReturnEarly = handleSpecialCaseOpcodes(currentOpcode, topQueueItem, activeIndex);
     if (shouldReturnEarly) {
       return;
@@ -212,6 +218,7 @@ const createScriptController = ({
       if (isDebugging) {
         console.log(`Aborting script run for ${script.groupId} due to new queue item:`, currentlyTopOfQueue, uniqueId);
       }
+
       goToNextOpcode({
         activeQueueItem: currentlyTopOfQueue,
         nextIndex,
@@ -251,7 +258,8 @@ const createScriptController = ({
     const insertAtIndex = newQueue.findIndex(item => item.priority > thisItemPriority);
     const isTopPriority = insertAtIndex === -1;
 
-    const isCurrentItemInterruptable = currentQueue.length > 0 && currentQueue.at(-1)!.isLooping
+    const isCurrentItemInterruptable =
+      currentQueue.length > 0 && (currentQueue.at(-1)!.isLooping || currentQueue.at(-1)!.priority < thisItemPriority);
 
     if (isTopPriority && isCurrentItemInterruptable) {
       newQueue.push(newItem);
@@ -259,6 +267,13 @@ const createScriptController = ({
       newQueue.splice(newQueue.length - 1, 0, newItem);
     } else {
       newQueue.splice(insertAtIndex, 0, newItem);
+    }
+
+    if (script.groupId === 8) {
+      console.log('insertAtIndex:', insertAtIndex);
+      console.log('isTopPriority:', isTopPriority);
+      console.log('isCurrentItemInterruptable:', isCurrentItemInterruptable);
+      console.log('Updating queue. Existing queue', JSON.stringify(currentQueue), 'New queue', JSON.stringify(newQueue));
     }
 
     setState({

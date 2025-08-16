@@ -81,7 +81,7 @@ export const createScriptState = (script: Script) => {
 
     pushRadius: 0,
     talkRadius: 100,
-    isPushable: false,
+    isPushable: true,
     isTalkable: true,
 
     isHeadTrackingPlayer: false,

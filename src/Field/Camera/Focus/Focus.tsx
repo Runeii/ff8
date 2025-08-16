@@ -25,7 +25,7 @@ const Focus = () => {
       return;
     }
 
-    const targetMesh = targetEntity.getObjectByName("animation-adjustment-group") as Group;
+    const targetMesh = targetEntity.getObjectByName("model") as Group;
 
     if (!targetMesh) {
       return;
@@ -42,7 +42,7 @@ const Focus = () => {
       focusRef.current.position.copy(characterPosition);
       return
     }
-    
+
     focusRef.current.position.lerp(
       characterPosition,
       cameraFocusSpring.get()

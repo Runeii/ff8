@@ -25,7 +25,7 @@ type SavedAnimation = {
   endFrame?: number;
 }
 
-export const createAnimationController = (id: string | number) => {
+export const createAnimationController = (id: string | number, isDebugging = false) => {
   const { getState: getSavedAnimation, setState: setSavedAnimation } = create(() => ({
     idleAnimationIds: {
       standAnimationId: 0,
@@ -45,6 +45,7 @@ export const createAnimationController = (id: string | number) => {
     speed: 16, // Default speed, can be adjusted later
 
     activeAction: undefined as AnimationAction | undefined,
+    activeActionId: undefined as string | undefined,
 
     animations: {
       currentAnimation: undefined as AnimationPlayOptions | undefined,
@@ -65,6 +66,9 @@ export const createAnimationController = (id: string | number) => {
 
   let currentDirection = 1;
   const handleAnimationEnded = (activeAnimation: AnimationPlayOptions) => {
+    if (isDebugging) {
+      console.log('Animation ended:', activeAnimation);
+    }
     if (!activeAnimation.keepLastFrame) {
       setState(state => ({
         ...state,
@@ -73,6 +77,9 @@ export const createAnimationController = (id: string | number) => {
           currentAnimation: undefined
         }
       }));
+      if (isDebugging) {
+        console.log('Animation ended without keeping last frame:', getState().animations);
+      }
       return;
     }
     const updatedAnimation = {
@@ -89,7 +96,7 @@ export const createAnimationController = (id: string | number) => {
   }
 
   const tick = (delta: number) => {
-    const { activeAction, mixer, mesh } = getState();
+    const { activeAction, activeActionId, mixer, mesh } = getState();
     
     if (mixer === undefined || mesh === undefined) {
       return;
@@ -110,12 +117,26 @@ export const createAnimationController = (id: string | number) => {
     const startTime = activeAnimation?.startFrame !== undefined ? activeAnimation.startFrame / FPS : 0;
     const endTime = activeAnimation?.endFrame !== undefined ? activeAnimation.endFrame / FPS : action.getClip().duration;
 
-    if (action !== activeAction) {
+    if (isDebugging && activeAnimation.animationId === 3) {
+      console.log('Animation 3 is active', {
+        action, activeAction, startTime, endTime, time: activeAction?.time
+      }, getState().animations);
+    }
+    if (activeAnimation.key !== activeActionId) {
       mixer.update(0);
       mixer.stopAllAction();
       if (activeAction) {
         activeAction.stop();
         activeAction.reset();
+      }
+      if (isDebugging) {
+        console.log('Starting new animation playback:', {
+          previousAction: {...action},
+          newAction: {...activeAction},
+          startTime,
+          endTime,
+          currentTime: action.time
+        });
       }
       
       action.time = startTime;
@@ -131,6 +152,7 @@ export const createAnimationController = (id: string | number) => {
       setState({
         needsZAdjustment,
         activeAction: action,
+        activeActionId: activeAnimation.key,
         animations: {
           currentAnimation: activeAnimation,
           queuedAnimation: undefined
@@ -147,7 +169,7 @@ export const createAnimationController = (id: string | number) => {
       return;
     }
 
-    if (activeAnimation.isCompleted && id === 1) {
+    if (activeAnimation.isCompleted && isDebugging) {
       console.log('Is compelted!')
     }
     action.time = action.time + (delta * currentDirection);
@@ -224,6 +246,10 @@ export const createAnimationController = (id: string | number) => {
       playOptions.loop = LoopOnce
     }
 
+    if (isDebugging) {
+      console.log('Playing animation:', playOptions);
+    }
+
     setState({
       animations: {
         ...getState().animations,
@@ -293,8 +319,14 @@ export const createAnimationController = (id: string | number) => {
 
   const playMovementAnimation = (type: 'stand' | 'walk' | 'run') => {
     const { animations: {
-      currentAnimation
+      currentAnimation,
+      queuedAnimation
     } } = getState();
+
+
+    if (queuedAnimation && queuedAnimation.type !== 'IDLE') {
+      return;
+    }
 
     const { idleAnimationIds } = getSavedAnimation();
     let animationId = 0;

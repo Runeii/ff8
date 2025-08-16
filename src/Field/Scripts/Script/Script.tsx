@@ -15,6 +15,7 @@ import createRotationController from "./RotationController/RotationController";
 import createScriptController from "./ScriptController/ScriptController";
 import createSFXController from "./SFXController/SFXController";
 import { getPlayerEntity } from "./Model/modelUtils";
+import { FieldData } from "../../Field";
 
 type ScriptProps = {
   doors: Door[];
@@ -23,20 +24,18 @@ type ScriptProps = {
   onStarted?: () => void;
   models: string[];
   script: ScriptType;
+  sounds: FieldData['sounds']
 }
 
-// Not implemented
-// * Pushable
-const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }: ScriptProps) => {
+const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, sounds }: ScriptProps) => {
   const entityRef = useRef<Group>(null);
-  
   const scene = useThree(state => state.scene);
   const useScriptStateStore = useMemo(() => createScriptState(script), [script]);
   const animationController = useMemo(() => createAnimationController(script.groupId), [script.groupId]);
   const movementController = useMemo(() => createMovementController(script.groupId, animationController), [script.groupId, animationController]);
   const headController = useMemo(() => createRotationController(script.groupId, movementController, entityRef), [script.groupId, movementController]);
   const rotationController = useMemo(() => createRotationController(script.groupId, movementController, entityRef), [script.groupId, movementController]);
-  const sfxController = useMemo(() => createSFXController(script.groupId), [script.groupId]);
+  const sfxController = useMemo(() => createSFXController(script.groupId, sounds ?? []), [script.groupId, sounds]);
   const scriptController = useMemo(() => createScriptController({
     animationController,
     headController,
@@ -46,7 +45,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
     script,
     scene,
     useScriptStateStore,
-    isDebugging: false
+    isDebugging: script.groupId === 10
   }), [animationController, headController, movementController, rotationController,sfxController, script, scene, useScriptStateStore]);
 
   const isVisible = useScriptStateStore(state => state.isVisible);
@@ -181,6 +180,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
       ref={entityRef}
       name={`entity--${script.groupId}`}
       userData={{
+        hasBeenPlaced: false,
         scriptController,
         partyMemberId,
         movementController,
@@ -190,7 +190,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script }
       position={script.type === 'model' ? [10,10,10] : [0,0,0]}
       visible={isVisible}
   >
-    <group name={`party--${partyMemberId}`}>
+    <group name={`party--${partyMemberId}`} userData={{ test: 'test' }}>
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'model' && <Model scriptController={scriptController} animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} script={script} useScriptStateStore={useScriptStateStore} />}

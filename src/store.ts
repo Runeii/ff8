@@ -85,6 +85,7 @@ interface GlobalState {
   globalMeshTint: [number, number, number],
 
   hasActiveTalkMethod: boolean,
+  hasActivePushMethod: boolean,
   lockedTriangles: number[],
 
   activeCameraId: number,
@@ -165,10 +166,11 @@ export const INITIAL_STATE: GlobalState = {
     cameraFocusObject: undefined,
     cameraFocusSpring: undefined,
 
-    globalMeshTint: [0, 0, 0],
+    globalMeshTint: [128, 128, 128],
   
     hasActiveTalkMethod: false,
-  
+    hasActivePushMethod: false,
+
     lockedTriangles: [],
   
     activeCameraId: 0,
@@ -179,7 +181,7 @@ export const INITIAL_STATE: GlobalState = {
   
     fieldData: undefined,
 
-    systemSfxController: createSFXController('world')
+    systemSfxController: createSFXController('world', [])
   }
 
 const useGlobalStore = create<GlobalState>()(() => ({...INITIAL_STATE}))

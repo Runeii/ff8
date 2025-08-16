@@ -376,6 +376,7 @@ export const createMovementController = (id: string | number, animationControlle
 
 
     entity.position.set(getPosition().x, getPosition().y, getPosition().z);
+    entity.userData.hasBeenPlaced = true;
   }
 
   const setHasAdjustedZ = (hasAdjustedZ: boolean) => {

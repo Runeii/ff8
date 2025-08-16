@@ -1,12 +1,15 @@
 import { create } from "zustand";
+import { FieldData } from "../../../Field";
+import { getSoundFromId } from "./utils";
 
-export const createSFXController = (id: string | number) => {
+export const createSFXController = (id: string | number, sounds: FieldData['sounds']) => {
   const {getState, setState} = create(() => ({
     id,
     generalChannel: [] as Howl[],
     channels: {} as {
       [key: number]: Howl;
     },
+    preloadedSoundBank: {} as Record<number, Howl>,
   }));
 
   const setPanForHowl = (howl: Howl, pan: number) => {
@@ -14,11 +17,11 @@ export const createSFXController = (id: string | number) => {
   }
 
   const setVolumeForHowl = (howl: Howl, volume: number) => {
-    howl.volume(volume / 255);
+    howl.volume(volume / 256);
   }
 
   const fadeVolumeForHowl = (howl: Howl, volume: number, duration: number) => {
-    howl.fade(howl.volume(), volume / 255, duration);
+    howl.fade(howl.volume(), volume / 256, duration);
   }
 
   const fadePanForHowl = (howl: Howl, pan: number, duration: number) => {
@@ -30,21 +33,21 @@ export const createSFXController = (id: string | number) => {
     howl.unload();
   }
 
-  const playLoopingEffect = (loopingBackgroundEffectId: number) => {
-    console.log('playLoopingEffect', loopingBackgroundEffectId);
-  }
-
-  const play = (id: number, channel: number, volume: number, pan: number) => {
-    const {channels} = getState();
-
+  const createSound = (id: number) => {
     const src = `/audio/effects/${id}.mp3`;
-    const howl = new Howl({
+    return new Howl({
       src: [src],
       preload: true,
       loop: false,
       autoplay: false,
       volume: 1,
     });
+  }
+
+  const play = (id: number, channel: number, volume: number, pan: number) => {
+    const {channels, preloadedSoundBank} = getState();
+
+    const howl = preloadedSoundBank[id] ?? createSound(id);
 
     setVolumeForHowl(howl, volume);
     setPanForHowl(howl, pan);
@@ -60,6 +63,15 @@ export const createSFXController = (id: string | number) => {
         [channel]: howl,
       } : channels,
     })
+  }
+
+  const playFieldSound = (index: number, channel: number, volume: number, pan: number) => {
+    const sound = getSoundFromId(sounds[index])
+    if (!sound) {
+      console.warn('No sound at index', index, 'in field data.')
+      return;
+    }
+    play(sound, channel, volume, pan);
   }
 
   const getExistingHowlsByChannel = (channel?: number) => {
@@ -108,9 +120,20 @@ export const createSFXController = (id: string | number) => {
     })
   }
 
+  const preloadMapSoundBank = async (sounds: number[]) => {
+    const preloadedSoundBank: Record<number, Howl> = {}
+    for await (const sound of sounds.slice(0, 10)) {
+      const howl = createSound(sound);
+      preloadedSoundBank[sound] = howl;
+    }
+    setState({ preloadedSoundBank });
+  }
+  
+  preloadMapSoundBank(sounds);
+
   return {
     play,
-    playLoopingEffect,
+    playFieldSound,
     setPan,
     setVolume,
     stop,
