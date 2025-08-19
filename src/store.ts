@@ -17,15 +17,15 @@ interface GlobalState {
   fieldDirection: number,
   isLoadingSavedGame: boolean,
 
-  characterPosition?: Vector3,
-  pendingCharacterPosition?: Vector3, // Ensures we can mark user start position before transitioning map
+  characterPosition: Vector3 | undefined,
+  pendingCharacterPosition: Vector3 | undefined,
 
   currentLocationPlaceName: number,
   backgroundLayerVisibility: Record<number, boolean>,
   currentParameterStates: Record<number, number>,
   currentParameterVisibility: Record<number, boolean>,
-  fieldId: typeof MAP_NAMES[number],
-  pendingFieldId: typeof MAP_NAMES[number],
+  fieldId: typeof MAP_NAMES[number] | undefined,
+  pendingFieldId: typeof MAP_NAMES[number] | undefined,
 
   initialAngle: number | undefined,
   hasMoved: boolean,
@@ -90,11 +90,11 @@ interface GlobalState {
 
   activeCameraId: number,
 
-  backgroundMusicSrc?: string,
-  backgroundMusic?: Howl,
-  dualMusic?: Howl,
+  backgroundMusicSrc: string | undefined,
+  backgroundMusic: Howl | undefined,
+  dualMusic: Howl | undefined,
 
-  fieldData?: FieldData,
+  fieldData: FieldData | undefined,
 
   systemSfxController: ReturnType<typeof createSFXController>
 }
@@ -112,8 +112,8 @@ export const INITIAL_STATE: GlobalState = {
 
   
     availableMessages: [],
-    characterPosition: undefined as unknown as Vector3,
-    pendingCharacterPosition: undefined as unknown as Vector3,
+    characterPosition: undefined,
+    pendingCharacterPosition: undefined,
     fieldId: '' as typeof MAP_NAMES[number],
     pendingFieldId: undefined as unknown as typeof MAP_NAMES[number],
   

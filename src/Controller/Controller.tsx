@@ -5,14 +5,14 @@ const Controller = () => {
   const joystickRef = useRef<HTMLDivElement>(null);
   const handleDown = (event: MouseEvent | TouchEvent) => {
     const keyEvent = new KeyboardEvent('keydown', {
-      code: (event.target as HTMLButtonElement).dataset.key,
+      code: (event.target as HTMLButtonElement).dataset.key ?? '',
     });
 
     window.dispatchEvent(keyEvent);
   }
   const handleUp = (event: MouseEvent | TouchEvent) => {
     const keyEvent = new KeyboardEvent('keyup', {
-      code: (event.target as HTMLButtonElement).dataset.key,
+      code: (event.target as HTMLButtonElement).dataset.key ?? '',
     });
 
     window.dispatchEvent(keyEvent);

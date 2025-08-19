@@ -5,8 +5,8 @@ export interface AudioSourceNode {
   buffer: AudioBuffer;
   id: number;
   isLooping: boolean;
-  loopStart?: number;
-  loopEnd?: number;
+  loopStart: number | undefined;
+  loopEnd: number | undefined;
 }
 
 let audioContext: AudioContext | null = null;

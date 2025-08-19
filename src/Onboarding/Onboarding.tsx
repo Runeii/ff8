@@ -31,10 +31,12 @@ const hasSavedData = !!(window.localStorage.getItem('saveData'));
 const fieldSelect = async (set = 0) => {
   const options = Object.keys(points).slice(set * 8, set * 8 + 8);
   const isFirstPage = set === 0;
-  const selectedOption = await openMessage('fieldSelect', [`Field Select\n${options.join('\n')}\n{Blue}${isFirstPage ? 'Next Page' : 'Previous Page'}{White}\nCancel`], { channel: 1, x: 0,  y:15 }, true, {
+  const selectedOption = await openMessage('fieldSelect', [`Field Select\n${options.join('\n')}\n{Blue}${isFirstPage ? 'Next Page' : 'Previous Page'}{White}\nCancel`], { channel: 1, x: 0,  y:15, width: undefined, height: undefined }, true, {
     first: 1,
     default: 1,
-    cancel: Object.keys(points).length - 1
+    cancel: Object.keys(points).length - 1,
+    last: undefined,
+    blocked: undefined
    });
 
    if (selectedOption === options.length + 1) {
@@ -55,7 +57,7 @@ const fieldSelect = async (set = 0) => {
 }
 
 const optionsSelect = async () => {
-  openMessage('optionsTitle', ['Options'], { channel: 0, x: 0,  y: 0 }, false);
+  openMessage('optionsTitle', ['Options'], { channel: 0, x: 0,  y: 0, width: undefined, height: undefined }, false, undefined);
   const { isOfflineEnabled, isEnablingOffline } = offlineController.getState()
   console.log('isOfflineEnabled', isOfflineEnabled, 'isEnablingOffline', isEnablingOffline);
 
@@ -67,11 +69,12 @@ const optionsSelect = async () => {
     offlineOptionMessage = `{Red}Disable offline{White}`;
   }
 
-  const optionsOption = await openMessage('options', [`Controls\n${offlineOptionMessage}\nBack`], { channel: 1, x: 100,  y: 80 }, true, {
+  const optionsOption = await openMessage('options', [`Controls\n${offlineOptionMessage}\nBack`], { channel: 1, x: 100,  y: 80, width: undefined, height: undefined }, true, {
     first: 0,
     default: 0,
     cancel: 2,
-    blocked: [],
+    last: undefined,
+    blocked: undefined,
   });
 
   if (optionsOption === 0) {
@@ -80,7 +83,7 @@ const optionsSelect = async () => {
       {Yellow}Interact{White} - [Space]
 
       {Yellow}Dev Mode{White} - [Esc]
-      {Yellow}Reset{White} - [Backspace]`], { x: 70,  y: 50 }, true);
+      {Yellow}Reset{White} - [Backspace]`], { x: 70,  y: 50, width: undefined, height: undefined, channel: 1 }, true, undefined);
       closeAllWindows();
       optionsSelect();
   }
@@ -98,12 +101,13 @@ const optionsSelect = async () => {
 
 const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
   const {fadeSpring} = useGlobalStore.getState();
-  openMessage('welcome', ['Welcome'], { channel: 0, x: 0,  y: 0 }, false);
+  openMessage('welcome', ['Welcome'], { channel: 0, x: 0,  y: 0, width: undefined, height: undefined }, false, undefined);
 
-  const option = await openMessage('menu', [`New Game\n${hasSavedData ? '' : '{Grey}'}Resume Game{White}\nField Select\nOptions`], { channel: 1, x: 100,  y: 80 }, true, {
+  const option = await openMessage('menu', [`New Game\n${hasSavedData ? '' : '{Grey}'}Resume Game{White}\nField Select\nOptions`], { channel: 1, x: 100,  y: 80, width: undefined, height: undefined }, true, {
     first: 0,
     default: defaultValue,
     cancel: undefined,
+    last: undefined,
     blocked: hasSavedData ? [] : [1],
   });
 

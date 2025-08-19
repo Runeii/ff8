@@ -11,7 +11,7 @@ type UseFollowerProps = {
   isActive: boolean;
   movementController: ReturnType<typeof createMovementController>;
   rotationController: ReturnType<typeof createRotationController>;
-  partyMemberId?: number;
+  partyMemberId: number | undefined;
 }
 
 const DISTANCE = 35;

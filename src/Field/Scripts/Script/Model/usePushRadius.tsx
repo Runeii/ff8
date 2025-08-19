@@ -10,9 +10,9 @@ import { getPlayerEntity } from "./modelUtils";
 type usePushRadiusProps = {
   isActive: boolean;
   scriptController: ReturnType<typeof createScriptController>;
-  pushMethod?: ScriptMethod,
+  pushMethod: ScriptMethod | undefined;
   pushTargetRef: React.RefObject<Mesh | null>;
-  useScriptStateStore: ScriptStateStore,
+  useScriptStateStore: ScriptStateStore;
 }
 
 const usePushRadius = ({ isActive, scriptController, pushMethod, useScriptStateStore, pushTargetRef }: usePushRadiusProps) => {

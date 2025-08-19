@@ -86,18 +86,16 @@ type FieldLoaderProps = Omit<FieldProps, 'data'>;
 
 const FieldLoader = (props: FieldLoaderProps) => {
   const pendingFieldId = useGlobalStore(state => state.pendingFieldId);
-  const preloadingFieldId = useGlobalStore(state => state.preloadingFieldId);
 
   const fieldId = useGlobalStore(state => state.fieldId);
 
   const currentFieldIdRef = useRef(fieldId);
   const [data, setData] = useState<FieldProps['data'] | null>(null);
-  const [preloadedMapData, setPreloadedMapData] = useState<FieldProps['data'] | null>(null);
   
   const gl = useThree(({ gl }) => gl);
 
   useEffect(() => {
-    if (fieldId === currentFieldIdRef.current) {
+    if (!currentFieldIdRef.current || fieldId === currentFieldIdRef.current) {
       return;
     }
 
@@ -106,19 +104,11 @@ const FieldLoader = (props: FieldLoaderProps) => {
   }, [fieldId]);
 
   useEffect(() => {
-    if (!preloadingFieldId) {
-      setPreloadedMapData(null);
-      return;
-    }
-
-    getFieldData(preloadingFieldId).then((data) => {
-      setPreloadedMapData(data);
-      console.log('preloaded data')
-    });
-  }, [preloadingFieldId]);
-
-  useEffect(() => {
     const handleTransition = async () => {
+      if (!pendingFieldId) {
+        console.warn('Trying to transition with no pending field id')
+        return;
+      }
       const { isLoadingSavedGame, isMapFadeEnabled } = useGlobalStore.getState();
       
       const nonReactiveFieldId = useGlobalStore.getState().fieldId;
@@ -222,12 +212,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
     return null;
   }
   
-  return (
-    <>
-      <Field data={data} key={fieldId} {...props} />
-      {preloadedMapData && <Field data={preloadedMapData} key={preloadingFieldId} {...props} />}
-    </>
-  );
+  return <Field data={data} key={fieldId} {...props} />
 }
 
 export default FieldLoader

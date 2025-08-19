@@ -49,9 +49,9 @@ export let MEMORY: Record<number, number> = {
   1024: 0,
   1025: 0,
   
-  
+  320: 3,
   84: 0, // last area visited
-  256: 800, // progress
+  256: 0, // progress
   720: 0, // squall model
   721: 2, // zell model
   722: 1, // selphie model
@@ -448,11 +448,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     const uniqueId = `${id}--${Date.now()}`;
 
-    const result = await openMessage(uniqueId, availableMessages[id], { x, y, channel }, true, {
+    const result = await openMessage(uniqueId, availableMessages[id], { x, y, channel, width: undefined, height: undefined }, true, {
       first,
       last,
       default: defaultOpt,
       cancel: cancelOpt,
+      blocked: undefined
     });
     TEMP_STACK[0] = result;
   },
@@ -1730,9 +1731,16 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
 
 
-  MENUSHOP: ({ STACK }) => {
+  MENUSHOP: async ({ STACK }) => {
     // Likely shop ID
     STACK.pop() as number;
+    await openMessage('shop', ['Shop not implemented.'], {
+      x: 20,
+      y: 20,
+      width: undefined,
+      height: undefined,
+      channel: 0,
+    }, true, undefined)
   },
   DRAWPOINT: ({ STACK }) => {
     // drawpoint ID
@@ -2006,38 +2014,38 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
 
   TCOLADD: ({ STACK }) => {
-    const fadeInDuration = STACK.pop() as number;
-    const intensityUnknown = STACK.pop() as number;
-    const modeUnknown = STACK.pop() as number;
-    const fadeOutDuration = STACK.pop() as number;
+    const duration = STACK.pop() as number;
+    const blue = STACK.pop() as number;
+    const green = STACK.pop() as number;
+    const red = STACK.pop() as number;
     
     useGlobalStore.setState(state => ({
       ...state,
       colorOverlay: {
         ...state.colorOverlay,
-        fadeInDuration,
-        fadeOutDuration,
-        intensityUnknown,
-        modeUnknown,
+        duration,
+        endRed: red,
+        endGreen: green,
+        endBlue: blue,
         type: 'additive'
       },
       isTransitioningColorOverlay: true
     }));
   },
   TCOLSUB: ({ STACK }) => {
-    const fadeInDuration = STACK.pop() as number;
-    const intensityUnknown = STACK.pop() as number;
-    const modeUnknown = STACK.pop() as number;
-    const fadeOutDuration = STACK.pop() as number;
+    const duration = STACK.pop() as number;
+    const blue = STACK.pop() as number;
+    const green = STACK.pop() as number;
+    const red = STACK.pop() as number;
 
     useGlobalStore.setState(state => ({
       ...state,
       colorOverlay: {
         ...state.colorOverlay,
-        fadeInDuration,
-        fadeOutDuration,
-        intensityUnknown,
-        modeUnknown,
+        duration,
+        endRed: red,
+        endGreen: green,
+        endBlue: blue,
         type: 'subtractive'
       },
       isTransitioningColorOverlay: true
@@ -2052,9 +2060,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     useGlobalStore.setState(state => ({
       colorOverlay: {
         ...state.colorOverlay,
-        red,
-        green,
-        blue,
+        duration: 0,
+        endRed: red,
+        endGreen: green,
+        endBlue: blue,
         type: 'additive',
       },
       isTransitioningColorOverlay: true
@@ -2068,9 +2077,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     useGlobalStore.setState(state => ({
       colorOverlay: {
         ...state.colorOverlay,
-        red,
-        green,
-        blue,
+        duration: 0,
+        endRed: red,
+        endGreen: green,
+        endBlue: blue,
         type: 'subtractive',
       },
       isTransitioningColorOverlay: true
@@ -2078,6 +2088,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   COLSYNC: async () => { 
     while (useGlobalStore.getState().isTransitioningColorOverlay) {
+      console.log('Color overlay transitioning...');
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },

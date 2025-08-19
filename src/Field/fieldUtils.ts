@@ -87,7 +87,7 @@ export const saveGame = (scene: Scene) => {
       ...MEMORY,
       261: 1
     },
-    fieldId,
+    fieldId: fieldId!,
     characterPosition: position,
     party,
     availableCharacters,

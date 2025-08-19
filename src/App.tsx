@@ -35,10 +35,13 @@ export default function App() {
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
 
   useEffect(() => {
+    if (!fieldId) {
+      return;
+    }
     const url = new URL(window.location.href);
     url.searchParams.set('field', fieldId);
     const progress = MEMORY[256]
-    console.log(progress, fieldId)
+
     url.searchParams.set('progress', progress.toString());
     window.history.pushState({}, '', url.toString());
   }, [fieldId, progress])

@@ -108,7 +108,7 @@ export const remoteExecutePartyMember = async (scene: Scene, partyMemberIndex: n
   await scriptController.triggerMethodByIndex(scriptLabel, priority);
 }
 
-export const openMessage = (id: string, text: string[], placement: MessagePlacement, isCloseable = true, askOptions?: AskOptions) => new Promise<number>((resolve) => {
+export const openMessage = (id: string, text: string[], placement: MessagePlacement, isCloseable = true, askOptions: AskOptions | undefined) => new Promise<number>((resolve) => {
   const { currentMessages } = useGlobalStore.getState();
 
   document.addEventListener('messageClosed', ({ detail }) => {

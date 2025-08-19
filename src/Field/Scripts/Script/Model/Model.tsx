@@ -37,7 +37,7 @@ const components = Object.fromEntries(Object.keys(modelFiles).map((path) => {
 }))
 
 const Model = ({animationController, models, scriptController, movementController, rotationController, script, useScriptStateStore }: ModelProps) => {
-  const fieldId = useGlobalStore(state => state.fieldId);
+  const fieldId = useGlobalStore(state => state.fieldId)!;
 
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   const modelId = useScriptStateStore(state => state.modelId);
@@ -252,7 +252,7 @@ const Model = ({animationController, models, scriptController, movementControlle
         position={[0, 0, characterDimensions.z / 2.5]}
         name="hitbox"
         userData={{ isSolid }}
-        visible={true}
+        visible={isDebugMode}
         >
         <meshBasicMaterial color={isSolid ? 'red' : 'green'} transparent opacity={0.5} />
       </Box>

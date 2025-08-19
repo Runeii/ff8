@@ -5,8 +5,8 @@ import { createAnimationController } from "../AnimationController/AnimationContr
 import PromiseSignal from "../../../../PromiseSignal";
 
 export type MoveOptions = {
-  customMovementTarget?: Vector3;
-  duration?: number;
+  customMovementTarget: Vector3 | undefined;
+  duration: number | undefined;
   isAnimationEnabled: boolean;
   isFacingTarget: boolean;
   userControlledSpeed: number | undefined;

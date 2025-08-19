@@ -10,7 +10,7 @@ import { getPlayerEntity } from "./modelUtils";
 type useTalkRadiusProps = {
   isActive: boolean;
   scriptController: ReturnType<typeof createScriptController>;
-  talkMethod?: ScriptMethod,
+  talkMethod: ScriptMethod | undefined;
   talkTargetRef: React.RefObject<Object3D | null>;
   useScriptStateStore: ScriptStateStore,
 }

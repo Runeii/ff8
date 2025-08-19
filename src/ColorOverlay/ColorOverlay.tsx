@@ -7,6 +7,7 @@ import { ColorBlendEffectImpl } from "./ColorBlendEffect";
 
 const ColorOverlay = () => {
   const colorOverlay = useGlobalStore(state => state.colorOverlay)
+  console.log(colorOverlay)
   const [spring] = useSpring(() => ({
     from: {
       red: colorOverlay.startRed,

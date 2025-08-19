@@ -104,24 +104,24 @@ declare global {
     id: string;
     text: string[];
     placement: MessagePlacement;
-    askOptions?: AskOptions
+    askOptions: AskOptions | undefined;
     isCloseable: boolean;
   }
 
   type MessagePlacement = {
     x: number;
     y: number;
-    width?: number;
-    height?: number;
-    channel?: number;
+    width: number | undefined;
+    height: number | undefined;
+    channel: number | undefined;
   }
 
   type AskOptions = {
     first: number;
-    last?: number;
-    default?: number;
-    cancel?: number;
-    blocked?: number[];
+    last: number | undefined;
+    default: number | undefined;
+    cancel: number | undefined;
+    blocked: number[] | undefined;
   }
 
   type useAnimationsReturn = ReturnType<typeof useAnimations>
