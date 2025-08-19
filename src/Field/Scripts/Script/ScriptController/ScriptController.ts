@@ -7,6 +7,7 @@
   import createRotationController from "../RotationController/RotationController";
   import createScriptState from "../state";
   import createSFXController from "../SFXController/SFXController";
+import { sendToDebugger } from "../../../../Debugger/debugUtils";
 
   type QueueItem = {
     activeIndex: number;
@@ -133,12 +134,6 @@
     const tick = async () => {
       const { isRunning, queue } = getState();
 
-      if (!window.QUEUES) {
-        window.QUEUES = {};
-      }
-
-      window.QUEUES[script.groupId] = queue.map(item => item.methodId).join(', ');
-
       if (isRunning || queue.length === 0) {
         return;
       }
@@ -147,10 +142,6 @@
       const topQueueItem = queue.at(-1)!;
       const { activeIndex, methodId, opcodes, uniqueId } = topQueueItem;
       const currentOpcode = opcodes[activeIndex];
-
-      if (isDebugging) {
-        console.log('Debugging script:', script.groupId, currentOpcode.name);
-      }
 
       const shouldReturnEarly = handleSpecialCaseOpcodes(currentOpcode, topQueueItem, activeIndex);
       if (shouldReturnEarly) {
@@ -180,21 +171,12 @@
       const clonedStack = [...STACK];
       const clonedTempStack = {...TEMP_STACK};
 
-      // RUN THAT OPCODE
-      window.scriptDump({
-        timestamps: [Date.now()],
-        action: 'Running Opcode',
+      sendToDebugger('opcode', JSON.stringify({
+        id: script.groupId,
         methodId,
-        opcode: currentOpcode,
-        payload: uniqueId,
         index: activeIndex,
-        isAsync: false,
-        scriptLabel: script.groupId,
-      })
-
-      if (isDebugging) {
-        console.log(`Running opcode ${currentOpcode.name} at index ${activeIndex} for method ${methodId} in script ${script.groupId}. Param: ${currentOpcode.param}`);
-      }
+        opcode: currentOpcode,
+      }))
 
       const promise = opcodeHandler({
         animationController,
@@ -220,20 +202,6 @@
       // Springs and controllers were already stopped when the new item was added to the queue
       const currentlyTopOfQueue = getState().queue.at(-1);
       if (!currentlyTopOfQueue || currentlyTopOfQueue.uniqueId !== uniqueId) {
-        window.scriptDump({
-          timestamps: [Date.now()],
-          action: 'Aborting due to new queue item',
-          methodId,
-          opcode: currentOpcode,
-          payload: uniqueId,
-          index: activeIndex,
-          isAsync: false,
-          scriptLabel: script.groupId,
-        })
-        if (isDebugging) {
-          console.log(`Aborting script run for ${script.groupId} due to new queue item:`, currentlyTopOfQueue, uniqueId);
-        }
-
         goToNextOpcode({
           activeQueueItem: currentlyTopOfQueue,
           nextIndex,
@@ -282,9 +250,6 @@
         newQueue.splice(insertAtIndex, 0, newItem);
       }
 
-      if (isDebugging) {
-        console.log('Updating queue. Existing queue', JSON.stringify(currentQueue), 'New queue', JSON.stringify(newQueue));
-      }
       setState({
         isRunning: false,
         queue: newQueue
@@ -313,17 +278,6 @@
 
       const uniqueId = `${script.groupId}-${methodId}--${priority}-${Date.now()}`;
 
-      window.scriptDump({
-        timestamps: [Date.now()],
-        action: `Adding method ${methodId} to queue with unique ID ${uniqueId}`,
-        methodId,
-        opcode: undefined,
-        payload: uniqueId,
-        index: undefined,
-        isAsync: false,
-        scriptLabel: script.groupId,
-      })
-
       if (isDebugging) {
         console.log(`Adding method ${methodId} to queue with unique ID ${uniqueId}`);
       }
@@ -340,17 +294,6 @@
       return new Promise<void>((resolve) => {
         const handler = ({ detail }: { detail: string}) => {
           if (detail === uniqueId) {
-            window.scriptDump({
-              timestamps: [Date.now()],
-              action: `Script method ${methodId} completed with unique ID ${uniqueId}`,
-              methodId,
-              opcode: undefined,
-              payload: uniqueId,
-              index: undefined,
-              isAsync: false,
-              scriptLabel: script.groupId,
-            })
-
             document.removeEventListener('scriptEnd', handler);
             resolve();
           }
@@ -367,14 +310,6 @@
       }
       await triggerMethod(method.methodId, priority);
     }
-
-    if (!window.getScriptState) {
-      window.getScriptState = []
-    }
-    window.getScriptState[script.groupId] = () => ({
-      state: useScriptStateStore.getState(),
-      script
-    });
 
     return {
       script,

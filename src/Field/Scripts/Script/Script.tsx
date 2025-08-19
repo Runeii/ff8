@@ -95,29 +95,8 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
       if (!matchingMethod) {
         return;
       }
-      window.scriptDump({
-        timestamps: [Date.now()],
-        action: `Heard request to execute script ${scriptLabel} with key ${key}`,
-        methodId: matchingMethod.methodId,
-        opcode: undefined,
-        payload: key,
-        index: undefined,
-        isAsync: false,
-        scriptLabel
-      });
       try {
         await scriptController.triggerMethod(matchingMethod.methodId, priority)
-        window.scriptDump({
-          timestamps: [Date.now()],
-          action: `Completed remote execution of script ${scriptLabel} with key ${key}`,
-          methodId: matchingMethod.methodId,
-          opcode: undefined,
-          payload: key,
-          index: undefined,
-          isAsync: false,
-          scriptLabel
-        })
-
         document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key} }));
       } catch (error) {
         console.error('Error executing script:', error);

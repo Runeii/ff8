@@ -5,6 +5,7 @@ import MAP_NAMES from './constants/maps';
 import type { Howl} from 'howler';
 import { FieldData } from './Field/Field';
 import createSFXController from './Field/Scripts/Script/SFXController/SFXController';
+import { sendToDebugger } from './Debugger/debugUtils';
 
 interface GlobalState {
   isDebugMode: boolean,
@@ -185,5 +186,14 @@ export const INITIAL_STATE: GlobalState = {
   }
 
 const useGlobalStore = create<GlobalState>()(() => ({...INITIAL_STATE}))
+
+useGlobalStore.subscribe((state) => {
+  const {
+    fieldData,
+    systemSfxController,
+    ...safeState
+  } = state;
+  sendToDebugger('state', JSON.stringify(safeState));
+});
 
 export default useGlobalStore

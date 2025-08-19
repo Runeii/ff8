@@ -3,6 +3,7 @@ import { Vector3 } from 'three';
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import type { Howl} from 'howler';
 import { Script } from '../types';
+import { sendToDebugger } from '../../../Debugger/debugUtils';
 
 export type ScriptState = {
   characterHeight: number;
@@ -56,7 +57,7 @@ export type ScriptState = {
 }
 
 export const createScriptState = (script: Script) => {
-  return create<ScriptState>()(() => ({ 
+  const creator = create<ScriptState>()(() => ({ 
     characterHeight: 0.6, // default to a reasonable height
 
     hasRemovedControl: false,
@@ -105,6 +106,25 @@ export const createScriptState = (script: Script) => {
 
     actorMode: 0
   }))
+
+  
+  creator.subscribe((state, prevState) => {
+    if (!prevState) {
+      return;
+    }
+    const changedState = Object.keys(state).reduce((acc, key) => {
+      if (state[key] !== prevState[key]) {
+        acc[key] = state[key];
+      }
+      return acc;
+    }, {} as Partial<ScriptState>);
+    sendToDebugger('script-state', JSON.stringify({
+      id: script.groupId,
+      state: changedState
+    }));
+  });
+
+  return creator;
 }
 
 export type ScriptStateStore = UseBoundStore<StoreApi<ScriptState>>

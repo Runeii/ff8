@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import useTilesTexture from "./useTilesTexture";
 import { Texture } from "three";
 import { getLayerIdFromTile, TILE_BLENDS_TO_THREEJS, TILE_PADDING, TILE_SIZE, TILES_PER_COLUMN } from "./tileUtils";
+import { sendToDebugger } from "../../Debugger/debugUtils";
 
 const initialiseLayer = (tile: Tile, width: number, height: number, layerRenderID: number): Layer => {
   const canvas = document.createElement('canvas');
@@ -89,6 +90,13 @@ const useLayeredTiles = (tiles: Tile[], filename: string, width: number, height:
       const { canvas } = result[layerId];
 
       drawTile(tile, canvas, tilesTexture);
+    });
+
+    Object.values(result).forEach(layer => {
+      const {canvas, ...rest} = layer;
+      canvas.toBlob(blob => {
+        sendToDebugger('layers', JSON.stringify(rest), blob ?? undefined);
+      });
     });
 
     return Object.values(result);

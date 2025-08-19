@@ -54,33 +54,11 @@ export const remoteExecute = async (scriptLabel: number, priority = 0) => new Pr
     if (detail.key !== key) {
       return;
     }
-    window.scriptDump({
-      timestamps: [Date.now()],
-      action: `Heard signal that remote execution id ${key} completed, proceeding.`,
-      methodId: 'remoteExecute',
-      scriptLabel,
-      opcode: undefined,
-      payload: key,
-      index: undefined,
-      isAsync: false,
-    });
-
     document.removeEventListener('scriptFinished', handler);
     resolve();
   }
 
   document.addEventListener('scriptFinished', handler);
-
-  window.scriptDump({
-    timestamps: [Date.now()],
-    action: `Remote executing script ${scriptLabel} with id ${key}`,
-    methodId: 'remoteExecute',
-    scriptLabel,
-    opcode: undefined,
-    payload: key,
-    index: undefined,
-    isAsync: false,
-  });
 
   document.dispatchEvent(new CustomEvent('executeScript', {
     detail: {
