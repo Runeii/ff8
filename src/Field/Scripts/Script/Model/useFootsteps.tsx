@@ -24,8 +24,8 @@ const useFootsteps = ({ movementController }: useFootstepsProps) => {
     const isAnimating = position.goal;
     const hasFootsteps = footsteps.isActive;
     const isWalking = movementSpeed < 2695
-  
-    if (!isAnimating || hasFootsteps || isBetweenFootstepsRef.current || isClimbingLadder) {
+
+    if (!isAnimating || !hasFootsteps || isBetweenFootstepsRef.current || isClimbingLadder) {
       return;
     }
 

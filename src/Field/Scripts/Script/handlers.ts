@@ -235,6 +235,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   LINEOFF: ({ setState }) => {
     setState({ isLineOn: false })
   },
+  PREMAPJUMP: ({ STACK }) => {
+    STACK.splice(-4);
+  },
   MAPJUMPO: ({ STACK }) => {
     STACK.pop() as number; // const walkmeshTriangleId = STACK.pop() as number;
     const fieldId = STACK.pop() as number;
@@ -1646,11 +1649,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   // SOUND
 
-  FOOTSTEP: ({ currentOpcode, movementController, STACK }) => {
-    console.log(currentOpcode.param); // volume?
-    STACK.pop() as number; //footstep pair ID?
-
-    movementController.setFootsteps()
+  FOOTSTEP: ({ currentOpcode, STACK }) => {
+    const footstepSoundId = STACK.pop() as number; //footstep pair ID?
+    console.log(currentOpcode.param, footstepSoundId)
+   // movementController.setFootsteps('FOOTSTEPS', footstepSoundId)
   },
   FOOTSTEPON: ({ movementController }) => {
     movementController.enableFootsteps();
@@ -1900,9 +1902,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   AXIS: ({ STACK }) => {
     STACK.splice(-2);
-  },
-  PREMAPJUMP: ({ STACK }) => {
-    STACK.splice(-4);
   },
   SETDRAWPOINT: ({ STACK }) => {
     STACK.pop() as number;

@@ -172,7 +172,10 @@ const Model = ({animationController, models, scriptController, movementControlle
       baseRootBoneZOffset.current = rootBone.position.z;
       baseBoundingBoxZOffset.current = boundingbox.min.z;
       rootBoneDistanceFromStanding.current = rootBonePosition.z - boundingbox.min.z;
-      const z = position.z - boundingbox.min.z;
+      
+      const centrePointOnWalkmesh = getPositionOnWalkmesh(boundingbox.getCenter(new Vector3()), walkmesh)
+      const zPosition = centrePointOnWalkmesh?.z ?? position.z
+      const z = zPosition - boundingbox.min.z
       animationGroupRef.current.position.z = z
 
       movementController.setHasAdjustedZ(true);
@@ -180,7 +183,9 @@ const Model = ({animationController, models, scriptController, movementControlle
     }
 
     if (!animationController.getState().animations.isCurrentAnimationABaseAnime) {
-      const z = position.z - boundingbox.min.z;
+      const centrePointOnWalkmesh = getPositionOnWalkmesh(boundingbox.getCenter(new Vector3()), walkmesh)
+      const zPosition = centrePointOnWalkmesh?.z ?? position.z
+      const z = zPosition - boundingbox.min.z
       animationGroupRef.current.position.z = z
     }
   })
@@ -243,11 +248,11 @@ const Model = ({animationController, models, scriptController, movementControlle
         )
       }
       <Box
-        args={characterDimensions.toArray().map(i => i * 2) as [number, number]}
+        args={characterDimensions.toArray().map(i => i + 0.01) as [number, number]}
         position={[0, 0, characterDimensions.z / 2.5]}
         name="hitbox"
         userData={{ isSolid }}
-        visible={isDebugMode}
+        visible={true}
         >
         <meshBasicMaterial color={isSolid ? 'red' : 'green'} transparent opacity={0.5} />
       </Box>

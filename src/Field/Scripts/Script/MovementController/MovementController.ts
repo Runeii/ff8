@@ -1,6 +1,6 @@
 import { Object3D, Scene, Vector3 } from "three";
 import { create } from "zustand";
-import { numberToFloatingPoint } from "../../../../utils";
+import { getPositionOnWalkmesh, numberToFloatingPoint } from "../../../../utils";
 import { createAnimationController } from "../AnimationController/AnimationController";
 import PromiseSignal from "../../../../PromiseSignal";
 
@@ -13,7 +13,7 @@ export type MoveOptions = {
   distanceToStopAnimationFromTarget: number;
 }
 
-export const createMovementController = (id: string | number, animationController: ReturnType<typeof createAnimationController>) => {
+export const createMovementController = (id: string | number, animationController: ReturnType<typeof createAnimationController>, scene: Scene) => {
   let isStopping = false;
 
   const {getState, setState, subscribe} = create(() => ({
@@ -342,10 +342,7 @@ export const createMovementController = (id: string | number, animationControlle
       const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
 
       const remainingDistance = currentPosition.distanceTo(positionGoal);
-      
-      if (id === 10) {
-        console.log('Speed', speed, maxDistance, remainingDistance, duration, remainingDistance <= maxDistance || duration === 0)
-      }
+
       if (remainingDistance <= maxDistance || duration === 0) {
         currentPosition.copy(positionGoal);
         resolvePendingPositionSignal();
@@ -362,6 +359,7 @@ export const createMovementController = (id: string | number, animationControlle
       } else {
         const direction = positionGoal.clone().sub(currentPosition).normalize();
         currentPosition.add(direction.multiplyScalar(maxDistance).divideScalar(10));
+        currentPosition.copy(getPositionOnWalkmesh(currentPosition, scene.getObjectByName('walkmesh')!) ?? currentPosition)
       }
     }
 

@@ -32,7 +32,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
   const scene = useThree(state => state.scene);
   const useScriptStateStore = useMemo(() => createScriptState(script), [script]);
   const animationController = useMemo(() => createAnimationController(script.groupId), [script.groupId]);
-  const movementController = useMemo(() => createMovementController(script.groupId, animationController), [script.groupId, animationController]);
+  const movementController = useMemo(() => createMovementController(script.groupId, animationController, scene), [script.groupId, animationController, scene]);
   const headController = useMemo(() => createRotationController(script.groupId, movementController, entityRef), [script.groupId, movementController]);
   const rotationController = useMemo(() => createRotationController(script.groupId, movementController, entityRef), [script.groupId, movementController]);
   const sfxController = useMemo(() => createSFXController(script.groupId, sounds ?? []), [script.groupId, sounds]);
