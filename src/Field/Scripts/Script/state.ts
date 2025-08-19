@@ -51,6 +51,8 @@ export type ScriptState = {
       height: number,
     }
   }
+
+  actorMode: number;
 }
 
 export const createScriptState = (script: Script) => {
@@ -100,6 +102,8 @@ export const createScriptState = (script: Script) => {
 
     pendingBackgroundMusic: undefined,
     pendingBackgroundMusicSrc: undefined,
+
+    actorMode: 0
   }))
 }
 

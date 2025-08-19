@@ -90,7 +90,6 @@ const usePushRadius = ({ isActive, scriptController, pushMethod, useScriptStateS
   });
 
   useEffect(() => {
-    console.log(isActive, isIntersecting, isPlayerAbleToPush)
     if (!isActive || !isIntersecting || !isPlayerAbleToPush) {
       return;
     }

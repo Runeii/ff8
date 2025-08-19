@@ -385,7 +385,7 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
       return false;
     }
 
-    if (pausedAtTime && Date.now() - pausedAtTime < (placement.duration / 25 * 1000)) {
+    if (pausedAtTime && Date.now() - pausedAtTime < (placement.duration / 25 * 500)) {
       return true;
     }
     if (!pausedAtTime) {

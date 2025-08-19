@@ -8,8 +8,6 @@ import { getPartyMemberModelComponent } from "../../Scripts/Script/Model/modelUt
 const FOCUS_VECTOR = new Vector3(0, 0, 0);
 
 const Focus = () => {
-  const isDebugMode = useGlobalStore((state) => state.isDebugMode);
-
   const focusRef = useRef<Mesh>(null);
 
   const { cameraFocusObject, cameraFocusSpring } = useGlobalStore();
@@ -31,12 +29,27 @@ const Focus = () => {
       return;
     }
 
-    const playerBoundingBox = targetMesh.userData.boundingbox as Box3;
+    const playerBoundingBox = targetMesh.userData.standingBoundingBox as Box3;
 
-    const height = playerBoundingBox.max.z - playerBoundingBox.min.z;
+    let longestDimension: 'x' | 'y' | 'z';
+    const lengthLongestDimension = Math.max(
+      playerBoundingBox.max.x - playerBoundingBox.min.x,
+      playerBoundingBox.max.y - playerBoundingBox.min.y,
+      playerBoundingBox.max.z - playerBoundingBox.min.z
+    );
+
+    if (lengthLongestDimension === playerBoundingBox.max.x - playerBoundingBox.min.x) {
+      longestDimension = 'x';
+    } else if (lengthLongestDimension === playerBoundingBox.max.y - playerBoundingBox.min.y) {
+      longestDimension = 'y';
+    } else {
+      longestDimension = 'z';
+    }
+
+    const height = lengthLongestDimension;
     const characterPosition = targetMesh.getWorldPosition(FOCUS_VECTOR);
 
-    characterPosition.z = characterPosition.z + (height / 256) * useGlobalStore.getState().cameraFocusHeight;
+    characterPosition.z = characterPosition[longestDimension] + (height / 256) * useGlobalStore.getState().cameraFocusHeight;
 
     if (!cameraFocusSpring) {
       focusRef.current.position.copy(characterPosition);
@@ -51,7 +64,7 @@ const Focus = () => {
 
   return (
     <Sphere args={[0.01, 32, 32]} name="focus" position={[0,0,0]} ref={focusRef}>
-      <meshBasicMaterial color="pink" transparent opacity={0.8} visible={isDebugMode} />
+      <meshBasicMaterial color="pink" transparent opacity={0.8} visible={true} />
     </Sphere>
   )
 }

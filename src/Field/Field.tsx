@@ -115,7 +115,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
         // @ts-expect-error We don't need args for this function
         await OPCODE_HANDLERS.FADESYNC();
       }
-
+      
       setData(null);
       gl.clear();
 

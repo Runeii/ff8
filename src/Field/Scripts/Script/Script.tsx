@@ -45,7 +45,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     script,
     scene,
     useScriptStateStore,
-    isDebugging: script.groupId === 10
+    isDebugging: false
   }), [animationController, headController, movementController, rotationController,sfxController, script, scene, useScriptStateStore]);
 
   const isVisible = useScriptStateStore(state => state.isVisible);
@@ -60,6 +60,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     if (!isActive && !hasTriggeredConstructorRef.current && entityRef.current) {
       hasTriggeredConstructorRef.current = true;
       scriptController.triggerMethod('constructor').then(() => {
+        console.log(`Script ${script.groupId} constructor completed`);
         onSetupCompleted();
       })
     }
@@ -129,6 +130,12 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
       document.removeEventListener('executeScript', handleExecutionRequest);
     }
   }, [isUnused, script.methods, scriptController]);
+
+  useEffect(() => {
+    return () => {
+      sfxController.stop();
+    }
+  }, [sfxController]);
   
 
   useEffect(() => {

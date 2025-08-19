@@ -40,7 +40,7 @@ export default function App() {
     const progress = MEMORY[256]
     console.log(progress, fieldId)
     url.searchParams.set('progress', progress.toString());
-    window.history.replaceState({}, '', url.toString());
+    window.history.pushState({}, '', url.toString());
   }, [fieldId, progress])
 
   return (

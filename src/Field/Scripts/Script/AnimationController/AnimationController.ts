@@ -49,6 +49,7 @@ export const createAnimationController = (id: string | number, isDebugging = fal
 
     animations: {
       currentAnimation: undefined as AnimationPlayOptions | undefined,
+      isCurrentAnimationABaseAnime: false,
       queuedAnimation: undefined as AnimationPlayOptions | undefined,
     },
 
@@ -149,12 +150,16 @@ export const createAnimationController = (id: string | number, isDebugging = fal
         needsZAdjustment = false;
       }
 
+      const { idleAnimationIds } = getSavedAnimation();
+      const isAnIdleAnimation = Object.values(idleAnimationIds).includes(activeAnimation.animationId);
+
       setState({
         needsZAdjustment,
         activeAction: action,
         activeActionId: activeAnimation.key,
         animations: {
           currentAnimation: activeAnimation,
+          isCurrentAnimationABaseAnime: isAnIdleAnimation,
           queuedAnimation: undefined
         }
       });
@@ -317,6 +322,19 @@ export const createAnimationController = (id: string | number, isDebugging = fal
     playMovementAnimation('stand')
   }
 
+  const getMovementAnimationId = (type: 'stand' | 'walk' | 'run') => {
+    const { idleAnimationIds } = getSavedAnimation();
+    if (type === 'stand') {
+      return idleAnimationIds.standAnimationId;
+    } else if (type === 'walk') {
+      return idleAnimationIds.walkAnimationId;
+    } else if (type === 'run') {
+      return idleAnimationIds.runAnimationId;
+    }
+
+    return 0;
+  }
+
   const playMovementAnimation = (type: 'stand' | 'walk' | 'run') => {
     const { animations: {
       currentAnimation,
@@ -328,15 +346,7 @@ export const createAnimationController = (id: string | number, isDebugging = fal
       return;
     }
 
-    const { idleAnimationIds } = getSavedAnimation();
-    let animationId = 0;
-    if (type === 'stand') {
-      animationId = idleAnimationIds.standAnimationId;
-    } else if (type === 'walk') {
-      animationId = idleAnimationIds.walkAnimationId;
-    } else if (type === 'run') {
-      animationId = idleAnimationIds.runAnimationId;
-    }
+    const animationId = getMovementAnimationId(type);
 
     if (currentAnimation?.type === 'IDLE' && currentAnimation.animationId === animationId) {
       return;
@@ -346,6 +356,9 @@ export const createAnimationController = (id: string | number, isDebugging = fal
       stopAnimation();
     }
 
+    if (id === 0) {
+      console.log('PLAYING MOVEMENT ANIMATION', animationId)
+    }
     return playAnimation(animationId, {
       loop: LoopRepeat,
       type: 'IDLE',
@@ -430,6 +443,7 @@ export const createAnimationController = (id: string | number, isDebugging = fal
     playAnimation,
     pauseAnimation,
     playMovementAnimation,
+    getMovementAnimationId,
     setIdleAnimations,
     setAnimationSpeed,
     stopAnimation,

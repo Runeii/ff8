@@ -1,0 +1,188 @@
+export interface AudioSourceNode {
+  source: AudioBufferSourceNode;
+  gainNode: GainNode;
+  panNode: StereoPannerNode;
+  buffer: AudioBuffer;
+  id: number;
+  isLooping: boolean;
+  loopStart?: number;
+  loopEnd?: number;
+}
+
+let audioContext: AudioContext | null = null;
+let preloadedSoundBank: Record<number, AudioBuffer> = {};
+let isUserActivationSetup = false;
+
+export const initializeAudioContext = async (): Promise<AudioContext> => {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: AudioContext }).webkitAudioContext)();
+  }
+
+  if (audioContext.state === 'suspended') {
+    await audioContext.resume();
+  }
+
+  return audioContext;
+};
+
+export const setupUserActivation = (): void => {
+  if (isUserActivationSetup) return;
+  
+  isUserActivationSetup = true;
+  
+  const activateAudio = async () => {
+    try {
+      await initializeAudioContext();
+    } catch (error) {
+      console.warn('Failed to initialize audio context:', error);
+    } finally {
+      document.removeEventListener('click', activateAudio);
+      document.removeEventListener('keydown', activateAudio);
+      document.removeEventListener('touchstart', activateAudio);
+    }
+  };
+
+  document.addEventListener('click', activateAudio, { once: true });
+  document.addEventListener('keydown', activateAudio, { once: true });
+  document.addEventListener('touchstart', activateAudio, { once: true });
+};
+
+export const loadAudioBuffer = async (url: string): Promise<AudioBuffer> => {
+  const context = await initializeAudioContext();
+  
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch audio: ${response.status} ${response.statusText}`);
+  }
+  
+  const arrayBuffer = await response.arrayBuffer();
+  return context.decodeAudioData(arrayBuffer);
+};
+
+export const preloadMapSoundBank = async (sounds: number[]): Promise<void> => {
+  if (!sounds?.length) return;
+
+  preloadedSoundBank = {};
+  
+  const soundsToLoad = sounds.slice(0, 10);
+  const loadPromises = soundsToLoad.map(async (soundId) => {
+    try {
+      const src = `/audio/effects/${soundId}.mp3`;
+      const buffer = await loadAudioBuffer(src);
+      preloadedSoundBank[soundId] = buffer;
+    } catch (error) {
+      console.warn(`Failed to preload sound ${soundId}:`, error);
+    }
+  });
+
+  await Promise.allSettled(loadPromises);
+};
+
+export const createAudioSource = async (
+  id: number, 
+  volume: number, 
+  pan: number,
+  loopPoints?: Record<number, [number, number]>
+): Promise<AudioSourceNode> => {
+  const context = await initializeAudioContext();
+  
+  let buffer = preloadedSoundBank[id];
+  if (!buffer) {
+    const src = `/audio/effects/${id}.mp3`;
+    buffer = await loadAudioBuffer(src);
+    preloadedSoundBank[id] = buffer;
+  }
+
+  const source = context.createBufferSource();
+  const gainNode = context.createGain();
+  const panNode = context.createStereoPanner();
+
+  source.buffer = buffer;
+  gainNode.gain.value = Math.max(0, Math.min(1, volume / 256));
+  panNode.pan.value = Math.max(-1, Math.min(1, (pan - 128) / 128));
+
+  source.connect(gainNode);
+  gainNode.connect(panNode);
+  panNode.connect(context.destination);
+
+  const loopPoint = loopPoints?.[id];
+  const loopStart = loopPoint ? loopPoint[0] / 1000 : undefined;
+  const loopEnd = loopPoint ? loopPoint[1] / 1000 : undefined;
+  console.log(loopPoint)
+  if (loopStart !== undefined && loopEnd !== undefined) {
+    source.loopStart = loopStart;
+    source.loopEnd = loopEnd;
+  }
+
+  return {
+    source,
+    gainNode,
+    panNode,
+    buffer,
+    id,
+    isLooping: false,
+    loopStart,
+    loopEnd,
+  };
+};
+
+export const setVolumeForSource = (sourceNode: AudioSourceNode, volume: number, duration?: number): void => {
+  const targetVolume = Math.max(0, Math.min(1, volume / 256));
+  
+  if (!duration) {
+    sourceNode.gainNode.gain.value = targetVolume;
+    return;
+  }
+
+  const context = sourceNode.gainNode.context;
+  const currentTime = context.currentTime;
+  sourceNode.gainNode.gain.cancelScheduledValues(currentTime);
+  sourceNode.gainNode.gain.linearRampToValueAtTime(targetVolume, currentTime + duration / 1000);
+};
+
+export const setPanForSource = (sourceNode: AudioSourceNode, pan: number, duration?: number): void => {
+  const targetPan = Math.max(-1, Math.min(1, (pan - 128) / 128));
+  
+  if (!duration) {
+    sourceNode.panNode.pan.value = targetPan;
+    return;
+  }
+
+  const context = sourceNode.panNode.context;
+  const currentTime = context.currentTime;
+  sourceNode.panNode.pan.cancelScheduledValues(currentTime);
+  sourceNode.panNode.pan.linearRampToValueAtTime(targetPan, currentTime + duration / 1000);
+};
+
+export const stopSource = (sourceNode: AudioSourceNode): void => {
+  try {
+    sourceNode.source.stop();
+    sourceNode.source.disconnect();
+    sourceNode.gainNode.disconnect();
+    sourceNode.panNode.disconnect();
+  } catch (error) {
+    console.warn('Error stopping audio source:', error);
+  }
+};
+
+export const playWithLoop = (
+  sourceNode: AudioSourceNode,
+  onLoopStart?: (originalSource: AudioSourceNode) => Promise<void>
+): void => {
+  const { source, loopStart, loopEnd } = sourceNode;
+  
+  if (!loopStart || !loopEnd) {
+    source.loop = false;
+    source.start();
+    return;
+  }
+
+  console.log(`Playing intro for sound ${sourceNode.id}`);
+  source.start(0, 0, loopStart);
+  
+  source.addEventListener('ended', () => {
+    if (!sourceNode.isLooping && onLoopStart) {
+      onLoopStart(sourceNode);
+    }
+  });
+};

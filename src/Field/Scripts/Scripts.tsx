@@ -58,8 +58,30 @@ const Scripts = ({ doors, models, scripts, sounds }: ScriptsProps) => {
 
   return (
     <>
-      {otherScripts.map((script, index) => <Script doors={formattedDoors} key={`${fieldId}--${script.exec}`} isActive={scriptsMounted === otherScripts.length} models={models} script={script} onSetupCompleted={handleScriptSetupCompleted} onStarted={onStarted} sounds={index === 0 ? sounds : []} /> )}
-      {runningScripts === otherScripts.length && mainScripts.map(mainScript => <Script doors={formattedDoors} key={`${fieldId}--${mainScript.exec}`} isActive={hasMountedMainScripts} models={models} script={mainScript} onSetupCompleted={handleMainScriptMounted} onStarted={handleStartedMain} sounds={[]} />)}
+      {otherScripts.map((script) => (
+        <Script 
+          doors={formattedDoors}
+          key={`${fieldId}--${script.exec}`}
+          isActive={scriptsMounted === otherScripts.length}
+          models={models}
+          script={script}
+          onSetupCompleted={handleScriptSetupCompleted}
+          onStarted={onStarted}
+          sounds={sounds}
+        />
+      ))}
+      {runningScripts === otherScripts.length && mainScripts.map(mainScript => (
+        <Script
+          doors={formattedDoors}
+          key={`${fieldId}--${mainScript.exec}`}
+          isActive={hasMountedMainScripts}
+          models={models}
+          script={mainScript}
+          onSetupCompleted={handleMainScriptMounted}
+          onStarted={handleStartedMain}
+          sounds={sounds}
+        />
+      ))}
     </>
   );
 }

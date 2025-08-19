@@ -128,12 +128,20 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const animationGroupRef = useRef<Group>(null);
   const [boundingbox] = useState(new Box3());
+  const [standingBoundingBox] = useState(new Box3());
   const pushableSphereRef = useRef<Mesh>(null);
 
+  const baseRootBoneZOffset = useRef<number>(0);
+  const baseBoundingBoxZOffset = useRef<number>(0);
+  const rootBoneDistanceFromStanding = useRef<number>(0);
   useFrame(({scene}) => {
-    const needsZAdjustment = animationController.getState().needsZAdjustment || movementController.getState().needsZAdjustment;
+    if (!animationGroupRef.current) {
+      return;
+    }
 
-    if (!animationGroupRef.current || !needsZAdjustment) {
+
+    const walkmesh = scene.getObjectByName('walkmesh');
+    if (!walkmesh) {
       return;
     }
 
@@ -141,27 +149,40 @@ const Model = ({animationController, models, scriptController, movementControlle
     animationGroupRef.current.updateMatrixWorld(true);
     boundingbox.setFromObject(animationGroupRef.current, true);
     
-    const walkmesh = scene.getObjectByName('walkmesh');
-    if (!walkmesh) {
+    const position = movementController.getPosition();
+
+    const rootBone = animationGroupRef.current.getObjectByName('bone_0');
+    if (!rootBone) {
       return;
     }
-    const centre = boundingbox.getCenter(new Vector3());
-    const walkmeshPoint = getPositionOnWalkmesh(centre, walkmesh);
-    if (!walkmeshPoint) {
-      return;
+    const rootBonePosition = rootBone.getWorldPosition(new Vector3());
+    const needsZAdjustment = animationController.getState().needsZAdjustment || movementController.getState().needsZAdjustment;
+
+    if (needsZAdjustment) {
+      if (!animationController.getState().animations.currentAnimation || animationController.getState().animations.currentAnimation?.animationId === animationController.getMovementAnimationId('stand')) {
+        standingBoundingBox.setFromObject(animationGroupRef.current, true);
+      }
+
+      setCharacterDimensions(new Vector3(
+        boundingbox.max.x - boundingbox.min.x,
+        boundingbox.max.y - boundingbox.min.y,
+        boundingbox.max.z - boundingbox.min.z
+      ));
+      
+      baseRootBoneZOffset.current = rootBone.position.z;
+      baseBoundingBoxZOffset.current = boundingbox.min.z;
+      rootBoneDistanceFromStanding.current = rootBonePosition.z - boundingbox.min.z;
+      const z = position.z - boundingbox.min.z;
+      animationGroupRef.current.position.z = z
+
+      movementController.setHasAdjustedZ(true);
+      animationController.setHasAdjustedZ(true);
     }
 
-    const z = walkmeshPoint.z - boundingbox.min.z;
-    animationGroupRef.current.position.z = z;
-
-    setCharacterDimensions(new Vector3(
-      boundingbox.max.x - boundingbox.min.x,
-      boundingbox.max.y - boundingbox.min.y,
-      boundingbox.max.z - boundingbox.min.z
-    ));
-
-//    movementController.setHasAdjustedZ(true);
-//    animationController.setHasAdjustedZ(true);
+    if (!animationController.getState().animations.isCurrentAnimationABaseAnime) {
+      const z = position.z - boundingbox.min.z;
+      animationGroupRef.current.position.z = z
+    }
   })
 
   const talkRadiusRef = useRef<Mesh>(null);
@@ -197,7 +218,7 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const talkRadius = useScriptStateStore(state => state.talkRadius);
   const pushRadius = useScriptStateStore(state => state.pushRadius);
-  
+
   return (
     <group>
       {
@@ -231,7 +252,8 @@ const Model = ({animationController, models, scriptController, movementControlle
         <meshBasicMaterial color={isSolid ? 'red' : 'green'} transparent opacity={0.5} />
       </Box>
       <group name="model" ref={animationGroupRef} userData={{
-        boundingbox
+        boundingbox,
+        standingBoundingBox
       }}>
         <ModelComponent
           mapName={fieldId}

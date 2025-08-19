@@ -144,7 +144,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   POPM_B: ({ currentOpcode, STACK }) => {
     const value = STACK.pop() as number;
-    console.log('Changing', currentOpcode.param, 'from', MEMORY[currentOpcode.param], 'to', value);
     MEMORY[currentOpcode.param] = value;
   },
   POPM_W: ({ currentOpcode, STACK }) => {
@@ -296,19 +295,17 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
-  BGDRAW: ({ currentState, script, setState, STACK }) => {
+  BGDRAW: ({ currentState, setState, STACK }) => {
     const frame = STACK.pop() as number;
     setState({
       isBackgroundVisible: true,
     })
-    console.log('BGDRAW', script, frame)
     currentState.backgroundAnimationSpring.set(frame);
   },
-  BGOFF: ({ script, setState }) => {
+  BGOFF: ({ setState }) => {
     setState({
       isBackgroundVisible: false,
     })
-    console.log('BGOFF', script)
   },
   BGANIMESPEED: ({ setState, STACK }) => {
     const speed = STACK.pop() as number;
@@ -915,7 +912,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
 
     await movementController.moveToPoint(target, {
-      distanceToStopAnimationFromTarget
+      distanceToStopAnimationFromTarget,
     });
   },
 
@@ -1888,8 +1885,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     // I assume actorId + HP
     STACK.splice(-2);
   },
-  ACTORMODE: ({ STACK }) => {
-    STACK.pop() as number;
+  // Some sort of styling effect: 0/1/2/3
+  ACTORMODE: ({ setState, STACK }) => {
+    const mode = STACK.pop() as number;
+    setState({
+      actorMode: mode
+    })
   },
   RESETGF: ({ STACK }) => {
     STACK.pop() as number;

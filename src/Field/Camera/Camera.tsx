@@ -10,7 +10,6 @@ import useGlobalStore from "../../store";
 import Focus from "./Focus/Focus";
 import useScrollSpring from "../useScrollSpring";
 import { useSpring } from "@react-spring/web";
-import { getPlayerEntity } from "../Scripts/Script/Model/modelUtils";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
@@ -200,12 +199,12 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
       return;
     }
     
-    const player = getPlayerEntity(scene);
-    if (!player) {
+    const focus = scene.getObjectByName("focus");
+    if (!focus) {
       return;
     }
     
-    moveableCamera.lookAt(player.position);
+    moveableCamera.lookAt(focus.position);
     const lookingAtQuaternion = moveableCamera.quaternion.clone();
     moveableCamera.quaternion.copy(camera.quaternion.clone().slerp(lookingAtQuaternion, spring.pullback.get()));
 

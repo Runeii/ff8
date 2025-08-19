@@ -1,135 +1,167 @@
 import { create } from "zustand";
 import { FieldData } from "../../../Field";
 import { getSoundFromId } from "./utils";
+import loopPoints from './loop_points.json';
+import {
+  AudioSourceNode,
+  setupUserActivation,
+  preloadMapSoundBank,
+  createAudioSource,
+  setVolumeForSource,
+  setPanForSource,
+  stopSource,
+  playWithLoop,
+} from './webAudio';
+
+const typedLoopPoints = loopPoints as unknown as Record<number, [number, number]>;
+
+interface SFXControllerState {
+  id: string | number;
+  generalChannel: AudioSourceNode[];
+  channels: Record<number, AudioSourceNode[]>;
+}
 
 export const createSFXController = (id: string | number, sounds: FieldData['sounds']) => {
-  const {getState, setState} = create(() => ({
+  setupUserActivation();
+
+  const { getState, setState } = create<SFXControllerState>(() => ({
     id,
-    generalChannel: [] as Howl[],
-    channels: {} as {
-      [key: number]: Howl;
-    },
-    preloadedSoundBank: {} as Record<number, Howl>,
+    generalChannel: [],
+    channels: {},
   }));
 
-  const setPanForHowl = (howl: Howl, pan: number) => {
-    howl.stereo((pan - 256 / 2));
-  }
-
-  const setVolumeForHowl = (howl: Howl, volume: number) => {
-    howl.volume(volume / 256);
-  }
-
-  const fadeVolumeForHowl = (howl: Howl, volume: number, duration: number) => {
-    howl.fade(howl.volume(), volume / 256, duration);
-  }
-
-  const fadePanForHowl = (howl: Howl, pan: number, duration: number) => {
-    howl.fade(howl.stereo(), (pan - 256 / 2) - 1, duration);
-  }
-
-  const stopHowl = (howl: Howl) => {
-    howl.stop();
-    howl.unload();
-  }
-
-  const createSound = (id: number) => {
-    const src = `/audio/effects/${id}.mp3`;
-    return new Howl({
-      src: [src],
-      preload: true,
-      loop: false,
-      autoplay: false,
-      volume: 1,
-    });
-  }
-
-  const play = (id: number, channel: number, volume: number, pan: number) => {
-    const {channels, preloadedSoundBank} = getState();
-
-    const howl = preloadedSoundBank[id] ?? createSound(id);
-
-    setVolumeForHowl(howl, volume);
-    setPanForHowl(howl, pan);
-    howl.play();
+  const replaceSourceInState = (oldSource: AudioSourceNode, newSource: AudioSourceNode): void => {
+    const state = getState();
+    const replaceInArray = (array: AudioSourceNode[]) => 
+      array.map(node => node === oldSource ? newSource : node);
 
     setState({
-      generalChannel: channel === 0 ? [
-        ...getState().generalChannel,
-        howl,
-      ] : getState().generalChannel,
-      channels: channel === 0 ?{
-        ...channels,
-        [channel]: howl,
-      } : channels,
-    })
-  }
+      ...state,
+      generalChannel: replaceInArray(state.generalChannel),
+      channels: Object.fromEntries(
+        Object.entries(state.channels).map(([key, nodes]) => [key, replaceInArray(nodes)])
+      ),
+    });
+  };
 
-  const playFieldSound = (index: number, channel: number, volume: number, pan: number) => {
-    const sound = getSoundFromId(sounds[index])
-    if (!sound) {
-      console.warn('No sound at index', index, 'in field data.')
+  const createLoopSource = async (originalSource: AudioSourceNode): Promise<void> => {
+    if (!originalSource.loopStart || !originalSource.loopEnd) {
+      return
+    };
+
+    try {
+      const loopSource = await createAudioSource(
+        originalSource.id, 
+        originalSource.gainNode.gain.value * 256, 
+        originalSource.panNode.pan.value * 128 + 128,
+        typedLoopPoints
+      );
+      
+      loopSource.source.loop = true;
+      loopSource.source.loopStart = originalSource.loopStart;
+      loopSource.source.loopEnd = originalSource.loopEnd;
+      loopSource.isLooping = true;
+
+      console.log(`Looping sound ${originalSource.id}. Loop start: ${originalSource.loopStart}, Loop end: ${originalSource.loopEnd}`);
+      loopSource.source.start(0, originalSource.loopStart);
+      
+      replaceSourceInState(originalSource, loopSource);
+    } catch (error) {
+      console.error('Failed to create loop source:', error);
+    }
+  };
+
+  const addSourceToChannel = (sourceNode: AudioSourceNode, channel: number): void => {
+    const state = getState();
+    
+    if (channel === 0) {
+      setState({
+        ...state,
+        generalChannel: [...state.generalChannel, sourceNode],
+      });
       return;
     }
-    play(sound, channel, volume, pan);
-  }
 
-  const getExistingHowlsByChannel = (channel?: number) => {
-    const {channels, generalChannel} = getState();
+    setState({
+      ...state,
+      channels: {
+        ...state.channels,
+        [channel]: [...(state.channels[channel] || []), sourceNode],
+      },
+    });
+  };
+
+  const play = async (id: number, channel: number, volume: number, pan: number): Promise<void> => {
+    try {
+      const sourceNode = await createAudioSource(id, volume, pan, typedLoopPoints);
+      addSourceToChannel(sourceNode, channel);
+      
+      playWithLoop(sourceNode, createLoopSource);
+    } catch (error) {
+      console.error(`Failed to play sound ${id}:`, error);
+    }
+  };
+
+  const playFieldSound = async (index: number, channel: number, volume: number, pan: number): Promise<void> => {
+    const sound = getSoundFromId(sounds[index]);
+    
+    if (!sound) {
+      console.warn('No sound at index', index, 'in field data.');
+      return;
+    }
+    
+    await play(sound, channel, volume, pan);
+  };
+
+  const getExistingSourcesByChannel = (channel?: number): AudioSourceNode[] => {
+    const { channels, generalChannel } = getState();
+    
+    if (channel === undefined) {
+      // Return all sources when no channel specified
+      return [...generalChannel, ...Object.values(channels).flat()];
+    }
+    
     if (channel === 0) {
-      return generalChannel.filter(Boolean);
+      return generalChannel;
     }
-    if (channel) {
-      return [channels[channel]].filter(Boolean);
+    
+    return channels[channel] || [];
+  };
+
+  const stop = (channel?: number): void => {
+    const state = getState();
+    const sources = getExistingSourcesByChannel(channel);
+    
+    sources.forEach(stopSource);
+    
+    // Clear state based on channel
+    if (channel === undefined) {
+      setState({ ...state, generalChannel: [], channels: {} });
+      return;
+    } else if (channel === 0) {
+      setState({ ...state, generalChannel: [] });
+    } else {
+      setState({
+        ...state,
+        channels: { ...state.channels, [channel]: [] },
+      });
     }
+  };
 
-    return [
-      ...Object.values(channels),
-      ...generalChannel,
-    ].filter(Boolean);
-  }
+  const setVolume = (channel: number | undefined, volume: number, duration?: number): void => {
+    const sources = getExistingSourcesByChannel(channel);
+    sources.forEach(source => setVolumeForSource(source, volume, duration));
+  };
 
-  const stop = (channel: number) => {
-    const howls = getExistingHowlsByChannel(channel);
+  const setPan = (channel: number | undefined, pan: number, duration?: number): void => {
+    const sources = getExistingSourcesByChannel(channel);
+    sources.forEach(source => setPanForSource(source, pan, duration));
+  };
 
-    howls.forEach((howl) => {
-      stopHowl(howl);
-    })
-  }
-
-
-  const setVolume = (channel: number | undefined, volume: number, duration?: number) => {
-    const howls = getExistingHowlsByChannel(channel);
-    howls.forEach((howl) => {
-      if (duration) {
-        fadeVolumeForHowl(howl, volume, duration);
-        return;
-      }
-      setVolumeForHowl(howl, volume);
-    })
-  }
-
-  const setPan = (channel: number | undefined, pan: number, duration?: number) => {
-    const howls = getExistingHowlsByChannel(channel);
-    howls.forEach((howl) => {
-      if (duration) {
-        fadePanForHowl(howl, pan, duration);
-        return;
-      }
-      setPanForHowl(howl, pan);
-    })
-  }
-
-  const preloadMapSoundBank = async (sounds: number[]) => {
-    const preloadedSoundBank: Record<number, Howl> = {}
-    for await (const sound of sounds.slice(0, 10)) {
-      const howl = createSound(sound);
-      preloadedSoundBank[sound] = howl;
-    }
-    setState({ preloadedSoundBank });
-  }
-  
-  preloadMapSoundBank(sounds);
+  // Initialize preloading
+  preloadMapSoundBank(sounds).catch(error => 
+    console.warn('Failed to preload sound bank:', error)
+  );
 
   return {
     play,
@@ -137,7 +169,7 @@ export const createSFXController = (id: string | number, sounds: FieldData['soun
     setPan,
     setVolume,
     stop,
-  }
-}
+  };
+};
 
 export default createSFXController;

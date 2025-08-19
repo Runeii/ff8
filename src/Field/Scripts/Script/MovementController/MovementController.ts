@@ -131,9 +131,10 @@ export const createMovementController = (id: string | number, animationControlle
       ...defaultOptions,
       ...passedOptions,
     }
-    
+
     resolvePendingPositionSignal();
     const signal = new PromiseSignal();
+
     setState({
       position: {
         current: getState().position.current,
@@ -248,6 +249,19 @@ export const createMovementController = (id: string | number, animationControlle
     });
   }
 
+  const unpause = () => {
+    setState({
+      position: {
+        ...getState().position,
+        isPaused: false,
+      },
+      offset: {
+        ...getState().offset,
+        isPaused: false,
+      }
+    });
+  }
+
   ///
 
   // FOOTSTEPS
@@ -308,6 +322,7 @@ export const createMovementController = (id: string | number, animationControlle
     const { position, offset, movementSpeed } = getState();
 
     const { isAnimationEnabled } = position;
+
     if (isStopping && isAnimationEnabled) {
       animationController.playMovementAnimation('stand');
       isStopping = false;
@@ -320,7 +335,7 @@ export const createMovementController = (id: string | number, animationControlle
     if (!position.goal && !offset.goal) {
       return;
     }
-    
+   
     const { current: currentPosition, duration, goal: positionGoal, userControlledSpeed } = position;
     if (positionGoal) {
       const speed = (userControlledSpeed !== undefined ? userControlledSpeed : movementSpeed) / 2560; // units per second
@@ -328,6 +343,9 @@ export const createMovementController = (id: string | number, animationControlle
 
       const remainingDistance = currentPosition.distanceTo(positionGoal);
       
+      if (id === 10) {
+        console.log('Speed', speed, maxDistance, remainingDistance, duration, remainingDistance <= maxDistance || duration === 0)
+      }
       if (remainingDistance <= maxDistance || duration === 0) {
         currentPosition.copy(positionGoal);
         resolvePendingPositionSignal();
@@ -373,7 +391,6 @@ export const createMovementController = (id: string | number, animationControlle
         currentOffset.add(direction.multiplyScalar(step));
       }
     }
-
 
     entity.position.set(getPosition().x, getPosition().y, getPosition().z);
     entity.userData.hasBeenPlaced = true;
@@ -424,6 +441,7 @@ export const createMovementController = (id: string | number, animationControlle
     setOffset,
     setPosition,
     pause,
+    unpause,
     setMovementSpeed,
     subscribe,
     stop,
