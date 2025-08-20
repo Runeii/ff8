@@ -5,11 +5,11 @@ import './index.css'
 import Debugger from './Debugger/Debugger.tsx'
 import { sendToDebugger } from './Debugger/debugUtils.ts'
 
-const isDebugger = window.location.pathname.includes('debugger');
+const isDebugging = window.location.pathname.includes('debugger');
 
 sendToDebugger('reset')
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {isDebugger ? <Debugger /> : <App />}
+    {isDebugging ? <Debugger /> : <App />}
   </React.StrictMode>,
 )

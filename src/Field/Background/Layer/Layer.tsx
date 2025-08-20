@@ -40,8 +40,6 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
 
   const scrollSpring = useScrollSpring(layer.renderID);
 
-  const hasRenderedBackground = useGlobalStore(state => state.hasRenderedBackground);
-
   useFrame(() => {
     if (!layerRef.current) {
       return;
@@ -156,13 +154,6 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
 
     layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(clampedPanX * widthUnits));
     layerRef.current.position.add(directions.upVector.clone().multiplyScalar(clampedPanY * heightUnits));
-
-    if (!hasRenderedBackground) {
-      useGlobalStore.setState({
-        hasRenderedBackground: true,
-      });
-    }
-
   })
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);

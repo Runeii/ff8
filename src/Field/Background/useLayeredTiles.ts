@@ -26,7 +26,7 @@ const initialiseLayer = (tile: Tile, width: number, height: number, layerRenderI
     id: getLayerIdFromTile(tile),
     layerID: tile.layerID,
     renderID: layerRenderID,
-    parameter: tile.parameter,
+    parameter: tile.parameter === 255 ? -1 : tile.parameter,
     state: tile.state,
     z: tile.Z,
   }
@@ -92,14 +92,25 @@ const useLayeredTiles = (tiles: Tile[], filename: string, width: number, height:
       drawTile(tile, canvas, tilesTexture);
     });
 
-    Object.values(result).forEach(layer => {
+    // Sort by Z index. If same Z, sort of by layer Index. If same Z and layer index, sort or by parameter
+    const sortedLayers = Object.values(result).sort((a, b) => {
+      if (a.z !== b.z) {
+        return a.z - b.z;
+      }
+      if (a.layerID !== b.layerID) {
+        return a.layerID - b.layerID;
+      }
+      return a.parameter - b.parameter;
+    });
+console.log('sort')
+    sortedLayers.forEach((layer, index) => {
       const {canvas, ...rest} = layer;
       canvas.toBlob(blob => {
-        sendToDebugger('layers', JSON.stringify(rest), blob ?? undefined);
+        sendToDebugger('layers', JSON.stringify({...rest, index}), blob ?? undefined);
       });
     });
 
-    return Object.values(result);
+    return sortedLayers;
   }, [height, tiles, tilesTexture, width]);
 
   return layers;

@@ -151,7 +151,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
 
     const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, characterHeight / 2);
-    
+      
     if (!newPosition) {
       return
     }

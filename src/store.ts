@@ -13,7 +13,6 @@ interface GlobalState {
 
   isFieldLoaded: boolean,
   isMapSuspended: boolean,
-  hasRenderedBackground: boolean,
 
   fieldDirection: number,
   isLoadingSavedGame: boolean,
@@ -106,7 +105,6 @@ export const INITIAL_STATE: GlobalState = {
 
     isFieldLoaded: false,
     isMapSuspended: false,
-    hasRenderedBackground: false,
   
     fieldDirection: 0,
     isLoadingSavedGame: false,

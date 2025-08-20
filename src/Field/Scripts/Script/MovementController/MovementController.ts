@@ -318,6 +318,7 @@ export const createMovementController = (id: string | number, animationControlle
       speedBeforeClimbingLadder: isClimbingLadder ? getState().movementSpeed : 0,
     })
 
+  let cachedWalkmesh: Object3D | undefined = undefined;
   const tick = (entity: Object3D, delta: number) => {
     const { position, offset, movementSpeed } = getState();
 
@@ -338,6 +339,9 @@ export const createMovementController = (id: string | number, animationControlle
    
     const { current: currentPosition, duration, goal: positionGoal, userControlledSpeed } = position;
     if (positionGoal) {
+      if (!cachedWalkmesh) {
+        cachedWalkmesh = scene.getObjectByName('walkmesh') as Object3D;
+      }
       const speed = (userControlledSpeed !== undefined ? userControlledSpeed : movementSpeed) / 2560; // units per second
       const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
 
@@ -359,7 +363,7 @@ export const createMovementController = (id: string | number, animationControlle
       } else {
         const direction = positionGoal.clone().sub(currentPosition).normalize();
         currentPosition.add(direction.multiplyScalar(maxDistance).divideScalar(10));
-        currentPosition.copy(getPositionOnWalkmesh(currentPosition, scene.getObjectByName('walkmesh')!) ?? currentPosition)
+        currentPosition.copy(getPositionOnWalkmesh(currentPosition, cachedWalkmesh) ?? currentPosition)
       }
     }
 

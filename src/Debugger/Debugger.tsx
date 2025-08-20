@@ -1,16 +1,11 @@
 import { generateUUID } from 'three/src/math/MathUtils.js';
-import createScriptState from '../Field/Scripts/Script/state';
-import { OpcodeObj, Script } from '../Field/Scripts/types';
+import { OpcodeObj } from '../Field/Scripts/types';
 import styles from './Debugger.module.css';
 import { useEffect, useMemo, useState } from "react";
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Layer from '../Field/Background/Layer/Layer';
 import { Vector3 } from 'three';
-
-const defaultScriptState = createScriptState({
-  type: 'unknown'
-} as unknown as Script);
 
 type Log = {
   uuid: string
@@ -21,11 +16,18 @@ type Log = {
   opcode: OpcodeObj
 }
 
-async function blobToCanvasModern(blob) {
+async function blobToCanvasModern(blob?: Blob): Promise<HTMLCanvasElement> {
+    if (!blob) {
+        throw new Error('No blob provided');
+    }
     const imageBitmap = await createImageBitmap(blob);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+
+    if (!ctx) {
+        throw new Error('Failed to get canvas 2D context');
+    }
+
     canvas.width = imageBitmap.width;
     canvas.height = imageBitmap.height;
     ctx.drawImage(imageBitmap, 0, 0);
@@ -53,6 +55,7 @@ const Debugger = () => {
         setScriptStates((prev) => ({
           ...prev,
           [payload.id]: {
+            // @ts-expect-error CBA typing debug
             ...(prev[payload.id] || {}),
             ...payload.state
           }
@@ -77,15 +80,10 @@ const Debugger = () => {
           ...prev,
           [payload.id]: {
             ...payload,
+            index: payload.index,
             canvas: canvas
           }
         }))
-      }
-      if (type === 'layer') {
-        setLayers(state => ({
-          ...state,
-          [payload.id]: payload.layer
-        }));
       }
       if (type === 'reset') {
         setStoreState('');
@@ -112,7 +110,7 @@ const Debugger = () => {
     const layersEl = document.getElementById('layers');
     if (layersEl) {
       layersEl.innerHTML = '';
-      Object.values(layers).forEach(layer => {
+      Object.values(layers).sort((a, b) => b.index - a.index).forEach(layer => {
         const layerEl = document.createElement('div');
         layerEl.className = styles.layer;
         layerEl.appendChild(layer.canvas);
@@ -138,12 +136,16 @@ const Debugger = () => {
         ))}
       </div>
       <div className={styles.submenu}>
-        <button onClick={() => setVisibleLogScriptId(null)}>All Entities</button>
-        {availableLogScriptIds.map(id => (
-          <button key={id} onClick={() => setVisibleLogScriptId(id)}>
-            {`Entity ${id}`}
-          </button>
-        ))}
+        {view === 'logs' && (
+          <>
+            <button onClick={() => setVisibleLogScriptId(null)}>All Entities</button>
+            {availableLogScriptIds.map(id => (
+              <button key={id} onClick={() => setVisibleLogScriptId(id)}>
+                {`Entity ${id}`}
+              </button>
+            ))}
+          </>
+        )}
       </div>
       <div className={styles.content}>
         {view === 'logs' && (
@@ -178,7 +180,7 @@ const Debugger = () => {
               boundaries: {
                 left: 120,
                 right: 120,
-                bottom: 120, 
+                bottom: 120,
                 top: 120,
               },
               panX: 0,
@@ -187,8 +189,8 @@ const Debugger = () => {
           </Canvas>
           <div>
             <h2>Layer Debug Info</h2>
-            <pre>{JSON.stringify(layers, null, 2)}</pre>
             <div id="layers" className={styles.layers} /> 
+            <pre>{JSON.stringify(layers, null, 2)}</pre>
           </div>
           </>
         )}

@@ -1,3 +1,5 @@
+import { getSoundFromId } from "./utils";
+
 export interface AudioSourceNode {
   source: AudioBufferSourceNode;
   gainNode: GainNode;
@@ -63,11 +65,12 @@ export const preloadMapSoundBank = async (sounds: number[]): Promise<void> => {
   if (!sounds?.length) return;
 
   preloadedSoundBank = {};
-  
   const soundsToLoad = sounds.slice(0, 10);
   const loadPromises = soundsToLoad.map(async (soundId) => {
     try {
-      const src = `/audio/effects/${soundId}.mp3`;
+      const sound = getSoundFromId(soundId)
+      console.log(sound)
+      const src = `/audio/effects/${sound}.mp3`;
       const buffer = await loadAudioBuffer(src);
       preloadedSoundBank[soundId] = buffer;
     } catch (error) {

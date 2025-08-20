@@ -49,37 +49,37 @@ export const getInitialEntrance = (initialField: FieldData) => {
 
 
 const raycaster = new Raycaster();
+const DIRECTION_UP = new Vector3(0, 0, -1);
+const DIRECTION_DOWN = new Vector3(0, 0, 1);
 export const getPositionOnWalkmesh = (desiredPosition: Vector3, walkmesh: Object3D, maxDistance?: number) => {
   let intersects = [];
-  raycaster.set(desiredPosition, new Vector3(0, 0, -1));
+  raycaster.set(desiredPosition, DIRECTION_DOWN);
+  raycaster.firstHitOnly = true;
   intersects.push(raycaster.intersectObject(walkmesh, true));
 
-  raycaster.set(desiredPosition, new Vector3(0, 0, 1));
+  raycaster.set(desiredPosition, DIRECTION_UP);
   intersects.push(raycaster.intersectObject(walkmesh, true));
-
-  intersects = intersects.flat()
+  
+  intersects = intersects.flat();
 
   if (maxDistance) {
     intersects = intersects.filter((intersect) => intersect.distance < maxDistance);
   }
-
+  
   if (intersects.length === 0) {
     return null;
   }
-
-  const sortedIntersects = intersects.sort((a, b) => {
-    return a.distance - b.distance;
-  });
-
-  const targetTriangle = sortedIntersects[0];
-  const targetTriangleId = parseInt(targetTriangle.object.name);
-  const { lockedTriangles } = useGlobalStore.getState()
-
-  if (lockedTriangles.includes(targetTriangleId)) {
+  
+  const hit = intersects[0];
+  
+  const triangleId = parseInt(hit.object.name);
+  const { lockedTriangles } = useGlobalStore.getState();
+  
+  if (lockedTriangles.includes(triangleId)) {
     return null;
   }
-
-  return sortedIntersects[0].point;
+  
+  return hit.point;
 }
 
 const intersectionRaycaster = new Raycaster();

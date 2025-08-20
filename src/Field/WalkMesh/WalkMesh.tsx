@@ -4,6 +4,7 @@ import useGlobalStore from "../../store";
 import { FieldData } from "../Field";
 import { vectorToFloatingPoint } from "../../utils";
 import { ThreeEvent } from "@react-three/fiber";
+import { Bvh } from "@react-three/drei";
 
 type WalkMeshProps = {
   walkmesh: FieldData['walkmesh'];
@@ -44,13 +45,15 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
   const lockedTriangles = useGlobalStore(state => state.lockedTriangles);
 
   return (
-    <group name="walkmesh">
-      {walkMeshGeometry.map((geometry, index) => (
-        <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={isDebugMode}>
-          <meshBasicMaterial color={lockedTriangles.includes(index) ? "red" : 'green'} transparent opacity={1} side={DoubleSide} />
-        </mesh>
-      ))}
-    </group>
+    <Bvh firstHitOnly>
+      <group name="walkmesh">
+        {walkMeshGeometry.map((geometry, index) => (
+          <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={isDebugMode}>
+            <meshBasicMaterial color={lockedTriangles.includes(index) ? "red" : 'green'} transparent opacity={1} side={DoubleSide} />
+          </mesh>
+        ))}
+      </group>
+    </Bvh>
   );
 };
 
