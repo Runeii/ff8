@@ -39,12 +39,31 @@ const createScriptController = ({
   let STACK: number[] = [];
   let TEMP_STACK = {};
 
-  const { getState, setState } = create(() => ({
+  const { getState, setState, subscribe } = create(() => ({
     abortController: new AbortController(),
     isProcessingAQueueItem: false,
     queue: [] as QueueItem[],
     script,
   }));
+
+  subscribe(state => {
+    const {abortController, ...safeState} = state;
+    sendToDebugger('script-controller-state', JSON.stringify({
+      ...safeState,
+      queue: safeState.queue.map(item => ({
+        ...item,
+        // We don't want to send the opcodes as they can be large and are not needed
+        method: {
+          ...item.method,
+          opcodes: [],
+          opcodesDebug: [],
+        },
+      })),
+      script: {
+        groupId: safeState.script.groupId,
+      }
+    }));
+  });
 
   const triggerMethodByIndex = async (methodIndex: number, priority = 10) => {
     const method = script.methods[methodIndex]
@@ -176,6 +195,7 @@ const createScriptController = ({
       methodId: method.methodId,
       index: activeOpcodeIndex,
       opcode: activeOpcode,
+      message: 'in'
     }))
 
     if (activeOpcode.name.startsWith('LABEL')) {
@@ -213,6 +233,13 @@ const createScriptController = ({
       TEMP_STACK: clonedTempStack,
     });
 
+    sendToDebugger('opcode', JSON.stringify({
+      id: script.groupId,
+      methodId: method.methodId,
+      index: activeOpcodeIndex,
+      opcode: activeOpcode,
+      message: 'race'
+    }))
     const nextIndex = await Promise.race([
       promise,
       new Promise<Error>((resolve) => {
@@ -227,6 +254,13 @@ const createScriptController = ({
       return;
     }
 
+    sendToDebugger('opcode', JSON.stringify({
+      id: script.groupId,
+      methodId: method.methodId,
+      index: activeOpcodeIndex,
+      opcode: activeOpcode,
+      message: 'done'
+    }))
     STACK = clonedStack;
     TEMP_STACK = clonedTempStack;
 

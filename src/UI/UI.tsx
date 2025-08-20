@@ -3,7 +3,7 @@ import useGlobalStore from "../store";
 import MessageBox from "./MessageBox/MessageBox";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/constants";
 import { Fragment } from "react/jsx-runtime";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { isSavePointMessage } from "./textUtils";
 import { useThree } from "@react-three/fiber";
 import { offlineController } from "../OfflineController";
@@ -22,7 +22,7 @@ const Ui = () => {
   }, {} as Record<number, Message[]>);
 
   const messagesArray = Object.values(messagesByChannel);
-
+  console.log('Heard', currentMessages, messagesArray)
   const worldScene = useThree(state => state.scene);
 
   const [isCachingOffline, setIsCachingOffline] = useState(false);
@@ -49,18 +49,14 @@ const Ui = () => {
         bottom={-(SCREEN_HEIGHT / 2)}
         position={[SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2, 0]}
       />
-      <Suspense>
-        {messagesArray.map((messages) => (
-          <Fragment key={messages[0].id}>
-              <MessageBox
-                key={`message--${messages[0].id}`}
-                isSavePoint={isSavePointMessage(messages[0])}
-                message={messages[0]}
-                worldScene={worldScene}
-              />
-          </Fragment>
-        ))}
-      </Suspense>
+      {messagesArray.map((messages) => (
+        <MessageBox
+          key={`message--${messages[0].id}`}
+          isSavePoint={isSavePointMessage(messages[0])}
+          message={messages[0]}
+          worldScene={worldScene}
+        />
+      ))}
       {isCachingOffline && <OfflineProgress />}
     </>
   );

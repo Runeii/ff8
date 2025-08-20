@@ -40,7 +40,7 @@ export default function App() {
     }
     const url = new URL(window.location.href);
     url.searchParams.set('field', fieldId);
-    const progress = MEMORY[256]
+    const progress = MEMORY[256] ?? 0
 
     url.searchParams.set('progress', progress.toString());
     window.history.pushState({}, '', url.toString());

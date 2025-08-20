@@ -38,6 +38,7 @@ export const createMovementController = (id: string | number, animationControlle
       goal: undefined as Vector3 | undefined,
       isPaused: false,
       signal: undefined as PromiseSignal | undefined,
+      totalDistance: 0
     },
     footsteps: {
       isActive: false,
@@ -174,6 +175,9 @@ export const createMovementController = (id: string | number, animationControlle
 
   const moveToOffset = async (x: number, y: number, z:number, duration: number) => {
     const target = new Vector3(...[x,y,z].map(numberToFloatingPoint));
+    const currentOffset = getState().offset.current;
+    const totalDistance = currentOffset.distanceTo(target);
+
     resolvePendingOffsetSignal();
     const signal = new PromiseSignal();
     setState({
@@ -182,7 +186,8 @@ export const createMovementController = (id: string | number, animationControlle
         goal: target,
         duration,
         isPaused: false,
-        signal
+        signal,
+        totalDistance
       }
     });
 
@@ -356,10 +361,10 @@ export const createMovementController = (id: string | number, animationControlle
       }
     }
 
-    const { current: currentOffset, goal: offsetGoal, duration: offsetDuration } = offset;
+    const { current: currentOffset, goal: offsetGoal, duration: offsetDuration, totalDistance } = offset;
 
     if (offsetGoal) {
-      const durationInSeconds = offsetDuration / 100; // convert tenths to seconds
+      const durationInSeconds = offsetDuration / 25;
       const remainingDistance = currentOffset.distanceTo(offsetGoal);
 
       if (remainingDistance < 0.0005 || durationInSeconds <= 0) {
@@ -374,12 +379,12 @@ export const createMovementController = (id: string | number, animationControlle
           }
         });
       } else {
-        // Fraction of total path to move this frame
-        const fractionThisFrame = delta / durationInSeconds; 
-        const step = remainingDistance * fractionThisFrame;
-
+        const speed = totalDistance / durationInSeconds; // units per second
+        const maxDistance = speed * delta; // distance to move this frame
+        const stepDistance = Math.min(maxDistance, remainingDistance);
+        
         const direction = offsetGoal.clone().sub(currentOffset).normalize();
-        currentOffset.add(direction.multiplyScalar(step));
+        currentOffset.add(direction.multiplyScalar(stepDistance));
       }
     }
 

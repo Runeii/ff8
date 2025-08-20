@@ -17,6 +17,7 @@ import { getFieldData } from './fieldUtils';
 import Onboarding from '../Onboarding/Onboarding';
 import { AREA_NAMES } from '../constants/areaNames';
 import { preloadMapSoundBank } from './Scripts/Script/SFXController/webAudio';
+import { sendToDebugger } from '../Debugger/debugUtils';
 
 export type RawFieldData = typeof data;
 
@@ -121,6 +122,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
         await OPCODE_HANDLERS.FADESYNC();
       }
       
+      sendToDebugger('reset')
       setData(null);
       gl.clear();
 

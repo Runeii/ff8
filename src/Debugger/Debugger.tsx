@@ -14,6 +14,7 @@ type Log = {
   methodId: string;
   index: number;
   opcode: OpcodeObj
+  message: string
 }
 
 async function blobToCanvasModern(blob?: Blob): Promise<HTMLCanvasElement> {
@@ -39,6 +40,7 @@ const channel = new BroadcastChannel('debugger');
 const Debugger = () => {
   const [storeState, setStoreState] = useState<string>('');
   const [scriptStates, setScriptStates] = useState<Record<number, string>>({});
+  const [scriptControllerStates, setScriptControllerStates] = useState<Record<number, string>>({});
   const [log, setLog] = useState<Log[]>([]);
 
   const [layers, setLayers] = useState<Record<number, Layer>>({});
@@ -61,6 +63,13 @@ const Debugger = () => {
           }
         }));
       }
+      if (type === 'script-controller-state') {
+        console.log('got state', payload);
+        setScriptControllerStates(state => ({
+          ...state,
+          [payload.script.groupId]: payload,
+        }));
+      }
       if (type === 'opcode') {
         setLog(state => [
           ...state,
@@ -70,7 +79,8 @@ const Debugger = () => {
             id: payload.id,
             methodId: payload.methodId,
             index: payload.index,
-            opcode: payload.opcode
+            opcode: payload.opcode,
+            message: payload.message
           }
         ])
       }
@@ -156,37 +166,20 @@ const Debugger = () => {
               <div className={styles.actor}>{`Actor ${entry.id}`}</div>
               <div className={styles.method}>{`Method ${entry.methodId}`}</div>
               <div className={styles.index}>{`Index ${entry.index}`}</div>
-              <div className={styles.opcode}>{`Opcode ${entry.opcode.name} param ${entry.opcode.param}`}</div>
+              <div className={styles.opcode}>{`Opcode ${entry.opcode.name} param ${entry.opcode.param} -- ${entry.message}`}</div>
             </div>
           ))}
         </div>
         )}
         {view === 'state' && <pre>{JSON.stringify(storeState, null, 2)}</pre>}
         {view === 'script-state' && scriptId !== null && (
-          <pre>{JSON.stringify(scriptStates[scriptId], null, 2)}</pre>
+          <>
+          <pre>Script state: {JSON.stringify(scriptStates[scriptId], null, 2)}</pre>
+          <pre>Script controller state: {JSON.stringify(scriptControllerStates[scriptId], null, 2)}</pre>
+          </>
         )}
         {view === 'layers' && (
           <>
-          <Canvas className={styles.canvas} camera={{
-            position: [0, 0, 5]
-          }}>
-            <ambientLight intensity={10} />
-            <OrbitControls />
-            <PerspectiveCamera name="sceneCamera" makeDefault userData={{
-              initialPosition: new Vector3(0, 0, 0),
-              initialTargetPosition: new Vector3(0, 0, 1)
-            }} />
-            {Object.values(layers).map((layer) => <Layer key={layer.id} layer={layer} backgroundPanRef={{current: {
-              boundaries: {
-                left: 120,
-                right: 120,
-                bottom: 120,
-                top: 120,
-              },
-              panX: 0,
-              panY: 0
-            }}} />)}
-          </Canvas>
           <div>
             <h2>Layer Debug Info</h2>
             <div id="layers" className={styles.layers} /> 

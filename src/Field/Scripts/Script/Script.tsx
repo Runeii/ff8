@@ -168,7 +168,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     }
   });
 
-  if (isUnused || !isVisible) {
+  if (isUnused) {
     return null;
   }
 

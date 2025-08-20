@@ -1613,7 +1613,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await movementController.moveToOffset(startX, startY, startZ, 0)
     movementController.moveToOffset(endX, endY, endZ, duration);
   },
-  OFFSETSYNC: async ({ movementController }) => {
+  OFFSETSYNC: async ({ movementController}) => {
     while (movementController.getState().offset.goal) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
