@@ -187,10 +187,13 @@ const useGlobalStore = create<GlobalState>()(() => ({...INITIAL_STATE}))
 
 useGlobalStore.subscribe((state) => {
   const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     fieldData,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     systemSfxController,
     ...safeState
   } = state;
+
   sendToDebugger('state', JSON.stringify(safeState));
 });
 

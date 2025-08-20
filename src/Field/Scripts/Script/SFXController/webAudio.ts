@@ -62,7 +62,9 @@ export const loadAudioBuffer = async (url: string): Promise<AudioBuffer> => {
 };
 
 export const preloadMapSoundBank = async (sounds: number[]): Promise<void> => {
-  if (!sounds?.length) return;
+  if (!sounds?.length) {
+    return;
+  };
 
   preloadedSoundBank = {};
   const soundsToLoad = sounds.slice(0, 10);
@@ -111,7 +113,7 @@ export const createAudioSource = async (
   const loopPoint = loopPoints?.[id];
   const loopStart = loopPoint ? loopPoint[0] / 1000 : undefined;
   const loopEnd = loopPoint ? loopPoint[1] / 1000 : undefined;
-  console.log(loopPoint)
+
   if (loopStart !== undefined && loopEnd !== undefined) {
     source.loopStart = loopStart;
     source.loopEnd = loopEnd;

@@ -54,21 +54,17 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
 
   useIntersection(lineRef.current, isLineOn && isUserControllable, {
     onTouchOn: () => {
-      console.log('onTouchOn', scriptController.script.groupId)
       window.addEventListener('keydown', onKeyDown);
       scriptController.triggerMethod('touchon');
     },
     onTouch: () => {
-      console.log('onTouch', scriptController.script.groupId)
        scriptController.triggerMethod('touch');
     },
     onTouchOff: () => {
-      console.log('onTouchOff', scriptController.script.groupId)
       window.removeEventListener('keydown', onKeyDown);
        scriptController.triggerMethod('touchoff');
     },
     onAcross: () => {
-      console.log('onAcross', scriptController.script.groupId)
        scriptController.triggerMethod('across');
     },
   }, linePoints ?? []);

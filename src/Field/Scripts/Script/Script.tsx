@@ -60,7 +60,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     if (!isActive && !hasTriggeredConstructorRef.current && entityRef.current) {
       hasTriggeredConstructorRef.current = true;
       scriptController.triggerMethod('constructor').then(() => {
-        console.log(`Script ${script.groupId} constructor completed`);
         onSetupCompleted();
       })
     }
@@ -127,6 +126,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     backgroundAnimationSpring.pause();
   }, [animationController, isTransitioningMap, movementController, useScriptStateStore]);
 
+  const savedRotationBeforeSpeaking = useRef<undefined | number>(undefined);
   useFrame(({ scene }, delta) => {
     if (!entityRef.current || script.type !== 'model') {
       return;
@@ -140,6 +140,17 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     const { goal } = movementController.getState().position
     if (goal) {
       rotationController.turnToFaceVector(goal, 0);
+    }
+
+    const isTalkingToPlayer = scriptController.isTalkingToPlayer();
+    if (isTalkingToPlayer && savedRotationBeforeSpeaking.current === undefined) {
+      savedRotationBeforeSpeaking.current = rotationController.getState().angle.get();
+      rotationController.turnToFaceEntity('party--0', scene, 10);
+    }
+
+    if (!isTalkingToPlayer && savedRotationBeforeSpeaking.current !== undefined) {
+      rotationController.turnToFaceAngle(savedRotationBeforeSpeaking.current, 30);
+      savedRotationBeforeSpeaking.current = undefined;
     }
 
     const raw256Angle = rotationController.getState().angle.get();

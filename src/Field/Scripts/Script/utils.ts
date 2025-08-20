@@ -108,6 +108,8 @@ export const openMessage = (id: string, text: string[], placement: MessagePlacem
       }
     ]
   });
+
+  console.log('Message opened:', id, text, placement, isCloseable, askOptions);
 })
 
 export const closeMessage = (id: string, selectedOptionIndex?: number) => {

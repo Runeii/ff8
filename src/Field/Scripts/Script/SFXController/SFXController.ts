@@ -158,11 +158,6 @@ export const createSFXController = (id: string | number, sounds: FieldData['soun
     sources.forEach(source => setPanForSource(source, pan, duration));
   };
 
-  // Initialize preloading
-  preloadMapSoundBank(sounds).catch(error => 
-    console.warn('Failed to preload sound bank:', error)
-  );
-
   return {
     play,
     playFieldSound,

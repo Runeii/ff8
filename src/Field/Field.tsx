@@ -16,6 +16,7 @@ import { SpringValue } from '@react-spring/web';
 import { getFieldData } from './fieldUtils';
 import Onboarding from '../Onboarding/Onboarding';
 import { AREA_NAMES } from '../constants/areaNames';
+import { preloadMapSoundBank } from './Scripts/Script/SFXController/webAudio';
 
 export type RawFieldData = typeof data;
 
@@ -144,6 +145,8 @@ const FieldLoader = (props: FieldLoaderProps) => {
       useGlobalStore.setState({
         fieldData: data,
         fieldDirection: data.controlDirection,
+        availableMessages: data.text,
+
         isLoadingSavedGame: false,
         isMapFadeEnabled: true,
 
@@ -154,6 +157,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
         isUserControllable: pendingFieldId !== 'start0',
         isRunEnabled: true,
 
+        backgroundLayerVisibility: {},
         currentParameterStates: {},
         currentParameterVisibility: {},
         layerScrollAdjustments: {},
@@ -181,13 +185,14 @@ const FieldLoader = (props: FieldLoaderProps) => {
           type: 'additive'
         },
         
-
         currentMessages: [],
-
-        availableMessages: data.text,
+        messageStyles: {},
+  
 
         hasActiveTalkMethod: false,
         lockedTriangles: [],
+        
+        globalMeshTint: [128, 128, 128],
 
         activeCameraId: 0,
         pendingFieldId: undefined,
@@ -195,6 +200,8 @@ const FieldLoader = (props: FieldLoaderProps) => {
 
         congaWaypointHistory: [],
       });
+
+      preloadMapSoundBank(data.sounds);
     }
 
     if (!pendingFieldId) {

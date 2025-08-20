@@ -67,9 +67,6 @@ export const createAnimationController = (id: string | number, isDebugging = fal
 
   let currentDirection = 1;
   const handleAnimationEnded = (activeAnimation: AnimationPlayOptions) => {
-    if (isDebugging) {
-      console.log('Animation ended:', activeAnimation);
-    }
     if (!activeAnimation.keepLastFrame) {
       setState(state => ({
         ...state,
@@ -78,9 +75,6 @@ export const createAnimationController = (id: string | number, isDebugging = fal
           currentAnimation: undefined
         }
       }));
-      if (isDebugging) {
-        console.log('Animation ended without keeping last frame:', getState().animations);
-      }
       return;
     }
     const updatedAnimation = {
@@ -118,11 +112,6 @@ export const createAnimationController = (id: string | number, isDebugging = fal
     const startTime = activeAnimation?.startFrame !== undefined ? activeAnimation.startFrame / FPS : 0;
     const endTime = activeAnimation?.endFrame !== undefined ? activeAnimation.endFrame / FPS : action.getClip().duration;
 
-    if (isDebugging && activeAnimation.animationId === 3) {
-      console.log('Animation 3 is active', {
-        action, activeAction, startTime, endTime, time: activeAction?.time
-      }, getState().animations);
-    }
     if (activeAnimation.key !== activeActionId) {
       mixer.update(0);
       mixer.stopAllAction();
@@ -174,9 +163,6 @@ export const createAnimationController = (id: string | number, isDebugging = fal
       return;
     }
 
-    if (activeAnimation.isCompleted && isDebugging) {
-      console.log('Is compelted!')
-    }
     action.time = action.time + (delta * currentDirection);
 
     // We are at the end of the animation, so we need to check if we should loop or stop
@@ -356,9 +342,6 @@ export const createAnimationController = (id: string | number, isDebugging = fal
       stopAnimation();
     }
 
-    if (id === 0) {
-      console.log('PLAYING MOVEMENT ANIMATION', animationId)
-    }
     return playAnimation(animationId, {
       loop: LoopRepeat,
       type: 'IDLE',

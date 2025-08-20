@@ -247,19 +247,8 @@ export const createMovementController = (id: string | number, animationControlle
         isPaused: true,
       }
     });
-  }
-
-  const unpause = () => {
-    setState({
-      position: {
-        ...getState().position,
-        isPaused: false,
-      },
-      offset: {
-        ...getState().offset,
-        isPaused: false,
-      }
-    });
+    
+    animationController.playMovementAnimation('stand');
   }
 
   ///
@@ -443,7 +432,6 @@ export const createMovementController = (id: string | number, animationControlle
     setOffset,
     setPosition,
     pause,
-    unpause,
     setMovementSpeed,
     subscribe,
     stop,

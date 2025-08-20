@@ -22,7 +22,6 @@ export type HandlerArgs = {
   currentOpcode: OpcodeObj,
   currentOpcodeIndex: number,
   currentState: Readonly<ScriptState>,
-  isDebugging: boolean,
   headController: ReturnType<typeof createRotationController>,
   movementController: ReturnType<typeof createMovementController>,
   rotationController: ReturnType<typeof createRotationController>,
@@ -69,6 +68,9 @@ export const MESSAGE_VARS: Record<number, string> = {};
 export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   RET: () => {
     return -1
+  },
+  HALT: () => {
+    return -2
   },
   PSHI_L: ({ currentOpcode, STACK, TEMP_STACK }) => {
     STACK.push(TEMP_STACK[currentOpcode.param] ?? 0);
@@ -273,11 +275,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     useGlobalStore.setState({
       pendingFieldId: 'wm00',
     });
-  },
-  HALT: ({ setState }) => {
-    setState({
-      isHalted: true,
-    })
   },
   SETPLACE: ({ STACK }) => {
     const placeName = STACK.pop() as number;
