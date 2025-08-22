@@ -567,7 +567,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const partyMemberIndex = currentOpcode.param as number;
     const label = STACK.pop() as number;
     const priority = STACK.pop() as number;
-    console.log('PREQ', partyMemberIndex, label, priority, scene);
+    console.log('PREQ', partyMemberIndex, label, priority);
     remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
   },
   PREQSW: ({ currentOpcode, scene, STACK }) => {
@@ -2004,7 +2004,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       isTransitioningColorOverlay: true
     });
   },
-  FCOLSUB: ({ STACK }) => {
+  FCOLSUB: ({ script, currentOpcode, opcodes, STACK }) => {
     const duration = STACK.pop() as number;
     const endBlue = STACK.pop() as number;
     const endGreen = STACK.pop() as number;
@@ -2012,7 +2012,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const startBlue = STACK.pop() as number;
     const startGreen = STACK.pop() as number;
     const startRed = STACK.pop() as number;
-    
+
+    console.log('start', 'fcolsub', startRed, startGreen, startBlue, endRed, endGreen, endBlue, duration);
     useGlobalStore.setState({
       colorOverlay: {
         startRed,
@@ -2088,7 +2089,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const red = STACK.pop() as number;
     const green = STACK.pop() as number;
     const blue = STACK.pop() as number;
-    
+
     useGlobalStore.setState(state => ({
       colorOverlay: {
         ...state.colorOverlay,

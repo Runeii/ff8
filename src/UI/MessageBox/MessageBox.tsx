@@ -11,9 +11,10 @@ import { saveGame } from "../../Field/fieldUtils.ts"
 import { closeMessage } from "../../Field/Scripts/Script/utils.ts"
 
 type MessageBoxProps = {
-  isSavePoint: boolean
-  message: Message
-  worldScene: Scene
+  isCloseableFocus: boolean;
+  isSavePoint: boolean;
+  message: Message;
+  worldScene: Scene;
 }
 
 const SAFE_BOUNDS = 8;
@@ -53,7 +54,7 @@ const calculatePlacement = (message: Message, width: number, height: number) => 
 }
 
 
-const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
+const MessageBox = ({ isCloseableFocus, isSavePoint, message, worldScene }: MessageBoxProps) => {
   const { id, text, askOptions, isCloseable } = isSavePoint ? {
     ...message,
     text: [`【Save Point】\nSave the game?\nYes\nNo`],
@@ -166,12 +167,16 @@ const MessageBox = ({ isSavePoint, message, worldScene }: MessageBoxProps) => {
       }
     }
 
+    if (!isCloseableFocus) {
+      return;
+    }
+
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [currentIndex, id, isCloseable, isSavePoint, options, worldScene, text, askOptions, hasDisplayedAllText]);
+  }, [currentIndex, id, isCloseable,isCloseableFocus, isSavePoint, options, worldScene, text, askOptions, hasDisplayedAllText]);
 
   const { placements, width: widthWithoutScaling, height: heightWithoutScaling, selectedY } = useMemo(() => {
     let x = LEFT_MARGIN;

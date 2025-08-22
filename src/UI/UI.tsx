@@ -2,7 +2,7 @@ import { OrthographicCamera } from "@react-three/drei";
 import useGlobalStore from "../store";
 import MessageBox from "./MessageBox/MessageBox";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/constants";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { isSavePointMessage } from "./textUtils";
 import { useThree } from "@react-three/fiber";
 import { offlineController } from "../OfflineController";
@@ -20,7 +20,9 @@ const Ui = () => {
     return acc;
   }, {} as Record<number, Message[]>);
 
-  const messagesArray = Object.values(messagesByChannel);
+  const messagesArray = useMemo(() => Object.values(messagesByChannel).reverse(), [messagesByChannel]);
+
+  const closeableMessages = useMemo(() => messagesArray.filter(message => message[0].isCloseable), [messagesArray]);
 
   const worldScene = useThree(state => state.scene);
 
@@ -50,6 +52,7 @@ const Ui = () => {
       />
       {messagesArray.map((messages) => (
         <MessageBox
+          isCloseableFocus={messages[0].id === closeableMessages.at(-1)?.[0].id}
           key={`message--${messages[0].id}`}
           isSavePoint={isSavePointMessage(messages[0])}
           message={messages[0]}

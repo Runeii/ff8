@@ -40,10 +40,11 @@ const ColorOverlay = () => {
       return;
     }
 
+    const intensity = (red + green + blue) / 3 / 255;
     effect.updateValues({
       color: [red / 255, green / 255, blue / 255],
-      blendMode: colorOverlay.type,
-      intensity: 1.0
+      blendMode: colorOverlay.type === 'additive' ? 'ps1_additive' : 'ps1_subtractive',
+      intensity
     })
   });
 
