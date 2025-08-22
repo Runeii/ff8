@@ -19,9 +19,9 @@ type MessageBoxProps = {
 
 const SAFE_BOUNDS = 8;
 
-const SOURCE_TILE_SIZE = 95.8;
+const SOURCE_TILE_SIZE = 95.7;
 
-const OUTPUT_TILE_SIZE = 24;
+const OUTPUT_TILE_SIZE = 22;
 const OUTPUT_HEIGHT_MODIFIER = 1;
 const OUTPUT_LINE_HEIGHT = OUTPUT_TILE_SIZE * OUTPUT_HEIGHT_MODIFIER * 1.4;
 const OPTION_MARGIN = OUTPUT_TILE_SIZE * 1.5;
@@ -386,19 +386,34 @@ const MessageBox = ({ isCloseableFocus, isSavePoint, message, worldScene }: Mess
 
   const handleWait = useCallback((placement: Extract<Modifier, { type: 'wait' }>, placementIndex: number) => {
     const pausedAtTime = pauseStartRef.current;
+    
+    // If we've already processed this wait command, don't wait again
     if (pauseIndexRef.current > placementIndex) {
       return false;
     }
 
+    // If we haven't reached this wait command yet in our progression, don't wait
+    if (placementIndex > textProgressRef.current && !hasDisplayedAllTextRef.current) {
+      return false;
+    }
+
+    // If we're currently waiting and the wait duration hasn't elapsed
     if (pausedAtTime && Date.now() - pausedAtTime < (placement.duration / 25 * 500)) {
       return true;
     }
+    
+    // If we haven't started waiting yet, start the wait
     if (!pausedAtTime) {
       pauseStartRef.current = Date.now();
       pauseIndexRef.current = placementIndex;
+      // Clamp textProgressRef to not advance beyond this wait command
+      textProgressRef.current = placementIndex;
       return true;
     }
+    
+    // Wait has completed, allow progression to continue
     pauseStartRef.current = undefined;
+    pauseIndexRef.current = placementIndex + 1; // Mark this wait as processed
     return false;
   }, []);
 
