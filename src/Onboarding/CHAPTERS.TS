@@ -3,6 +3,10 @@ export const CHAPTERS = {
     fieldId: 'bvcar_1',
     progress: 0
   },
+  'First Laguna dream': {
+    fieldId: 'testbl6',
+    progress: 22,
+  },
   'Winhill': {
     fieldId: 'gfelone2',
     progress: 400

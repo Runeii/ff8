@@ -1,17 +1,17 @@
-  import { create } from "zustand";
-  import type { Script, ScriptMethod } from "../../types";
-  import { Scene } from "three";
-  import createMovementController from "../MovementController/MovementController";
-  import { createAnimationController } from "../AnimationController/AnimationController";
-  import createRotationController from "../RotationController/RotationController";
-  import createScriptState from "../state";
-  import createSFXController from "../SFXController/SFXController";
+import { create } from "zustand";
+import type { Script, ScriptMethod } from "../../types";
+import { Scene } from "three";
+import createMovementController from "../MovementController/MovementController";
+import { createAnimationController } from "../AnimationController/AnimationController";
+import createRotationController from "../RotationController/RotationController";
+import createScriptState from "../state";
+import createSFXController from "../SFXController/SFXController";
 import { OPCODE_HANDLERS } from "../handlers";
-import { sendToDebugger } from "../../../../Debugger/debugUtils";
 
 type QueueItem = {
   activeOpcodeIndex: number;
   method: ScriptMethod;
+  isAwaiting: boolean;
   isLooping: boolean;
   priority: number;
   uniqueId: string;
@@ -36,45 +36,25 @@ const createScriptController = ({
   sfxController: ReturnType<typeof createSFXController>;
   useScriptStateStore: ReturnType<typeof createScriptState>;
 }) => {
-  let STACK: number[] = [];
-  let TEMP_STACK = {};
+  const STACK: number[] = [];
+  const TEMP_STACK = {};
 
-  const { getState, setState, subscribe } = create(() => ({
-    abortController: new AbortController(),
+  const { getState, setState } = create(() => ({
     isProcessingAQueueItem: false,
     queue: [] as QueueItem[],
     script,
   }));
 
-  subscribe(state => {
-    const {abortController, ...safeState} = state;
-    sendToDebugger('script-controller-state', JSON.stringify({
-      ...safeState,
-      queue: safeState.queue.map(item => ({
-        ...item,
-        // We don't want to send the opcodes as they can be large and are not needed
-        method: {
-          ...item.method,
-          opcodes: [],
-          opcodesDebug: [],
-        },
-      })),
-      script: {
-        groupId: safeState.script.groupId,
-      }
-    }));
-  });
-
-  const triggerMethodByIndex = async (methodIndex: number, priority = 10) => {
+  const triggerMethodByIndex = async (methodIndex: number, priority = 10, sender?: number) => {
     const method = script.methods[methodIndex]
     if (!method) {
       console.trace(`Method with index ${methodIndex} not found in script for ${script.groupId}`);
       return;
     }
-    await triggerMethod(method.methodId, priority);
+    await triggerMethod(method.methodId, priority, sender);
   }
-  
-  const triggerMethod = async (methodId: string, priority = 10) => {
+
+  const triggerMethod = async (methodId: string, priority = 10, sender?: number) => {
     const method = script.methods.find(method => method.methodId === methodId);
     if (!method) {
       console.warn(`Method with id ${methodId} not found in script for ${script.groupId}`);
@@ -89,7 +69,6 @@ const createScriptController = ({
     const isValidActionableMethod = method.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET' && opcode.name !== 'HALT').length > 0;
 
     if (!isValidActionableMethod) {
-      console.warn('Method is not actionable:', method);
       return;
     }
 
@@ -99,6 +78,7 @@ const createScriptController = ({
     addToQueue({
       activeOpcodeIndex: 0,
       method,
+      isAwaiting: false,
       isLooping,
       priority,
       uniqueId,
@@ -117,7 +97,6 @@ const createScriptController = ({
 
   const addToQueue = (newItem: QueueItem) => {
     const currentQueue = getState().queue;
-    const isCurrentlyProcessingQueueItem = getState().isProcessingAQueueItem;
 
     const newQueue = [...currentQueue];
 
@@ -132,10 +111,6 @@ const createScriptController = ({
     }
 
     setState({ queue: newQueue });
-
-    if (isCurrentlyProcessingQueueItem && isTopPriority) {
-      getState().abortController.abort();
-    }
   }
 
   const removeQueueItem = (uniqueId: string) => {
@@ -143,7 +118,6 @@ const createScriptController = ({
     const newQueue = currentQueue.filter(item => item.uniqueId !== uniqueId);
     
     setState({
-      isProcessingAQueueItem: false,
       queue: newQueue
     });
 
@@ -162,41 +136,32 @@ const createScriptController = ({
       return item;
     });
     setState({ 
-      isProcessingAQueueItem: false,
       queue: newQueue
     });
   }
 
   const tick = async () => {
-    const {queue: __queue, isProcessingAQueueItem} = getState();
+    const {queue: __queue} = getState();
     const queueSnapshot = structuredClone(__queue);
 
-    if (isProcessingAQueueItem || queueSnapshot.length === 0) {
+    if (queueSnapshot.length === 0) {
       return;
     }
 
-    setState({ isProcessingAQueueItem: true });
-
     const queueItem = queueSnapshot[0];
 
-    const { activeOpcodeIndex, method } = queueItem;
+    const { activeOpcodeIndex, isAwaiting, method } = queueItem;
 
-    // Refresh aborted abort controller as we're resuming a previous item
-    if (getState().abortController.signal.aborted) {
-      setState({
-        abortController: new AbortController()
-      })
+    if (isAwaiting) {
+      return;
     }
 
-    const activeOpcode = method.opcodes[activeOpcodeIndex];
+    updateQueueItem({
+      ...queueItem,
+      isAwaiting: true,
+    })
 
-    sendToDebugger('opcode', JSON.stringify({
-      id: script.groupId,
-      methodId: method.methodId,
-      index: activeOpcodeIndex,
-      opcode: activeOpcode,
-      message: 'in'
-    }))
+    const activeOpcode = method.opcodes[activeOpcodeIndex];
 
     if (activeOpcode.name.startsWith('LABEL')) {
       handleTickCleanup(queueItem.activeOpcodeIndex + 1, queueSnapshot)
@@ -211,11 +176,6 @@ const createScriptController = ({
     const opcodeHandler = OPCODE_HANDLERS[activeOpcode.name];
     const currentState = useScriptStateStore.getState();
 
-    // If this next action is cancelled, we want to be able to discard
-    // our changes to ensure we can repeat in the future
-    const clonedStack = [...STACK];
-    const clonedTempStack = {...TEMP_STACK};
-
     const promise = opcodeHandler({
       animationController,
       currentOpcode: activeOpcode,
@@ -229,42 +189,17 @@ const createScriptController = ({
       script,
       setState: useScriptStateStore.setState,
       sfxController,
-      STACK: clonedStack,
-      TEMP_STACK: clonedTempStack,
+      STACK,
+      TEMP_STACK,
     });
 
-    sendToDebugger('opcode', JSON.stringify({
-      id: script.groupId,
-      methodId: method.methodId,
-      index: activeOpcodeIndex,
-      opcode: activeOpcode,
-      message: 'race'
-    }))
-    const nextIndex = await Promise.race([
-      promise,
-      new Promise<Error>((resolve) => {
-        getState().abortController.signal.addEventListener('abort', () => {
-          resolve(new Error('Aborted'));
-        });
-      })
-    ]);
+    // eslint-disable-next-line no-async-promise-executor
+    new Promise<void>(async (resolve) => {
+      const nextIndex = await Promise.race([promise]);
 
-    if (nextIndex instanceof Error) {
-      handlePause();
-      return;
-    }
-
-    sendToDebugger('opcode', JSON.stringify({
-      id: script.groupId,
-      methodId: method.methodId,
-      index: activeOpcodeIndex,
-      opcode: activeOpcode,
-      message: 'done'
-    }))
-    STACK = clonedStack;
-    TEMP_STACK = clonedTempStack;
-
-    handleTickCleanup(nextIndex, queueSnapshot)
+      handleTickCleanup(nextIndex, queueSnapshot)
+      resolve();
+    })
   }
 
   const handleTickCleanup = (nextIndex: number | void, queueSnapshot: QueueItem[]) => {
@@ -288,21 +223,14 @@ const createScriptController = ({
     }
 
     updatedQueueItem.activeOpcodeIndex = nextIndex ?? updatedQueueItem.activeOpcodeIndex + 1;
+    updatedQueueItem.isAwaiting = false;
 
     if (updatedQueueItem.activeOpcodeIndex >= updatedQueueItem.method.opcodes.length) {
       removeQueueItem(updatedQueueItem.uniqueId);
       return;
     }
-    
+
     updateQueueItem(updatedQueueItem);
-  }
-
-  const handlePause = () => {
-    movementController.pause();
-
-    setState({
-      isProcessingAQueueItem: false,
-    })
   }
 
   const isTalkingToPlayer = () => getState().queue[0]?.method.methodId === 'talk';

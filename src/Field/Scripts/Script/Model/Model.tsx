@@ -82,7 +82,7 @@ const Model = ({animationController, models, scriptController, movementControlle
       return;
     }
     convertMaterialsToBasic(ref.group.current);
-    animationController.setHeadBone(ref.nodes.head as unknown as Bone);
+    animationController.setHeadBone(ref.nodes.bone_4 as unknown as Bone);
     animationController.initialize(ref.animations.mixer, ref.animations.clips, ref.group.current);
     setMeshGroup(ref.group.current);
   }, [convertMaterialsToBasic, animationController]);
@@ -252,7 +252,9 @@ const Model = ({animationController, models, scriptController, movementControlle
         args={characterDimensions.toArray().map(i => i + 0.01) as [number, number]}
         position={[0, 0, characterDimensions.z / 2.5]}
         name="hitbox"
-        userData={{ isSolid }}
+        userData={{
+          isSolid: isSolid && (!isLeadCharacter && !isFollower)
+        }}
         visible={isDebugMode}
         >
         <meshBasicMaterial color={isSolid ? 'red' : 'green'} transparent opacity={0.5} />

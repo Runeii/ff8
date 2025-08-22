@@ -1,4 +1,5 @@
 import {Howl} from 'howler'
+import { create } from 'zustand';
 
 const BASE_VOLUME = 0.4;
 
@@ -11,6 +12,10 @@ const MusicController = () => {
 
   let channel1: Howl | undefined = undefined;
   let channel1Src: string | undefined = undefined;
+
+  const { setState } = create(() => ({
+    battleMusicId: 0
+  }))
 
   const preloadMusic = (src: string) => {
     preloadedAudio = new Howl({
@@ -103,13 +108,18 @@ const MusicController = () => {
     audio.fade(audio.volume(), volume / 127 * BASE_VOLUME, duration * 30); // FPS
   }
 
+  const setBattleMusic = (musicId: number) => {
+    setState({ battleMusicId: musicId });
+  }
+
   return {
     preloadMusic,
     playMusic,
     pauseChannel,
     setVolume,
     transitionVolume,
-    dualMusic
+    dualMusic,
+    setBattleMusic
   }
 }
 

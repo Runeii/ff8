@@ -2,7 +2,6 @@ import { OrthographicCamera } from "@react-three/drei";
 import useGlobalStore from "../store";
 import MessageBox from "./MessageBox/MessageBox";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/constants";
-import { Fragment } from "react/jsx-runtime";
 import { useEffect, useState } from "react";
 import { isSavePointMessage } from "./textUtils";
 import { useThree } from "@react-three/fiber";
@@ -22,7 +21,7 @@ const Ui = () => {
   }, {} as Record<number, Message[]>);
 
   const messagesArray = Object.values(messagesByChannel);
-  console.log('Heard', currentMessages, messagesArray)
+
   const worldScene = useThree(state => state.scene);
 
   const [isCachingOffline, setIsCachingOffline] = useState(false);

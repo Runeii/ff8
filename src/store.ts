@@ -66,6 +66,7 @@ interface GlobalState {
 
   availableCharacters: number[],
   party: number[],
+  sleepingParty: number[];
   congaWaypointHistory: CongaHistory[],
   playerMovementSpeed: number,
   isPartyFollowing: boolean,
@@ -96,7 +97,8 @@ interface GlobalState {
 
   fieldData: FieldData | undefined,
 
-  systemSfxController: ReturnType<typeof createSFXController>
+  systemSfxController: ReturnType<typeof createSFXController>,
+  spuValue: number
 }
 
 export const INITIAL_STATE: GlobalState = {
@@ -149,6 +151,8 @@ export const INITIAL_STATE: GlobalState = {
   
     availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     party: [0],
+    sleepingParty: [],
+
     congaWaypointHistory: [],
     playerMovementSpeed: 0,
     isPartyFollowing: true,
@@ -180,7 +184,8 @@ export const INITIAL_STATE: GlobalState = {
   
     fieldData: undefined,
 
-    systemSfxController: createSFXController('world', [])
+    systemSfxController: createSFXController('world', []),
+    spuValue: 0
   }
 
 const useGlobalStore = create<GlobalState>()(() => ({...INITIAL_STATE}))

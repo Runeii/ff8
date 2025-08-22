@@ -21,7 +21,9 @@ export const getPartyMemberModelComponent = (scene: Scene, partyMemberIndex: num
 }
 
 export const getPlayerEntity = (scene: Scene): Group | null => {
-  const groupWrapper = scene.getObjectByName(`party--0`) as Group;
+  const { party } = useGlobalStore.getState();
+  const partyMemberId = party[0];
+  const groupWrapper = scene.getObjectByName(`party--${partyMemberId}`) as Group;
   if (!groupWrapper) {
     console.warn("Player entity not found in scene");
     return null;

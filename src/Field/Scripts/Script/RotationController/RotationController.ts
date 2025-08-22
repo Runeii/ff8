@@ -10,17 +10,23 @@ export const createRotationController = (
   movementController: ReturnType<typeof createMovementController>,
   entityRef: RefObject<Group | null>
 ) => {
-  const { getState } = create(() => ({
+  const { getState, setState } = create(() => ({
     angle: new SpringValue(0),
     id,
+    limits: [-255, 255],
     target: undefined,
   }));
+
+  const setLimits = (min: number, max: number) => {
+    setState({ limits: [min, max] });
+  }
 
   const turnToFaceAngle = async (angle: number, duration: number, _direction: 'left' | 'right' | 'either' = 'either') => {
     const currentAngle = getState().angle
     const targetAngle = getShortestRouteToAngle(angle, currentAngle.get());
 
-    await currentAngle.start(targetAngle % 256, {
+    const limitedAngle = Math.max(getState().limits[0], Math.min(getState().limits[1], targetAngle));
+    await currentAngle.start(limitedAngle % 256, {
       config: {
         duration: duration * 1000 / 30,
       },
@@ -74,6 +80,7 @@ export const createRotationController = (
     turnToFaceEntity,
     turnToFaceVector,
     turnToFaceDirection,
+    setLimits,
     stop,
   }
 }

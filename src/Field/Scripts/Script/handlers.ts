@@ -411,13 +411,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     displayMessage(id, x, y, channel, undefined, undefined, false);
   },
-  AMESW: async ({ script, currentOpcode, currentOpcodeIndex, opcodes, STACK }) => {
+  AMESW: async ({ STACK }) => {
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
     const id = STACK.pop() as number;
     const channel = STACK.pop() as number;
 
-    console.log('AMESW', id, x, y, channel, currentOpcode.param, currentOpcodeIndex, script, currentOpcode, opcodes);
     await displayMessage(id, x, y, channel);
   },
   RAMESW: async ({ STACK }) => {
@@ -557,11 +556,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const priority = STACK.pop();
     remoteExecute(label, priority)
   },
-  REQEW: async ({ STACK }) => {
+  REQEW: async ({ STACK, script, sender }) => {
     const label = STACK.pop() as number;
     const priority = STACK.pop();
-    console.log('REQEW', label, priority);
-    await remoteExecute(label, priority)
+    console.log('REQEW', label, priority, 'from', script.groupId, sender ? `within a subroutine sent by ${sender}` : '');
+    await remoteExecute(label, priority, script.groupId)
+    console.log('Completed REQEW', label, priority, 'from', script.groupId, sender ? `within a subroutine sent by ${sender}` : '');
   },
   PREQ: ({ currentOpcode, scene, STACK }) => {
     const partyMemberIndex = currentOpcode.param as number;
@@ -576,11 +576,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const priority = STACK.pop() as number;
     remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
   },
-  PREQEW: async ({ currentOpcode, scene, STACK }) => {
+  PREQEW: async ({ currentOpcode, scene, STACK, script, sender }) => {
     const partyMemberIndex = currentOpcode.param as number;
     const label = STACK.pop() as number;
     const priority = STACK.pop() as number;
-    await remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
+    await remoteExecutePartyMember(scene, partyMemberIndex, label, priority, script.groupId)
   },
   ISPARTY: ({ STACK, TEMP_STACK }) => {
     const characterID = STACK.pop() as number;
@@ -600,9 +600,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   ADDPARTY: ({ STACK }) => {
     const characterID = STACK.pop() as number;
-    useGlobalStore.setState({
-      party: [...useGlobalStore.getState().party, characterID]
-    });
+    useGlobalStore.setState(state => ({
+      ...state,
+      party: [...state.party, characterID]
+    }))
   },
   SUBPARTY: ({ STACK }) => {
     const characterID = STACK.pop() as number;
@@ -623,7 +624,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   ADDMEMBER: ({ STACK }) => {
     const characterID = STACK.pop() as number;
     useGlobalStore.setState({
-      availableCharacters: [...useGlobalStore.getState().party, characterID]
+      availableCharacters: [...useGlobalStore.getState().availableCharacters, characterID]
     });
   },
   SUBMEMBER: ({ STACK }) => {
@@ -632,6 +633,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       availableCharacters: useGlobalStore.getState().availableCharacters.filter(id => id !== characterID),
       party: useGlobalStore.getState().party.filter(id => id !== characterID),
     });
+  },
+  // Flips Squall/Laguna teams
+  JUNCTION: ({ STACK }) => {
+    const isNowLaguna = (STACK.pop() as number) === 1;
+    useGlobalStore.setState(state => ({
+      ...state,
+      sleepingParty: isNowLaguna ? [...state.party] : [],
+      party: isNowLaguna ? [8, 9, 10] : [...state.sleepingParty],
+    }))
   },
   SETMODEL: ({ setState, currentOpcode }) => {
     const modelId = currentOpcode.param;
@@ -1127,7 +1137,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     setState({
       isHeadTrackingPlayer: true,
     })
-    console.log('Head tracking enabled');
   },
   FACEDIR: ({ headController, STACK }) => {
     const duration = STACK.pop() as number;
@@ -1136,30 +1145,24 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const x = STACK.pop() as number;
     
     const directionVector = vectorToFloatingPoint({x, y, z});
-    console.log('Turning head to face direction', directionVector, duration);
     headController.turnToFaceDirection(directionVector, duration);
   },
   FACEDIRA: ({ headController, scene, STACK }) => {
     const duration = STACK.pop() as number;
     const targetActorId = STACK.pop() as number;
-    console.log('Turning head to face entity', targetActorId, duration);
     headController.turnToFaceEntity(`entity--${targetActorId}`, scene, duration);
   },
   FACEDIRP: ({ headController, scene, STACK }) => {
     const duration = STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
-    console.log('Turning head to face party member', partyMemberId, duration);
     headController.turnToFaceEntity(`party--${partyMemberId}`, scene, duration);
   },
   FACEDIROFF: ({ headController, STACK }) => {
     const duration = STACK.pop() as number;
-    console.log('Turning head to face angle', 0, duration);
     headController.turnToFaceAngle(0, duration);
   },
   FACEDIRSYNC: async ({ headController }) => {
-    console.log('Waiting for head tracking to finish');
     while (headController.getState().angle.isAnimating) {
-      console.log('Waiting for head tracking to finish');
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -1170,28 +1173,31 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const x = STACK.pop() as number;
     
     const directionVector = vectorToFloatingPoint({x, y, z});
-    console.log('AWAITED Turning head to face direction', directionVector, duration);
     await headController.turnToFaceDirection(directionVector, duration);
   },
   RFACEDIRA: async ({ headController, scene, STACK }) => {
     const duration = STACK.pop() as number;
     const targetActorId = STACK.pop() as number;
-    console.log('AWAITED Turning head to face entity', targetActorId, duration);
     await headController.turnToFaceEntity(`entity--${targetActorId}`, scene, duration);
   },
   RFACEDIRP: async ({ headController, scene, STACK }) => {
     const duration = STACK.pop() as number;
     const partyMemberId = STACK.pop() as number;
-    console.log('AWAITED Turning head to face party member', partyMemberId, duration);
     await headController.turnToFaceEntity(`party--${partyMemberId}`, scene, duration);
   },
   RFACEDIROFF: async ({ headController, STACK }) => {
     const duration = STACK.pop() as number;
-    console.log('AWAITED Turning head to face angle', 0, duration);
     await headController.turnToFaceAngle(0, duration)
   },
-  FACEDIRI: ({ STACK }) => {
-    STACK.splice(-4);
+  // No idea how this differs to facedir. Inverted?
+  FACEDIRI: async ({ headController, STACK }) => {
+    const duration = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const z = STACK.pop() as number;
+    const x = STACK.pop() as number;
+    console.log(x,y,z,duration)
+    const directionVector = vectorToFloatingPoint({x, y, z});
+    await headController.turnToFaceDirection(directionVector, duration);
   },
   // This sets the maximum angle allowed, likely when a model's head loops to follow another entity
   FACEDIRLIMIT: ({ STACK }) => {
@@ -1473,13 +1479,22 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   MAPFADEOFF: () => {
     useGlobalStore.setState({ isMapFadeEnabled: false });
   },
+  // These two are used to synchronise the Eyes on Me sequence
+  // SPU here is the PS1 Sound Processing Unit
   SPUREADY: ({ STACK }) => {
-    STACK.pop() as number;
+    const startTime = STACK.pop() as number; // always 0
+    useGlobalStore.setState({ spuValue: startTime });
+    const tick = () => {
+      useGlobalStore.setState(state => ({ ...state, spuValue: state.spuValue + 1 }));
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
   },
-  SPUSYNC: async ({ currentState, STACK }) => {
+  SPUSYNC: async ({ STACK }) => {
     const frames = STACK.pop() as number;
-    while (currentState.spuValue < frames) {
-      await wait(100);
+    while (useGlobalStore.getState().spuValue < frames) {
+      console.log('Waiting for SPU sync', useGlobalStore.getState().spuValue, frames);
+      await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
   MAPJUMPON: () => {
@@ -1540,6 +1555,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const member1MovementController = member1!.userData.movementController as ReturnType<typeof createMovementController>
     const member1Position = vectorToFloatingPoint(STACK.splice(-3));
     member1MovementController.setMovementSpeed(2560);
+    console.log('Moving member1', 'from', member1MovementController.getPosition(), 'to', member1Position);
     controllerPromises.push(member1MovementController.moveToPoint(member1Position));
 
     const member2 = getPartyMemberModelComponent(scene, 1)
@@ -1547,6 +1563,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       const member2MovementController = member2!.userData.movementController as ReturnType<typeof createMovementController>
       const member2Position = vectorToFloatingPoint(STACK.splice(-3));
       member2MovementController.setMovementSpeed(2560);
+      console.log('Moving member2', 'from', member2MovementController.getPosition(), 'to', member2Position);
       member2MovementController.moveToPoint(member2Position);
       controllerPromises.push(member2MovementController.moveToPoint(member2Position));
     }
@@ -1556,6 +1573,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       const member3MovementController = member3!.userData.movementController as ReturnType<typeof createMovementController>
       const member3Position = vectorToFloatingPoint(STACK.splice(-3));
       member3MovementController.setMovementSpeed(2560);
+      console.log('Moving member3', 'from', member3MovementController.getPosition(), 'to', member3Position);
       controllerPromises.push(member3MovementController.moveToPoint(member3Position));
     }
 
@@ -1644,7 +1662,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.push(1);
   },
 
-
+  
   // SOUND
 
   FOOTSTEP: ({ currentOpcode, STACK }) => {
@@ -1765,7 +1783,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
   },
   SETBATTLEMUSIC: ({ STACK }) => {
-    STACK.pop() as number;
+    const musicId = STACK.pop() as number;
+    musicController.setBattleMusic(musicId);
   },
   PARTICLEON: ({ STACK }) => {
     STACK.pop() as number;
@@ -1793,9 +1812,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   BATTLEMODE: ({ STACK }) => {
     STACK.pop() as number;
   },
-  JUNCTION: ({ STACK }) => {
-    STACK.pop() as number;
-  },
+  // Enables changing party
   PHSENABLE: ({ STACK }) => {
     STACK.pop() as number;
   },
@@ -1899,6 +1916,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       actorMode: mode
     })
   },
+  // Removes GFs from character. Unsure if stashes details in memory for recall
   RESETGF: ({ STACK }) => {
     STACK.pop() as number;
   },

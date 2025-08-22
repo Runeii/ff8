@@ -22,7 +22,7 @@ export const createMovementController = (id: string | number, animationControlle
     needsZAdjustment: true,
     loopSignal: undefined as PromiseSignal | undefined,
     position: {
-      current: new Vector3(9999, 0, 0),
+      current: new Vector3(-1, 0, 0),
       duration: 0 as number | undefined,
       distanceToStopAnimationFromTarget: 0,
       isAnimationEnabled: true,

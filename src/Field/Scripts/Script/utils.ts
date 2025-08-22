@@ -47,7 +47,7 @@ export function asyncSetSpring<T extends object>(setSpring: SpringRef<T>, state:
   });
 }
 
-export const remoteExecute = async (scriptLabel: number, priority = 0) => new Promise<void>((resolve) => {
+export const remoteExecute = async (scriptLabel: number, priority = 10) => new Promise<void>((resolve) => {
   const key = Math.random().toString(36).substring(7);
 
   const handler = ({ detail }: { detail: { key: string }}) => {
@@ -69,7 +69,7 @@ export const remoteExecute = async (scriptLabel: number, priority = 0) => new Pr
   }));
 });
 
-export const remoteExecutePartyMember = async (scene: Scene, partyMemberIndex: number, scriptLabel: number, priority = 0) => {
+export const remoteExecutePartyMember = async (scene: Scene, partyMemberIndex: number, scriptLabel: number, priority = 10) => {
   const actor = getPartyMemberModelComponent(scene, partyMemberIndex);
   if (!actor) {
     console.warn(`Party member index ${partyMemberIndex} not found`);
@@ -93,7 +93,7 @@ export const openMessage = (id: string, text: string[], placement: MessagePlacem
     if (detail.id !== id) {
       return;
     }
-    console.log('Message closed heard:', id, 'selected option:', detail.selectedOption);
+
     resolve(detail.selectedOption);
   });
   useGlobalStore.setState({
@@ -108,8 +108,6 @@ export const openMessage = (id: string, text: string[], placement: MessagePlacem
       }
     ]
   });
-
-  console.log('Message opened:', id, text, placement, isCloseable, askOptions);
 })
 
 export const closeMessage = (id: string, selectedOptionIndex?: number) => {

@@ -45,7 +45,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     script,
     scene,
     useScriptStateStore,
-    isDebugging: false
   }), [animationController, headController, movementController, rotationController,sfxController, script, scene, useScriptStateStore]);
 
   const isVisible = useScriptStateStore(state => state.isVisible);
@@ -67,9 +66,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
       hasTriggeredDefaultRef.current = true;
       scriptController.triggerMethod('default');
       onStarted?.();
-    }
-    if (isUnused && hasTriggeredDefaultRef.current) {
-      return;
     }
     scriptController.tick();
   })
