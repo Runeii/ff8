@@ -45,16 +45,16 @@ const createScriptController = ({
     script,
   }));
 
-  const triggerMethodByIndex = async (methodIndex: number, priority = 10, sender?: number) => {
+  const triggerMethodByIndex = async (methodIndex: number, priority = 10) => {
     const method = script.methods[methodIndex]
     if (!method) {
       console.trace(`Method with index ${methodIndex} not found in script for ${script.groupId}`);
       return;
     }
-    await triggerMethod(method.methodId, priority, sender);
+    await triggerMethod(method.methodId, priority);
   }
 
-  const triggerMethod = async (methodId: string, priority = 10, sender?: number) => {
+  const triggerMethod = async (methodId: string, priority = 10) => {
     const method = script.methods.find(method => method.methodId === methodId);
     if (!method) {
       console.warn(`Method with id ${methodId} not found in script for ${script.groupId}`);

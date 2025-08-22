@@ -556,12 +556,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const priority = STACK.pop();
     remoteExecute(label, priority)
   },
-  REQEW: async ({ STACK, script, sender }) => {
+  REQEW: async ({ STACK, script }) => {
     const label = STACK.pop() as number;
     const priority = STACK.pop();
-    console.log('REQEW', label, priority, 'from', script.groupId, sender ? `within a subroutine sent by ${sender}` : '');
-    await remoteExecute(label, priority, script.groupId)
-    console.log('Completed REQEW', label, priority, 'from', script.groupId, sender ? `within a subroutine sent by ${sender}` : '');
+    console.log('REQEW', label, priority, 'from', script.groupId);
+    await remoteExecute(label, priority)
+    console.log('Completed REQEW', label, priority, 'from', script.groupId);
   },
   PREQ: ({ currentOpcode, scene, STACK }) => {
     const partyMemberIndex = currentOpcode.param as number;
@@ -576,11 +576,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const priority = STACK.pop() as number;
     remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
   },
-  PREQEW: async ({ currentOpcode, scene, STACK, script, sender }) => {
+  PREQEW: async ({ currentOpcode, scene, STACK }) => {
     const partyMemberIndex = currentOpcode.param as number;
     const label = STACK.pop() as number;
     const priority = STACK.pop() as number;
-    await remoteExecutePartyMember(scene, partyMemberIndex, label, priority, script.groupId)
+    await remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
   },
   ISPARTY: ({ STACK, TEMP_STACK }) => {
     const characterID = STACK.pop() as number;
