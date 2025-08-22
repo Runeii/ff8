@@ -172,24 +172,6 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       isAnimationEnabled: true,
       userControlledSpeed: movementSpeed,
     });
-
-    useGlobalStore.setState(state => {
-      state.hasMoved = true;
-
-      const latestCongaWaypoint = state.congaWaypointHistory[0];
-      if (latestCongaWaypoint && latestCongaWaypoint.position.distanceTo(newPosition) < 0.005) {
-        return state;
-      }
-      state.congaWaypointHistory.push({
-        position: newPosition.clone(),
-        angle: movementAngle,
-        speed: movementSpeed
-      })
-      if (state.congaWaypointHistory.length > 100) {
-        state.congaWaypointHistory.shift();
-      }
-      return state;
-    });
   }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, rotationController, handleMovement, isRunEnabled, movementFlags.isWalking, movementController, characterHeight]);
 
   useFrame(({ scene }, delta) => {

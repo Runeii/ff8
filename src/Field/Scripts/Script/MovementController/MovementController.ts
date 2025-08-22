@@ -3,6 +3,8 @@ import { create } from "zustand";
 import { getPositionOnWalkmesh, numberToFloatingPoint } from "../../../../utils";
 import { createAnimationController } from "../AnimationController/AnimationController";
 import PromiseSignal from "../../../../PromiseSignal";
+import useGlobalStore from "../../../../store";
+import { createRotationController } from "../RotationController/RotationController";
 
 export type MoveOptions = {
   customMovementTarget: Vector3 | undefined;
@@ -17,6 +19,7 @@ export const createMovementController = (id: string | number, animationControlle
   let isStopping = false;
 
   const {getState, setState, subscribe} = create(() => ({
+    hasBeenPlaced: false,
     id,
     movementSpeed: 2560,
     needsZAdjustment: true,
@@ -84,6 +87,7 @@ export const createMovementController = (id: string | number, animationControlle
   const setPosition = (position: Vector3) => {
     resolvePendingPositionSignal();
     setState({
+      hasBeenPlaced: true,
       needsZAdjustment: true,
       position: {
         ...getState().position,
@@ -137,6 +141,7 @@ export const createMovementController = (id: string | number, animationControlle
     const signal = new PromiseSignal();
 
     setState({
+      hasBeenPlaced: true,
       position: {
         current: getState().position.current,
         goal: target,
@@ -241,7 +246,12 @@ export const createMovementController = (id: string | number, animationControlle
     });
   }
 
+  let positionPauseStateBeforePause = false;
+  let offsetPauseStateBeforePause = false;
   const pause = () => {
+    positionPauseStateBeforePause = getState().position.isPaused;
+    offsetPauseStateBeforePause = getState().offset.isPaused;
+
     setState({
       position: {
         ...getState().position,
@@ -252,8 +262,19 @@ export const createMovementController = (id: string | number, animationControlle
         isPaused: true,
       }
     });
-    
-    animationController.playMovementAnimation('stand');
+  }
+
+  const resume = () => {
+    setState({
+      position: {
+        ...getState().position,
+        isPaused: positionPauseStateBeforePause,
+      },
+      offset: {
+        ...getState().offset,
+        isPaused: offsetPauseStateBeforePause,
+      }
+    });
   }
 
   ///
@@ -345,6 +366,7 @@ export const createMovementController = (id: string | number, animationControlle
         currentPosition.copy(positionGoal);
         resolvePendingPositionSignal();
         setState({
+          hasBeenPlaced: true,
           position: {
             ...getState().position,
             userControlledSpeed: undefined,
@@ -390,6 +412,28 @@ export const createMovementController = (id: string | number, animationControlle
 
     entity.position.set(getPosition().x, getPosition().y, getPosition().z);
     entity.userData.hasBeenPlaced = true;
+
+    if (id !== useGlobalStore.getState().party[0]) {
+      return;
+    }
+
+    useGlobalStore.setState(state => {
+      state.hasMoved = true;
+
+      const latestCongaWaypoint = state.congaWaypointHistory[0];
+      if (latestCongaWaypoint && latestCongaWaypoint.position.distanceTo(entity.position) < 0.005) {
+        return state;
+      }
+      state.congaWaypointHistory.push({
+        position: entity.position.clone(),
+        angle: (entity.userData.rotationController as ReturnType<typeof createRotationController>).getState().angle.get(),
+        speed: movementSpeed
+      })
+      if (state.congaWaypointHistory.length > 100) {
+        state.congaWaypointHistory.shift();
+      }
+      return state;
+    });
   }
 
   const setHasAdjustedZ = (hasAdjustedZ: boolean) => {
@@ -427,9 +471,14 @@ export const createMovementController = (id: string | number, animationControlle
     }))
   }
 
+  const hasBeenPlaced = () => {
+    return getState().hasBeenPlaced;
+  }
+
   return {
     getState,
     getPosition,
+    hasBeenPlaced,
     loopOffsets,
     moveToObject,
     moveToOffset,
@@ -448,6 +497,7 @@ export const createMovementController = (id: string | number, animationControlle
     tick,
     setHasAdjustedZ,
     reset,
+    resume,
   }
 }
 

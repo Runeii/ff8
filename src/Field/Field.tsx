@@ -91,19 +91,9 @@ const FieldLoader = (props: FieldLoaderProps) => {
 
   const fieldId = useGlobalStore(state => state.fieldId);
 
-  const currentFieldIdRef = useRef(fieldId);
   const [data, setData] = useState<FieldProps['data'] | null>(null);
   
   const gl = useThree(({ gl }) => gl);
-
-  useEffect(() => {
-    if (!currentFieldIdRef.current || fieldId === currentFieldIdRef.current) {
-      return;
-    }
-
-    MEMORY[84] = Object.values(MAP_NAMES).indexOf(currentFieldIdRef.current);
-    currentFieldIdRef.current = fieldId;
-  }, [fieldId]);
 
   useEffect(() => {
     const handleTransition = async () => {
@@ -113,8 +103,8 @@ const FieldLoader = (props: FieldLoaderProps) => {
       }
       const { isLoadingSavedGame, isMapFadeEnabled } = useGlobalStore.getState();
       
-      const nonReactiveFieldId = useGlobalStore.getState().fieldId;
-      const isSwitchingBetweenMaps = nonReactiveFieldId && pendingFieldId && pendingFieldId !== nonReactiveFieldId;
+      const lastFieldId = useGlobalStore.getState().fieldId;
+      const isSwitchingBetweenMaps = lastFieldId && pendingFieldId && pendingFieldId !== lastFieldId;
       if (isMapFadeEnabled && isSwitchingBetweenMaps) {
         // @ts-expect-error We don't need args for this function
         OPCODE_HANDLERS.FADEOUT();
@@ -125,6 +115,10 @@ const FieldLoader = (props: FieldLoaderProps) => {
       sendToDebugger('reset')
       setData(null);
       gl.clear();
+
+      if (lastFieldId) {
+        MEMORY[84] = Object.values(MAP_NAMES).indexOf(lastFieldId);
+      }
 
       if (pendingFieldId === 'wm00') {
         useGlobalStore.setState({

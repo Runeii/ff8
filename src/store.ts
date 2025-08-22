@@ -49,6 +49,19 @@ interface GlobalState {
     xScrollSpeed: number,
     yScrollSpeed: number,
   }>,
+  layerTints: Record<number, {
+    durationIn: number,
+    durationOut: number,
+    startRed: number,
+    startGreen: number,
+    startBlue: number,
+    endRed: number,
+    endGreen: number,
+    endBlue: number,
+    holdIn: number,
+    holdOut: number,
+    isLooping: boolean,
+  }>,
 
   colorOverlay: {
     startRed: number,
@@ -128,6 +141,7 @@ export const INITIAL_STATE: GlobalState = {
     backgroundLayerVisibility: {},
     currentParameterStates: {},
     currentParameterVisibility: {},
+    layerTints: {},
   
     isMapJumpEnabled: true,
   
@@ -150,7 +164,7 @@ export const INITIAL_STATE: GlobalState = {
     isMapFadeEnabled: true,
   
     availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    party: [0],
+    party: [0,1,2],
     sleepingParty: [],
 
     congaWaypointHistory: [],

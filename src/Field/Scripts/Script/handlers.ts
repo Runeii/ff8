@@ -48,13 +48,15 @@ export let MEMORY: Record<number, number> = {
   1024: 0,
   1025: 0,
   
-  320: 3,
   84: 0, // last area visited
+
   256: 0, // progress
+  528: 0, // subprogress
+
   720: 0, // squall model
-  721: 2, // zell model
-  722: 1, // selphie model
-  723: 1, // quistis model
+  721: 0, // zell model
+  722: 0, // selphie model
+  723: 0, // quistis model
 };
 
 export const restoreMemory = (savedMemory: typeof MEMORY) => {
@@ -360,9 +362,68 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       true,
     )
   },
-  BGSHADE: ({ STACK }) => {
-    STACK.splice(-7); // const lastSeven = STACK.splice(-7);
+  BGSHADE: ({ script, STACK }) => {
+    const endBlue = STACK.pop() as number;
+    const endGreen = STACK.pop() as number;
+    const endRed = STACK.pop() as number;
+    const startBlue = STACK.pop() as number;
+    const startGreen = STACK.pop() as number;
+    const startRed = STACK.pop() as number;
+    const duration = STACK.pop() as number;
+
+    useGlobalStore.setState(state => ({
+      layerTints: {
+        ...state.layerTints,
+        [script.backgroundParamId]: {
+          durationIn: duration,
+          durationOut: 0,
+          startRed,
+          startGreen,
+          startBlue,
+          endRed,
+          endGreen,
+          endBlue,
+          holdIn: 0,
+          holdOut: 0,
+          isLooping: false
+        }
+      }
+    }))
   },
+  RBGSHADELOOP: ({ script,STACK }) => {
+    console.log(script)
+    const holdOut = STACK.pop() as number;
+    const holdIn = STACK.pop() as number;
+    const endBlue = STACK.pop() as number;
+    const endGreen = STACK.pop() as number;
+    const endRed = STACK.pop() as number;
+    const startBlue = STACK.pop() as number;
+    const startGreen = STACK.pop() as number;
+    const startRed = STACK.pop() as number;
+    const durationOut = STACK.pop() as number;
+    const durationIn = STACK.pop() as number;
+
+    useGlobalStore.setState(state => ({
+      layerTints: {
+        ...state.layerTints,
+        [script.backgroundParamId]: {
+          durationIn,
+          durationOut,
+          startRed,
+          startGreen,
+          startBlue,
+          endRed,
+          endGreen,
+          endBlue,
+          holdIn,
+          holdOut,
+          isLooping: true
+        }
+      }
+    }))
+  },
+  BGSHADESTOP: () => { },
+  BGSHADEOFF: dummiedCommand,
   BGANIME: async ({ currentState, setState, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
@@ -890,6 +951,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   GETINFO: ({ scene, script, TEMP_STACK }) => {
     const entity = getScriptEntity(scene, script.groupId);
+    if (!entity) {
+      console.warn('Entity not found', script.groupId);
+      return;
+    }
     const position = entity.getWorldPosition(new Vector3());
 
     // We need to get this script entity's X/Y and stick it in to:
@@ -1643,16 +1708,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
     console.error('GAME OVER WHAT DID YOU DO');
   },
-  // Memory 80 is used to track frames. This is used to fake a movie
-  MOVIE: () => {
-    MEMORY['80'] = 0;
-    const interval = setInterval(() => {
-      MEMORY['80'] += 100;
-      if (MEMORY['80'] > 3000) {
-        clearInterval(interval);
-      }
-    }, 1000 / 30);
-  },
   ADDGIL: ({ STACK }) => {
     const gil = STACK.pop() as number;
     MEMORY[72] += gil;
@@ -1757,6 +1812,33 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       channel: 0,
     }, true, undefined)
   },
+  SETBATTLEMUSIC: ({ STACK }) => {
+    const musicId = STACK.pop() as number;
+    musicController.setBattleMusic(musicId);
+  },
+
+
+  /// MOVIES
+  MOVIEREADY: ({ STACK }) => {
+    STACK.pop() as number;
+    STACK.pop() as number;
+  },
+  // Memory 80 is used to track frames. This is used to fake a movie
+  MOVIE: () => {
+    MEMORY['80'] = 0;
+    const interval = setInterval(() => {
+      MEMORY['80'] += 100;
+      if (MEMORY['80'] > 3000) {
+        clearInterval(interval);
+      }
+    }, 1000 / 30);
+  },
+  // Camera movement during movie overlays
+  SETDCAMERA: ({ STACK }) => {
+    STACK.pop() as number;
+  },
+  MOVIESYNC: dummiedCommand, // used to sync with a movie, we do not show movies so this is dummied and returns done immediately
+
   DRAWPOINT: ({ STACK }) => {
     // drawpoint ID
     STACK.pop() as number;
@@ -1778,25 +1860,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
     STACK.pop() as number;
   },
-  MOVIEREADY: ({ STACK }) => {
-    STACK.pop() as number;
-    STACK.pop() as number;
-  },
-  SETBATTLEMUSIC: ({ STACK }) => {
-    const musicId = STACK.pop() as number;
-    musicController.setBattleMusic(musicId);
-  },
   PARTICLEON: ({ STACK }) => {
     STACK.pop() as number;
   },
   SHADESET: ({ STACK }) => {
     STACK.pop() as number;
   },
-  BGSHADESTOP: () => { },
-  RBGSHADELOOP: ({ STACK }) => {
-    STACK.splice(-10);
-  },
-  BGSHADEOFF: dummiedCommand,
   CARDGAME: ({ STACK }) => {
     STACK.splice(-7);
   },
@@ -1839,9 +1908,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.pop() as number;
   },
   MENUTIPS: ({ STACK }) => {
-    STACK.pop() as number;
-  },
-  SETDCAMERA: ({ STACK }) => {
     STACK.pop() as number;
   },
   SETMESSPEED: ({ STACK }) => {
@@ -1974,8 +2040,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.splice(-3);
   },
   SETDRESS: ({ STACK }) => {
-    STACK.pop() as number;
-    STACK.pop() as number;
+    const outfitId = STACK.pop() as number;
+    const playerId = STACK.pop() as number;
+    console.log('Set dress:', { outfitId, playerId });
+    MEMORY[720 + playerId] = outfitId;
   },
   // Used once in the balamb basement. I think it might clear a ladder key?
   KEY: ({ STACK }) => {
@@ -2157,7 +2225,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   LBL: dummiedCommand,
 
   // Do not touch stack
-  MOVIESYNC: dummiedCommand, // used to sync with a movie, we do not show movies so this is dummied and returns done immediately
   REST: dummiedCommand, // heal party and GFs
   REFRESHPARTY: dummiedCommand, // used to ensure party changes are reflected everywhere, afaik
   SWAP: dummiedCommand, // swap party members, works across whole party so probably for Laguna scenes

@@ -106,7 +106,7 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     const heightScale = layer.canvas.height / layer.canvas.width;
     const height = width * heightScale
 
-    layerRef.current.scale.set(width * 3, height * 3, 1)
+    layerRef.current.scale.set(width, height, 1)
 
     /*
     // Panning
@@ -192,9 +192,8 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
           minFilter={NearestFilter}
           colorSpace={SRGBColorSpace}
           magFilter={NearestFilter}
-          wrapS={RepeatWrapping}
-          wrapT={RepeatWrapping}
-          repeat={new Vector2(3, 3) }
+          wrapS={ClampToEdgeWrapping}
+          wrapT={ClampToEdgeWrapping}
         />
       </spriteMaterial>
     </sprite>

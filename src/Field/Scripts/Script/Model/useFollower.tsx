@@ -5,6 +5,7 @@ import createRotationController from "../RotationController/RotationController";
 import { useState } from "react";
 import { Vector3 } from "three";
 import { createAnimationController } from "../AnimationController/AnimationController";
+import { getPartyMemberModelComponent, getPlayerEntity } from "./modelUtils";
 
 type UseFollowerProps = {
   animationController: ReturnType<typeof createAnimationController>;
@@ -18,7 +19,7 @@ const DISTANCE = 35;
 const useFollower = ({ animationController, isActive, movementController, partyMemberId, rotationController }: UseFollowerProps) => {
   const [currentPosition] = useState(new Vector3());
   const [targetPosition] = useState(new Vector3());
-  useFrame(() => {
+  useFrame(({scene}) => {
     if (!isActive || !movementController || !rotationController || partyMemberId === undefined) {
       return;
     }
@@ -30,11 +31,29 @@ const useFollower = ({ animationController, isActive, movementController, partyM
 
     const offset = party.findIndex(id => id === partyMemberId);
     const history = congaWaypointHistory.at(-1 * offset * DISTANCE - 1);
+    if (!history && !movementController.hasBeenPlaced()) {
+      const leaderEntity = getPlayerEntity(scene);
+      const thisMemberEntity = getPartyMemberModelComponent(scene, offset);
+      if (!leaderEntity || !thisMemberEntity) {
+        return;
+      }
+
+      const leaderMovementController = leaderEntity.userData.movementController as ReturnType<typeof createMovementController>;
+
+      const position = leaderMovementController.getPosition();
+      const forward = new Vector3(-1, 0, 0);
+      forward.applyQuaternion(leaderEntity.quaternion);
+      forward.normalize();
+      movementController.setPosition(new Vector3(position.x, position.y, position.z).sub(forward.multiplyScalar(0.04 * offset)));
+      thisMemberEntity.quaternion.copy(leaderEntity.quaternion);
+      rotationController.turnToFaceDirection(forward, 0);
+
+      return;
+    }
 
     if (!history) {
       return;
     }
-
     const { position, angle, speed } = history;
 
     const followerPosition = movementController.getPosition();

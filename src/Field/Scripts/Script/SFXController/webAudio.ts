@@ -114,10 +114,10 @@ export const createAudioSource = async (
   const loopStart = loopPoint ? loopPoint[0] / 1000 : undefined;
   const loopEnd = loopPoint ? loopPoint[1] / 1000 : undefined;
 
-  if (loopStart !== undefined && loopEnd !== undefined) {
-    source.loopStart = loopStart;
-    source.loopEnd = loopEnd;
-  }
+//  if (loopStart !== undefined && loopEnd !== undefined) {
+//    source.loopStart = loopStart;
+//    source.loopEnd = loopEnd;
+//  }
 
   return {
     source,
@@ -176,6 +176,9 @@ export const playWithLoop = (
 ): void => {
   const { source, loopStart, loopEnd } = sourceNode;
   
+  source.loop = false;
+  source.start();
+  return;
   if (!loopStart || !loopEnd) {
     source.loop = false;
     source.start();

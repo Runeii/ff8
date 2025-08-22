@@ -13,7 +13,7 @@ export const createRotationController = (
   const { getState, setState } = create(() => ({
     angle: new SpringValue(0),
     id,
-    limits: [-255, 255],
+    limits: undefined as [number, number] | undefined,
     target: undefined,
   }));
 
@@ -25,7 +25,8 @@ export const createRotationController = (
     const currentAngle = getState().angle
     const targetAngle = getShortestRouteToAngle(angle, currentAngle.get());
 
-    const limitedAngle = Math.max(getState().limits[0], Math.min(getState().limits[1], targetAngle));
+    const limits = getState().limits;
+    const limitedAngle = limits ? Math.max(limits[0], Math.min(limits[1], targetAngle)) : targetAngle;
     await currentAngle.start(limitedAngle % 256, {
       config: {
         duration: duration * 1000 / 30,

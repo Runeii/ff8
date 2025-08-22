@@ -122,7 +122,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     backgroundAnimationSpring.pause();
   }, [animationController, isTransitioningMap, movementController, useScriptStateStore]);
 
-  const savedRotationBeforeSpeaking = useRef<undefined | number>(undefined);
+  const hasPausedMovement = useRef(false);
   useFrame(({ scene }, delta) => {
     if (!entityRef.current || script.type !== 'model') {
       return;
@@ -139,14 +139,14 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     }
 
     const isTalkingToPlayer = scriptController.isTalkingToPlayer();
-    if (isTalkingToPlayer && savedRotationBeforeSpeaking.current === undefined) {
-      savedRotationBeforeSpeaking.current = rotationController.getState().angle.get();
-      rotationController.turnToFaceEntity('party--0', scene, 10);
+    if (isTalkingToPlayer && !hasPausedMovement.current) {
+      movementController.pause();
+      hasPausedMovement.current = true;
     }
 
-    if (!isTalkingToPlayer && savedRotationBeforeSpeaking.current !== undefined) {
-      rotationController.turnToFaceAngle(savedRotationBeforeSpeaking.current, 30);
-      savedRotationBeforeSpeaking.current = undefined;
+    if (!isTalkingToPlayer && hasPausedMovement.current) {
+      movementController.resume();
+      hasPausedMovement.current = false;
     }
 
     const raw256Angle = rotationController.getState().angle.get();
