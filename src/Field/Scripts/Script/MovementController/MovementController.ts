@@ -4,9 +4,10 @@ import { numberToFloatingPoint } from "../../../../utils";
 import { createAnimationController } from "../AnimationController/AnimationController";
 import PromiseSignal from "../../../../PromiseSignal";
 import useGlobalStore from "../../../../store";
-import { createRotationController } from "../RotationController/RotationController";
+import createRotationController from "../RotationController/RotationController";
+import createScriptState from "../state";
 
-export type MoveOptions = {
+type MoveOptions = {
   customMovementTarget: Vector3 | undefined;
   duration: number | undefined;
   isAnimationEnabled: boolean;
@@ -15,7 +16,7 @@ export type MoveOptions = {
   distanceToStopAnimationFromTarget: number;
 }
 
-export const createMovementController = (id: string | number, animationController: ReturnType<typeof createAnimationController>, scene: Scene) => {
+const createMovementController = (id: string | number, animationController: ReturnType<typeof createAnimationController>, useScriptStateStore: ReturnType<typeof createScriptState>) => {
   let isStopping = false;
 
   const {getState, setState, subscribe} = create(() => ({
@@ -411,7 +412,8 @@ export const createMovementController = (id: string | number, animationControlle
     entity.position.set(getPosition().x, getPosition().y, getPosition().z);
     entity.userData.hasBeenPlaced = true;
 
-    if (id !== useGlobalStore.getState().party[0]) {
+
+    if (useScriptStateStore.getState().partyMemberId !== useGlobalStore.getState().party[0]) {
       return;
     }
 

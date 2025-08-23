@@ -87,14 +87,8 @@ interface GlobalState {
   isPartyFollowing: boolean,
 
   cameraFocusHeight: number,
-  cameraScrollSpring: {
-    x: SpringValue<number>,
-    y: SpringValue<number>,
-  },
-  layerScrollSprings: {
-    x: SpringValue<number>,
-    y: SpringValue<number>,
-  }[],
+  cameraScrollOffset: CameraScrollTransition
+  layerScrollOffsets: Record<number, CameraScrollTransition>,
   cameraFocusObject: Object3D | undefined,
   cameraFocusSpring: SpringValue<number> | undefined,
 
@@ -116,7 +110,7 @@ interface GlobalState {
   spuValue: number
 }
 
-export const INITIAL_STATE: GlobalState = {
+const INITIAL_STATE: GlobalState = {
     isDebugMode: false,
     isOfflineSupported: false,
 
@@ -167,7 +161,7 @@ export const INITIAL_STATE: GlobalState = {
     isMapFadeEnabled: true,
   
     availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    party: [0],
+    party: [0,1,2],
     sleepingParty: [],
 
     congaWaypointHistory: [],
@@ -175,14 +169,15 @@ export const INITIAL_STATE: GlobalState = {
     isPartyFollowing: true,
   
     cameraFocusHeight: 0,
-    cameraScrollSpring: {
-      x: new SpringValue(0),
-      y: new SpringValue(0),
+    cameraScrollOffset: {
+      startX: 0,
+      startY: 0,
+      endX: 0,
+      endY: 0,
+      duration: 0,
+      isInProgress: false,
     },
-    layerScrollSprings: new Array(8).fill(0).map(() => ({
-      x: new SpringValue(0),
-      y: new SpringValue(0),
-    })),
+    layerScrollOffsets: {},
     cameraFocusObject: undefined,
     cameraFocusSpring: undefined,
 

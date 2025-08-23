@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { Group, Object3D, PerspectiveCamera, Scene, Vector3 } from "three";
+import { Object3D, PerspectiveCamera, Scene, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
-import { useFrame, useThree } from "@react-three/fiber";
-import { checkForIntersections, getPositionOnWalkmesh } from "../../../../utils";
+import { useFrame } from "@react-three/fiber";
+import { checkForIntersections } from "../../../../utils";
 import useGlobalStore from "../../../../store";
 import { convert256ToRadians } from "../utils";
 import createMovementController from "../MovementController/MovementController";
@@ -28,8 +28,6 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
   const isRunEnabled = useGlobalStore((state) => state.isRunEnabled);
   
   const movementFlags = useKeyboardControls();
-
-  const scene = useThree(({ scene }) => scene);
 
   const [hasPlacedCharacter, setHasPlacedCharacter] = useState(false);
   

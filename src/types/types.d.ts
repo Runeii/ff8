@@ -159,6 +159,15 @@ declare global {
   type Door = FieldData['doors'][number] & {
     name: string;
   };
+
+  type CameraScrollTransition = {
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    duration: number;
+    isInProgress: boolean;
+  }
 }
 
 export { };

@@ -56,7 +56,7 @@ export type ScriptState = {
   actorMode: number;
 }
 
-export const createScriptState = (script: Script) => {
+const createScriptState = (script: Script) => {
   const creator = create<ScriptState>()(() => ({ 
     characterHeight: 0.6, // default to a reasonable height
 
@@ -113,7 +113,9 @@ export const createScriptState = (script: Script) => {
       return;
     }
     const changedState = Object.keys(state).reduce((acc, key) => {
+      // @ts-expect-error Error
       if (state[key] !== prevState[key]) {
+        // @ts-expect-error Error
         acc[key] = state[key];
       }
       return acc;
@@ -129,4 +131,4 @@ export const createScriptState = (script: Script) => {
 
 export type ScriptStateStore = UseBoundStore<StoreApi<ScriptState>>
 
-export default createScriptState;
+export default createScriptState

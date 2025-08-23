@@ -74,7 +74,7 @@ export default function App() {
         </Canvas>
         <Canvas camera={undefined} className="canvas" gl={{
           logarithmicDepthBuffer: true,
-        }} frameloop="always">
+        }} frameloop="demand">
           <Ui />
         </Canvas>
         {isDebugMode && <Queues />}

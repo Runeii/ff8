@@ -12,7 +12,7 @@ const KEY_MAP: Record<string, keyof MovementFlags> = {
   KeyD: "right",
 };
 
-export const onMovementKeyPress = (
+const onMovementKeyPress = (
   invalidate: (frames?: number) => void,
   setMovementFlags: Dispatch<SetStateAction<MovementFlags>>,
   value: boolean

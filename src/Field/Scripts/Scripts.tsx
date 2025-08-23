@@ -4,7 +4,7 @@ import Script from "./Script/Script";
 import { Script as ScriptType } from "./types";
 import useGlobalStore from "../../store";
 
-export type ScriptsProps = {
+type ScriptsProps = {
   doors: FieldData['doors'],
   models: string[],
   scripts: ScriptType[]

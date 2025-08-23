@@ -1,6 +1,6 @@
 import { Box3, Group, Mesh, Sphere, Vector3 } from "three";
 import { ScriptMethod } from "../../types";
-import {  useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import {  useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
 import { ScriptStateStore } from "../state";
@@ -29,8 +29,6 @@ const usePushRadius = ({ isActive, scriptController, pushMethod, useScriptStateS
   }, [pushMethod]);
 
   const isPlayerAbleToPush = isUserControllable && isPushable && !hasActivePushMethod && hasValidPushMethod && !hasActiveText;
-
-  const [isIntersecting, setIsIntersecting] = useState(false);
 
   const reusableBox = useRef(new Box3());
   const reusableSphere = useRef(new Sphere());
@@ -86,19 +84,13 @@ const usePushRadius = ({ isActive, scriptController, pushMethod, useScriptStateS
     sphere.radius *= worldScale;
 
     const isIntersecting = sphere.intersectsBox(worldBox);
-    setIsIntersecting(isIntersecting);
-  });
+    if (isIntersecting && !hasActivePushMethod) {
+      useGlobalStore.setState({ hasActivePushMethod: true });
 
-  useEffect(() => {
-    if (!isActive || !isIntersecting || !isPlayerAbleToPush) {
-      return;
+      scriptController.triggerMethod('push').then(() => {
+        useGlobalStore.setState({ hasActivePushMethod: false });
+      });
     }
-
-    useGlobalStore.setState({ hasActivePushMethod: true });
-    scriptController.triggerMethod('push').then(() => {
-      useGlobalStore.setState({ hasActivePushMethod: false });
-    });
-  }, [isActive, isIntersecting, scriptController, isPlayerAbleToPush]);
-}
+  });}
 
 export default usePushRadius;

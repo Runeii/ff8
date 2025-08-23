@@ -163,16 +163,4 @@ export const formatNameTags = (string: string) => {
   return result;
 }
 
-
-export const convertFF8GrayscaleToRGB = (colorValue: number) => {
-  // Normalize the value to 0-1 range
-  const normalizedValue = colorValue / 4096;
-  
-  // Convert to 8-bit RGB component (0-255)
-  const rgbComponent = Math.round(normalizedValue * 255);
-  
-  // Return RGB string for canvas
-  return `rgb(${rgbComponent}, ${rgbComponent}, ${rgbComponent})`;
-}
-
 export const isSavePointMessage = (message: Message) => message.text[0].startsWith(`【Save Point】`)

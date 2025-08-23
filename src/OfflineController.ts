@@ -9,8 +9,6 @@ export const SERVICE_WORKER_STATE = {
   },
 }
 
-export type ServiceWorkerState = typeof SERVICE_WORKER_STATE;
-
 const OfflineController = () => {
   const { getState, setState, subscribe } = createStore(() => structuredClone(SERVICE_WORKER_STATE));
   

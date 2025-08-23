@@ -8,7 +8,6 @@ import { createAnimationController } from "../AnimationController/AnimationContr
 import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
 import createScriptController from "../ScriptController/ScriptController";
-import { getPositionOnWalkmesh } from "../../../../utils";
 import { Box, Sphere } from "@react-three/drei";
 import useControls from "./useControls";
 import useFootsteps from "./useFootsteps";
@@ -137,7 +136,7 @@ const Model = ({animationController, models, scriptController, movementControlle
   const rootBoneDistanceFromStanding = useRef<number>(0);
 
   const walkmeshController = useGlobalStore(state => state.walkmeshController);
-  useFrame(({scene}) => {
+  useFrame(() => {
     if (!animationGroupRef.current) {
       return;
     }
@@ -229,7 +228,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     <group>
       {
         hasPushableSphere && (
-          <Sphere args={[0.1 / 500 * pushRadius, 16, 16]} ref={pushableSphereRef} visible={isDebugMode}>
+          <Sphere args={[(0.1 / 500) * pushRadius, 16, 16]} ref={pushableSphereRef} visible={true}>
             <meshBasicMaterial color="green" side={DoubleSide} opacity={0.2} transparent />
           </Sphere>
         )

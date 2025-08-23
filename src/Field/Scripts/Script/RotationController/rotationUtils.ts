@@ -57,12 +57,6 @@ export const signedAngleBetweenVectors = (v1: Vector3, v2: Vector3, axis: Vector
     return angle * sign;
 }
 
-export const unitToRadians = (unit: number) => {
-  const normalizedValue = unit % 256;
-  const radians = (normalizedValue * Math.PI * 2) / 256;
-  return radians;
-}
-
 export const radiansToUnit = (radians: number) => {
   const normalizedValue = (radians * 256) / (Math.PI * 2);
   return Math.floor(normalizedValue) % 256;

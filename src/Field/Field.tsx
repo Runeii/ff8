@@ -12,13 +12,10 @@ import { Script } from './Scripts/types';
 import { getInitialEntrance } from '../utils';
 import { MEMORY, OPCODE_HANDLERS } from './Scripts/Script/handlers';
 import MAP_NAMES from '../constants/maps';
-import { SpringValue } from '@react-spring/web';
 import { getFieldData } from './fieldUtils';
 import Onboarding from '../Onboarding/Onboarding';
 import { AREA_NAMES } from '../constants/areaNames';
 import { preloadMapSoundBank } from './Scripts/Script/SFXController/webAudio';
-import { sendToDebugger } from '../Debugger/debugUtils';
-import { Line } from '@react-three/drei';
 
 export type RawFieldData = typeof data;
 
@@ -163,14 +160,15 @@ const FieldLoader = (props: FieldLoaderProps) => {
         cameraFocusHeight: data.cameraFocusHeight,
         cameraFocusObject: undefined,
         cameraFocusSpring: undefined,
-        cameraScrollSpring: {
-          x: new SpringValue(0),
-          y: new SpringValue(0),
+        cameraScrollOffset: {
+          startX: 0,
+          startY: 0,
+          endX: 0,
+          endY: 0,
+          duration: 0,
+          isInProgress: false
         },
-        layerScrollSprings: new Array(8).fill(0).map(() => ({
-          x: new SpringValue(0),
-          y: new SpringValue(0),
-        })),
+        layerScrollOffsets: {},
 
         colorOverlay: {
           startRed: 0,

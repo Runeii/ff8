@@ -15,7 +15,7 @@ let audioContext: AudioContext | null = null;
 let preloadedSoundBank: Record<number, AudioBuffer> = {};
 let isUserActivationSetup = false;
 
-export const initializeAudioContext = async (): Promise<AudioContext> => {
+const initializeAudioContext = async (): Promise<AudioContext> => {
   if (!audioContext) {
     audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: AudioContext }).webkitAudioContext)();
   }
@@ -49,7 +49,7 @@ export const setupUserActivation = (): void => {
   document.addEventListener('touchstart', activateAudio, { once: true });
 };
 
-export const loadAudioBuffer = async (url: string): Promise<AudioBuffer> => {
+const loadAudioBuffer = async (url: string): Promise<AudioBuffer> => {
   const context = await initializeAudioContext();
   
   const response = await fetch(url);

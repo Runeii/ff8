@@ -5,7 +5,6 @@ import loopPoints from './loop_points.json';
 import {
   AudioSourceNode,
   setupUserActivation,
-  preloadMapSoundBank,
   createAudioSource,
   setVolumeForSource,
   setPanForSource,
@@ -21,7 +20,7 @@ interface SFXControllerState {
   channels: Record<number, AudioSourceNode[]>;
 }
 
-export const createSFXController = (id: string | number, sounds: FieldData['sounds']) => {
+const createSFXController = (id: string | number, sounds: FieldData['sounds']) => {
   setupUserActivation();
 
   const { getState, setState } = create<SFXControllerState>(() => ({

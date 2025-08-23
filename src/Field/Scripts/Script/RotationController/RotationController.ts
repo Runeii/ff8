@@ -2,10 +2,10 @@ import { SpringValue } from "@react-spring/web";
 import { Group, Scene, Vector3 } from "three";
 import { create } from "zustand";
 import createMovementController from "../MovementController/MovementController";
-import { getDirectionToVector, getShortestRouteToAngle, radiansToUnit, signedAngleBetweenVectors, unitToRadians } from "./rotationUtils";
+import { getDirectionToVector, getShortestRouteToAngle, radiansToUnit, signedAngleBetweenVectors } from "./rotationUtils";
 import { RefObject } from "react";
 
-export const createRotationController = (
+const createRotationController = (
   id: string | number,
   movementController: ReturnType<typeof createMovementController>,
   entityRef: RefObject<Group | null>

@@ -1,9 +1,8 @@
 import { SpringValue } from "@react-spring/web";
 import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
-import { convert255ToRadians, convertRadiansTo255, getRotationAngleToDirection, openMessage } from "./utils";
+import { openMessage } from "./utils";
 import { Group, Object3D, Scene, Vector3 } from "three";
-import { WORLD_DIRECTIONS } from "../../../utils";
 
 export const displayMessage = async (id: number, x: number, y: number, channel: number, width?: number, height?: number, isCloseable = true) => {
   const { availableMessages } = useGlobalStore.getState();
@@ -16,84 +15,6 @@ export const displayMessage = async (id: number, x: number, y: number, channel: 
     width,
     height,
   }, isCloseable, undefined);
-}
-
-export const turnToFaceAngle = async (angle: number, frames: number, spring: SpringValue<number>) => {
-  // console.log('Turning to face angle:', angle, frames);
-  spring.start(angle, {
-    immediate: frames === 0,
-    config: {
-      duration: frames / 15 * 1000,
-    }
-  });
-}
-
-export const turnToFaceEntity = async (thisId: number, targetName: string, duration: number, scene: Scene, spring: SpringValue<number>) => {
-  const thisMesh = getScriptEntity(scene, thisId);
-  const targetMesh = scene.getObjectByName(targetName) as Group;
-
-  if (!thisMesh || !targetMesh) {
-    console.warn('Error turning to face entity:', thisMesh, targetMesh);
-    return;
-  }
-
-  // Current forward
-  const meshForward = new Vector3(-1,0,0).applyQuaternion(thisMesh.quaternion).normalize();
-  meshForward.z = 0;
-
-  const meshUp = new Vector3(0, 0, 1).applyQuaternion(thisMesh.quaternion).normalize();
-
-  const fieldDirection = useGlobalStore.getState().fieldDirection;
-  // Calculate initial angle to face down
-  const base = convert255ToRadians(fieldDirection);
-  const direction = WORLD_DIRECTIONS.FORWARD.clone().applyAxisAngle(meshUp, base);
-  const faceDownBaseAngle = getRotationAngleToDirection(meshForward, direction, meshUp);
-
-  const targetDirection = targetMesh.position.clone().sub(thisMesh.position).normalize();
-  const targetAngle = getRotationAngleToDirection(meshForward, targetDirection, meshUp);
-  
-  let radian = (targetAngle - faceDownBaseAngle) % (Math.PI * 2);
-  if (radian < 0) {
-    radian += Math.PI * 2; // Ensure the angle is in the range [0, 2π)
-  }
-
-  const angle255 = convertRadiansTo255(radian);
-  turnToFaceAngle(angle255, duration, spring);
-}
-
-export const calculateMovingSpeed = (distance: number, movementSpeed: number) => {
-  const speed = distance / movementSpeed * 3 * 10000000
-
-  if (Number.isNaN(speed) || speed === Infinity) {
-    return 2000 * distance;
-  }
-
-  return speed;
-}
-
-export const moveToPoint = async (spring: SpringValue<number[]>, targetPoint: Vector3, movementSpeed: number, isDebugging?: boolean) => {
-  const start = spring.get();
-  const distance = targetPoint.distanceTo(new Vector3(...start));
-
-  if (isDebugging) {
-    console.log('Moving to point:', targetPoint.toArray(), distance, movementSpeed);
-  }
-
-  if (spring.get() === targetPoint.toArray()) {
-    return;
-  }
-
-  await spring.start(targetPoint.toArray(), {
-    immediate: false,
-    config: {
-      duration: calculateMovingSpeed(distance, movementSpeed)
-    },
-    onRest: () => {
-      if (isDebugging) {
-        console.log('Finished moving to point:', targetPoint.toArray());
-      }
-    }
-  })
 }
 
 export const isTouching = (thisId: number, targetName: string, scene: Scene) => {
@@ -179,59 +100,46 @@ export const attachKeyDownListeners = () => {
   window.addEventListener('keyup', keyupListener);
 }
 
-const standardScrollConfig = (duration: number) => ({
-  config: {
-    duration: duration / 30 * 1000,
-  },
-  immediate: duration === 0,
-})
 export const setCameraAndLayerScroll = async (x: number, y: number, duration: number, layerIndex?: number) => {
-  let xSpring: SpringValue<number>;
-  let ySpring: SpringValue<number>;
+  const currentTransition =
+    layerIndex === undefined
+    ? useGlobalStore.getState().cameraScrollOffset
+    : useGlobalStore.getState().layerScrollOffsets[layerIndex];
 
-  if (layerIndex === undefined) {
-    const { cameraScrollSpring } = useGlobalStore.getState();
-    xSpring = cameraScrollSpring.x;
-    ySpring = cameraScrollSpring.y;
-  } else {
-    const { layerScrollSprings } = useGlobalStore.getState();
-    xSpring = layerScrollSprings[layerIndex].x;
-    ySpring = layerScrollSprings[layerIndex].y;
+  const transition: CameraScrollTransition = {
+    startX: currentTransition?.endX ?? 0,
+    startY: currentTransition?.endY ?? 0,
+    endX: x,
+    endY: y,
+    duration,
+    isInProgress: true
   }
 
-  const previousGoalX = xSpring.goal;
-  const previousGoalY = ySpring.goal;
-  console.log('From', previousGoalX, previousGoalY, 'To', -x, -y);
-  xSpring.start({
-    from: previousGoalX,
-    to: -x,
-    ...standardScrollConfig(duration),
-  })
+  console.trace('Camera and layer scroll set:', { x, y, duration, layerIndex });
 
-  ySpring.start({
-    from: previousGoalY,
-    to: y,
-    ...standardScrollConfig(duration),
-  })
+  if (layerIndex === undefined) {
+    useGlobalStore.setState({ cameraScrollOffset: transition });
+    return;
+  }
+
+  useGlobalStore.setState({
+    layerScrollOffsets: {
+      ...useGlobalStore.getState().layerScrollOffsets,
+      [layerIndex!]: transition
+    }
+  });
 }
 
 // This could probably smooth out resetting any set X/Ys
 export const setCameraAndLayerFocus = (object: Object3D | null, duration: number) => {
-  new Array(8).fill(0).forEach((_, i) => {
-    setCameraAndLayerScroll(0, 0, duration, i);
-  })
-  const { layerScrollSprings } = useGlobalStore.getState();
-  layerScrollSprings.forEach((_, i) => {
-    setCameraAndLayerScroll(0, 0, duration, i);
+  const { layerScrollOffsets } = useGlobalStore.getState();
+  Object.keys(layerScrollOffsets).forEach((layerIndex) => {
+    setCameraAndLayerScroll(0, 0, duration, Number(layerIndex));
   });
   console.log('Layer focus reset', object);
+
+  setCameraAndLayerScroll(0, 0, duration);
   useGlobalStore.setState({
     cameraFocusObject: object ?? undefined,
-    cameraFocusSpring: new SpringValue({
-      from: 0,
-      to: 1,
-      config: { duration },
-      immediate: duration === 0,
-    }),
   })
 }

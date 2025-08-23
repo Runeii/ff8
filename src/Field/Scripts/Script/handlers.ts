@@ -9,7 +9,7 @@ import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtil
 import { displayMessage, isKeyDown, KEY_FLAGS, animateBackground, isTouching, setCameraAndLayerScroll, setCameraAndLayerFocus, wasKeyPressed } from "./common";
 import createScriptState, { ScriptState } from "./state";
 import { createAnimationController } from "./AnimationController/AnimationController";
-import { createMovementController } from "./MovementController/MovementController";
+import createMovementController from "./MovementController/MovementController";
 import { MUSIC_IDS } from "../../../constants/audio";
 import MusicController from "./MusicController";
 import createRotationController from "./RotationController/RotationController";
@@ -17,7 +17,7 @@ import createSFXController from "./SFXController/SFXController";
 
 const musicController = MusicController();
 
-export type HandlerArgs = {
+type HandlerArgs = {
   animationController: ReturnType<typeof createAnimationController>,
   currentOpcode: OpcodeObj,
   currentOpcodeIndex: number,
@@ -879,7 +879,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   POPANIME: () => { },
   PUSHANIME: () => { },
-  UNUSE: ({ setState }) => {
+  UNUSE: ({ script, setState }) => {
+    console.log(script)
     setState({ isUnused: true })
   },
   USE: ({ setState }) => {
@@ -1497,18 +1498,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     setCameraAndLayerFocus(mesh, duration);
   },
   SCROLLSYNC: async () => {
-    while (
-      useGlobalStore.getState().cameraScrollSpring.x.isAnimating || useGlobalStore.getState().cameraScrollSpring.y.isAnimating
-      || useGlobalStore.getState().layerScrollSprings.some(spring => spring.x.isAnimating || spring.y.isAnimating)
-      || useGlobalStore.getState().cameraFocusSpring?.isAnimating
-    ) {
+    while (useGlobalStore.getState().cameraScrollOffset.isInProgress || Object.values(useGlobalStore.getState().layerScrollOffsets).some(transition => transition.isInProgress)) {
+      console.log('waiting for sync')
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
   SCROLLSYNC2: async ({ STACK }) => {
     const layerID = STACK.pop() as number;
 
-    while (useGlobalStore.getState().layerScrollSprings[layerID].y.isAnimating || useGlobalStore.getState().layerScrollSprings[layerID].x.isAnimating) {
+    while (useGlobalStore.getState().layerScrollOffsets[layerID].isInProgress) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },

@@ -1,11 +1,5 @@
-import { generateUUID } from 'three/src/math/MathUtils.js';
-import { OpcodeObj } from '../Field/Scripts/types';
 import styles from './Debugger.module.css';
-import { useEffect, useMemo, useState } from "react";
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
-import Layer from '../Field/Background/Layer/Layer';
-import { Vector3 } from 'three';
+import { useEffect, useState } from "react";
 
 type Log = {
   id: number;
@@ -96,6 +90,7 @@ const Debugger = () => {
               id: payload.id,
               mode: payload.mode,
               uniqueId: payload.uniqueId,
+              // @ts-expect-error CBA typing debug
               queue: payload.queue.map(item => ({
                 ...item,
                 method: {
@@ -136,6 +131,7 @@ const Debugger = () => {
     const layersEl = document.getElementById('layers');
     if (layersEl) {
       layersEl.innerHTML = '';
+      // @ts-expect-error CBA typing debug
       Object.values(layers).sort((a, b) => b.index - a.index).forEach(layer => {
         const layerEl = document.createElement('div');
         layerEl.className = styles.layer;

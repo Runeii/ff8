@@ -1,30 +1,6 @@
 import { AnimationClip, Object3D, VectorKeyframeTrack, NumberKeyframeTrack, QuaternionKeyframeTrack, Vector3 } from 'three';
 
 /**
- * Applies animation data up to a specific frame directly to a mesh's bones/objects
- * @param mesh - The mesh to apply the animation to
- * @param clip - The animation clip containing the animation data
- * @param endFrame - The frame number to apply animation up to (0-based)
- */
-const applyAnimationUpToFrame = (mesh: Object3D, clip: AnimationClip, endFrame: number): void => {
-  // Process each track in the clip
-  clip.tracks.forEach(track => {
-    const trackName = track.name;
-    // Extract object name and property name from track name
-    const [objectName, propertyName] = extractNamesFromTrack(trackName);
-    // Find target object in mesh hierarchy
-    const object = mesh.getObjectByName(objectName);
-    if (object) {
-      // @ts-expect-error Helper method
-      applyTrackToObjectUpToFrame(track, object, propertyName, endFrame);
-    }
-  });
-  // Update mesh matrices
-  mesh.updateMatrix();
-  mesh.updateMatrixWorld(true);
-};
-
-/**
  * Extracts object name and property name from track name
  */
 const extractNamesFromTrack = (trackName: string): [string, string] => {
@@ -34,52 +10,8 @@ const extractNamesFromTrack = (trackName: string): [string, string] => {
   return [objectName, propertyName];
 };
 
-/**
- * Applies a track's values up to a specific frame to the target object
- */
-const applyTrackToObjectUpToFrame = (
-  track: VectorKeyframeTrack | NumberKeyframeTrack | QuaternionKeyframeTrack,
-  object: Object3D,
-  propertyName: keyof typeof object,
-  endFrame: number
-): void => {
-  const stride = track.getValueSize();
-  const totalFrames = track.values.length / stride;
-  
-  // Clamp endFrame to valid range
-  const frameIndex = Math.min(Math.max(0, endFrame), totalFrames - 1);
-  
-  // Calculate the value index for the target frame
-  const valueIndex = frameIndex * stride;
-  
-  // Handle different track types
-  if (track instanceof VectorKeyframeTrack || track instanceof NumberKeyframeTrack) {
-    const value = track.values.slice(valueIndex, valueIndex + stride);
-    
-    if (stride === 3 && object[propertyName] instanceof Vector3) {
-      // Handle Vector3 properties (position, scale)
-      const [x, y, z] = value;
-      object[propertyName].set(x, y, z);
-    } else if (stride === 1) {
-      // Handle single numeric properties
-      // @ts-expect-error Helper method
-      object[propertyName] = value[0];
-    }
-  } else if (track instanceof QuaternionKeyframeTrack) {
-    // Handle quaternion tracks (rotation)
-    const quaternionValues = track.values.slice(valueIndex, valueIndex + 4);
-    const [x, y, z, w] = quaternionValues;
-    object.quaternion.set(x, y, z, w);
-  }
-};
 
-/**
- * Alternative version that applies animation at a specific time (in seconds)
- * @param mesh - The mesh to apply the animation to
- * @param clip - The animation clip containing the animation data
- * @param time - The time in seconds to apply animation at
- */
-const applyAnimationAtTime = (mesh: Object3D, clip: AnimationClip, time: number): void => {
+export const applyAnimationAtTime = (mesh: Object3D, clip: AnimationClip, time: number): void => {
   // Process each track in the clip
   clip.tracks.forEach(track => {
     const trackName = track.name;
@@ -95,9 +27,7 @@ const applyAnimationAtTime = (mesh: Object3D, clip: AnimationClip, time: number)
   mesh.updateMatrixWorld(true);
 };
 
-/**
- * Applies a track's values at a specific time to the target object
- */
+
 const applyTrackToObjectAtTime = (
   track: VectorKeyframeTrack | NumberKeyframeTrack | QuaternionKeyframeTrack,
   object: Object3D,
@@ -137,9 +67,6 @@ const applyTrackToObjectAtTime = (
   }
 };
 
-/**
- * Helper function to apply values at a specific index
- */
 const applyValuesAtIndex = (
   track: VectorKeyframeTrack | NumberKeyframeTrack | QuaternionKeyframeTrack,
   object: Object3D,
@@ -165,9 +92,6 @@ const applyValuesAtIndex = (
   }
 };
 
-/**
- * Helper function to interpolate between two keyframes and apply the result
- */
 const interpolateAndApply = (
   track: VectorKeyframeTrack | NumberKeyframeTrack | QuaternionKeyframeTrack,
   object: Object3D,
@@ -205,10 +129,4 @@ const interpolateAndApply = (
       object[propertyName] = interpolated[0];
     }
   }
-};
-
-export { 
-  applyAnimationUpToFrame, 
-  applyAnimationAtTime,
-  extractNamesFromTrack 
 };

@@ -79,22 +79,6 @@ export const getCameraDirections = (camera: Camera) => {
   };
 };
 
-export const getCharacterForwardDirection = (camera: Camera) => {
-  const { forwardVector, upVector } = getCameraDirections(camera);
-
-  if (Math.abs(forwardVector.z) < 0.9) {
-    return {
-      forwardVector,
-      upVector
-    }
-  }
-
-  return {
-    upVector: forwardVector,
-    forwardVector: upVector
-  };
-}
-
 export const getReliableRotationAxes = (camera: Camera) => {
   const forward = new Vector3();
   camera.getWorldDirection(forward);

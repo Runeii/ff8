@@ -1,10 +1,10 @@
 import { MutableRefObject, useRef, useState } from "react";
-import { ClampToEdgeWrapping, Line3, Mesh, NearestFilter, PerspectiveCamera, RepeatWrapping, Sprite, SRGBColorSpace, Vector2, Vector3 } from "three";
+import { ClampToEdgeWrapping, Line3, Mesh, NearestFilter, PerspectiveCamera, Sprite, SRGBColorSpace, Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
 import { getCameraDirections } from "../../Camera/cameraUtils";
 import useGlobalStore from "../../../store";
-import useScrollSpring from "../../useScrollSpring";
+import useCameraScroll from "../../useCameraScroll";
 import { clamp } from "three/src/math/MathUtils.js";
 import { Plane } from "@react-three/drei";
 
@@ -38,7 +38,8 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
 
   const camera = useThree(({ scene }) => scene.getObjectByName("sceneCamera") as PerspectiveCamera);
 
-  const scrollSpring = useScrollSpring(layer.renderID);
+  const cameraScroll = useCameraScroll('camera');
+  const layerScroll = useCameraScroll('layer', layer.layerID);
 
   useFrame(() => {
     if (!layerRef.current) {
@@ -114,27 +115,8 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     const widthUnits = result.width / SCREEN_WIDTH;
     const heightUnits = result.height / SCREEN_HEIGHT;
 
-    const { layerScrollAdjustments } = useGlobalStore.getState()
-
-    const controlledScroll = layerScrollAdjustments[layer.renderID]
-
     let panX = backgroundPanRef.current.panX;
     let panY = backgroundPanRef.current.panY 
-
-    if (controlledScroll) {
-      const {
-        xOffset,
-        yOffset,
-        xScrollSpeed,
-        yScrollSpeed,
-      } = controlledScroll;
-
-      const adjustedX = (panX / 256) * xScrollSpeed;
-      const adjustedY = (panY / 256) * yScrollSpeed;
-
-      panX = xOffset + adjustedX;
-      panY = -yOffset + adjustedY;
-    }
 
     if (Number.isNaN(panX) || !Number.isFinite(panX)) {
       panX = 0;
@@ -147,9 +129,29 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     let clampedPanX = clamp(panX, left * 256, right * 256);
     let clampedPanY = clamp(panY, top * 256, bottom * 256);
 
-    clampedPanX += scrollSpring.get().x;
-    clampedPanY += scrollSpring.get().y;
+    clampedPanX += cameraScroll.current.x;
+    clampedPanY += cameraScroll.current.y;
 
+    clampedPanX += layerScroll.current.x;
+    clampedPanY += layerScroll.current.y;
+
+    const { layerScrollAdjustments } = useGlobalStore.getState()
+    const controlledScroll = layerScrollAdjustments[layer.renderID]
+    if (controlledScroll) {
+      const {
+        xOffset,
+        yOffset,
+        xScrollSpeed,
+        yScrollSpeed,
+      } = controlledScroll;
+
+      const adjustedX = (clampedPanX / 256) * xScrollSpeed;
+      const adjustedY = (clampedPanY / 256) * yScrollSpeed;
+
+      clampedPanX = xOffset + adjustedX;
+      clampedPanY = -yOffset + adjustedY;
+    }
+  
     const directions = getCameraDirections(camera);
 
     layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(clampedPanX * widthUnits));

@@ -23,6 +23,8 @@ export const vectorToFloatingPoint = (value: Vector3 | { x: number, y: number, z
   return vector
 }
 
+// These are from a year ago...I think they're wrong and based on a fundamental misunderstanding
+// of Vectors, axis, local/world, a whole bunch of stuff
 export const WORLD_DIRECTIONS = {
   FORWARD: new Vector3(0, 0, -1),
   RIGHT: new Vector3(1, 0, 0),
@@ -94,75 +96,4 @@ export const checkForIntersections = (object: Object3D, target: Vector3, blockag
   const intersects = intersectionRaycaster.intersectObjects(blockages, true);
 
   return intersects.length === 0;
-}
-
-
-// These are the "final" versions
-const toCameraMeshWorldPosition = new Vector3(0, 0, 0);
-const toCameraCameraWorldPosition = new Vector3(0, 0, 0);
-export const getDirectionToCamera = (entity: Object3D, camera: Camera, targetVector = new Vector3(0, 0, 0)) => {
-  entity.updateMatrixWorld(true);
-  camera.updateMatrixWorld(true);
-
-  entity.getWorldPosition(toCameraMeshWorldPosition);
-  camera.getWorldPosition(toCameraCameraWorldPosition);
-
-  targetVector
-    .subVectors(toCameraCameraWorldPosition, toCameraMeshWorldPosition)
-    .normalize();
-
-  return targetVector;
-}
-
-const localRight = new Vector3(1, 0, 0);
-export const getLocalViewportRight = (entity: Object3D, camera: Camera, targetVector = new Vector3(0, 0, 0)) => {
-  const cameraRightWorld = localRight.clone().applyQuaternion(camera.quaternion); // Transform to world space
-  const rightWorldPosition = entity.getWorldPosition(targetVector).add(cameraRightWorld);
-  const rightLocalPosition = entity.worldToLocal(rightWorldPosition);
-
-  return rightLocalPosition.normalize();
-}
-
-const localForward = new Vector3(0, 0, -1);
-export const getLocalViewportForward = (entity: Object3D, camera: Camera, targetVector = new Vector3(0, 0, 0)) => {
-  const cameraForwardWorld = localForward.clone().applyQuaternion(camera.quaternion);
-  const forwardWorldPosition = entity.getWorldPosition(targetVector).add(cameraForwardWorld);
-  const forwardLocalPosition = entity.worldToLocal(forwardWorldPosition);
-
-  return forwardLocalPosition.normalize();
-}
-
-export const getLocalViewportTop = (entity: Object3D, camera: Camera, targetVector = new Vector3(0, 0, 0)) => {
-  entity.getWorldPosition(targetVector);
-
-  const meshNDC = targetVector.clone().project(camera);
-  // Top direction remains unchanged
-  const topCenterNDC = new Vector3(meshNDC.x, 1, meshNDC.z);
-  const topCenterWorld = topCenterNDC.clone().unproject(camera);
-
-  return topCenterWorld.sub(targetVector).normalize();
-}
-
-export const computeSignedAngleTo = (
-  currentDirection: Vector3,
-  targetDirection: Vector3,
-  up: Vector3
-) => {
-  // Compute the unsigned angle between the two vectors
-  const angle = currentDirection.angleTo(targetDirection);
-
-  // Determine the sign of the angle using the cross product
-  const cross = new Vector3().crossVectors(currentDirection, targetDirection);
-
-
-  if (cross.length() < 0.2) {
-    // Use dot product to determine angle directly
-    const dot = currentDirection.dot(targetDirection);
-    return dot > 0 ? 0 : Math.PI; // 0 for same direction, π for opposite
-  }
-
-  const sign = cross.dot(up) < 0 ? -1 : 1;
-
-  // Return the signed angle
-  return angle * sign;
 }

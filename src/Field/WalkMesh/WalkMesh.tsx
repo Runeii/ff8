@@ -1,5 +1,5 @@
-import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
-import {  useCallback, useEffect, useMemo } from "react";
+import { BufferAttribute, BufferGeometry, DoubleSide, Object3D } from "three";
+import { useCallback, useMemo } from "react";
 import useGlobalStore from "../../store";
 import { FieldData } from "../Field";
 import { vectorToFloatingPoint } from "../../utils";

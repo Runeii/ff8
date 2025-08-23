@@ -4,7 +4,7 @@ import useGlobalStore from '../../store';
 import generatedGateways from '../../gateways.ts';
 import MAP_NAMES from "../../constants/maps.ts";
 
-export type GatewaysProps = {
+type GatewaysProps = {
   fieldId: string,
 }
 

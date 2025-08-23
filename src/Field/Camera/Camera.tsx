@@ -8,7 +8,7 @@ import { clamp } from "three/src/math/MathUtils.js";
 import { SCREEN_HEIGHT } from "../../constants/constants";
 import useGlobalStore from "../../store";
 import Focus from "./Focus/Focus";
-import useScrollSpring from "../useScrollSpring";
+import useCameraScroll from "../useCameraScroll";
 import { useSpring } from "@react-spring/web";
 
 type CameraProps = {
@@ -85,8 +85,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     [limits]
   );
 
-
-  const scrollSpring = useScrollSpring();
+  const scrollSpring = useCameraScroll('camera');
 
   // This is the main logic for the camera movement
   useFrame(({ scene }) => {
@@ -139,7 +138,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
 
     camera.rotation.copy(initialCameraRotation);
 
-    const {x: xPan, y: yPan} = scrollSpring.get();
+    const {x: xPan, y: yPan} = scrollSpring.current;
     //const xPan = 0;
     //const yPan = 0;
     const clippedPanX = clamp(panX, boundaries.left, boundaries.right);

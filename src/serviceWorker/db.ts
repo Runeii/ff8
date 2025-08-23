@@ -1,4 +1,4 @@
-import { ServiceWorkerState } from "../OfflineController";
+import { SERVICE_WORKER_STATE } from "../OfflineController";
 
 const PRESERVED_STATE_STORE = 'offline-state';
 const KEY_NAME = 'preserved-state';
@@ -26,17 +26,17 @@ const openDatabase = (): Promise<IDBDatabase> =>
     request.onsuccess = (e) => resolve((e.target as IDBOpenDBRequest).result);
   });
 
-export const getPreservedState = async (): Promise<ServiceWorkerState> => {
+export const getPreservedState = async (): Promise<typeof SERVICE_WORKER_STATE> => {
   const db = await openDatabase();
   const transaction = db.transaction([PRESERVED_STATE_STORE], 'readonly');
   const store = transaction.objectStore(PRESERVED_STATE_STORE);
   const request = store.get(KEY_NAME);
-  
-  return promisify<ServiceWorkerState>(request)
-    .catch(() => ({} as ServiceWorkerState));
+
+  return promisify<typeof SERVICE_WORKER_STATE>(request)
+    .catch(() => ({} as typeof SERVICE_WORKER_STATE));
 };
 
-export const setPreservedState = async (state: ServiceWorkerState): Promise<IDBValidKey> => {
+export const setPreservedState = async (state: typeof SERVICE_WORKER_STATE): Promise<IDBValidKey> => {
   const db = await openDatabase();
   const transaction = db.transaction([PRESERVED_STATE_STORE], 'readwrite');
   const store = transaction.objectStore(PRESERVED_STATE_STORE);
