@@ -2072,7 +2072,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       isTransitioningColorOverlay: true
     });
   },
-  FCOLSUB: ({ script, currentOpcode, opcodes, STACK }) => {
+  FCOLSUB: ({ STACK }) => {
     const duration = STACK.pop() as number;
     const endBlue = STACK.pop() as number;
     const endGreen = STACK.pop() as number;
@@ -2081,7 +2081,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const startGreen = STACK.pop() as number;
     const startRed = STACK.pop() as number;
 
-    console.log('start', 'fcolsub', startRed, startGreen, startBlue, endRed, endGreen, endBlue, duration);
     useGlobalStore.setState({
       colorOverlay: {
         startRed,

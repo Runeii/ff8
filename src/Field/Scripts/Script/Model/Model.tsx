@@ -92,7 +92,7 @@ const Model = ({animationController, models, scriptController, movementControlle
       return;
     }
     const {fieldDirection, initialAngle} = useGlobalStore.getState();
-    rotationController.turnToFaceAngle(initialAngle ?? fieldDirection, 1)
+    rotationController.turnToFaceAngle(initialAngle ?? fieldDirection, 0)
   }, [isLeadCharacter, rotationController]);
 
   const [currentAngle, setCurrentAngle] = useState<number>(0);

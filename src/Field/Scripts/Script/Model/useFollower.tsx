@@ -39,14 +39,14 @@ const useFollower = ({ animationController, isActive, movementController, partyM
       }
 
       const leaderMovementController = leaderEntity.userData.movementController as ReturnType<typeof createMovementController>;
-
+      const leaderRotationController = leaderEntity.userData.rotationController as ReturnType<typeof createRotationController>;
       const position = leaderMovementController.getPosition();
-      const forward = new Vector3(-1, 0, 0);
-      forward.applyQuaternion(leaderEntity.quaternion);
-      forward.normalize();
-      movementController.setPosition(new Vector3(position.x, position.y, position.z).sub(forward.multiplyScalar(0.04 * offset)));
-      thisMemberEntity.quaternion.copy(leaderEntity.quaternion);
-      rotationController.turnToFaceDirection(forward, 0);
+      movementController.setPosition(
+        new Vector3(position.x, position.y, position.z).sub(
+          leaderRotationController.getCurrentDirection().multiplyScalar(0.03 * offset)
+        )
+      );
+      rotationController.turnToFaceAngle(leaderRotationController.getState().angle.get(), 0);
 
       return;
     }
@@ -57,10 +57,6 @@ const useFollower = ({ animationController, isActive, movementController, partyM
     const { position, angle, speed } = history;
 
     const followerPosition = movementController.getPosition();
-    if (followerPosition.x === 9999) {
-      movementController.setPosition(position)
-      return;
-    }
     currentPosition.set(followerPosition.x, followerPosition.y, followerPosition.z);
     targetPosition.set(position.x, position.y, position.z);
 

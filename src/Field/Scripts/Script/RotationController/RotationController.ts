@@ -2,7 +2,7 @@ import { SpringValue } from "@react-spring/web";
 import { Group, Scene, Vector3 } from "three";
 import { create } from "zustand";
 import createMovementController from "../MovementController/MovementController";
-import { getDirectionToVector, getShortestRouteToAngle, radiansToUnit, signedAngleBetweenVectors } from "./rotationUtils";
+import { getDirectionToVector, getShortestRouteToAngle, radiansToUnit, signedAngleBetweenVectors, unitToRadians } from "./rotationUtils";
 import { RefObject } from "react";
 
 export const createRotationController = (
@@ -21,12 +21,30 @@ export const createRotationController = (
     setState({ limits: [min, max] });
   }
 
+  const getCurrentDirection = () => {
+    const currentAngle = getState().angle.get();
+    const radians = (currentAngle * Math.PI) / 128;
+    
+    const meshUp = new Vector3(0, 0, 1);
+    const zeroDirection = new Vector3(0, -1, 0); // Starting direction
+    
+    // Apply rotation around Z-axis
+    const direction = zeroDirection.clone().applyAxisAngle(meshUp, radians);
+    
+    return direction;
+  }
+
   const turnToFaceAngle = async (angle: number, duration: number, _direction: 'left' | 'right' | 'either' = 'either') => {
     const currentAngle = getState().angle
     const targetAngle = getShortestRouteToAngle(angle, currentAngle.get());
 
     const limits = getState().limits;
     const limitedAngle = limits ? Math.max(limits[0], Math.min(limits[1], targetAngle)) : targetAngle;
+
+    if (duration === 0) {
+      currentAngle.set(limitedAngle % 256);
+      return;
+    }
     await currentAngle.start(limitedAngle % 256, {
       config: {
         duration: duration * 1000 / 30,
@@ -77,6 +95,7 @@ export const createRotationController = (
 
   return {
     getState,
+    getCurrentDirection,
     turnToFaceAngle,
     turnToFaceEntity,
     turnToFaceVector,
