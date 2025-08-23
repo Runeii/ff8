@@ -7,6 +7,8 @@ import createRotationController from "../RotationController/RotationController";
 import createScriptState from "../state";
 import createSFXController from "../SFXController/SFXController";
 import { OPCODE_HANDLERS } from "../handlers";
+import { sendToDebugger } from "../../../../Debugger/debugUtils";
+import { generateUUID } from "three/src/math/MathUtils.js";
 
 type QueueItem = {
   activeOpcodeIndex: number;
@@ -192,6 +194,12 @@ const createScriptController = ({
       STACK,
       TEMP_STACK,
     });
+
+    sendToDebugger('command', JSON.stringify({
+      uuid: generateUUID(),
+      id: script.groupId,
+      opcode: activeOpcode.name,
+    }));
 
     // eslint-disable-next-line no-async-promise-executor
     new Promise<void>(async (resolve) => {
