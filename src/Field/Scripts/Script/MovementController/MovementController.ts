@@ -25,10 +25,9 @@ export const createMovementController = (id: string | number, animationControlle
     needsZAdjustment: true,
     loopSignal: undefined as PromiseSignal | undefined,
     position: {
-      current: new Vector3(9999, 0, 0),
+      current: new Vector3(-1, 0, 0),
       duration: 0 as number | undefined,
       distanceToStopAnimationFromTarget: 0,
-      hasResolvedEarly: false,
       isAnimationEnabled: true,
       isFacingTarget: true,
       isPaused: false,
@@ -40,7 +39,6 @@ export const createMovementController = (id: string | number, animationControlle
       current: new Vector3(0,0,0),
       duration: 0,
       goal: undefined as Vector3 | undefined,
-      hasResolvedEarly: false,
       isPaused: false,
       signal: undefined as PromiseSignal | undefined,
       totalDistance: 0
@@ -149,7 +147,6 @@ export const createMovementController = (id: string | number, animationControlle
         goal: target,
         duration: duration && duration > 0 ? duration : undefined,
         distanceToStopAnimationFromTarget,
-        hasResolvedEarly: false,
         isAnimationEnabled,
         isFacingTarget,
         isPaused: false,
@@ -193,7 +190,6 @@ export const createMovementController = (id: string | number, animationControlle
         current: getState().offset.current,
         goal: target,
         duration,
-        hasResolvedEarly: false,
         isPaused: false,
         signal,
         totalDistance
@@ -356,28 +352,16 @@ export const createMovementController = (id: string | number, animationControlle
       return;
     }
    
-    const { current: currentPosition, duration, hasResolvedEarly: hasResolvedPositionEarly, goal: positionGoal, userControlledSpeed } = position;
+    const { current: currentPosition, duration, goal: positionGoal, userControlledSpeed } = position;
     const movementSpeed = (userControlledSpeed !== undefined ? userControlledSpeed : baseMovementSpeed);
     if (positionGoal) {
       if (!cachedWalkmesh) {
         cachedWalkmesh = scene.getObjectByName('walkmesh') as Object3D;
       }
 
-      const speed = movementSpeed / 2560;
-      const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
+      const speed = movementSpeed / 2560;      const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
 
       const remainingDistance = currentPosition.distanceTo(positionGoal);
-
-      const framesUntilComplete = Math.ceil(remainingDistance / maxDistance);
-      if (framesUntilComplete <= 4 && !hasResolvedPositionEarly) { // Resolve 4 frames early
-          resolvePendingPositionSignal();
-          setState({
-            position: {
-              ...getState().position,
-              hasResolvedEarly: true,
-            }
-          })
-      }
 
       if (remainingDistance <= maxDistance || duration === 0) {
         currentPosition.copy(positionGoal);
@@ -400,7 +384,7 @@ export const createMovementController = (id: string | number, animationControlle
       }
     }
 
-    const { current: currentOffset, goal: offsetGoal, hasResolvedEarly: hasResolvedOffsetEarly, duration: offsetDuration, totalDistance } = offset;
+    const { current: currentOffset, goal: offsetGoal, duration: offsetDuration, totalDistance } = offset;
 
     if (offsetGoal) {
       const durationInSeconds = offsetDuration / 25;
@@ -422,18 +406,6 @@ export const createMovementController = (id: string | number, animationControlle
         const maxDistance = speed * delta; // distance to move this frame
         const stepDistance = Math.min(maxDistance, remainingDistance);
         
-        // Resolve 4 frames early
-        const framesUntilComplete = Math.ceil(remainingDistance / maxDistance);
-        if (framesUntilComplete <= 4 && !hasResolvedOffsetEarly) {
-            resolvePendingOffsetSignal();
-            setState({
-              offset: {
-                ...getState().offset,
-                hasResolvedEarly: true,
-              }
-            });
-        }
-
         const direction = offsetGoal.clone().sub(currentOffset).normalize();
         currentOffset.add(direction.multiplyScalar(stepDistance));
       }
