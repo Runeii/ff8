@@ -127,6 +127,23 @@ export const closeMessage = (id: string, selectedOptionIndex?: number) => {
   }));
 }
 
+export const enableMessageToClose = (id: string) => {
+  useGlobalStore.setState(state => {
+    const currentMessages = state.currentMessages.map(message => {
+      if (message.id === id) {
+        return {
+          ...message,
+          isCloseable: true
+        };
+      }
+      return message;
+    });
+    return {
+      ...state,
+      currentMessages
+    };
+  });
+}
 
 export const getRotationAngleToDirection = (
   currentDirection: Vector3,

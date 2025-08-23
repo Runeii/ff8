@@ -6,6 +6,7 @@ import type { Howl} from 'howler';
 import { FieldData } from './Field/Field';
 import createSFXController from './Field/Scripts/Script/SFXController/SFXController';
 import { sendToDebugger } from './Debugger/debugUtils';
+import WalkmeshMovementController from './Field/WalkMesh/WalkmeshMovement';
 
 interface GlobalState {
   isDebugMode: boolean,
@@ -20,6 +21,7 @@ interface GlobalState {
   characterPosition: Vector3 | undefined,
   pendingCharacterPosition: Vector3 | undefined,
 
+  walkmeshController: WalkmeshMovementController | undefined,
   currentLocationPlaceName: number,
   backgroundLayerVisibility: Record<number, boolean>,
   currentParameterStates: Record<number, number>,
@@ -130,7 +132,8 @@ export const INITIAL_STATE: GlobalState = {
     pendingCharacterPosition: undefined,
     fieldId: '' as typeof MAP_NAMES[number],
     pendingFieldId: undefined as unknown as typeof MAP_NAMES[number],
-  
+
+    walkmeshController: undefined,
     currentLocationPlaceName: 0,
     hasMoved: false,
     isPlayerClimbingLadder: false,
@@ -164,7 +167,7 @@ export const INITIAL_STATE: GlobalState = {
     isMapFadeEnabled: true,
   
     availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    party: [0,1,2],
+    party: [0],
     sleepingParty: [],
 
     congaWaypointHistory: [],

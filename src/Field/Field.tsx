@@ -18,6 +18,7 @@ import Onboarding from '../Onboarding/Onboarding';
 import { AREA_NAMES } from '../constants/areaNames';
 import { preloadMapSoundBank } from './Scripts/Script/SFXController/webAudio';
 import { sendToDebugger } from '../Debugger/debugUtils';
+import { Line } from '@react-three/drei';
 
 export type RawFieldData = typeof data;
 
@@ -112,7 +113,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
         await OPCODE_HANDLERS.FADESYNC();
       }
       
-      sendToDebugger('reset')
+      //sendToDebugger('reset')
       setData(null);
       gl.clear();
 
@@ -153,6 +154,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
         isUserControllable: pendingFieldId !== 'start0',
         isRunEnabled: true,
 
+        walkmeshController: undefined,
         backgroundLayerVisibility: {},
         currentParameterStates: {},
         currentParameterVisibility: {},

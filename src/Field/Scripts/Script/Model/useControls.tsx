@@ -36,7 +36,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
   const initialFieldPosition = useGlobalStore((state) => state.characterPosition);
   const isTransitioningMap = useGlobalStore(state => !!state.pendingFieldId);
-  const walkmesh = scene.getObjectByName("walkmesh") as Group;
+  const walkmeshController = useGlobalStore(state => state.walkmeshController);
 
   useEffect(() => {
     if (movementController.getState().footsteps.leftSound) {
@@ -50,13 +50,13 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     if (!isActive) {
       return;
     }
-    if (!walkmesh || !initialFieldPosition || isTransitioningMap) {
+    if (!walkmeshController || !initialFieldPosition || isTransitioningMap) {
       return;
     }
 
     const initialPosition = new Vector3(initialFieldPosition.x, initialFieldPosition.y, initialFieldPosition.z);
-    const newPosition = getPositionOnWalkmesh(initialPosition, walkmesh);
-
+    const newPosition = walkmeshController.getPositionOnWalkmesh(initialPosition);
+    console.log(initialPosition, newPosition)
     if (newPosition) {
       movementController.setPosition(newPosition);
     } else {
@@ -67,7 +67,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     return () => {
       setHasPlacedCharacter(false);
     }
-  }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, movementController, walkmesh, isActive]);
+  }, [initialFieldPosition, isTransitioningMap, setHasPlacedCharacter, movementController, walkmeshController, isActive]);
 
   const controlDirection = useGlobalStore(state => state.fieldDirection);
 
@@ -114,9 +114,8 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       return;
     }
 
-    const walkmesh = scene.getObjectByName("walkmesh");
     const isTurning = rotationController.getState().angle.isAnimating;
-    if (!walkmesh || !isUserControllable || isTurning) {
+    if (!walkmeshController || !isUserControllable || isTurning) {
       return;
     }
 
@@ -150,7 +149,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       currentPosition.z
     ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
 
-    const newPosition = getPositionOnWalkmesh(desiredPosition, walkmesh, characterHeight / 2);
+    const newPosition = walkmeshController.getPositionOnWalkmesh(desiredPosition, characterHeight / 2);
       
     if (!newPosition) {
       return
@@ -172,7 +171,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       isAnimationEnabled: true,
       userControlledSpeed: movementSpeed,
     });
-  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, rotationController, handleMovement, isRunEnabled, movementFlags.isWalking, movementController, characterHeight]);
+  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking, characterHeight]);
 
   useFrame(({ scene }, delta) => {
     if (!isActive) {

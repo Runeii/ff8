@@ -2,7 +2,7 @@ import { LoopRepeat, Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script } from "../types";
-import { closeMessage, dummiedCommand, openMessage, remoteExecute, remoteExecutePartyMember, unusedCommand, wait } from "./utils";
+import { closeMessage, dummiedCommand, openMessage, enableMessageToClose, remoteExecute, remoteExecutePartyMember, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
@@ -528,7 +528,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     while (useGlobalStore.getState().currentMessages.some(message => message.placement.channel === channel)) {
       const messagesOnChannel = useGlobalStore.getState().currentMessages.filter(message => message.placement.channel === channel);
       if (!messagesOnChannel[0].isCloseable) {
-        closeMessage(messagesOnChannel[0].id);
+        enableMessageToClose(messagesOnChannel[0].id);
       }
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
@@ -620,9 +620,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   REQEW: async ({ STACK, script }) => {
     const label = STACK.pop() as number;
     const priority = STACK.pop();
+    const startTimestamp = performance.now();
     console.log('REQEW', label, priority, 'from', script.groupId);
     await remoteExecute(label, priority)
-    console.log('Completed REQEW', label, priority, 'from', script.groupId);
+    const endTimestamp = performance.now();
+    console.log('Completed REQEW', label, priority, 'from', script.groupId, 'in', endTimestamp - startTimestamp, 'ms');
   },
   PREQ: ({ currentOpcode, scene, STACK }) => {
     const partyMemberIndex = currentOpcode.param as number;

@@ -91,7 +91,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
         return;
       }
       try {
-        await scriptController.triggerMethod(matchingMethod.methodId, priority)
+        await scriptController.triggerMethod(matchingMethod.methodId, priority, true)
         document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key} }));
       } catch (error) {
         console.error('Error executing script:', error);

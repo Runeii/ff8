@@ -135,14 +135,14 @@ const Model = ({animationController, models, scriptController, movementControlle
   const baseBoundingBoxZOffset = useRef<number>(0);
   const [boundingBoxCentre] = useState(new Vector3());
   const rootBoneDistanceFromStanding = useRef<number>(0);
+
+  const walkmeshController = useGlobalStore(state => state.walkmeshController);
   useFrame(({scene}) => {
     if (!animationGroupRef.current) {
       return;
     }
 
-
-    const walkmesh = scene.getObjectByName('walkmesh');
-    if (!walkmesh) {
+    if (!walkmeshController) {
       return;
     }
 
@@ -174,7 +174,7 @@ const Model = ({animationController, models, scriptController, movementControlle
       baseBoundingBoxZOffset.current = boundingbox.min.z;
       rootBoneDistanceFromStanding.current = rootBonePosition.z - boundingbox.min.z;
       
-      const centrePointOnWalkmesh = getPositionOnWalkmesh(boundingbox.getCenter(boundingBoxCentre), walkmesh, boundingbox.max.z - boundingbox.min.z);
+      const centrePointOnWalkmesh = walkmeshController.getPositionOnWalkmesh(boundingbox.getCenter(boundingBoxCentre), boundingbox.max.z - boundingbox.min.z);
       const zPosition = centrePointOnWalkmesh?.z ?? position.z
       const z = zPosition - boundingbox.min.z
       animationGroupRef.current.position.z = z
@@ -184,7 +184,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     }
     
     if (!animationController.getState().animations.isCurrentAnimationABaseAnime) {
-      const centrePointOnWalkmesh = getPositionOnWalkmesh(boundingbox.getCenter(boundingBoxCentre), walkmesh, boundingbox.max.z - boundingbox.min.z)
+      const centrePointOnWalkmesh = walkmeshController.getPositionOnWalkmesh(boundingbox.getCenter(boundingBoxCentre), boundingbox.max.z - boundingbox.min.z)
       const zPosition = centrePointOnWalkmesh?.z ?? position.z
       const z = zPosition - boundingbox.min.z
       animationGroupRef.current.position.z = z

@@ -1,6 +1,6 @@
 import { Object3D, Scene, Vector3 } from "three";
 import { create } from "zustand";
-import { getPositionOnWalkmesh, numberToFloatingPoint } from "../../../../utils";
+import { numberToFloatingPoint } from "../../../../utils";
 import { createAnimationController } from "../AnimationController/AnimationController";
 import PromiseSignal from "../../../../PromiseSignal";
 import useGlobalStore from "../../../../store";
@@ -23,7 +23,6 @@ export const createMovementController = (id: string | number, animationControlle
     id,
     movementSpeed: 2560,
     needsZAdjustment: true,
-    loopSignal: undefined as PromiseSignal | undefined,
     position: {
       current: new Vector3(-1, 0, 0),
       duration: 0 as number | undefined,
@@ -86,12 +85,21 @@ export const createMovementController = (id: string | number, animationControlle
 
   const setPosition = (position: Vector3) => {
     resolvePendingPositionSignal();
+
+    const { walkmeshController } = useGlobalStore.getState();
+
+    if (!walkmeshController) {
+      return;
+    }
+
+    const goal = walkmeshController.getPositionOnWalkmesh(position);
+
     setState({
       hasBeenPlaced: true,
       needsZAdjustment: true,
       position: {
         ...getState().position,
-        goal: position,
+        goal: goal ?? position,
         duration: 0,
         isAnimationEnabled: false,
         isFacingTarget: false,
@@ -140,11 +148,19 @@ export const createMovementController = (id: string | number, animationControlle
     resolvePendingPositionSignal();
     const signal = new PromiseSignal();
 
+    const { walkmeshController } = useGlobalStore.getState();
+
+    if (!walkmeshController) {
+      return;
+    }
+
+    const goal = walkmeshController.getPositionOnWalkmesh(target);
+
     setState({
       hasBeenPlaced: true,
       position: {
         current: getState().position.current,
-        goal: target,
+        goal: goal ?? target,
         duration: duration && duration > 0 ? duration : undefined,
         distanceToStopAnimationFromTarget,
         isAnimationEnabled,
@@ -197,28 +213,6 @@ export const createMovementController = (id: string | number, animationControlle
     });
 
     await signal.promise;
-  }
-
-  const loopOffsets = async (startX: number, startY: number, startZ: number, endX: number, endY: number, endZ: number, duration: number) => {
-    const loopSignal = new PromiseSignal();
-    setState({
-      loopSignal,
-    });
-    let isLooping = true;
-
-    const loop = async () => {
-      await moveToOffset(startX, startY, startZ, duration);
-      if (!isLooping) {
-        return;
-      }
-      await moveToOffset(endX, endY, endZ, duration);
-      if (isLooping) {
-        window.requestAnimationFrame(loop);
-      }
-    }
-    window.requestAnimationFrame(loop);
-    await loopSignal.promise;
-    isLooping = false;
   }
 
   const getPosition = () => {
@@ -333,11 +327,16 @@ export const createMovementController = (id: string | number, animationControlle
       speedBeforeClimbingLadder: isClimbingLadder ? getState().movementSpeed : 0,
     })
 
-  let cachedWalkmesh: Object3D | undefined = undefined;
   const tick = (entity: Object3D, delta: number) => {
     const { position, offset, movementSpeed: baseMovementSpeed } = getState();
 
     const { isAnimationEnabled } = position;
+
+    const { walkmeshController } = useGlobalStore.getState();
+
+    if (!walkmeshController) {
+      return;
+    }
 
     if (isStopping && isAnimationEnabled) {
       animationController.playMovementAnimation('stand');
@@ -355,11 +354,8 @@ export const createMovementController = (id: string | number, animationControlle
     const { current: currentPosition, duration, goal: positionGoal, userControlledSpeed } = position;
     const movementSpeed = (userControlledSpeed !== undefined ? userControlledSpeed : baseMovementSpeed);
     if (positionGoal) {
-      if (!cachedWalkmesh) {
-        cachedWalkmesh = scene.getObjectByName('walkmesh') as Object3D;
-      }
-
-      const speed = movementSpeed / 2560;      const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
+      const speed = movementSpeed / 2560;
+      const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
 
       const remainingDistance = currentPosition.distanceTo(positionGoal);
 
@@ -379,8 +375,9 @@ export const createMovementController = (id: string | number, animationControlle
         isStopping = true;
       } else {
         const direction = positionGoal.clone().sub(currentPosition).normalize();
-        currentPosition.add(direction.multiplyScalar(maxDistance).divideScalar(10));
-        currentPosition.copy(getPositionOnWalkmesh(currentPosition, cachedWalkmesh) ?? currentPosition)
+        const desiredNextPos = currentPosition.clone().add(direction.multiplyScalar(maxDistance).divideScalar(10));
+        const newPos = walkmeshController.moveToward(currentPosition, desiredNextPos);
+        currentPosition.copy(newPos);
       }
     }
 
@@ -480,7 +477,6 @@ export const createMovementController = (id: string | number, animationControlle
     getState,
     getPosition,
     hasBeenPlaced,
-    loopOffsets,
     moveToObject,
     moveToOffset,
     moveToPoint,

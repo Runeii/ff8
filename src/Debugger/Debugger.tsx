@@ -13,6 +13,13 @@ type Log = {
   opcode: string
 }
 
+type Queue = {
+  id: number;
+  mode: string;
+  uniqueId: string;
+  queue: unknown[];
+}
+
 async function blobToCanvasModern(blob?: Blob): Promise<HTMLCanvasElement> {
     if (!blob) {
         throw new Error('No blob provided');
@@ -38,6 +45,7 @@ const Debugger = () => {
   const [scriptStates, setScriptStates] = useState<Record<number, string>>({});
   const [scriptControllerStates, setScriptControllerStates] = useState<Record<number, string>>({});
   const [log, setLog] = useState<Record<number, Log[]>>({});
+  const [queue, setQueue] = useState<Record<number, Queue[]>>({});
 
   const [layers, setLayers] = useState<Record<number, Layer>>({});
 
@@ -79,6 +87,27 @@ const Debugger = () => {
           ]
         }));
       }
+      if (type === 'queue') {
+        setQueue(state => ({
+          ...state,
+          [payload.id]: [
+            ...(state[payload.id] ?? []),
+            {
+              id: payload.id,
+              mode: payload.mode,
+              uniqueId: payload.uniqueId,
+              queue: payload.queue.map(item => ({
+                ...item,
+                method: {
+                  ...item.method,
+                  opcodes: null,
+                  opcodesDebug: null
+                }
+              })),
+            }
+          ]
+        }));
+      }
       if (type === 'layers') {
         const canvas = await blobToCanvasModern(blob);
         setLayers(prev => ({
@@ -95,11 +124,12 @@ const Debugger = () => {
         setScriptStates({});
         setLog([]);
         setLayers({});
+        setQueue({});
       }
     };
   }, []);
 
-  const [view, setView] = useState<'state' | 'script-state' | 'logs' | 'layers'>('state');
+  const [view, setView] = useState<'state' | 'queue' | 'script-state' | 'logs' | 'layers'>('state');
   const [scriptId, setScriptId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -123,6 +153,7 @@ const Debugger = () => {
       <div className={styles.menu}>
         <button onClick={() => setView('state')}>State</button>
         <button onClick={() => setView('logs')}>Logs</button>
+        <button onClick={() => setView('queue')}>Queue</button>
         <button onClick={() => setView('layers')}>Layers</button>
         {Object.entries(scriptStates).map(([id]) => (
           <button key={id} onClick={() => {
@@ -156,6 +187,14 @@ const Debugger = () => {
             <h2>Layer Debug Info</h2>
             <div id="layers" className={styles.layers} /> 
             <pre>{JSON.stringify(layers, null, 2)}</pre>
+          </div>
+          </>
+        )}
+        {view === 'queue' && (
+          <>
+          <div>
+            <h2>Queue Debug Info</h2>
+            <pre>{JSON.stringify(queue, null, 2)}</pre>
           </div>
           </>
         )}

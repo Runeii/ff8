@@ -1,10 +1,11 @@
 import { BufferAttribute, BufferGeometry, DoubleSide } from "three";
-import {  useCallback, useMemo } from "react";
+import {  useCallback, useEffect, useMemo } from "react";
 import useGlobalStore from "../../store";
 import { FieldData } from "../Field";
 import { vectorToFloatingPoint } from "../../utils";
-import { ThreeEvent } from "@react-three/fiber";
+import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { Bvh } from "@react-three/drei";
+import WalkmeshMovementController from "./WalkmeshMovement";
 
 type WalkMeshProps = {
   walkmesh: FieldData['walkmesh'];
@@ -43,6 +44,14 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
   }, [isDebugMode]);
 
   const lockedTriangles = useGlobalStore(state => state.lockedTriangles);
+
+  useFrame(({scene}) => {
+    if (!useGlobalStore.getState().walkmeshController) {
+      useGlobalStore.setState({
+        walkmeshController: new WalkmeshMovementController(scene.getObjectByName('walkmesh') as Object3D)
+      })
+    }
+  })
 
   return (
     <Bvh firstHitOnly>

@@ -56,7 +56,7 @@ const createScriptController = ({
     await triggerMethod(method.methodId, priority);
   }
 
-  const triggerMethod = async (methodId: string, priority = 10) => {
+  const triggerMethod = async (methodId: string, priority = 10, canDuplicate = false) => {
     const method = script.methods.find(method => method.methodId === methodId);
     if (!method) {
       console.warn(`Method with id ${methodId} not found in script for ${script.groupId}`);
@@ -64,7 +64,7 @@ const createScriptController = ({
     }
 
     const currentQueue = getState().queue;
-    if (currentQueue.find(item => item.method.methodId === methodId)) {
+    if (!canDuplicate && currentQueue.find(item => item.method.methodId === methodId)) {
       return;
     }
 
@@ -113,6 +113,12 @@ const createScriptController = ({
     }
 
     setState({ queue: newQueue });
+    sendToDebugger('queue', JSON.stringify({
+      id: script.groupId,
+      mode: 'add',
+      uniqueId: newItem.uniqueId,
+      queue: newQueue
+    }), undefined, script.groupId === 8);
   }
 
   const removeQueueItem = (uniqueId: string) => {
@@ -122,6 +128,13 @@ const createScriptController = ({
     setState({
       queue: newQueue
     });
+
+    sendToDebugger('queue', JSON.stringify({
+      id: script.groupId,
+      mode: 'delete',
+      uniqueId,
+      queue: newQueue
+    }), undefined, script.groupId === 8);
 
     const event = new CustomEvent('scriptEnd', {
       detail: uniqueId
@@ -152,7 +165,7 @@ const createScriptController = ({
 
     const queueItem = queueSnapshot[0];
 
-    const { activeOpcodeIndex, isAwaiting, method } = queueItem;
+    const { activeOpcodeIndex, isAwaiting, method, uniqueId } = queueItem;
 
     if (isAwaiting) {
       return;
@@ -166,12 +179,12 @@ const createScriptController = ({
     const activeOpcode = method.opcodes[activeOpcodeIndex];
 
     if (activeOpcode.name.startsWith('LABEL')) {
-      handleTickCleanup(queueItem.activeOpcodeIndex + 1, queueSnapshot)
+      handleTickCleanup(queueItem.activeOpcodeIndex + 1, uniqueId)
       return;
     }
 
     if (activeOpcode.name === 'HALT') {
-      handleTickCleanup(-2, queueSnapshot);
+      handleTickCleanup(-2, uniqueId);
       return;
     }
 
@@ -205,23 +218,27 @@ const createScriptController = ({
     new Promise<void>(async (resolve) => {
       const nextIndex = await Promise.race([promise]);
 
-      handleTickCleanup(nextIndex, queueSnapshot)
+      handleTickCleanup(nextIndex, uniqueId)
       resolve();
     })
   }
 
-  const handleTickCleanup = (nextIndex: number | void, queueSnapshot: QueueItem[]) => {
-    const updatedQueueItem = structuredClone(queueSnapshot[0]);
+  const handleTickCleanup = (nextIndex: number | void, uniqueId: string) => {
+    const updatedQueueItem = getState().queue.find(item => item.uniqueId === uniqueId);
+
+    if (!updatedQueueItem) {
+      return;
+    }
 
     // Halt
     if (nextIndex === -2) {
-      removeQueueItem(updatedQueueItem.uniqueId);
+      removeQueueItem(uniqueId);
       return;
     }
 
     // Return and not looping
     if (nextIndex === -1 && !updatedQueueItem.isLooping) {
-      removeQueueItem(updatedQueueItem.uniqueId);
+      removeQueueItem(uniqueId);
       return;
     }
     
@@ -234,7 +251,7 @@ const createScriptController = ({
     updatedQueueItem.isAwaiting = false;
 
     if (updatedQueueItem.activeOpcodeIndex >= updatedQueueItem.method.opcodes.length) {
-      removeQueueItem(updatedQueueItem.uniqueId);
+      removeQueueItem(uniqueId);
       return;
     }
 
