@@ -2,6 +2,7 @@ import useGlobalStore from "../../../store";
 import { Scene } from "three";
 import createScriptController from "./ScriptController/ScriptController";
 import { getPartyMemberModelComponent } from "./Model/modelUtils";
+import { ScriptMethod } from "../types";
 
 export const dummiedCommand = () => { }
 
@@ -109,3 +110,10 @@ export const enableMessageToClose = (id: string) => {
 
 
 export const convert256ToRadians = (value: number) => (value % 256 / 256) * 2 * Math.PI;
+
+export const isValidActionableMethod = (method?: ScriptMethod) => {
+  if (!method) {
+    return false;
+  }
+  return method.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET' && opcode.name !== 'HALT').length > 0;
+}

@@ -90,6 +90,8 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
   // This is the main logic for the camera movement
   useFrame(({ scene }) => {
     if (activeCameraId !== 0) {
+      backgroundPanRef.current.panX = 0
+      backgroundPanRef.current.panY = 0
       return
     }
     const cameraFocusObject = useGlobalStore.getState().cameraFocusObject;
@@ -141,9 +143,9 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     const {x: xPan, y: yPan} = scrollSpring.current;
 
     const clippedPanX = clamp(panX, boundaries.left, boundaries.right);
-    const finalPanX = clippedPanX + xPan / 256;
+    const finalPanX = clippedPanX - xPan / 256;
     const clippedPanY = clamp(panY, boundaries.top, boundaries.bottom);
-    const finalPanY = clippedPanY + yPan / 256;
+    const finalPanY = clippedPanY - yPan / 256;
 
     const { UP, RIGHT } = WORLD_DIRECTIONS;
   

@@ -7,13 +7,6 @@ type Log = {
   opcode: string
 }
 
-type Queue = {
-  id: number;
-  mode: string;
-  uniqueId: string;
-  queue: unknown[];
-}
-
 async function blobToCanvasModern(blob?: Blob): Promise<HTMLCanvasElement> {
     if (!blob) {
         throw new Error('No blob provided');
@@ -39,7 +32,7 @@ const Debugger = () => {
   const [scriptStates, setScriptStates] = useState<Record<number, string>>({});
   const [scriptControllerStates, setScriptControllerStates] = useState<Record<number, string>>({});
   const [log, setLog] = useState<Record<number, Log[]>>({});
-  const [queue, setQueue] = useState<Record<number, Queue[]>>({});
+  const [queue, setQueue] = useState<Record<number, Log[]>>({});
 
   const [layers, setLayers] = useState<Record<number, Layer>>({});
 
@@ -88,17 +81,8 @@ const Debugger = () => {
             ...(state[payload.id] ?? []),
             {
               id: payload.id,
-              mode: payload.mode,
-              uniqueId: payload.uniqueId,
-              // @ts-expect-error CBA typing debug
-              queue: payload.queue.map(item => ({
-                ...item,
-                method: {
-                  ...item.method,
-                  opcodes: null,
-                  opcodesDebug: null
-                }
-              })),
+              uuid: payload.uuid,
+              opcode: payload.opcode,
             }
           ]
         }));
@@ -169,7 +153,13 @@ const Debugger = () => {
           ))}
         </div>
         )}
-        {view === 'state' && <pre>{JSON.stringify(storeState, null, 2)}</pre>}
+        {view === 'state' && <pre>{JSON.stringify({
+          ...storeState,
+          availableMessages: 'blanked out',
+          walkmesh: 'blanked out',
+          walkmeshController: 'blanked out',
+          congaWaypointHistory: 'blanked out'
+        }, null, 2)}</pre>}
         {view === 'script-state' && scriptId !== null && (
           <>
           <pre>Script state: {JSON.stringify(scriptStates[scriptId], null, 2)}</pre>

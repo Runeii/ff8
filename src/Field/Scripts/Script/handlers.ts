@@ -224,13 +224,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   UCON: () => {
     useGlobalStore.setState({ isUserControllable: true });
   },
-  UCOFF: ({ setState }) => {
-    const isUserControllable = useGlobalStore.getState().isUserControllable;
-    if (isUserControllable) {
-      setState({
-        hasRemovedControl: true,
-      })
-    }
+  UCOFF: () => {
     useGlobalStore.setState({ isUserControllable: false });
   },
   LINEON: ({ setState }) => {
@@ -748,7 +742,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       endFrame: lastFrame,
     });
   },
-  CANIMEKEEP: async ({ animationController, currentOpcode, currentOpcodeIndex, script, opcodes, STACK }) => {
+  CANIMEKEEP: async ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
@@ -989,6 +983,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     await movementController.moveToPoint(target, {
       distanceToStopAnimationFromTarget,
+      isAllowedToLeaveWalkmesh: true
     });
   },
 

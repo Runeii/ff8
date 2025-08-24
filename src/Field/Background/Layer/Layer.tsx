@@ -1,5 +1,5 @@
 import { MutableRefObject, useRef, useState } from "react";
-import { ClampToEdgeWrapping, Line3, Mesh, NearestFilter, PerspectiveCamera, Sprite, SRGBColorSpace, Vector3 } from "three";
+import { Line3, Mesh, NearestFilter, PerspectiveCamera, RepeatWrapping, Sprite, SRGBColorSpace, Vector2, Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
 import { getCameraDirections } from "../../Camera/cameraUtils";
@@ -39,7 +39,7 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
   const camera = useThree(({ scene }) => scene.getObjectByName("sceneCamera") as PerspectiveCamera);
 
   const cameraScroll = useCameraScroll('camera');
-  const layerScroll = useCameraScroll('layer', layer.layerID);
+  const layerScroll = useCameraScroll('layer', layer.renderID);
 
   useFrame(() => {
     if (!layerRef.current) {
@@ -107,7 +107,7 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     const heightScale = layer.canvas.height / layer.canvas.width;
     const height = width * heightScale
 
-    layerRef.current.scale.set(width, height, 1)
+    layerRef.current.scale.set(width * 3, height * 3, 1)
 
     /*
     // Panning
@@ -129,11 +129,11 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     let clampedPanX = clamp(panX, left * 256, right * 256);
     let clampedPanY = clamp(panY, top * 256, bottom * 256);
 
-    clampedPanX += cameraScroll.current.x;
-    clampedPanY += cameraScroll.current.y;
+    clampedPanX -= cameraScroll.current.x;
+    clampedPanY -= cameraScroll.current.y;
 
-    clampedPanX += layerScroll.current.x;
-    clampedPanY += layerScroll.current.y;
+    clampedPanX -= layerScroll.current.x;
+    clampedPanY -= layerScroll.current.y;
 
     const { layerScrollAdjustments } = useGlobalStore.getState()
     const controlledScroll = layerScrollAdjustments[layer.renderID]
@@ -176,8 +176,9 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
             minFilter={NearestFilter}
             colorSpace={SRGBColorSpace}
             magFilter={NearestFilter}
-            wrapS={ClampToEdgeWrapping}
-            wrapT={ClampToEdgeWrapping}
+            wrapS={RepeatWrapping}
+            wrapT={RepeatWrapping}
+            repeat={new Vector2(3, 3)}
           />
         </meshBasicMaterial>
       </Plane>
@@ -194,8 +195,9 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
           minFilter={NearestFilter}
           colorSpace={SRGBColorSpace}
           magFilter={NearestFilter}
-          wrapS={ClampToEdgeWrapping}
-          wrapT={ClampToEdgeWrapping}
+          wrapS={RepeatWrapping}
+          wrapT={RepeatWrapping}
+          repeat={new Vector2(3, 3)}
         />
       </spriteMaterial>
     </sprite>

@@ -30,7 +30,7 @@ const Gateway = ({
 
   return (
     <LineBlock
-      color="yellow"
+      color={isMapJumpEnabled ? 'yellow' : 'black'}
       lineBlockRef={lineRef}
       points={formattedGateway.sourceLine}
       renderOrder={0}

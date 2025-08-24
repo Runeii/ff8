@@ -5,6 +5,7 @@ import useGlobalStore from "../../../../store";
 import useIntersection from "../useIntersection";
 import LineBlock from "../../../LineBlock/LineBlock";
 import createScriptController from "../ScriptController/ScriptController";
+import { isValidActionableMethod } from "../utils";
 
 type LocationProps = {
   scriptController: ReturnType<typeof createScriptController>;
@@ -17,17 +18,14 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
 
   const lineRef = useRef<Mesh>(null);
 
-  const talkMethod = scriptController.script.methods.find(method => method.methodId === 'talk');
-
   const hasValidTalkMethod = useMemo(() => {
+    const talkMethod = scriptController.script.methods.find(method => method.methodId === 'talk');
     if (!talkMethod) {
       return false;
     }
-    return talkMethod.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET').length > 0;
-  }, [talkMethod]);
+    return isValidActionableMethod(talkMethod);
+  }, [scriptController]);
 
-  
-  
   const onKeyDown = useCallback((event: KeyboardEvent) => {
     const { currentMessages, isUserControllable, hasActiveTalkMethod  } = useGlobalStore.getState();
     const isTalkable = useScriptStateStore.getState().isTalkable;
@@ -58,7 +56,17 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
       scriptController.triggerMethod('touchon');
     },
     onTouch: () => {
-       scriptController.triggerMethod('touch');
+      const touchMethod = scriptController.script.methods.find(method => method.methodId === 'touch');
+      const hasValidTouchMethod = isValidActionableMethod(touchMethod);
+      if (hasValidTouchMethod) {
+        scriptController.triggerMethod('touch');
+        return;
+      }
+      const pushMethod = scriptController.script.methods.find(method => method.methodId === 'push');
+      const hasValidPushMethod = isValidActionableMethod(pushMethod);
+      if (hasValidPushMethod) {
+        scriptController.triggerMethod('push');
+      }
     },
     onTouchOff: () => {
       window.removeEventListener('keydown', onKeyDown);

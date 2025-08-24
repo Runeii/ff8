@@ -77,6 +77,7 @@ const useFollower = ({ animationController, isActive, movementController, partyM
 
     movementController.moveToPoint(position, {
       isAnimationEnabled: true,
+      isAllowedToLeaveWalkmesh: true,
       userControlledSpeed: speed
     });
 

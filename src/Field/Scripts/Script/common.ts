@@ -28,7 +28,7 @@ export const isTouching = (thisId: number, targetName: string, scene: Scene) => 
   const thisPosition = thisMesh.getWorldPosition(new Vector3());
   const targetPosition = targetMesh.getWorldPosition(new Vector3());
 
-  return thisPosition.distanceTo(targetPosition) < 0.07;
+  return thisPosition.distanceTo(targetPosition) < 0.001;
 }
 
 
@@ -115,7 +115,7 @@ export const setCameraAndLayerScroll = async (x: number, y: number, duration: nu
     isInProgress: true
   }
 
-  console.trace('Camera and layer scroll set:', { x, y, duration, layerIndex });
+  //console.trace('Camera and layer scroll set:', { x, y, duration, layerIndex });
 
   if (layerIndex === undefined) {
     useGlobalStore.setState({ cameraScrollOffset: transition });

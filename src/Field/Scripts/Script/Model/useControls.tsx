@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Object3D, PerspectiveCamera, Scene, Vector3 } from "three";
 import useKeyboardControls from "./useKeyboardControls";
 import { useFrame } from "@react-three/fiber";
@@ -44,6 +44,11 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     movementController.setFootsteps();
   }, [movementController]);
 
+  const characterHeightRef = useRef(characterHeight);
+  useEffect(() => {
+    characterHeightRef.current = characterHeight;
+  }, [characterHeight]);
+
   useEffect(() => {
     if (!isActive) {
       return;
@@ -53,7 +58,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     }
 
     const initialPosition = new Vector3(initialFieldPosition.x, initialFieldPosition.y, initialFieldPosition.z);
-    const newPosition = walkmeshController.getPositionOnWalkmesh(initialPosition);
+    const newPosition = walkmeshController.getPositionOnWalkmesh(initialPosition, characterHeightRef.current / 2, false);
 
     if (newPosition) {
       movementController.setPosition(newPosition);
@@ -147,8 +152,8 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       currentPosition.z
     ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
 
-    const newPosition = walkmeshController.getPositionOnWalkmesh(desiredPosition, characterHeight / 2);
-      
+    const newPosition = walkmeshController.findNearestValidPosition(new Vector3(currentPosition.x, currentPosition.y, currentPosition.z), desiredPosition, false, 0.001);
+
     if (!newPosition) {
       return
     }
@@ -167,9 +172,10 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     }
     await movementController.moveToPoint(newPosition, {
       isAnimationEnabled: true,
+      isAllowedToCrossBlockedTriangles: false,
       userControlledSpeed: movementSpeed,
     });
-  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking, characterHeight]);
+  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking]);
 
   useFrame(({ scene }, delta) => {
     if (!isActive) {

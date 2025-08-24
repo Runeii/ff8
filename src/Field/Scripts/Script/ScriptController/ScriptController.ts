@@ -112,13 +112,12 @@ const createScriptController = ({
       newQueue.splice(insertAtIndex, 0, newItem);
     }
 
+      sendToDebugger('queue', JSON.stringify({
+        uuid: generateUUID(),
+        id: script.groupId,
+        opcode: `QUEUE: ADD ${newItem.uniqueId} ${newItem.method.methodId}`,
+      }));
     setState({ queue: newQueue });
-    sendToDebugger('queue', JSON.stringify({
-      id: script.groupId,
-      mode: 'add',
-      uniqueId: newItem.uniqueId,
-      queue: newQueue
-    }), undefined, script.groupId === 8);
   }
 
   const removeQueueItem = (uniqueId: string) => {
@@ -130,11 +129,10 @@ const createScriptController = ({
     });
 
     sendToDebugger('queue', JSON.stringify({
+      uuid: generateUUID(),
       id: script.groupId,
-      mode: 'delete',
-      uniqueId,
-      queue: newQueue
-    }), undefined, script.groupId === 8);
+      opcode: `QUEUE: ${uniqueId} complete`,
+    }));
 
     const event = new CustomEvent('scriptEnd', {
       detail: uniqueId
@@ -178,6 +176,12 @@ const createScriptController = ({
 
     const activeOpcode = method.opcodes[activeOpcodeIndex];
 
+    sendToDebugger('command', JSON.stringify({
+      uuid: generateUUID(),
+      id: script.groupId,
+      opcode: activeOpcode.name,
+    }));
+
     if (activeOpcode.name.startsWith('LABEL')) {
       handleTickCleanup(queueItem.activeOpcodeIndex + 1, uniqueId)
       return;
@@ -208,17 +212,17 @@ const createScriptController = ({
       TEMP_STACK,
     });
 
-    sendToDebugger('command', JSON.stringify({
-      uuid: generateUUID(),
-      id: script.groupId,
-      opcode: activeOpcode.name,
-    }));
-
     // eslint-disable-next-line no-async-promise-executor
     new Promise<void>(async (resolve) => {
       const nextIndex = await Promise.race([promise]);
 
       handleTickCleanup(nextIndex, uniqueId)
+      sendToDebugger('command', JSON.stringify({
+        uuid: generateUUID(),
+        id: script.groupId,
+        opcode: `Completed: ${activeOpcode.name}`,
+      }));
+
       resolve();
     })
   }

@@ -11,7 +11,9 @@ type MoveOptions = {
   customMovementTarget: Vector3 | undefined;
   duration: number | undefined;
   isAnimationEnabled: boolean;
+  isAllowedToCrossBlockedTriangles: boolean;
   isFacingTarget: boolean;
+  isAllowedToLeaveWalkmesh: boolean;
   userControlledSpeed: number | undefined;
   distanceToStopAnimationFromTarget: number;
 }
@@ -29,6 +31,8 @@ const createMovementController = (id: string | number, animationController: Retu
       duration: 0 as number | undefined,
       distanceToStopAnimationFromTarget: 0,
       isAnimationEnabled: true,
+      isAllowedToCrossBlockedTriangles: true,
+      isAllowedToLeaveWalkmesh: false,
       isFacingTarget: true,
       isPaused: false,
       userControlledSpeed: undefined as number | undefined,
@@ -87,20 +91,12 @@ const createMovementController = (id: string | number, animationController: Retu
   const setPosition = (position: Vector3) => {
     resolvePendingPositionSignal();
 
-    const { walkmeshController } = useGlobalStore.getState();
-
-    if (!walkmeshController) {
-      return;
-    }
-
-    const goal = walkmeshController.getPositionOnWalkmesh(position);
-
     setState({
       hasBeenPlaced: true,
       needsZAdjustment: true,
       position: {
         ...getState().position,
-        goal: goal ?? position,
+        goal: position,
         duration: 0,
         isAnimationEnabled: false,
         isFacingTarget: false,
@@ -131,6 +127,8 @@ const createMovementController = (id: string | number, animationController: Retu
       duration: undefined,
       isAnimationEnabled: true,
       isFacingTarget: true,
+      isAllowedToCrossBlockedTriangles: true,
+      isAllowedToLeaveWalkmesh: false,
       userControlledSpeed: undefined,
       distanceToStopAnimationFromTarget: 0
     }
@@ -139,6 +137,8 @@ const createMovementController = (id: string | number, animationController: Retu
       distanceToStopAnimationFromTarget,
       duration,
       isAnimationEnabled,
+      isAllowedToCrossBlockedTriangles,
+      isAllowedToLeaveWalkmesh,
       isFacingTarget,
       userControlledSpeed,
     } = {
@@ -155,7 +155,7 @@ const createMovementController = (id: string | number, animationController: Retu
       return;
     }
 
-    const goal = walkmeshController.getPositionOnWalkmesh(target);
+    const goal = isAllowedToLeaveWalkmesh ? target : walkmeshController.getPositionOnWalkmesh(target);
 
     setState({
       hasBeenPlaced: true,
@@ -165,6 +165,8 @@ const createMovementController = (id: string | number, animationController: Retu
         duration: duration && duration > 0 ? duration : undefined,
         distanceToStopAnimationFromTarget,
         isAnimationEnabled,
+        isAllowedToCrossBlockedTriangles,
+        isAllowedToLeaveWalkmesh,
         isFacingTarget,
         isPaused: false,
         userControlledSpeed,
@@ -352,10 +354,10 @@ const createMovementController = (id: string | number, animationController: Retu
       return;
     }
    
-    const { current: currentPosition, duration, goal: positionGoal, userControlledSpeed } = position;
-    const movementSpeed = (userControlledSpeed !== undefined ? userControlledSpeed : baseMovementSpeed);
+    const { current: currentPosition, duration, isAllowedToCrossBlockedTriangles, isAllowedToLeaveWalkmesh, goal: positionGoal, userControlledSpeed } = position;
+    const movementSpeed = (userControlledSpeed !== undefined ? userControlledSpeed : baseMovementSpeed) * 0.75;
     if (positionGoal) {
-      const speed = movementSpeed / 2560;
+      const speed = movementSpeed / 2560
       const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
 
       const remainingDistance = currentPosition.distanceTo(positionGoal);
@@ -377,7 +379,7 @@ const createMovementController = (id: string | number, animationController: Retu
       } else {
         const direction = positionGoal.clone().sub(currentPosition).normalize();
         const desiredNextPos = currentPosition.clone().add(direction.multiplyScalar(maxDistance).divideScalar(10));
-        const newPos = walkmeshController.moveToward(currentPosition, desiredNextPos);
+        const newPos = isAllowedToLeaveWalkmesh ? desiredNextPos : walkmeshController.moveToward(currentPosition, desiredNextPos, isAllowedToCrossBlockedTriangles);
         currentPosition.copy(newPos);
       }
     }

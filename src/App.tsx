@@ -72,9 +72,22 @@ export default function App() {
             <ColorOverlay />
           </EffectComposer>
         </Canvas>
-        <Canvas camera={undefined} className="canvas" gl={{
-          logarithmicDepthBuffer: true,
-        }} frameloop="demand">
+        <Canvas
+          camera={undefined}
+          className="canvas" 
+          shadows={false}
+          dpr={window.devicePixelRatio}
+          gl={{
+            antialias: false,
+            alpha: true,
+            depth: false,
+            stencil: false,
+            powerPreference: "high-performance"
+          }}
+          linear={true}
+          flat={true}
+          frameloop="always"
+        >
           <Ui />
         </Canvas>
         {isDebugMode && <Queues />}

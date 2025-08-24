@@ -7,7 +7,6 @@ import { sendToDebugger } from '../../../Debugger/debugUtils';
 
 export type ScriptState = {
   characterHeight: number;
-  hasRemovedControl: boolean;
   isHalted: boolean;
 
   ladderAnimationId: number | undefined;
@@ -60,7 +59,6 @@ const createScriptState = (script: Script) => {
   const creator = create<ScriptState>()(() => ({ 
     characterHeight: 0.6, // default to a reasonable height
 
-    hasRemovedControl: false,
     isHalted: false,
 
     animationSpeed: 1,
