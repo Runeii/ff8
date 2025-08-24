@@ -15,6 +15,8 @@ export type ScriptState = {
   backgroundAnimationSpeed: number;
   isBackgroundVisible: boolean;
 
+  isDrawPoint: boolean,
+
   isLineOn: boolean;
   linePoints: Vector3[] | null;
 
@@ -68,6 +70,8 @@ const createScriptState = (script: Script) => {
     backgroundAnimationSpring: new SpringValue(0),
     backgroundAnimationSpeed: 200,
     isBackgroundVisible: false,
+
+    isDrawPoint: false,
 
     isLineOn: true,
     linePoints: null,

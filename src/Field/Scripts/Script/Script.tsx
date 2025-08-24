@@ -16,6 +16,7 @@ import createScriptController from "./ScriptController/ScriptController";
 import createSFXController from "./SFXController/SFXController";
 import { getPlayerEntity } from "./Model/modelUtils";
 import { FieldData } from "../../Field";
+import DrawPoint from "./DrawPoint/DrawPoint";
 
 type ScriptProps = {
   doors: Door[];
@@ -48,6 +49,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
   }), [animationController, headController, movementController, rotationController,sfxController, script, scene, useScriptStateStore]);
 
   const isVisible = useScriptStateStore(state => state.isVisible);
+  const isDrawPoint = useScriptStateStore(state => state.isDrawPoint);
   const isUnused = useScriptStateStore(state => state.isUnused);
   const partyMemberId = useScriptStateStore(state => state.partyMemberId);
   
@@ -184,12 +186,16 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
         useScriptStateStore,
       }}
       position={script.type === 'model' ? [10,10,10] : [0,0,0]}
-      visible={isVisible}
+      visible={isVisible || isDrawPoint}
   >
     <group name={`party--${partyMemberId}`} userData={{ test: 'test' }}>
       {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
-      {script.type === 'model' && <Model scriptController={scriptController} animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} script={script} useScriptStateStore={useScriptStateStore} />}
+      {script.type === 'model' && (
+        isDrawPoint ?
+          <DrawPoint scriptController={scriptController} useScriptStateStore={useScriptStateStore} />
+          : <Model scriptController={scriptController} animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} script={script} useScriptStateStore={useScriptStateStore} />
+      )}
       {script.type === 'door' && <Door scriptController={scriptController} doors={doors} script={script} useScriptStateStore={useScriptStateStore} />}
     </group>
     </animated.group>

@@ -58,7 +58,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     }
 
     const initialPosition = new Vector3(initialFieldPosition.x, initialFieldPosition.y, initialFieldPosition.z);
-    const newPosition = walkmeshController.getPositionOnWalkmesh(initialPosition, characterHeightRef.current / 2, false);
+    const newPosition = walkmeshController.getPositionOnWalkmesh(initialPosition, 1, false);
 
     if (newPosition) {
       movementController.setPosition(newPosition);
@@ -102,20 +102,34 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     return angle + (controlDirection - 128);
   }, [movementFlags, controlDirection]);
 
+  const [forwardDirection] = useState(new Vector3(0, -1, 0));
+  const [upDirection] = useState(new Vector3(0, 0, 1));
+  const [currentPositionVector] = useState(new Vector3());
+
+  const playerEntityRef = useRef<Object3D | null>(null);
+  const partyLeader = useGlobalStore((state) => state.party[0]);
+  useEffect(() => {
+    playerEntityRef.current = null
+  }, [partyLeader]);
+
   const handleFrame = useCallback(async (camera: PerspectiveCamera, scene: Scene, delta: number) => {
     if (!isActive || !isUserControllable || !hasPlacedCharacter || isTransitioningMap) {
       return;
     }
 
-    if (movementController.getState().position.goal && movementController.getState().position.userControlledSpeed !== undefined && !movementController.getState().position.isPaused) {
+    const { goal, userControlledSpeed, isPaused } = movementController.getState().position;
+
+    if (goal && userControlledSpeed !== undefined && !isPaused) {
       return;
     }
     
-    const player = getPlayerEntity(scene);
+    const player = playerEntityRef.current ?? getPlayerEntity(scene);
     if (!player) {
       console.warn("No player entity found in scene");
       return;
     }
+
+    playerEntityRef.current = player;
 
     const isTurning = rotationController.getState().angle.isAnimating;
     if (!walkmeshController || !isUserControllable || isTurning) {
@@ -140,10 +154,11 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       return;
     }
 
-    let meshForward = new Vector3(0,-1,0).clone();
-    meshForward.z = 0;
-    const meshUp = new Vector3(0, 0, 1).applyQuaternion(player.quaternion).normalize();
-    meshForward = meshForward.applyAxisAngle(meshUp, convert256ToRadians(movementAngle));
+    upDirection.set(0, 0, 1);
+    const meshUp = upDirection.applyQuaternion(player.quaternion).normalize();
+
+    forwardDirection.set(0, -1, 0);
+    const meshForward = forwardDirection.applyAxisAngle(meshUp, convert256ToRadians(movementAngle));
 
     const directionAdjustmentForSpeed = speed * 1000;
     desiredPosition.set(
@@ -152,7 +167,13 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       currentPosition.z
     ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
 
-    const newPosition = walkmeshController.findNearestValidPosition(new Vector3(currentPosition.x, currentPosition.y, currentPosition.z), desiredPosition, false, 0.001);
+    currentPositionVector.copy(currentPosition);
+    const newPosition = walkmeshController.getPositionOnWalkmesh(
+      desiredPosition,
+      characterHeight / 2,
+      false,
+      true
+    );
 
     if (!newPosition) {
       return
@@ -175,7 +196,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       isAllowedToCrossBlockedTriangles: false,
       userControlledSpeed: movementSpeed,
     });
-  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking]);
+  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking, upDirection, forwardDirection, currentPositionVector, characterHeight]);
 
   useFrame(({ scene }, delta) => {
     if (!isActive) {

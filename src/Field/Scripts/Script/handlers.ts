@@ -14,6 +14,7 @@ import { MUSIC_IDS } from "../../../constants/audio";
 import MusicController from "./MusicController";
 import createRotationController from "./RotationController/RotationController";
 import createSFXController from "./SFXController/SFXController";
+import { DRAW_POINTS } from "../../../constants/drawPoints";
 
 const musicController = MusicController();
 
@@ -52,6 +53,7 @@ export let MEMORY: Record<number, number> = {
 
   256: 0, // progress
   528: 0, // subprogress
+  533:8,
 
   720: 0, // squall model
   721: 0, // zell model
@@ -385,7 +387,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     }))
   },
   RBGSHADELOOP: ({ script,STACK }) => {
-    console.log(script)
     const holdOut = STACK.pop() as number;
     const holdIn = STACK.pop() as number;
     const endBlue = STACK.pop() as number;
@@ -611,14 +612,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const priority = STACK.pop();
     remoteExecute(label, priority)
   },
-  REQEW: async ({ STACK, script }) => {
+  REQEW: async ({ STACK }) => {
     const label = STACK.pop() as number;
     const priority = STACK.pop();
-    const startTimestamp = performance.now();
-    console.log('REQEW', label, priority, 'from', script.groupId);
+
     await remoteExecute(label, priority)
-    const endTimestamp = performance.now();
-    console.log('Completed REQEW', label, priority, 'from', script.groupId, 'in', endTimestamp - startTimestamp, 'ms');
   },
   PREQ: ({ currentOpcode, scene, STACK }) => {
     const partyMemberIndex = currentOpcode.param as number;
@@ -870,8 +868,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   POPANIME: () => { },
   PUSHANIME: () => { },
-  UNUSE: ({ script, setState }) => {
-    console.log(script)
+  UNUSE: ({ setState }) => {
     setState({ isUnused: true })
   },
   USE: ({ setState }) => {
@@ -983,7 +980,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     await movementController.moveToPoint(target, {
       distanceToStopAnimationFromTarget,
-      isAllowedToLeaveWalkmesh: true
     });
   },
 
@@ -1831,9 +1827,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   MOVIESYNC: dummiedCommand, // used to sync with a movie, we do not show movies so this is dummied and returns done immediately
 
-  DRAWPOINT: ({ STACK }) => {
-    // drawpoint ID
-    STACK.pop() as number;
+  DRAWPOINT: async ({ STACK }) => {
+    const drawPointId = STACK.pop() as number;
+    await openMessage('drawpoint', [`Found a draw point!\n${DRAW_POINTS[drawPointId]} found.`], {
+      x: 110,
+      y: 90,
+      width: 120,
+      height: 40,
+      channel: 0,
+    }, true);
   },
   SAVEENABLE: ({ STACK }) => {
     // const isEnabled =
@@ -1984,8 +1986,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   AXIS: ({ STACK }) => {
     STACK.splice(-2);
   },
-  SETDRAWPOINT: ({ STACK }) => {
-    STACK.pop() as number;
+  SETDRAWPOINT: ({ STACK, setState }) => {
+    const isDrawPoint = STACK.pop() as number;
+    setState({ isDrawPoint: Boolean(isDrawPoint) });
   },
   PARTICLEOFF: ({ STACK }) => {
     STACK.pop() as number;
