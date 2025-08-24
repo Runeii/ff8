@@ -102,7 +102,7 @@ const useLayeredTiles = (tiles: Tile[], filename: string, width: number, height:
       }
       return a.parameter - b.parameter;
     });
-console.log('sort')
+
     sortedLayers.forEach((layer, index) => {
       const {canvas, ...rest} = layer;
       canvas.toBlob(blob => {

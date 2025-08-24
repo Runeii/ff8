@@ -228,7 +228,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     <group>
       {
         hasPushableSphere && (
-          <Sphere args={[(0.1 / 500) * pushRadius, 16, 16]} ref={pushableSphereRef} visible={true}>
+          <Sphere args={[(0.1 / 500) * pushRadius, 16, 16]} ref={pushableSphereRef} visible={isDebugMode}>
             <meshBasicMaterial color="green" side={DoubleSide} opacity={0.2} transparent />
           </Sphere>
         )

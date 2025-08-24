@@ -753,9 +753,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const firstFrame = STACK.pop() as number;
     const lastFrame = STACK.pop() as number;
 
-    if (script.groupId === 1) {
-      console.log('CANIMEKEEP', currentOpcode, currentOpcodeIndex, opcodes, script)
-    }
     await animationController.playAnimation(animationId, {
       startFrame: firstFrame,
       endFrame: lastFrame,

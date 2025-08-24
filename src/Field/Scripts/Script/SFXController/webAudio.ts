@@ -71,7 +71,6 @@ export const preloadMapSoundBank = async (sounds: number[]): Promise<void> => {
   const loadPromises = soundsToLoad.map(async (soundId) => {
     try {
       const sound = getSoundFromId(soundId)
-      console.log(sound)
       const src = `/audio/effects/${sound}.mp3`;
       const buffer = await loadAudioBuffer(src);
       preloadedSoundBank[soundId] = buffer;

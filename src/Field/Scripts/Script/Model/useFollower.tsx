@@ -2,7 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
 import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Vector3 } from "three";
 import { createAnimationController } from "../AnimationController/AnimationController";
 import { getPartyMemberModelComponent, getPlayerEntity } from "./modelUtils";
@@ -19,6 +19,7 @@ const DISTANCE = 35;
 const useFollower = ({ animationController, isActive, movementController, partyMemberId, rotationController }: UseFollowerProps) => {
   const [currentPosition] = useState(new Vector3());
   const [targetPosition] = useState(new Vector3());
+  const isStandingRef = useRef(false);
   useFrame(({scene}) => {
     if (!isActive || !movementController || !rotationController || partyMemberId === undefined) {
       return;
@@ -60,15 +61,25 @@ const useFollower = ({ animationController, isActive, movementController, partyM
     currentPosition.set(followerPosition.x, followerPosition.y, followerPosition.z);
     targetPosition.set(position.x, position.y, position.z);
 
-    if (speed === 0 || currentPosition.distanceTo(targetPosition) === 0) {
-      animationController.playMovementAnimation('stand');
+    if (isStandingRef.current && currentPosition.distanceTo(targetPosition) === 0) {
       return;
     }
+
+    if (!isStandingRef.current) {
+      if (speed === 0 || currentPosition.distanceTo(targetPosition) === 0) {
+        animationController.playMovementAnimation('stand');
+        isStandingRef.current = true;
+        return;
+      }
+    }
+
+    isStandingRef.current = false;
 
     movementController.moveToPoint(position, {
       isAnimationEnabled: true,
       userControlledSpeed: speed
     });
+
 
     rotationController.turnToFaceAngle(angle, 0);
   });

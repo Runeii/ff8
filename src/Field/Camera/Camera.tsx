@@ -139,8 +139,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     camera.rotation.copy(initialCameraRotation);
 
     const {x: xPan, y: yPan} = scrollSpring.current;
-    //const xPan = 0;
-    //const yPan = 0;
+
     const clippedPanX = clamp(panX, boundaries.left, boundaries.right);
     const finalPanX = clippedPanX + xPan / 256;
     const clippedPanY = clamp(panY, boundaries.top, boundaries.bottom);

@@ -40,8 +40,10 @@ const useIntersection = (targetMesh: Object3D | null, isActive = true, {
 
   const [playerPosition] = useState(new Vector3());
 
+  const isUserControllable = useGlobalStore(state => state.isUserControllable)
+
   useFrame(({ scene }) => {
-    if (!hasMoved || !targetMesh || !isActive) {
+    if (!hasMoved || !targetMesh || !isActive || !isUserControllable) {
       return;
     }
 

@@ -345,6 +345,7 @@ export const createAnimationController = (id: string | number, isDebugging = fal
     return playAnimation(animationId, {
       loop: LoopRepeat,
       type: 'IDLE',
+      keepLastFrame: true
     });
   }
 

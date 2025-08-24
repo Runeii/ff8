@@ -54,7 +54,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
 
     const initialPosition = new Vector3(initialFieldPosition.x, initialFieldPosition.y, initialFieldPosition.z);
     const newPosition = walkmeshController.getPositionOnWalkmesh(initialPosition);
-    console.log(initialPosition, newPosition)
+
     if (newPosition) {
       movementController.setPosition(newPosition);
     } else {
