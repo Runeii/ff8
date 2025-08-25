@@ -172,7 +172,6 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       desiredPosition,
       characterHeight / 2,
       false,
-      true
     );
 
     if (!newPosition) {

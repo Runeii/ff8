@@ -64,14 +64,45 @@ const drawTile = (tile: Tile, canvas: HTMLCanvasElement, texture: Texture) => {
     TILE_SIZE,
     TILE_SIZE
   );
+
+  return {
+    posX,
+    posY
+  }
 }
 
+const tileBackground = (layer: Layer, layout: { lowX: number; lowY: number; highX: number; highY: number; }) => {
+  const { canvas } = layer;
+  const context = canvas.getContext('2d');
+  if (!context) return;
 
-const useLayeredTiles = (tiles: Tile[], filename: string, width: number, height: number) => {
+  const width = layout.highX - layout.lowX;
+  const height = layout.highY - layout.lowY;
+  const drawnArea = context.getImageData(layout.lowX, layout.lowY, width, height);
+
+  const newCanvas = document.createElement('canvas');
+  newCanvas.width = width;
+  newCanvas.height = height;
+  const newContext = newCanvas.getContext('2d');
+  if (!newContext) return;
+
+  newContext.putImageData(drawnArea, 0, 0);
+
+  return newCanvas;
+};
+
+const useLayeredTiles = (tiles: Tile[], filename: string, width: number, height: number, hasTiledRear: boolean) => {
   const tilesTexture = useTilesTexture(filename);
 
   const layers = useMemo(() => {
     const result: Record<string, Layer> = {};
+
+    const canvasLayouts: Record<string, {
+      lowX: number;
+      lowY: number;
+      highX: number;
+      highY: number;
+    }> = {};
 
     tiles.forEach((tile) => {
       const layerId = getLayerIdFromTile(tile);
@@ -89,7 +120,31 @@ const useLayeredTiles = (tiles: Tile[], filename: string, width: number, height:
 
       const { canvas } = result[layerId];
 
-      drawTile(tile, canvas, tilesTexture);
+      const drawResult = drawTile(tile, canvas, tilesTexture);
+      if (!drawResult) {
+        console.error('Failed to draw tile');
+        return;
+      }
+
+      const { posX, posY } = drawResult;
+
+      if (!canvasLayouts[layerId]) {
+        canvasLayouts[layerId] = {
+          lowX: Infinity,
+          lowY: Infinity,
+          highX: 0,
+          highY: 0,
+        };
+      }
+
+      const currentLayout = canvasLayouts[layerId];
+      
+      canvasLayouts[layerId] = {
+        lowX: Math.min(currentLayout.lowX, posX),
+        lowY: Math.min(currentLayout.lowY, posY),
+        highX: Math.max(currentLayout.highX, posX + TILE_SIZE),
+        highY: Math.max(currentLayout.highY, posY + TILE_SIZE),
+      };
     });
 
     // Sort by Z index. If same Z, sort of by layer Index. If same Z and layer index, sort or by parameter
@@ -103,15 +158,22 @@ const useLayeredTiles = (tiles: Tile[], filename: string, width: number, height:
       return a.parameter - b.parameter;
     });
 
+    const backgroundLayer = sortedLayers.at(-1)
+    if (hasTiledRear && backgroundLayer) {
+      const layout = canvasLayouts[backgroundLayer.id]
+      const tiledCanvas = tileBackground(backgroundLayer, layout)
+      if (tiledCanvas) {
+       backgroundLayer.canvas = tiledCanvas;
+      }
+    }
     sortedLayers.forEach((layer, index) => {
       const {canvas, ...rest} = layer;
       canvas.toBlob(blob => {
         sendToDebugger('layers', JSON.stringify({...rest, index}), blob ?? undefined);
       });
     });
-
     return sortedLayers;
-  }, [height, tiles, tilesTexture, width]);
+  }, [hasTiledRear, height, tiles, tilesTexture, width]);
 
   return layers;
 }

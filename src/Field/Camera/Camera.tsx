@@ -143,12 +143,10 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     const {x: xPan, y: yPan} = scrollSpring.current;
 
     const clippedPanX = clamp(panX, boundaries.left, boundaries.right);
-    const finalPanX = clippedPanX - xPan / 256;
+    const finalPanX = clippedPanX + xPan / 256;
     const clippedPanY = clamp(panY, boundaries.top, boundaries.bottom);
-    const finalPanY = clippedPanY - yPan / 256;
-
+    const finalPanY = clippedPanY + yPan / 256;
     const { UP, RIGHT } = WORLD_DIRECTIONS;
-  
     const yawRotation = new Quaternion().setFromAxisAngle(UP, calculateAngleForParallax(finalPanX, cameraZoom));
     camera.quaternion.multiply(yawRotation);
     
@@ -212,8 +210,8 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     
     const scenePosition = camera.position.clone();
     const debugPosition = camera.position.clone();
-    debugPosition.sub(forwardVector.clone().multiplyScalar(0.5));
-    debugPosition.sub(rightVector.clone().multiplyScalar(0.5));
+    debugPosition.sub(forwardVector.clone().multiplyScalar(2));
+    debugPosition.sub(rightVector.clone().multiplyScalar(1));
     debugPosition.add(upVector.clone().multiplyScalar(0.5));
 
     moveableCamera.position.copy(scenePosition.lerp(debugPosition, spring.pullback.get()));

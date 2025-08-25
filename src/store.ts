@@ -23,9 +23,6 @@ interface GlobalState {
 
   walkmeshController: WalkmeshMovementController | undefined,
   currentLocationPlaceName: number,
-  backgroundLayerVisibility: Record<number, boolean>,
-  currentParameterStates: Record<number, number>,
-  currentParameterVisibility: Record<number, boolean>,
   fieldId: typeof MAP_NAMES[number] | undefined,
   pendingFieldId: typeof MAP_NAMES[number] | undefined,
 
@@ -108,6 +105,19 @@ interface GlobalState {
 
   systemSfxController: ReturnType<typeof createSFXController>,
   spuValue: number
+
+  backgroundAnimations: Record<number, {
+    start: number,
+    end: number,
+    isInProgress: boolean,
+    isLooping: boolean
+  }>,
+  backgroundLayerVisibility: Record<number, boolean>,
+  backgroundLayerSpeeds: Record<number, number>,
+  backgroundScrollRatios: Record<number, {
+    x: number,
+    y: number,
+  }>,
 }
 
 const INITIAL_STATE: GlobalState = {
@@ -135,9 +145,6 @@ const INITIAL_STATE: GlobalState = {
     isRunEnabled: true,
     initialAngle: undefined,
   
-    backgroundLayerVisibility: {},
-    currentParameterStates: {},
-    currentParameterVisibility: {},
     layerTints: {},
   
     isMapJumpEnabled: true,
@@ -197,8 +204,20 @@ const INITIAL_STATE: GlobalState = {
     fieldData: undefined,
 
     systemSfxController: createSFXController('world', []),
-    spuValue: 0
-  }
+    spuValue: 0,
+
+    backgroundAnimations: {
+      [-1]: {
+        start: 0,
+        end: 1,
+        isInProgress: false,
+        isLooping: true,
+      }
+    },
+    backgroundLayerVisibility: {},
+    backgroundLayerSpeeds: {},
+    backgroundScrollRatios: {},
+}
 
 const useGlobalStore = create<GlobalState>()(() => ({...INITIAL_STATE}))
 

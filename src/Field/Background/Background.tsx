@@ -22,10 +22,14 @@ const Background = ({ backgroundPanRef, data }: BackgroundProps) => {
   if (height < verticalRange) {
     height = verticalRange;
   }
+  
+  const hasTiledRear = data.unknown[5] > 0;
 
-  const layers = useLayeredTiles(tiles, backgroundDetails.sprite, width, height);
+  const layers = useLayeredTiles(tiles, backgroundDetails.sprite, width, height, hasTiledRear);
 
-  return layers.map((layer) => <Layer key={layer.id} layer={layer} backgroundPanRef={backgroundPanRef} />);
+  return layers.map((layer, index) => (
+    <Layer key={layer.id} layer={layer} isTiled={index === layers.length - 1 && hasTiledRear} backgroundPanRef={backgroundPanRef} />
+  ));
 }
 
 export default Background;

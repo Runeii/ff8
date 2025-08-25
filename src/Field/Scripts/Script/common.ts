@@ -1,4 +1,3 @@
-import { SpringValue } from "@react-spring/web";
 import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
 import { openMessage } from "./utils";
@@ -31,21 +30,6 @@ export const isTouching = (thisId: number, targetName: string, scene: Scene) => 
   return thisPosition.distanceTo(targetPosition) < 0.001;
 }
 
-
-export const animateBackground = async (spring: SpringValue<number>, speed: number, startFrame: number, endFrame: number, isLooping: boolean) => {
-  spring.set(startFrame);
-
-  const duration = (Math.max(endFrame, startFrame) - Math.min(endFrame, startFrame)) * speed * 30 + 10;
-
-  await spring.start(endFrame, {
-    from: startFrame,
-    immediate: false,
-    loop: isLooping,
-    config: {
-      duration,
-    },
-  });
-}
 
 export const KEY_FLAGS = {
   16: 'w', // 'Cancel'

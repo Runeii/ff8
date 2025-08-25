@@ -1,5 +1,5 @@
 import { MutableRefObject, useRef, useState } from "react";
-import { Line3, Mesh, NearestFilter, PerspectiveCamera, RepeatWrapping, Sprite, SRGBColorSpace, Vector2, Vector3 } from "three";
+import { ClampToEdgeWrapping, Line3, Mesh, NearestFilter, PerspectiveCamera, RepeatWrapping, Sprite, SRGBColorSpace, Vector2, Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
 import { getCameraDirections } from "../../Camera/cameraUtils";
@@ -7,6 +7,7 @@ import useGlobalStore from "../../../store";
 import useCameraScroll from "../../useCameraScroll";
 import { clamp } from "three/src/math/MathUtils.js";
 import { Plane } from "@react-three/drei";
+import useBackgroundAnimation from "./useBackgroundAnimation";
 
 
 function getVisibleDimensionsAtDistance(
@@ -25,21 +26,23 @@ function getVisibleDimensionsAtDistance(
 
 type LayerProps = {
   backgroundPanRef: React.MutableRefObject<CameraPanAngle>;
+  isTiled: boolean;
   layer: Layer;
 };
 
-const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
+const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
   const layerRef = useRef<Sprite | Mesh>(null);
 
   const [line] = useState<Line3>(new Line3(new Vector3(), new Vector3()));
   const [point] = useState<Vector3>(new Vector3());
 
-  const {layerID, parameter, state} = layer;
+  const {parameter, state} = layer;
 
   const camera = useThree(({ scene }) => scene.getObjectByName("sceneCamera") as PerspectiveCamera);
 
   const cameraScroll = useCameraScroll('camera');
   const layerScroll = useCameraScroll('layer', layer.renderID);
+  const currentParameterState = useBackgroundAnimation(parameter);
 
   useFrame(() => {
     if (!layerRef.current) {
@@ -51,18 +54,13 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
       initialTargetPosition: Vector3,
     }
 
-    const { backgroundLayerVisibility, currentParameterStates, currentParameterVisibility} = useGlobalStore.getState();
+    const { backgroundLayerVisibility, backgroundScrollRatios } = useGlobalStore.getState();
 
     let isLayerVisible = true;
-    if (backgroundLayerVisibility[layerID] === false) {
-      isLayerVisible = false;
-    }
 
-    if (currentParameterVisibility[parameter] === false) {
+    if (parameter !== -1 && backgroundLayerVisibility[parameter] !== true) {
       isLayerVisible = false;
-    }
-
-    if (currentParameterStates[parameter] !== undefined && currentParameterStates[parameter] !== state) {
+    } else if (currentParameterState.current !== state) {
       isLayerVisible = false;
     }
 
@@ -107,7 +105,8 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     const heightScale = layer.canvas.height / layer.canvas.width;
     const height = width * heightScale
 
-    layerRef.current.scale.set(width * 3, height * 3, 1)
+    const tiling = isTiled ? 5 : 1
+    layerRef.current.scale.set(width * tiling, height * tiling, 1)
 
     /*
     // Panning
@@ -118,22 +117,41 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
     let panX = backgroundPanRef.current.panX;
     let panY = backgroundPanRef.current.panY 
 
-    if (Number.isNaN(panX) || !Number.isFinite(panX)) {
-      panX = 0;
-    }
-    if (Number.isNaN(panY) || !Number.isFinite(panY)) {
-      panY = 0;
-    }
-
     const {left, right, top, bottom} = backgroundPanRef.current.boundaries;
-    let clampedPanX = clamp(panX, left * 256, right * 256);
-    let clampedPanY = clamp(panY, top * 256, bottom * 256);
+    const ratio = backgroundScrollRatios[layer.renderID];
+
+    let xLeft = left * 256;
+    let xRight = right * 256;
+
+    let yTop = top * 256;
+    let yBottom = bottom * 256;
+
+    let clampedPanX = clamp(panX, xLeft, xRight);
+    let clampedPanY = clamp(panY, yTop, yBottom);
 
     clampedPanX -= cameraScroll.current.x;
     clampedPanY -= cameraScroll.current.y;
 
     clampedPanX -= layerScroll.current.x;
     clampedPanY -= layerScroll.current.y;
+
+    let ratioAdjustedX = panX;
+    let ratioAdjustedY = panY;
+
+    if (ratio) {
+      const standardXRange = xRight - xLeft;
+      const standardYRange = yBottom - yTop;
+
+      ratioAdjustedX = clampedPanX * (standardXRange / ratio.x);
+      ratioAdjustedY = clampedPanY * (standardYRange / ratio.y);
+    }
+
+    if (Number.isNaN(ratioAdjustedX) || !Number.isFinite(ratioAdjustedX)) {
+      ratioAdjustedX = 0;
+    }
+    if (Number.isNaN(ratioAdjustedY) || !Number.isFinite(ratioAdjustedY)) {
+      ratioAdjustedY = 0;
+    }
 
     const { layerScrollAdjustments } = useGlobalStore.getState()
     const controlledScroll = layerScrollAdjustments[layer.renderID]
@@ -145,11 +163,11 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
         yScrollSpeed,
       } = controlledScroll;
 
-      const adjustedX = (clampedPanX / 256) * xScrollSpeed;
-      const adjustedY = (clampedPanY / 256) * yScrollSpeed;
+      const adjustedX = (ratioAdjustedX / 256) * xScrollSpeed;
+      const adjustedY = (ratioAdjustedY / 256) * yScrollSpeed;
 
-      clampedPanX = xOffset + adjustedX;
-      clampedPanY = -yOffset + adjustedY;
+      ratioAdjustedX = xOffset + adjustedX;
+      ratioAdjustedY = -yOffset + adjustedY;
     }
   
     const directions = getCameraDirections(camera);
@@ -176,9 +194,9 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
             minFilter={NearestFilter}
             colorSpace={SRGBColorSpace}
             magFilter={NearestFilter}
-            wrapS={RepeatWrapping}
-            wrapT={RepeatWrapping}
-            repeat={new Vector2(3, 3)}
+            wrapS={isTiled ? RepeatWrapping : ClampToEdgeWrapping}
+            wrapT={isTiled ? RepeatWrapping : ClampToEdgeWrapping}
+            repeat={isTiled ? new Vector2(5, 5) : new Vector2(1, 1)}
           />
         </meshBasicMaterial>
       </Plane>
@@ -195,9 +213,9 @@ const Layer = ({ backgroundPanRef, layer }: LayerProps) => {
           minFilter={NearestFilter}
           colorSpace={SRGBColorSpace}
           magFilter={NearestFilter}
-          wrapS={RepeatWrapping}
-          wrapT={RepeatWrapping}
-          repeat={new Vector2(3, 3)}
+          wrapS={isTiled ? RepeatWrapping : ClampToEdgeWrapping}
+          wrapT={isTiled ? RepeatWrapping : ClampToEdgeWrapping}
+          repeat={isTiled ? new Vector2(5, 5) : new Vector2(1, 1)}
         />
       </spriteMaterial>
     </sprite>

@@ -23,8 +23,7 @@ export const vectorToFloatingPoint = (value: Vector3 | { x: number, y: number, z
   return vector
 }
 
-// These are from a year ago...I think they're wrong and based on a fundamental misunderstanding
-// of Vectors, axis, local/world, a whole bunch of stuff
+
 export const WORLD_DIRECTIONS = {
   FORWARD: new Vector3(0, 0, -1),
   RIGHT: new Vector3(1, 0, 0),

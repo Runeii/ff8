@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Script as ScriptType } from "../types";
-import Background from "./Background/Background";
 import Location from "./Location/Location";
 import Model from "./Model/Model";
 import useGlobalStore from "../../../store";
@@ -121,10 +120,8 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     if (!isTransitioningMap) {
       return;
     }
-    const { backgroundAnimationSpring} = useScriptStateStore.getState();
     animationController.stopAnimation();
     movementController.pause();
-    backgroundAnimationSpring.pause();
   }, [animationController, isTransitioningMap, movementController, useScriptStateStore]);
 
   const hasPausedMovement = useRef(false);
@@ -189,7 +186,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
       visible={isVisible || isDrawPoint}
   >
     <group name={`party--${partyMemberId}`} userData={{ test: 'test' }}>
-      {script.type === 'background' && <Background script={script} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
       {script.type === 'model' && (
         isDrawPoint ?

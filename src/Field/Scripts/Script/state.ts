@@ -1,4 +1,3 @@
-import { SpringValue } from '@react-spring/web';
 import { Vector3 } from 'three';
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import type { Howl} from 'howler';
@@ -10,10 +9,6 @@ export type ScriptState = {
   isHalted: boolean;
 
   ladderAnimationId: number | undefined;
-
-  backgroundAnimationSpring: SpringValue<number>;
-  backgroundAnimationSpeed: number;
-  isBackgroundVisible: boolean;
 
   isDrawPoint: boolean,
 
@@ -66,10 +61,6 @@ const createScriptState = (script: Script) => {
     animationSpeed: 1,
     currentAnimationId: undefined,
     ladderAnimationId: undefined,
-
-    backgroundAnimationSpring: new SpringValue(0),
-    backgroundAnimationSpeed: 200,
-    isBackgroundVisible: false,
 
     isDrawPoint: false,
 

@@ -153,8 +153,9 @@ const FieldLoader = (props: FieldLoaderProps) => {
 
         walkmeshController: undefined,
         backgroundLayerVisibility: {},
-        currentParameterStates: {},
-        currentParameterVisibility: {},
+        backgroundAnimations: {},
+        backgroundLayerSpeeds: {},
+        backgroundScrollRatios: {},
         layerScrollAdjustments: {},
 
         cameraFocusHeight: data.cameraFocusHeight,

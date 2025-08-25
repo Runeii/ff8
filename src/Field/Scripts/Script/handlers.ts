@@ -6,7 +6,7 @@ import { closeMessage, dummiedCommand, openMessage, enableMessageToClose, remote
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
-import { displayMessage, isKeyDown, KEY_FLAGS, animateBackground, isTouching, setCameraAndLayerScroll, setCameraAndLayerFocus, wasKeyPressed } from "./common";
+import { displayMessage, isKeyDown, KEY_FLAGS, isTouching, setCameraAndLayerScroll, setCameraAndLayerFocus, wasKeyPressed } from "./common";
 import createScriptState, { ScriptState } from "./state";
 import { createAnimationController } from "./AnimationController/AnimationController";
 import createMovementController from "./MovementController/MovementController";
@@ -54,6 +54,7 @@ export let MEMORY: Record<number, number> = {
   256: 0, // progress
   528: 0, // subprogress
   533:8,
+  354: 999,
 
   720: 0, // squall model
   721: 0, // zell model
@@ -293,26 +294,44 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const isDown = isKeyDown(STACK.pop() as keyof typeof KEY_FLAGS);
     TEMP_STACK[0] = isDown ? 1 : 0;
   },
-  BGDRAW: ({ currentState, setState, STACK }) => {
+  BGDRAW: ({ script, STACK }) => {
     const frame = STACK.pop() as number;
-    setState({
-      isBackgroundVisible: true,
+
+    useGlobalStore.setState({
+      backgroundAnimations: {
+        ...useGlobalStore.getState().backgroundAnimations,
+        [script.backgroundParamId]: {
+          start: frame,
+          end: -1,
+          isInProgress: false,
+          isLooping: false
+        }
+      },
+      backgroundLayerVisibility: {
+        ...useGlobalStore.getState().backgroundLayerVisibility,
+        [script.backgroundParamId]: true
+      }
     })
-    currentState.backgroundAnimationSpring.set(frame);
   },
-  BGOFF: ({ setState }) => {
-    setState({
-      isBackgroundVisible: false,
+  BGOFF: ({ script }) => {
+    useGlobalStore.setState({
+      backgroundLayerVisibility: {
+        ...useGlobalStore.getState().backgroundLayerVisibility,
+        [script.backgroundParamId]: false
+      }
     })
   },
-  BGANIMESPEED: ({ setState, STACK }) => {
+  BGANIMESPEED: ({ script, STACK }) => {
     const speed = STACK.pop() as number;
-    setState({
-      backgroundAnimationSpeed: speed,
+    useGlobalStore.setState({
+      backgroundLayerSpeeds: {
+        ...useGlobalStore.getState().backgroundLayerSpeeds,
+        [script.backgroundParamId]: speed
+      }
     })
   },
-  BGANIMESYNC: async ({ currentState }) => {
-    while (currentState.backgroundAnimationSpring.isAnimating) {
+  BGANIMESYNC: async ({script}) => {
+    while (useGlobalStore.getState().backgroundAnimations[script.backgroundParamId].isInProgress) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -327,36 +346,45 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       }
     })
   },
-  RBGANIME: ({ currentState,setState, STACK }) => {
+  RBGANIME: ({ script, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
-    setState({
-      isBackgroundVisible: true,
+    useGlobalStore.setState({
+      backgroundAnimations: {
+        ...useGlobalStore.getState().backgroundAnimations,
+        [script.backgroundParamId]: {
+          start,
+          end,
+          isInProgress: true,
+          isLooping: false
+        }
+      },
+      backgroundLayerVisibility: {
+        ...useGlobalStore.getState().backgroundLayerVisibility,
+        [script.backgroundParamId]: true
+      }
     })
-    animateBackground(
-      currentState.backgroundAnimationSpring,
-      currentState.backgroundAnimationSpeed,
-      start,
-      end,
-      false,
-    )
   },
-  RBGANIMELOOP: ({ currentState,setState, STACK }) => {
+  RBGANIMELOOP: ({ script, STACK }) => {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
-    setState({
-      isBackgroundVisible: true,
+    useGlobalStore.setState({
+      backgroundAnimations: {
+        ...useGlobalStore.getState().backgroundAnimations,
+        [script.backgroundParamId]: {
+          start,
+          end,
+          isInProgress: true,
+          isLooping: true
+        }
+      },
+      backgroundLayerVisibility: {
+        ...useGlobalStore.getState().backgroundLayerVisibility,
+        [script.backgroundParamId]: true
+      }
     })
-
-    animateBackground(
-      currentState.backgroundAnimationSpring,
-      currentState.backgroundAnimationSpeed,
-      start,
-      end,
-      true,
-    )
   },
   BGSHADE: ({ script, STACK }) => {
     const endBlue = STACK.pop() as number;
@@ -419,20 +447,29 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   BGSHADESTOP: () => { },
   BGSHADEOFF: dummiedCommand,
-  BGANIME: async ({ currentState, setState, STACK }) => {
+  BGANIME: async ({ script, STACK }) => {
     const end = STACK.pop() as number;
-    const start = STACK.pop() as number
+    const start = STACK.pop() as number;
 
-    setState({
-      isBackgroundVisible: true,
+    useGlobalStore.setState({
+      backgroundLayerVisibility: {
+        ...useGlobalStore.getState().backgroundLayerVisibility,
+        [script.backgroundParamId]: true
+      },
+      backgroundAnimations: {
+        ...useGlobalStore.getState().backgroundAnimations,
+        [script.backgroundParamId]: {
+          start,
+          end,
+          isInProgress: true,
+          isLooping: false
+        }
+      }
     })
-    await animateBackground(
-      currentState.backgroundAnimationSpring,
-      currentState.backgroundAnimationSpeed,
-      start,
-      end,
-      false,
-    )
+
+    while (useGlobalStore.getState().backgroundAnimations[script.backgroundParamId]?.isInProgress) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
   },
   RND: ({ TEMP_STACK }) => {
     TEMP_STACK[0] = Math.round(Math.random() * 255);
@@ -2032,7 +2069,19 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     });
   },
   SCROLLRATIO2: ({ STACK }) => {
-    STACK.splice(-3);
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+    const layer = STACK.pop() as number;
+
+    useGlobalStore.setState({
+      backgroundScrollRatios: {
+        ...useGlobalStore.getState().backgroundScrollRatios,
+        [layer]: {
+          x,
+          y,
+        }
+      }
+    })
   },
   SETDRESS: ({ STACK }) => {
     const outfitId = STACK.pop() as number;
