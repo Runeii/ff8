@@ -13,8 +13,8 @@ const useBackgroundAnimation = (backgroundParamId: number) => {
       return;
     }
 
-    if (!animation.isInProgress && currentStateRef.current !== animation.start) {
-      currentStateRef.current = animation.start;
+    if (!animation.isInProgress) {
+      currentStateRef.current = animation.end;
       invalidate();
       return;
     }

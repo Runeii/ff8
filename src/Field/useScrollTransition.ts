@@ -1,12 +1,12 @@
 import { RefObject, useCallback, useRef } from "react";
 import useGlobalStore from "../store";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { MathUtils } from "three";
 
 
 const useScrollTransition = (
   type: 'camera' | 'layer',
-  backgroundPanRef: RefObject<CameraPanAngle>,
+  backgroundPanRef: RefObject<{ panX: number; panY: number }>,
   layerID?: number
 ) => {
   const currentValue = useRef({
@@ -44,6 +44,8 @@ const useScrollTransition = (
     }
   }, [layerID, type]);
 
+  const invalidate = useThree(({ invalidate }) => invalidate);
+
   useFrame((state) => {
     const currentTransition = getCurrentTransitionState();
 
@@ -62,7 +64,8 @@ const useScrollTransition = (
     const elapsed = state.clock.elapsedTime - transitionState.current.startTime;
     const progress = duration === 0 ? 1 : Math.min(elapsed / (duration / 30), 1);
 
-    if (positioning === 'camera') {
+    const isSimpleLerp = positioning === 'camera' && type === 'camera' || positioning === 'level' && type === 'layer';
+    if (isSimpleLerp) {
       currentValue.current.x = MathUtils.lerp(startX, endX, progress);
       currentValue.current.y = MathUtils.lerp(startY, endY, progress);
     } else {
@@ -72,6 +75,7 @@ const useScrollTransition = (
 
     currentValue.current.positioning = currentTransition.positioning;
     currentValue.current.progress = progress;
+    invalidate();
 
     if (progress !== 1) {
       return;

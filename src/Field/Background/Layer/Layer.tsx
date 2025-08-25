@@ -41,7 +41,9 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
 
   const camera = useThree(({ scene }) => scene.getObjectByName("sceneCamera") as PerspectiveCamera);
 
-  const layerScroll = useCameraScroll('layer', backgroundPanRef, layer.renderID);
+  const layerPanRef = useRef<{panX: number, panY: number}>({panX: 0, panY: 0});
+  const layerScroll = useCameraScroll('layer', layerPanRef, layer.renderID);
+
   const currentParameterState = useBackgroundAnimation(parameter);
 
   useFrame(() => {
@@ -114,29 +116,31 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
     const widthUnits = result.width / SCREEN_WIDTH;
     const heightUnits = result.height / SCREEN_HEIGHT;
 
-    let panX = backgroundPanRef.current.panX;
-    let panY = backgroundPanRef.current.panY 
+    const panX = backgroundPanRef.current.panX;
+    const panY = backgroundPanRef.current.panY;
 
     const {left, right, top, bottom} = backgroundPanRef.current.boundaries;
     const ratio = backgroundScrollRatios[layer.renderID];
 
-    let xLeft = left * 256;
-    let xRight = right * 256;
+    const xLeft = left * 256;
+    const xRight = right * 256;
 
-    let yTop = top * 256;
-    let yBottom = bottom * 256;
+    const yTop = top * 256;
+    const yBottom = bottom * 256;
 
     let clampedPanX = clamp(panX, xLeft, xRight);
     let clampedPanY = clamp(panY, yTop, yBottom);
 
     if (layerScroll.current.positioning === 'camera') {
-      clampedPanX -= layerScroll.current.x;
-      clampedPanY -= layerScroll.current.y;
+      if (layerScroll.current.x !== 0) {
+        clampedPanX -= layerScroll.current.x;
+      }
+      if (layerScroll.current.y !== 0) {
+        clampedPanY -= layerScroll.current.y;
+      }
     } else {
-
-      console.log('Layer scroll', layerScroll.current.x, layerScroll.current.y, layerScroll.current.positioning, layerScroll.current.progress);
-      clampedPanX = -layerScroll.current.x;
-      clampedPanY = -layerScroll.current.y;
+      clampedPanX += layerScroll.current.x;
+      clampedPanY += layerScroll.current.y;
     }
 
     let ratioAdjustedX = panX;

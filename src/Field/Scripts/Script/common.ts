@@ -106,8 +106,11 @@ export const setCameraScroll = (x: number, y: number, duration: number, position
 }
 
 export const setLayerScroll = (layerIndex: number, x: number, y: number, duration: number, positioning: ScrollPositionMode) => {
+  setCameraScroll(-x / 2, -y / 2, duration, 'camera');
+
   const currentTransition = useGlobalStore.getState().layerScrollOffsets[layerIndex!];
-  const transition = constructScrollTransition(currentTransition, x, y, duration, positioning);
+  const transition = constructScrollTransition(currentTransition, x / 2, y / 2, duration, positioning);
+
   useGlobalStore.setState({
     layerScrollOffsets: {
       ...useGlobalStore.getState().layerScrollOffsets,

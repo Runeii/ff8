@@ -161,14 +161,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
         cameraFocusHeight: data.cameraFocusHeight,
         cameraFocusObject: undefined,
         cameraFocusSpring: undefined,
-        cameraScrollOffset: {
-          startX: 0,
-          startY: 0,
-          endX: 0,
-          endY: 0,
-          duration: 0,
-          isInProgress: false
-        },
+        cameraScrollOffset: {} as CameraScrollTransition,
         layerScrollOffsets: {},
 
         colorOverlay: {

@@ -4,7 +4,7 @@ import { vectorToFloatingPoint, WORLD_DIRECTIONS } from "../../utils";
 import { FieldData } from "../Field";
 import { MutableRefObject, useEffect, useMemo, useState } from "react";
 import { calculateAngleForParallax, calculateFOV, calculateParallax, getBoundaries, getCameraDirections, getReliableRotationAxes, getRotationAngleAroundAxis } from "./cameraUtils";
-import { clamp, lerp } from "three/src/math/MathUtils.js";
+import { clamp } from "three/src/math/MathUtils.js";
 import { SCREEN_HEIGHT } from "../../constants/constants";
 import useGlobalStore from "../../store";
 import Focus from "./Focus/Focus";

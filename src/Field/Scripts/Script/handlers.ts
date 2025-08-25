@@ -53,8 +53,6 @@ export let MEMORY: Record<number, number> = {
 
   256: 0, // progress
   528: 0, // subprogress
-  533:8,
-  354: 999,
 
   720: 0, // squall model
   721: 0, // zell model
@@ -302,7 +300,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
         ...useGlobalStore.getState().backgroundAnimations,
         [script.backgroundParamId]: {
           start: frame,
-          end: -1,
+          end: frame,
           isInProgress: false,
           isLooping: false
         }
@@ -1378,13 +1376,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   LOADSYNC: () => { },
   /*
-  DSCROLL: all instant
-  LSCROLL: all with duration
-  CSCROLL: camera (0) with duration
-  DSCROLL2: layer instant
-  LSCROLL2/CSCROLL2: identical, layer with duration
+  Prefixes:
+  d – instant camera
+  c – relative to camera viewport
+  l – relative to level ('absolute')
 
-  level 3 is just an inverted x/y
+  Suffix:
+  none – affects camera/everything
+  2 – affects a single layer
+  3 – affects a single layer, sets both start and end values
   */
   DSCROLL: ({ STACK }) => {
     const y = STACK.pop() as number;
