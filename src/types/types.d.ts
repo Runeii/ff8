@@ -160,6 +160,8 @@ declare global {
     name: string;
   };
 
+  type ScrollPositionMode = 'camera' | 'level';
+
   type CameraScrollTransition = {
     startX: number;
     startY: number;
@@ -167,6 +169,7 @@ declare global {
     endY: number;
     duration: number;
     isInProgress: boolean;
+    positioning: ScrollPositionMode;
   }
 }
 

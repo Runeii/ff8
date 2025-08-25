@@ -1,10 +1,11 @@
+
 import { MutableRefObject, useRef, useState } from "react";
 import { ClampToEdgeWrapping, Line3, Mesh, NearestFilter, PerspectiveCamera, RepeatWrapping, Sprite, SRGBColorSpace, Vector2, Vector3 } from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../../../constants/constants";
 import { getCameraDirections } from "../../Camera/cameraUtils";
 import useGlobalStore from "../../../store";
-import useCameraScroll from "../../useCameraScroll";
+import useCameraScroll from "../../useScrollTransition";
 import { clamp } from "three/src/math/MathUtils.js";
 import { Plane } from "@react-three/drei";
 import useBackgroundAnimation from "./useBackgroundAnimation";
@@ -40,8 +41,7 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
 
   const camera = useThree(({ scene }) => scene.getObjectByName("sceneCamera") as PerspectiveCamera);
 
-  const cameraScroll = useCameraScroll('camera');
-  const layerScroll = useCameraScroll('layer', layer.renderID);
+  const layerScroll = useCameraScroll('layer', backgroundPanRef, layer.renderID);
   const currentParameterState = useBackgroundAnimation(parameter);
 
   useFrame(() => {
@@ -129,11 +129,15 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
     let clampedPanX = clamp(panX, xLeft, xRight);
     let clampedPanY = clamp(panY, yTop, yBottom);
 
-    clampedPanX -= cameraScroll.current.x;
-    clampedPanY -= cameraScroll.current.y;
+    if (layerScroll.current.positioning === 'camera') {
+      clampedPanX -= layerScroll.current.x;
+      clampedPanY -= layerScroll.current.y;
+    } else {
 
-    clampedPanX -= layerScroll.current.x;
-    clampedPanY -= layerScroll.current.y;
+      console.log('Layer scroll', layerScroll.current.x, layerScroll.current.y, layerScroll.current.positioning, layerScroll.current.progress);
+      clampedPanX = -layerScroll.current.x;
+      clampedPanY = -layerScroll.current.y;
+    }
 
     let ratioAdjustedX = panX;
     let ratioAdjustedY = panY;

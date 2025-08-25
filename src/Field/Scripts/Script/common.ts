@@ -84,28 +84,30 @@ export const attachKeyDownListeners = () => {
   window.addEventListener('keyup', keyupListener);
 }
 
-export const setCameraAndLayerScroll = async (x: number, y: number, duration: number, layerIndex?: number) => {
-  const currentTransition =
-    layerIndex === undefined
-    ? useGlobalStore.getState().cameraScrollOffset
-    : useGlobalStore.getState().layerScrollOffsets[layerIndex];
-
+const constructScrollTransition = (currentTransition: CameraScrollTransition, newX: number, newY: number, duration: number, positioning: ScrollPositionMode) => {
   const transition: CameraScrollTransition = {
     startX: currentTransition?.endX ?? 0,
     startY: currentTransition?.endY ?? 0,
-    endX: x,
-    endY: y,
+    endX: newX,
+    endY: newY,
     duration,
+    positioning,
     isInProgress: true
   }
 
-  //console.trace('Camera and layer scroll set:', { x, y, duration, layerIndex });
+  return transition;
+}
 
-  if (layerIndex === undefined) {
-    useGlobalStore.setState({ cameraScrollOffset: transition });
-    return;
-  }
+export const setCameraScroll = (x: number, y: number, duration: number, positioning: ScrollPositionMode) => {
+  const currentTransition = useGlobalStore.getState().cameraScrollOffset;
+  const transition = constructScrollTransition(currentTransition, x, y, duration, positioning);
 
+  useGlobalStore.setState({ cameraScrollOffset: transition });
+}
+
+export const setLayerScroll = (layerIndex: number, x: number, y: number, duration: number, positioning: ScrollPositionMode) => {
+  const currentTransition = useGlobalStore.getState().layerScrollOffsets[layerIndex!];
+  const transition = constructScrollTransition(currentTransition, x, y, duration, positioning);
   useGlobalStore.setState({
     layerScrollOffsets: {
       ...useGlobalStore.getState().layerScrollOffsets,
@@ -118,11 +120,11 @@ export const setCameraAndLayerScroll = async (x: number, y: number, duration: nu
 export const setCameraAndLayerFocus = (object: Object3D | null, duration: number) => {
   const { layerScrollOffsets } = useGlobalStore.getState();
   Object.keys(layerScrollOffsets).forEach((layerIndex) => {
-    setCameraAndLayerScroll(0, 0, duration, Number(layerIndex));
+    setLayerScroll(Number(layerIndex), 0, 0, duration, 'camera');
   });
   console.log('Layer focus reset', object);
 
-  setCameraAndLayerScroll(0, 0, duration);
+  setCameraScroll(0, 0, duration, 'camera');
   useGlobalStore.setState({
     cameraFocusObject: object ?? undefined,
   })

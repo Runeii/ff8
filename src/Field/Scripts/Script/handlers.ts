@@ -6,7 +6,7 @@ import { closeMessage, dummiedCommand, openMessage, enableMessageToClose, remote
 import MAP_NAMES from "../../../constants/maps";
 import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
-import { displayMessage, isKeyDown, KEY_FLAGS, isTouching, setCameraAndLayerScroll, setCameraAndLayerFocus, wasKeyPressed } from "./common";
+import { displayMessage, isKeyDown, KEY_FLAGS, isTouching, setCameraAndLayerFocus, wasKeyPressed, setCameraScroll, setLayerScroll } from "./common";
 import createScriptState, { ScriptState } from "./state";
 import { createAnimationController } from "./AnimationController/AnimationController";
 import createMovementController from "./MovementController/MovementController";
@@ -1389,29 +1389,30 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   DSCROLL: ({ STACK }) => {
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
-    setCameraAndLayerScroll(x, y, 0);
+
+    setCameraScroll(x, y, 0, 'camera');
   },
   LSCROLL: ({ STACK }) => {
     const duration = STACK.pop() as number;
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
 
-    setCameraAndLayerScroll(x, y, duration);
+    setCameraScroll(x, y, duration, 'level');
   },
   CSCROLL: ({ STACK }) => {
     const duration = STACK.pop() as number;
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
 
-    setCameraAndLayerScroll(x, y, duration);
+    setCameraScroll(x, y, duration, 'camera');
   },
   DSCROLL2: async ({ STACK }) => {
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
 
     const layerID = STACK.pop() as number;
-    console.log('DSCROLL2', layerID, x, y)
-    setCameraAndLayerScroll(x, y, 0, layerID);
+
+    setLayerScroll(layerID, x, y, 0, 'camera');
   },
   LSCROLL2: ({ STACK }) => {
     const duration = STACK.pop() as number;
@@ -1420,7 +1421,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     const layerID = STACK.pop() as number;
 
-    setCameraAndLayerScroll(x, y, duration, layerID);
+    setLayerScroll(layerID, x, y, duration, 'level');
   },
   CSCROLL2: ({ STACK }) => {
     const duration = STACK.pop() as number;
@@ -1429,7 +1430,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     const layerID = STACK.pop() as number;
 
-    setCameraAndLayerScroll(x, y, duration, layerID);
+    setLayerScroll(layerID, x, y, duration, 'camera');
   },
   CSCROLL3: async ({ STACK }) => {
     const duration = STACK.pop() as number;
@@ -1441,8 +1442,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     // Pop layer ID from stack
     const layerID = STACK.pop() as number; 
 
-    setCameraAndLayerScroll(startX, startY, 0, layerID);
-    setCameraAndLayerScroll(endX, endY, duration, layerID);
+    setLayerScroll(layerID, startX, startY, 0, 'camera');
+    setLayerScroll(layerID, endX, endY, duration, 'camera');
   },
   LSCROLL3: async ({ STACK }) => {
     const duration = STACK.pop() as number;
@@ -1454,8 +1455,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     // Pop layer ID from stack
     const layerID = STACK.pop() as number;
 
-    await setCameraAndLayerScroll(startX, startY, 0, layerID);
-    setCameraAndLayerScroll(endX, endY, duration, layerID);
+    setLayerScroll(layerID, startX, startY, 0, 'level');
+    setLayerScroll(layerID, endX, endY, duration, 'level');
   },
 
   DSCROLLP: async ({ scene, STACK }) => {

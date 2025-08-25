@@ -84,8 +84,6 @@ interface GlobalState {
   isPartyFollowing: boolean,
 
   cameraFocusHeight: number,
-  cameraScrollOffset: CameraScrollTransition
-  layerScrollOffsets: Record<number, CameraScrollTransition>,
   cameraFocusObject: Object3D | undefined,
   cameraFocusSpring: SpringValue<number> | undefined,
 
@@ -118,6 +116,9 @@ interface GlobalState {
     x: number,
     y: number,
   }>,
+
+  cameraScrollOffset: CameraScrollTransition
+  layerScrollOffsets: Record<number, CameraScrollTransition>,
 }
 
 const INITIAL_STATE: GlobalState = {
@@ -176,15 +177,6 @@ const INITIAL_STATE: GlobalState = {
     isPartyFollowing: true,
   
     cameraFocusHeight: 0,
-    cameraScrollOffset: {
-      startX: 0,
-      startY: 0,
-      endX: 0,
-      endY: 0,
-      duration: 0,
-      isInProgress: false,
-    },
-    layerScrollOffsets: {},
     cameraFocusObject: undefined,
     cameraFocusSpring: undefined,
 
@@ -217,6 +209,9 @@ const INITIAL_STATE: GlobalState = {
     backgroundLayerVisibility: {},
     backgroundLayerSpeeds: {},
     backgroundScrollRatios: {},
+
+    cameraScrollOffset: {} as CameraScrollTransition,
+    layerScrollOffsets: {},
 }
 
 const useGlobalStore = create<GlobalState>()(() => ({...INITIAL_STATE}))
