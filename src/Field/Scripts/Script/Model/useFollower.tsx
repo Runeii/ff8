@@ -27,6 +27,11 @@ const useFollower = ({ animationController, isActive, movementController, partyM
 
     const { congaWaypointHistory, isPartyFollowing, party, isUserControllable } = useGlobalStore.getState();
     if (!isUserControllable) {
+      if (congaWaypointHistory.length > 0) {
+        useGlobalStore.setState({
+          congaWaypointHistory: []
+        })
+      }
       return;
     }
 
