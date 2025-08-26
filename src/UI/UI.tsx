@@ -4,11 +4,15 @@ import MessageBox from "./MessageBox/MessageBox";
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from "../constants/constants";
 import { useEffect, useMemo, useState } from "react";
 import { isSavePointMessage } from "./textUtils";
-import { useThree } from "@react-three/fiber";
 import { offlineController } from "../OfflineController";
 import OfflineProgress from "./OfflineProgress/OfflineProgress";
+import { Scene } from "three";
 
-const Ui = () => {
+type UiProps = {
+  worldScene?: Scene;
+};
+
+const Ui = ({ worldScene }: UiProps) => {
   const currentMessages = useGlobalStore(state => state.currentMessages);
 
   const messagesByChannel = currentMessages.reduce((acc, message) => {
@@ -23,8 +27,6 @@ const Ui = () => {
   const messagesArray = useMemo(() => Object.values(messagesByChannel).reverse(), [messagesByChannel]);
 
   const closeableMessages = useMemo(() => messagesArray.filter(message => message[0].isCloseable), [messagesArray]);
-
-  const worldScene = useThree(state => state.scene);
 
   const [isCachingOffline, setIsCachingOffline] = useState(false);
   useEffect(() => {

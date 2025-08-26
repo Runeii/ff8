@@ -16,6 +16,7 @@ import createRotationController from "./RotationController/RotationController";
 import createSFXController from "./SFXController/SFXController";
 import { DRAW_POINTS } from "../../../constants/drawPoints";
 import { preloadSound } from "./SFXController/webAudio";
+import { handleLadder } from "./MovementController/utils";
 
 const musicController = MusicController();
 
@@ -181,6 +182,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       STACK.push(-value2);
     } else if (currentOpcode.param === 6) {
       STACK.push(value1 === value2 ? 1 : 0);
+      console.log('CAL EQ', value1, value2)
     } else if (currentOpcode.param === 7) {
       STACK.push(value1 > value2 ? 1 : 0);
     } else if (currentOpcode.param === 8) {
@@ -297,7 +299,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   BGDRAW: ({ script, STACK }) => {
     const frame = STACK.pop() as number;
-
+    console.log('BGDRAW', frame, script)
     useGlobalStore.setState({
       backgroundAnimations: {
         ...useGlobalStore.getState().backgroundAnimations,
@@ -315,6 +317,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     })
   },
   BGOFF: ({ script }) => {
+    console.log('BGOFF', script)
     useGlobalStore.setState({
       backgroundLayerVisibility: {
         ...useGlobalStore.getState().backgroundLayerVisibility,
@@ -650,10 +653,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const priority = STACK.pop();
     remoteExecute(label, priority)
   },
-  REQEW: async ({ STACK }) => {
+  REQEW: async ({ script, STACK }) => {
     const label = STACK.pop() as number;
     const priority = STACK.pop();
 
+    console.log('REQEW', script.name, label, priority)
     await remoteExecute(label, priority)
   },
   PREQ: ({ currentOpcode, scene, STACK }) => {
@@ -850,49 +854,19 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     animationController.setLadderAnimation(animationId, startFrame, endFrame);
   },
   LADDERDOWN2: async ({ animationController, movementController, STACK }) => {
-   // const speed = currentOpcode.param;
-
     const end = vectorToFloatingPoint(STACK.splice(-3));
-    const middle = vectorToFloatingPoint(STACK.splice(-3));
-    const start = vectorToFloatingPoint(STACK.splice(-3));
+    const middle = vectorToFloatingPoint(STACK.splice(-3)); // middle, not used
+    vectorToFloatingPoint(STACK.splice(-3));
 
-    useGlobalStore.setState({
-      isUserControllable: false,
-    });
-    movementController.setIsClimbingLadder(true, 22);
-
-    useGlobalStore.setState({ isPlayerClimbingLadder: true });
-
-    await Promise.all([
-      animationController.playLadderIntroAnimation(),
-      movementController.moveToPoint(start, {
-        isFacingTarget: false,
-        isAllowedToCrossBlockedTriangles: true,
-        isAllowedToLeaveWalkmesh: true,
-        isAnimationEnabled: false
-      })
-    ])
-    animationController.playLadderAnimation();
-    await movementController.moveToPoint(middle, {
-      isFacingTarget: false,
-      isAllowedToCrossBlockedTriangles: true,
-      isAllowedToLeaveWalkmesh: true,
-      isAnimationEnabled: false
-    });
-    await movementController.moveToPoint(end, {
-      isFacingTarget: false,
-      isAnimationEnabled: false,
-      isAllowedToCrossBlockedTriangles: true,
-      isAllowedToLeaveWalkmesh: true,
-    });
-    animationController.stopLadderAnimation();
-    movementController.setIsClimbingLadder(false);
-    useGlobalStore.setState({
-      isPlayerClimbingLadder: false,
-      isUserControllable: true,
-    });
+    await handleLadder(animationController, movementController, middle, end, false);
   },
-  LADDERUP2: args => OPCODE_HANDLERS?.LADDERDOWN2?.(args),
+  LADDERUP2: async ({ animationController, movementController, STACK }) => {
+    const end = vectorToFloatingPoint(STACK.splice(-3));
+    const middle = vectorToFloatingPoint(STACK.splice(-3)); // middle, not used
+    vectorToFloatingPoint(STACK.splice(-3));
+
+    await handleLadder(animationController, movementController, middle, end, true);
+  },
   LADDERUP: ({ currentOpcode, STACK }) => {
     console.log(currentOpcode.param);
     STACK.splice(-4);
@@ -1880,7 +1854,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   DRAWPOINT: async ({ sfxController, STACK }) => {
     const drawPointId = STACK.pop() as number;
-    await sfxController.play(66, 0, 64, 128);
+    await sfxController.play(66, 0, 127, 128);
     preloadSound(67);
     await openMessage('drawpoint', [`Found a draw point!\n${DRAW_POINTS[drawPointId]} found.`], {
       x: 110,
@@ -1889,7 +1863,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       height: 40,
       channel: 0,
     }, true);
-    sfxController.play(67, 0, 64, 128);
+    sfxController.play(67, 0, 127, 128);
   },
   SAVEENABLE: ({ STACK }) => {
     // const isEnabled =

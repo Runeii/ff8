@@ -19,12 +19,6 @@ type AnimationPlayOptions = {
   type: 'DEFAULT' | 'IDLE' | 'LADDER';
 }
 
-type SavedAnimation = {
-  animationId: number;
-  startFrame?: number;
-  endFrame?: number;
-}
-
 export const createAnimationController = (id: string | number, isDebugging = false) => {
   const { getState: getSavedAnimation, setState: setSavedAnimation } = create(() => ({
     idleAnimationIds: {
@@ -32,7 +26,11 @@ export const createAnimationController = (id: string | number, isDebugging = fal
       walkAnimationId: 0,
       runAnimationId: 0,
     },
-    ladderAnimation: undefined as SavedAnimation | undefined,
+    ladderAnimationIds: {
+      climbingAnimationId: 0,
+      topAnimationId: 0,
+      bottomAnimationId: 0,
+    }
   }));
 
   const { getState, setState, subscribe } = create(() => ({
@@ -237,10 +235,6 @@ export const createAnimationController = (id: string | number, isDebugging = fal
       playOptions.loop = LoopOnce
     }
 
-    if (isDebugging) {
-      console.log('Playing animation:', playOptions);
-    }
-
     setState({
       animations: {
         ...getState().animations,
@@ -362,43 +356,53 @@ export const createAnimationController = (id: string | number, isDebugging = fal
 
   const setHeadBone = (headBone: Bone) => setState({ headBone });
 
-  const setLadderAnimation = (ladderAnimationId: number, unknownParam1: number, unknownParam2: number) => {
+  const setLadderAnimation = (climbingAnimationId: number, bottomAnimationId: number, topAnimationId: number) => {
+    console.log(climbingAnimationId, topAnimationId, bottomAnimationId)
     setSavedAnimation({
-      ladderAnimation: {
-        animationId: ladderAnimationId,
-        startFrame: unknownParam1,
-        endFrame: unknownParam2 !== 0 ? unknownParam2 : undefined,
+      ladderAnimationIds: {
+        climbingAnimationId,
+        topAnimationId,
+        bottomAnimationId: 4
       }
     })
   }
 
-  const playLadderIntroAnimation = () => {
-    const { ladderAnimation } = getSavedAnimation();
-    if (!ladderAnimation) {
-      console.warn('Ladder animation not set');
-      return;
-    }
-    return playAnimation(ladderAnimation.animationId, {
+  const playLadderTopAnimation = (direction: 'enter' | 'exit') => {
+    const { ladderAnimationIds } = getSavedAnimation();
+
+    return playAnimation(ladderAnimationIds.topAnimationId, {
       startFrame: 0,
-      endFrame: 16,
+      endFrame: undefined,
       loop: LoopOnce,
       keepLastFrame: true,
       type: 'LADDER',
+      direction: direction === 'enter' ? -1 : 1
     });
   }
 
   const playLadderAnimation = () => {
-    const { ladderAnimation } = getSavedAnimation();
-    if (!ladderAnimation) {
-      console.warn('Ladder animation not set');
-      return;
-    }
-    return playAnimation(ladderAnimation.animationId, {
-      startFrame: 16,
+    const { ladderAnimationIds } = getSavedAnimation();
+
+    return playAnimation(ladderAnimationIds.climbingAnimationId, {
+      startFrame: 0,
       endFrame: undefined,
       loop: LoopPingPong,
+      keepLastFrame: true,
       type: 'LADDER',
-      speed: 0.6
+      speed: 1.5
+    });
+  }
+
+  const playLadderBottomAnimation = (direction: 'enter' | 'exit') => {
+    const { ladderAnimationIds } = getSavedAnimation();
+
+    return playAnimation(ladderAnimationIds.bottomAnimationId, {
+      startFrame: 0,
+      endFrame: undefined,
+      loop: LoopOnce,
+      keepLastFrame: true,
+      type: 'LADDER',
+      direction: direction === 'enter' ? -1 : 1
     });
   }
 
@@ -420,6 +424,7 @@ export const createAnimationController = (id: string | number, isDebugging = fal
   }
 
   return {
+    getSavedAnimation,
     getIsPlaying,
     getState,
     subscribe,
@@ -434,7 +439,8 @@ export const createAnimationController = (id: string | number, isDebugging = fal
     setHeadBone,
     setLadderAnimation,
     stopLadderAnimation,
-    playLadderIntroAnimation,
+    playLadderTopAnimation,
+    playLadderBottomAnimation,
     playLadderAnimation,
     tick,
     setHasAdjustedZ

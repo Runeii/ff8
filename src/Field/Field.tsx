@@ -5,7 +5,7 @@ import type data from '../../public/output/escouse2.json';
 import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
-import { useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import Scripts from './Scripts/Scripts';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
@@ -16,6 +16,8 @@ import { getFieldData } from './fieldUtils';
 import Onboarding from '../Onboarding/Onboarding';
 import { AREA_NAMES } from '../constants/areaNames';
 import { preloadMapSoundBank } from './Scripts/Script/SFXController/webAudio';
+import { Sphere } from '@react-three/drei';
+import { Vector3 } from 'three';
 
 export type RawFieldData = typeof data;
 
@@ -66,8 +68,22 @@ const Field = ({ data }: FieldProps) => {
     
   }, [currentLocationPlaceName, data.id]);
 
+  const needleRef = useRef<Sphere>(null);
+  const targetRef = useRef<Sphere>(null);
+
+  useFrame(() => {
+    needleRef.current.position.copy(window.needlePos ?? new Vector3(0,0,0));
+    targetRef.current.position.copy(window.targetPos ?? new Vector3(0,0,0));
+    //console.log(window.needlePos, window.targetPos)
+  });
   return (
     <group>
+      <Sphere args={[0.005, 16, 16]} ref={needleRef} position={[0,0,0]}>
+        <meshBasicMaterial color="white" opacity={1} wireframe />
+      </Sphere>
+      <Sphere args={[0.005, 16, 16]} ref={targetRef} position={[0,0,0]}>
+        <meshBasicMaterial color="blue" opacity={1} wireframe />
+      </Sphere>
       <WalkMesh walkmesh={data.walkmesh} />
       <Camera backgroundPanRef={backgroundPanRef} data={data} />
       <Scripts
@@ -108,6 +124,9 @@ const FieldLoader = (props: FieldLoaderProps) => {
         OPCODE_HANDLERS.FADEOUT();
         // @ts-expect-error We don't need args for this function
         await OPCODE_HANDLERS.FADESYNC();
+
+        // Fixes a quirk in the engine. See feroad, checking 0/10
+        MEMORY[87] = 1;
       }
       
       //sendToDebugger('reset')

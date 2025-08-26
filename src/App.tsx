@@ -6,7 +6,7 @@ import Controller from './Controller/Controller'
 import useGlobalStore from './store'
 import Ui from './UI/UI'
 import Entrypoint from './Entrypoint'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Memory from './Memory/Memory'
 import { PerspectiveCamera } from '@react-three/drei'
 import Queues from './Queues/Queues'
@@ -15,6 +15,7 @@ import { EffectComposer } from '@react-three/postprocessing'
 import useIsTabActive from './useIsTabActive'
 import { MEMORY } from './Field/Scripts/Script/handlers'
 import MAP_NAMES from './constants/maps'
+import { Scene } from 'three'
 
 const requestedProgress = new URLSearchParams(window.location.search).get('progress');
 if (requestedProgress) {
@@ -46,6 +47,8 @@ export default function App() {
     window.history.pushState({}, '', url.toString());
   }, [fieldId, progress])
 
+  const [worldScene, setWorldScene] = useState<Scene>();
+
   return (
     <>
       <div className="container">
@@ -68,7 +71,7 @@ export default function App() {
               near={0.001}
               far={1000}
             />
-            <Entrypoint />
+            <Entrypoint setWorldScene={setWorldScene} />
             <ColorOverlay />
           </EffectComposer>
         </Canvas>
@@ -88,7 +91,7 @@ export default function App() {
           flat={true}
           frameloop="always"
         >
-          <Ui />
+          <Ui worldScene={worldScene} />
         </Canvas>
         {isDebugMode && <Queues />}
         {isDebugMode && <Memory />}

@@ -140,28 +140,28 @@ const MessageBox = ({ isCloseableFocus, isSavePoint, message, worldScene }: Mess
           saveGame(worldScene);
         }
         if (options[currentIndex].includes('{Grey}')) {
-          useGlobalStore.getState().systemSfxController.play(16, 0, 255, 128);
+          useGlobalStore.getState().systemSfxController.play(16, 0, 127, 128);
           return;
         }
 
         if (askOptions && currentIndex !== askOptions.cancel && !isSavePoint) {
-          useGlobalStore.getState().systemSfxController.play(1, 0, 255, 128);
+          useGlobalStore.getState().systemSfxController.play(1, 0, 127, 128);
         }
         
         if (askOptions && currentIndex === askOptions.cancel || isSavePoint && currentIndex === 1) {
-          useGlobalStore.getState().systemSfxController.play(9, 0, 255, 128);
+          useGlobalStore.getState().systemSfxController.play(9, 0, 127, 128);
         }
         setCurrentPage(prev => prev + 1);
       }
 
       if (event.key === 'ArrowUp') {
-        useGlobalStore.getState().systemSfxController.play(1, 0, 255, 128);
+        useGlobalStore.getState().systemSfxController.play(1, 0, 127, 128);
         invalidate();
         setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
       }
 
       if (event.key === 'ArrowDown') {
-        useGlobalStore.getState().systemSfxController.play(1, 0, 255, 128);
+        useGlobalStore.getState().systemSfxController.play(1, 0, 127, 128);
         invalidate();
         setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, options.length - 1));
       }

@@ -4,14 +4,18 @@ import FieldLoader from "./Field/Field";
 import { attachKeyDownListeners } from "./Field/Scripts/Script/common";
 import { getInitialField } from "./utils";
 import MAP_NAMES from "./constants/maps";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
+import { Scene } from "three";
 
 
 useGlobalStore.setState({
   pendingFieldId: (getInitialField() ?? 'wm00') as typeof MAP_NAMES[number], 
 });
 
-const Entrypoint = () => {
+type EntrypointProps = {
+  setWorldScene: (scene: Scene) => void;
+}
+const Entrypoint = ({ setWorldScene }: EntrypointProps) => {
   useEffect(() => {
     attachKeyDownListeners();
   }, []);
@@ -31,6 +35,11 @@ const Entrypoint = () => {
     currentStyleRef.current = currentStyle;
     document.body.style.setProperty('--canvas-opacity', currentStyle.toString());
   })
+
+  const scene = useThree(state => state.scene);
+  useEffect(() => {
+    setWorldScene(scene);
+  }, [scene, setWorldScene])
 
   return (
     <>

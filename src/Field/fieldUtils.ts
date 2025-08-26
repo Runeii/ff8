@@ -85,6 +85,7 @@ export const saveGame = (scene: Scene) => {
   const saveData: SaveData = {
     MEMORY: {
       ...MEMORY,
+      87: 0,
       261: 1
     },
     fieldId: fieldId!,
@@ -103,7 +104,7 @@ export const loadGame = () => {
     return;
   }
   const parsedData = JSON.parse(saveData) as SaveData;
-  console.log('Loading game', parsedData);
+
   const { fieldId, characterPosition, party, availableCharacters } = parsedData;
 
   useGlobalStore.setState({

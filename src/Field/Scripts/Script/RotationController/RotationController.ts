@@ -41,6 +41,9 @@ const createRotationController = (
     const limits = getState().limits;
     const limitedAngle = limits ? Math.max(limits[0], Math.min(limits[1], targetAngle)) : targetAngle;
 
+    if (id === 0) {
+      console.log('Turning to face angle:', angle);
+    }
     if (duration === 0) {
       currentAngle.set(limitedAngle % 256);
       return;

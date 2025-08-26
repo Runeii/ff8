@@ -105,12 +105,6 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
   const [forwardDirection] = useState(new Vector3(0, -1, 0));
   const [upDirection] = useState(new Vector3(0, 0, 1));
 
-  const playerEntityRef = useRef<Object3D | null>(null);
-  const partyLeader = useGlobalStore((state) => state.party[0]);
-  useEffect(() => {
-    playerEntityRef.current = null
-  }, [partyLeader]);
-
   const handleFrame = useCallback(async (camera: PerspectiveCamera, scene: Scene, delta: number) => {
     if (!isActive || !isUserControllable || !hasPlacedCharacter || isTransitioningMap) {
       return;
@@ -122,13 +116,11 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       return;
     }
     
-    const player = playerEntityRef.current ?? getPlayerEntity(scene);
+    const player = getPlayerEntity(scene);
     if (!player) {
       console.warn("No player entity found in scene");
       return;
     }
-
-    playerEntityRef.current = player;
 
     const isTurning = rotationController.getState().angle.isAnimating;
     if (!walkmeshController || !isUserControllable || isTurning) {

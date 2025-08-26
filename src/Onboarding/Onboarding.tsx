@@ -116,7 +116,7 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
   if (option === 0) {
     await fadeSpring.start(0);
     closeAllWindows();
-    useGlobalStore.getState().systemSfxController.play(37, 0, 255, 128);
+    useGlobalStore.getState().systemSfxController.play(37, 0, 127, 128);
     useGlobalStore.setState({
       pendingFieldId: 'start0',
     });
@@ -127,7 +127,7 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
     await fadeSpring.start(0);
     closeAllWindows();
     loadGame();
-    useGlobalStore.getState().systemSfxController.play(37, 0, 255, 128);
+    useGlobalStore.getState().systemSfxController.play(37, 0, 127, 128);
     
     return;
   }

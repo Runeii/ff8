@@ -71,6 +71,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     if (isUnused && isActive) {
       return;
     }
+
     scriptController.tick();
   })
 
@@ -135,8 +136,8 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     entityRef.current.quaternion.identity();
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
 
-    const { goal } = movementController.getState().position
-    if (goal) {
+    const { isFacingTarget, goal } = movementController.getState().position
+    if (goal && isFacingTarget) {
       rotationController.turnToFaceVector(goal, 0);
     }
 

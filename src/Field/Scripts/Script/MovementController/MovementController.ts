@@ -89,8 +89,9 @@ const createMovementController = (id: string | number, animationController: Retu
     });
   }
 
-  const setPosition = (position: Vector3) => {
+  const setPosition = async (position: Vector3) => {
     resolvePendingPositionSignal();
+    const signal = new PromiseSignal();
 
     setState({
       hasBeenPlaced: true,
@@ -102,9 +103,11 @@ const createMovementController = (id: string | number, animationController: Retu
         isAnimationEnabled: false,
         isFacingTarget: false,
         isPaused: false,
-        signal: undefined,
+        signal,
       },
     });
+
+    await signal.promise;
   }
 
   const setOffset = (x: number, y: number, z: number) => {
