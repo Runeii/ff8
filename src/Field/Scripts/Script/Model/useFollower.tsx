@@ -25,14 +25,18 @@ const useFollower = ({ animationController, isActive, movementController, partyM
       return;
     }
 
-    const { congaWaypointHistory, isPartyFollowing, party } = useGlobalStore.getState();
+    const { congaWaypointHistory, isPartyFollowing, party, isUserControllable } = useGlobalStore.getState();
+    if (!isUserControllable) {
+      return;
+    }
+
     if (!isPartyFollowing || !party.includes(partyMemberId)) {
       return;
     }
 
     const offset = party.findIndex(id => id === partyMemberId);
     const history = congaWaypointHistory.at(-1 * offset * DISTANCE - 1);
-    if (!history && !movementController.hasBeenPlaced()) {
+    if (!history && !movementController.getState().hasBeenPlaced) {
       const leaderEntity = getPlayerEntity(scene);
       const thisMemberEntity = getPartyMemberModelComponent(scene, offset);
       if (!leaderEntity || !thisMemberEntity) {

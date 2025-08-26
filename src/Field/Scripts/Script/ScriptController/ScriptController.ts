@@ -68,12 +68,6 @@ const createScriptController = ({
       return;
     }
 
-    const isValidActionableMethod = method.opcodes.filter(opcode => !opcode.name.startsWith('LABEL') && opcode.name !== 'LBL' && opcode.name !== 'RET' && opcode.name !== 'HALT').length > 0;
-
-    if (!isValidActionableMethod) {
-      return;
-    }
-
     const uniqueId = `${script.groupId}-${methodId}--${priority}-${Date.now()}`;
     const isLooping = method.methodId === "default"
 
@@ -109,14 +103,15 @@ const createScriptController = ({
     if (isTopPriority) {
       newQueue.unshift(newItem);
     } else {
-      newQueue.splice(insertAtIndex, 0, newItem);
+      newQueue.splice(insertAtIndex + 1, 0, newItem);
     }
 
-      sendToDebugger('queue', JSON.stringify({
-        uuid: generateUUID(),
-        id: script.groupId,
-        opcode: `QUEUE: ADD ${newItem.uniqueId} ${newItem.method.methodId}`,
-      }));
+    sendToDebugger('queue', JSON.stringify({
+      uuid: generateUUID(),
+      id: script.groupId,
+      opcode: `QUEUE: ADD ${newItem.uniqueId} ${newItem.method.methodId}`,
+    }));
+
     setState({ queue: newQueue });
   }
 
