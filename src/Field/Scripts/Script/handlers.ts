@@ -15,6 +15,7 @@ import MusicController from "./MusicController";
 import createRotationController from "./RotationController/RotationController";
 import createSFXController from "./SFXController/SFXController";
 import { DRAW_POINTS } from "../../../constants/drawPoints";
+import { preloadSound } from "./SFXController/webAudio";
 
 const musicController = MusicController();
 
@@ -49,7 +50,7 @@ export let MEMORY: Record<number, number> = {
   1024: 0,
   1025: 0,
   
-  84: 0, // last area visited
+  84: 566, // last area visited
 
   256: 0, // progress
   528: 0, // subprogress
@@ -223,9 +224,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     })
   },
   UCON: () => {
+    console.log('is controllable')
     useGlobalStore.setState({ isUserControllable: true });
   },
   UCOFF: () => {
+    console.log('is not controllable')
     useGlobalStore.setState({ isUserControllable: false });
   },
   LINEON: ({ setState }) => {
@@ -670,7 +673,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const partyMemberIndex = currentOpcode.param as number;
     const label = STACK.pop() as number;
     const priority = STACK.pop() as number;
+    console.log('start preqew', partyMemberIndex, label, priority)
     await remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
+    console.log('end preqew', partyMemberIndex, label, priority)
   },
   ISPARTY: ({ STACK, TEMP_STACK }) => {
     const characterID = STACK.pop() as number;
@@ -862,17 +867,23 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       animationController.playLadderIntroAnimation(),
       movementController.moveToPoint(start, {
         isFacingTarget: false,
+        isAllowedToCrossBlockedTriangles: true,
+        isAllowedToLeaveWalkmesh: true,
         isAnimationEnabled: false
       })
     ])
     animationController.playLadderAnimation();
     await movementController.moveToPoint(middle, {
       isFacingTarget: false,
+      isAllowedToCrossBlockedTriangles: true,
+      isAllowedToLeaveWalkmesh: true,
       isAnimationEnabled: false
     });
     await movementController.moveToPoint(end, {
       isFacingTarget: false,
-      isAnimationEnabled: false
+      isAnimationEnabled: false,
+      isAllowedToCrossBlockedTriangles: true,
+      isAllowedToLeaveWalkmesh: true,
     });
     animationController.stopLadderAnimation();
     movementController.setIsClimbingLadder(false);
@@ -1385,6 +1396,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   none – affects camera/everything
   2 – affects a single layer
   3 – affects a single layer, sets both start and end values
+
+  CSCROLL2 moves a single layer AND the camera while not adjusting other layers, allowing the scene to move with a layer
   */
   DSCROLL: ({ STACK }) => {
     const y = STACK.pop() as number;
@@ -1532,7 +1545,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SCROLLSYNC2: async ({ STACK }) => {
     const layerID = STACK.pop() as number;
 
-    while (useGlobalStore.getState().layerScrollOffsets[layerID].isInProgress) {
+    while (useGlobalStore.getState().layerScrollOffsets[layerID] && useGlobalStore.getState().layerScrollOffsets[layerID].isInProgress) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -1865,8 +1878,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   MOVIESYNC: dummiedCommand, // used to sync with a movie, we do not show movies so this is dummied and returns done immediately
 
-  DRAWPOINT: async ({ STACK }) => {
+  DRAWPOINT: async ({ sfxController, STACK }) => {
     const drawPointId = STACK.pop() as number;
+    await sfxController.play(66, 0, 64, 128);
+    preloadSound(67);
     await openMessage('drawpoint', [`Found a draw point!\n${DRAW_POINTS[drawPointId]} found.`], {
       x: 110,
       y: 90,
@@ -1874,6 +1889,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       height: 40,
       channel: 0,
     }, true);
+    sfxController.play(67, 0, 64, 128);
   },
   SAVEENABLE: ({ STACK }) => {
     // const isEnabled =

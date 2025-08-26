@@ -179,7 +179,7 @@ const createScriptController = ({
     sendToDebugger('command', JSON.stringify({
       uuid: generateUUID(),
       id: script.groupId,
-      opcode: activeOpcode.name,
+      opcode: `${activeOpcode.name} with param ${activeOpcode.param}. Index: ${activeOpcodeIndex}, method: ${method.methodId}`,
     }));
 
     if (activeOpcode.name.startsWith('LABEL')) {

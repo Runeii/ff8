@@ -158,6 +158,9 @@ const Model = ({animationController, models, scriptController, movementControlle
     const rootBonePosition = rootBone.getWorldPosition(new Vector3());
     const needsZAdjustment = animationController.getState().needsZAdjustment || movementController.getState().needsZAdjustment;
 
+    if (movementController.getState().isClimbingLadder) {
+      return;
+    }
     if (needsZAdjustment) {
       if (!animationController.getState().animations.currentAnimation || animationController.getState().animations.currentAnimation?.animationId === animationController.getMovementAnimationId('stand')) {
         standingBoundingBox.setFromObject(animationGroupRef.current, true);
@@ -192,7 +195,8 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const talkRadiusRef = useRef<Mesh>(null);
 
-  const hasTalkableSphere = !!talkMethod && !isLeadCharacter && !isFollower && !!meshGroup;
+  const hasBeenPlaced = movementController.getState().hasBeenPlaced;
+  const hasTalkableSphere = !!talkMethod && !isLeadCharacter && !isFollower && !!meshGroup && hasBeenPlaced;
   useTalkRadius({
     isActive: hasTalkableSphere,
     scriptController,
@@ -201,7 +205,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     talkTargetRef: talkRadiusRef
   })
 
-  const hasPushableSphere = !!pushMethod && !isLeadCharacter && !isFollower && !!meshGroup;
+  const hasPushableSphere = !!pushMethod && !isLeadCharacter && !isFollower && !!meshGroup && hasBeenPlaced;
   usePushRadius({
     isActive: hasPushableSphere,
     scriptController,

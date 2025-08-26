@@ -51,11 +51,6 @@ const usePushRadius = ({ isActive, scriptController, pushMethod, useScriptStateS
       return
     };
 
-    const hasPlayerBeenPositioned = player.userData.hasBeenPlaced;
-    if (!hasPlayerBeenPositioned) {
-      return;
-    }
-
     const playerMesh = player.getObjectByName("model") as Group;
 
     if (!playerMesh) {

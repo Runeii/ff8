@@ -47,6 +47,7 @@ export const remoteExecutePartyMember = async (scene: Scene, partyMemberIndex: n
   }
   console.log(`Executing script ${scriptLabel} on party member ${partyMemberIndex} ${partyMemberIndex}`);
   await scriptController.triggerMethodByIndex(scriptLabel, priority);
+  console.log(`Finished script ${scriptLabel} on party member ${partyMemberIndex} ${partyMemberIndex}`);
 }
 
 export const openMessage = (id: string, text: string[], placement: MessagePlacement, isCloseable = true, askOptions?: AskOptions | undefined) => new Promise<number>((resolve) => {

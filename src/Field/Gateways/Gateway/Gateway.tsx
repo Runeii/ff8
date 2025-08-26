@@ -24,7 +24,7 @@ const Gateway = ({
 
   const isMapJumpEnabled = useGlobalStore((state) => state.isMapJumpEnabled);
 
-  useIntersection(lineRef.current, isMapJumpEnabled, {
+  useIntersection(lineRef, isMapJumpEnabled, {
     onTouchOn: () => onIntersect(formattedGateway),
   }, formattedGateway.sourceLine);
 

@@ -1,9 +1,10 @@
 import { useFrame } from "@react-three/fiber";
-import { useRef, useState } from "react";
+import { RefObject, useRef, useState } from "react";
 import { checkForIntersectingMeshes } from "../../Gateways/gatewayUtils";
 import { Object3D, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { getPlayerEntity } from "./Model/modelUtils";
+import createMovementController from "./MovementController/MovementController";
 
 export type STATES = 'LEFT' | 'INTERSECTING' | 'RIGHT' | undefined;
 
@@ -22,7 +23,7 @@ const getPointSideOfLine = (lineStart: VectorLike, lineEnd: VectorLike, point: V
   }
 }
 
-const useIntersection = (targetMesh: Object3D | null, isActive = true, {
+const useIntersection = (targetMeshRef: RefObject<Object3D | null>, isActive = true, {
   onTouchOn,  
   onTouchOff,
   onAcross,
@@ -33,8 +34,6 @@ const useIntersection = (targetMesh: Object3D | null, isActive = true, {
   onAcross?: () => void;
   onTouch?: () => void;
 }, line: VectorLike[]) => {
-  const hasMoved = useGlobalStore(state => state.hasMoved);
-
   const currentStateRef = useRef<STATES>(undefined);
   const hasEverExitedRef = useRef(false);
 
@@ -43,13 +42,23 @@ const useIntersection = (targetMesh: Object3D | null, isActive = true, {
   const isUserControllable = useGlobalStore(state => state.isUserControllable)
 
   useFrame(({ scene }) => {
-    if (!hasMoved || !targetMesh || !isActive || !isUserControllable) {
+    if (!targetMeshRef.current || !isActive || !isUserControllable) {
       return;
     }
 
-    const player = getPlayerEntity(scene);
+    const targetMesh = targetMeshRef.current;
 
+    const player = getPlayerEntity(scene);
     if (!player) {
+      return;
+    }
+
+
+    const movementController = (player.userData.movementController as ReturnType<typeof createMovementController>);
+    const hasBeenPlaced = movementController.getState().hasBeenPlaced;
+    const hasMoved = movementController.getState().hasMoved;
+
+    if (!hasBeenPlaced || !hasMoved) {
       return;
     }
 

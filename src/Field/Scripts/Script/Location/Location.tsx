@@ -50,7 +50,7 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
 
   const isUserControllable = useGlobalStore(state => state.isUserControllable);
 
-  useIntersection(lineRef.current, isLineOn && isUserControllable, {
+  useIntersection(lineRef, isLineOn && isUserControllable, {
     onTouchOn: () => {
       window.addEventListener('keydown', onKeyDown);
       scriptController.triggerMethod('touchon');

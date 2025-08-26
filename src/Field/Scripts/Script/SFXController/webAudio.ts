@@ -61,23 +61,27 @@ const loadAudioBuffer = async (url: string): Promise<AudioBuffer> => {
   return context.decodeAudioData(arrayBuffer);
 };
 
+export const preloadSound = async (soundId: number) => {
+  const sound = getSoundFromId(soundId);
+  const src = `/audio/effects/${sound}.mp3`;
+  try {
+    const buffer = await loadAudioBuffer(src);
+    preloadedSoundBank[soundId] = buffer;
+  } catch (error) {
+    console.warn(`Failed to preload sound ${soundId}:`, error);
+  }
+};
+
 export const preloadMapSoundBank = async (sounds: number[]): Promise<void> => {
   if (!sounds?.length) {
     return;
   };
 
+  // Reset soundbank as new map
   preloadedSoundBank = {};
+
   const soundsToLoad = sounds.slice(0, 10);
-  const loadPromises = soundsToLoad.map(async (soundId) => {
-    try {
-      const sound = getSoundFromId(soundId)
-      const src = `/audio/effects/${sound}.mp3`;
-      const buffer = await loadAudioBuffer(src);
-      preloadedSoundBank[soundId] = buffer;
-    } catch (error) {
-      console.warn(`Failed to preload sound ${soundId}:`, error);
-    }
-  });
+  const loadPromises = soundsToLoad.map(preloadSound);
 
   await Promise.allSettled(loadPromises);
 };

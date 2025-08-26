@@ -23,11 +23,12 @@ const createMovementController = (id: string | number, animationController: Retu
 
   const {getState, setState, subscribe} = create(() => ({
     hasBeenPlaced: false,
+    hasMoved: false,
     id,
     movementSpeed: 2560,
     needsZAdjustment: true,
     position: {
-      current: new Vector3(-1, 0, 0),
+      current: new Vector3(-999, 0, 0),
       duration: 0 as number | undefined,
       distanceToStopAnimationFromTarget: 0,
       isAnimationEnabled: true,
@@ -158,7 +159,6 @@ const createMovementController = (id: string | number, animationController: Retu
     const goal = isAllowedToLeaveWalkmesh ? target : walkmeshController.getPositionOnWalkmesh(target);
 
     setState({
-      hasBeenPlaced: true,
       position: {
         current: getState().position.current,
         goal: goal ?? target,
@@ -366,7 +366,6 @@ const createMovementController = (id: string | number, animationController: Retu
         currentPosition.copy(positionGoal);
         resolvePendingPositionSignal();
         setState({
-          hasBeenPlaced: true,
           position: {
             ...getState().position,
             userControlledSpeed: undefined,
@@ -374,7 +373,6 @@ const createMovementController = (id: string | number, animationController: Retu
             isPaused: true,
           }
         });
-
         isStopping = true;
       } else {
         const direction = positionGoal.clone().sub(currentPosition).normalize();
@@ -382,6 +380,10 @@ const createMovementController = (id: string | number, animationController: Retu
         const newPos = isAllowedToLeaveWalkmesh ? desiredNextPos : walkmeshController.moveToward(currentPosition, desiredNextPos, isAllowedToCrossBlockedTriangles);
         currentPosition.copy(newPos);
       }
+
+      setState({
+        hasBeenPlaced: true,
+      })
     }
 
     const { current: currentOffset, goal: offsetGoal, duration: offsetDuration, totalDistance } = offset;
@@ -412,7 +414,6 @@ const createMovementController = (id: string | number, animationController: Retu
     }
 
     entity.position.set(getPosition().x, getPosition().y, getPosition().z);
-    entity.userData.hasBeenPlaced = true;
 
 
     if (useScriptStateStore.getState().partyMemberId !== useGlobalStore.getState().party[0]) {
@@ -449,6 +450,8 @@ const createMovementController = (id: string | number, animationController: Retu
     resolvePendingPositionSignal();
 
     setState(state => ({
+      hasBeenPlaced: false,
+      hasMoved: false,
       movementSpeed: 2560,
       needsZAdjustment: true,
       isClimbingLadder: false,
@@ -473,14 +476,15 @@ const createMovementController = (id: string | number, animationController: Retu
     }))
   }
 
-  const hasBeenPlaced = () => {
-    return getState().hasBeenPlaced;
+  const setHasMoved = (hasMoved: boolean) => {
+    setState({
+      hasMoved,
+    });
   }
 
   return {
     getState,
     getPosition,
-    hasBeenPlaced,
     moveToObject,
     moveToOffset,
     moveToPoint,
@@ -499,6 +503,7 @@ const createMovementController = (id: string | number, animationController: Retu
     setHasAdjustedZ,
     reset,
     resume,
+    setHasMoved
   }
 }
 

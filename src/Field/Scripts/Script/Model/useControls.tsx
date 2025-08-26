@@ -104,7 +104,6 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
 
   const [forwardDirection] = useState(new Vector3(0, -1, 0));
   const [upDirection] = useState(new Vector3(0, 0, 1));
-  const [currentPositionVector] = useState(new Vector3());
 
   const playerEntityRef = useRef<Object3D | null>(null);
   const partyLeader = useGlobalStore((state) => state.party[0]);
@@ -167,7 +166,6 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       currentPosition.z
     ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
 
-    currentPositionVector.copy(currentPosition);
     const newPosition = walkmeshController.getPositionOnWalkmesh(
       desiredPosition,
       characterHeight / 2,
@@ -195,7 +193,8 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       isAllowedToCrossBlockedTriangles: false,
       userControlledSpeed: movementSpeed,
     });
-  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking, upDirection, forwardDirection, currentPositionVector, characterHeight]);
+    movementController.setHasMoved(true);
+  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking, upDirection, forwardDirection, characterHeight]);
 
   useFrame(({ scene }, delta) => {
     if (!isActive) {
