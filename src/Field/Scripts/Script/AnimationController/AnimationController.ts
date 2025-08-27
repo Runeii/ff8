@@ -1,6 +1,7 @@
 import { AnimationAction, AnimationClip, AnimationMixer, Object3D } from "three";
 import { create } from "zustand"
 import { applyAnimationAtTime } from "./animationUtils";
+import { invalidate } from "@react-three/fiber";
 
 type AnimationItem = {
   id: string;
@@ -79,7 +80,8 @@ export const createAnimationController = (id: string | number) => {
     const { action, direction, startTime, endTime } = activeAnimation;
 
     action.enabled = true;
-
+    invalidate();
+  
     // New run
     if (!currentRunState) {
       currentRunState = {

@@ -1,9 +1,9 @@
-import { SpringValue } from "@react-spring/web";
 import { Group, Scene, Vector3 } from "three";
 import { create } from "zustand";
 import createMovementController from "../MovementController/MovementController";
 import { getDirectionToVector, getShortestRouteToAngle, radiansToUnit, signedAngleBetweenVectors } from "./rotationUtils";
 import { RefObject } from "react";
+import LerpValue from "../../../../LerpValue";
 
 const createRotationController = (
   id: string | number,
@@ -11,7 +11,7 @@ const createRotationController = (
   entityRef: RefObject<Group | null>
 ) => {
   const { getState, setState } = create(() => ({
-    angle: new SpringValue(0),
+    angle: new LerpValue(0),
     id,
     limits: undefined as [number, number] | undefined,
     target: undefined,
@@ -45,12 +45,7 @@ const createRotationController = (
       currentAngle.set(limitedAngle % 256);
       return;
     }
-    await currentAngle.start(limitedAngle % 256, {
-      config: {
-        duration: duration * 1000 / 30,
-      },
-      immediate: duration === 0,
-    })
+    await currentAngle.start(limitedAngle % 256, duration * 1000 / 30);
   }
 
   const turnToFaceDirection = async (direction: Vector3, duration: number) => {

@@ -3,7 +3,6 @@ import { Script as ScriptType } from "../types";
 import Location from "./Location/Location";
 import Model from "./Model/Model";
 import useGlobalStore from "../../../store";
-import { animated } from "@react-spring/three";
 import Door from "./Door/Door";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Group, Vector3 } from "three";
@@ -172,7 +171,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
   }
 
   return (
-    <animated.group
+    <group
       ref={entityRef}
       name={`entity--${script.groupId}`}
       userData={{
@@ -195,7 +194,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
       )}
       {script.type === 'door' && <Door scriptController={scriptController} doors={doors} script={script} useScriptStateStore={useScriptStateStore} />}
     </group>
-    </animated.group>
+    </group>
   );
 }
 

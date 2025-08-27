@@ -5,6 +5,7 @@ import PromiseSignal from "../../../../PromiseSignal";
 import useGlobalStore from "../../../../store";
 import createRotationController from "../RotationController/RotationController";
 import createScriptState from "../state";
+import { invalidate } from "@react-three/fiber";
 
 type MoveOptions = {
   customMovementTarget: Vector3 | undefined;
@@ -343,6 +344,7 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     const movementSpeed = getMovementSpeed();
     
     if (positionGoal) {
+      invalidate();
       const speed = movementSpeed / 2560
       const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
 
@@ -374,6 +376,7 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     const { current: currentOffset, goal: offsetGoal, duration: offsetDuration, totalDistance } = offset;
 
     if (offsetGoal) {
+      invalidate();
       const durationInSeconds = offsetDuration / 25;
       const remainingDistance = currentOffset.distanceTo(offsetGoal);
 

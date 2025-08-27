@@ -49,10 +49,7 @@ const Scripts = ({ doors, models, scripts, sounds }: ScriptsProps) => {
   const handleStartedMain = useCallback(() => {
     const {fieldId, fadeSpring} = useGlobalStore.getState();
     if (fieldId === 'bghoke_2') {
-      fadeSpring.start(1, {
-        config: { duration: 10 },
-        delay: 500
-      });
+      fadeSpring.start(1, 10);
     }
   }, []);
 

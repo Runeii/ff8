@@ -8,7 +8,6 @@ import useGlobalStore from "../../../store";
 import useCameraScroll from "../../useScrollTransition";
 import { clamp } from "three/src/math/MathUtils.js";
 import { Plane } from "@react-three/drei";
-import useBackgroundAnimation from "./useBackgroundAnimation";
 
 
 function getVisibleDimensionsAtDistance(
@@ -44,8 +43,6 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
   const layerPanRef = useRef<{panX: number, panY: number}>({panX: 0, panY: 0});
   const layerScroll = useCameraScroll('layer', layerPanRef, layer.renderID);
 
-  const currentParameterState = useBackgroundAnimation(parameter);
-
   useFrame(() => {
     if (!layerRef.current) {
       return;
@@ -55,14 +52,16 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
       initialPosition: Vector3,
       initialTargetPosition: Vector3,
     }
-
-    const { backgroundLayerVisibility, backgroundScrollRatios } = useGlobalStore.getState();
+    
+    const { backgroundAnimations, backgroundLayerVisibility, backgroundScrollRatios } = useGlobalStore.getState();
+    
+    const currentParameterState = backgroundAnimations[parameter];
 
     let isLayerVisible = true;
 
     if (parameter !== -1 && backgroundLayerVisibility[parameter] !== true) {
       isLayerVisible = false;
-    } else if (currentParameterState.current !== state) {
+    } else if (currentParameterState !== undefined && Math.round(currentParameterState?.get()) !== state) {
       isLayerVisible = false;
     }
 

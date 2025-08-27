@@ -17,6 +17,7 @@ import createSFXController from "./SFXController/SFXController";
 import { DRAW_POINTS } from "../../../constants/drawPoints";
 import { preloadSound } from "./SFXController/webAudio";
 import { handleLadder } from "./MovementController/utils";
+import LerpValue from "../../../LerpValue";
 
 const musicController = MusicController();
 
@@ -298,16 +299,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   BGDRAW: ({ script, STACK }) => {
     const frame = STACK.pop() as number;
-    console.log('BGDRAW', frame, script)
+
+    const lerpValue = new LerpValue(frame);
+    
     useGlobalStore.setState({
       backgroundAnimations: {
         ...useGlobalStore.getState().backgroundAnimations,
-        [script.backgroundParamId]: {
-          start: frame,
-          end: frame,
-          isInProgress: false,
-          isLooping: false
-        }
+        [script.backgroundParamId]: lerpValue
       },
       backgroundLayerVisibility: {
         ...useGlobalStore.getState().backgroundLayerVisibility,
@@ -333,7 +331,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     })
   },
   BGANIMESYNC: async ({script}) => {
-    while (useGlobalStore.getState().backgroundAnimations[script.backgroundParamId].isInProgress) {
+    while (useGlobalStore.getState().backgroundAnimations[script.backgroundParamId].isAnimating) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -352,15 +350,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
+    const speed = useGlobalStore.getState().backgroundLayerSpeeds[script.backgroundParamId];
+    const lerpValue = new LerpValue(start);
+    const duration = lerpValue.calculateDuration(speed);
+    lerpValue.start(end, duration, 0);
+
     useGlobalStore.setState({
       backgroundAnimations: {
         ...useGlobalStore.getState().backgroundAnimations,
-        [script.backgroundParamId]: {
-          start,
-          end,
-          isInProgress: true,
-          isLooping: false
-        }
+        [script.backgroundParamId]: lerpValue
       },
       backgroundLayerVisibility: {
         ...useGlobalStore.getState().backgroundLayerVisibility,
@@ -372,15 +370,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number
 
+    const speed = useGlobalStore.getState().backgroundLayerSpeeds[script.backgroundParamId];
+    const lerpValue = new LerpValue(start);
+    const duration = lerpValue.calculateDuration(speed);
+    lerpValue.start(end, duration, 0, true);
+
     useGlobalStore.setState({
       backgroundAnimations: {
         ...useGlobalStore.getState().backgroundAnimations,
-        [script.backgroundParamId]: {
-          start,
-          end,
-          isInProgress: true,
-          isLooping: true
-        }
+        [script.backgroundParamId]: lerpValue
       },
       backgroundLayerVisibility: {
         ...useGlobalStore.getState().backgroundLayerVisibility,
@@ -453,6 +451,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const end = STACK.pop() as number;
     const start = STACK.pop() as number;
 
+    const speed = useGlobalStore.getState().backgroundLayerSpeeds[script.backgroundParamId];
+    const lerpValue = new LerpValue(start);
+    const duration = lerpValue.calculateDuration(speed);
+    lerpValue.start(end, duration, 0);
+
     useGlobalStore.setState({
       backgroundLayerVisibility: {
         ...useGlobalStore.getState().backgroundLayerVisibility,
@@ -460,16 +463,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       },
       backgroundAnimations: {
         ...useGlobalStore.getState().backgroundAnimations,
-        [script.backgroundParamId]: {
-          start,
-          end,
-          isInProgress: true,
-          isLooping: false
-        }
+        [script.backgroundParamId]: lerpValue
       }
     })
-
-    while (useGlobalStore.getState().backgroundAnimations[script.backgroundParamId]?.isInProgress) {
+    while (useGlobalStore.getState().backgroundAnimations[script.backgroundParamId].isAnimating) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -2209,19 +2206,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   FADEIN: () => {
     const { fadeSpring } = useGlobalStore.getState()
-    fadeSpring.start(1, {
-      config: {
-        duration: 250
-      }
-    });
+    fadeSpring.start(1, 250);
   },
   FADEOUT: () => {
     const { fadeSpring } = useGlobalStore.getState()
-    fadeSpring.start(0, {
-      config: {
-        duration: 500
-      }
-    });
+    fadeSpring.start(0, 500);
   },
   FADENONE: () => {
     const { fadeSpring } = useGlobalStore.getState()

@@ -54,7 +54,7 @@ export default function App() {
       <div className="container">
         <Canvas camera={undefined} className="canvas" gl={{
           logarithmicDepthBuffer: true,
-        }} frameloop={isTabActive ? 'always' : 'never'}>
+        }} frameloop={isTabActive ? 'demand' : 'never'}>
           <EffectComposer>
             <PerspectiveCamera
               makeDefault

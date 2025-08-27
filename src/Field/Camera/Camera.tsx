@@ -8,8 +8,8 @@ import { clamp } from "three/src/math/MathUtils.js";
 import { SCREEN_HEIGHT } from "../../constants/constants";
 import useGlobalStore from "../../store";
 import Focus from "./Focus/Focus";
-import { useSpring } from "@react-spring/web";
 import useScrollTransition from "../useScrollTransition";
+import LerpValue from "../../LerpValue";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
@@ -166,24 +166,19 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
   });
 
   const [isDebugModeActive, setIsDebugModeActive] = useState(false);
-  const spring = useSpring({
-    pullback: isDebugModeActive ? 1 : 0,
-    config: {
-      tension: isDebugModeActive ? 60 : 120,
-      friction: 60,
-      precision: 0.01
-    },
-    onStart: () => {
-      if (isDebugModeActive) {
-        useGlobalStore.setState({ isDebugMode: true });
-      }
-    },
-    onRest: () => {
-      if (!isDebugModeActive) {
-        useGlobalStore.setState({ isDebugMode: false });
-      }
+  const [pullback] = useState(new LerpValue(0));
+
+  useEffect(() => {
+    if (isDebugModeActive) {
+      useGlobalStore.setState({ isDebugMode: true });
     }
-  })
+    pullback.start(isDebugModeActive ? 1 : 0, 300)
+      .then(() => {
+        if (!isDebugModeActive) {
+          useGlobalStore.setState({ isDebugMode: false });
+        }
+      })
+  }, [isDebugModeActive, pullback]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -211,7 +206,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     
     moveableCamera.lookAt(focus.position);
     const lookingAtQuaternion = moveableCamera.quaternion.clone();
-    moveableCamera.quaternion.copy(camera.quaternion.clone().slerp(lookingAtQuaternion, spring.pullback.get()));
+    moveableCamera.quaternion.copy(camera.quaternion.clone().slerp(lookingAtQuaternion, pullback.get()));
 
     const {upVector, rightVector, forwardVector} = getCameraDirections(camera.clone());
     
@@ -221,7 +216,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     debugPosition.sub(rightVector.clone().multiplyScalar(1));
     debugPosition.add(upVector.clone().multiplyScalar(0.5));
 
-    moveableCamera.position.copy(scenePosition.lerp(debugPosition, spring.pullback.get()));
+    moveableCamera.position.copy(scenePosition.lerp(debugPosition, pullback.get()));
 
     moveableCamera.fov = camera.fov;
     moveableCamera.updateProjectionMatrix();

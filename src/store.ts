@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 import type { Object3D, Vector3 } from 'three';
-import { SpringValue } from '@react-spring/web';
 import MAP_NAMES from './constants/maps';
 import type { Howl} from 'howler';
 import { FieldData } from './Field/Field';
 import createSFXController from './Field/Scripts/Script/SFXController/SFXController';
 import { sendToDebugger } from './Debugger/debugUtils';
 import WalkmeshMovementController from './Field/WalkMesh/WalkmeshMovement';
+import LerpValue from './LerpValue';
 
 interface GlobalState {
   isDebugMode: boolean,
@@ -73,7 +73,7 @@ interface GlobalState {
     duration: number,
   },
   isTransitioningColorOverlay: boolean,
-  fadeSpring: SpringValue<number>,
+  fadeSpring: LerpValue,
   isMapFadeEnabled: boolean,
 
   availableCharacters: number[],
@@ -85,7 +85,7 @@ interface GlobalState {
 
   cameraFocusHeight: number,
   cameraFocusObject: Object3D | undefined,
-  cameraFocusSpring: SpringValue<number> | undefined,
+  cameraFocusSpring: LerpValue | undefined,
 
   globalMeshTint: [number, number, number],
 
@@ -104,12 +104,7 @@ interface GlobalState {
   systemSfxController: ReturnType<typeof createSFXController>,
   spuValue: number
 
-  backgroundAnimations: Record<number, {
-    start: number,
-    end: number,
-    isInProgress: boolean,
-    isLooping: boolean
-  }>,
+  backgroundAnimations: Record<number, LerpValue>,
   backgroundLayerVisibility: Record<number, boolean>,
   backgroundLayerSpeeds: Record<number, number>,
   backgroundScrollRatios: Record<number, {
@@ -165,7 +160,7 @@ const INITIAL_STATE: GlobalState = {
       duration: 0,
     },
     isTransitioningColorOverlay: false,
-    fadeSpring: new SpringValue(1),
+    fadeSpring: new LerpValue(1),
     isMapFadeEnabled: true,
   
     availableCharacters: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -199,12 +194,7 @@ const INITIAL_STATE: GlobalState = {
     spuValue: 0,
 
     backgroundAnimations: {
-      [-1]: {
-        start: 0,
-        end: 1,
-        isInProgress: false,
-        isLooping: true,
-      }
+      [-1]: new LerpValue(0)
     },
     backgroundLayerVisibility: {},
     backgroundLayerSpeeds: {},
