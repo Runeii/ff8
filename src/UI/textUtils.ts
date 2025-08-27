@@ -1,3 +1,4 @@
+import { CONTROLS_MAP } from "../constants/controls";
 import { MESSAGE_VARS } from "../Field/Scripts/Script/handlers";
 import { Modifier } from "./textTypes";
 
@@ -79,7 +80,6 @@ export const createModifier = (tag: string) => {
     return result;
   }
   
-  
   if (tag.startsWith('Wait')) {
     result = {
       type: 'wait',
@@ -121,10 +121,10 @@ const CONTROL_INPUTS = {
   "{x0521}": "R2",
   "{x0522}": "L1",
   "{x0523}": "R1",
-  "{x0524}": "TRI",
-  "{x0525}": "CIR",
-  "{x0526}": "CRO",
-  "{x0527}": "SQUA",
+  "{x0524}": CONTROLS_MAP.menu,
+  "{x0525}": CONTROLS_MAP.cancel,
+  "{x0526}": CONTROLS_MAP.confirm,
+  "{x0527}": CONTROLS_MAP.card,
   "{x0528}": "SELECT",
   "{x052b}": "STAT",
   "{x052c}": "UP",

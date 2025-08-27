@@ -4,7 +4,7 @@ import Location from "./Location/Location";
 import Model from "./Model/Model";
 import useGlobalStore from "../../../store";
 import Door from "./Door/Door";
-import { useFrame, useThree } from "@react-three/fiber";
+import { invalidate, useFrame, useThree } from "@react-three/fiber";
 import { Group, Vector3 } from "three";
 import createScriptState from "./state";
 import { createAnimationController } from "./AnimationController/AnimationController";
@@ -58,12 +58,15 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
   useFrame(() => {
     if (!isActive && !hasTriggeredConstructorRef.current && entityRef.current) {
       hasTriggeredConstructorRef.current = true;
+      invalidate();
       scriptController.triggerMethod('constructor').then(() => {
+        invalidate();
         onSetupCompleted();
       })
     }
     if (!hasTriggeredDefaultRef.current && isActive) {
       hasTriggeredDefaultRef.current = true;
+      invalidate();
       scriptController.triggerMethod('default');
       onStarted?.();
     }

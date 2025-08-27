@@ -80,10 +80,12 @@ const optionsSelect = async () => {
   if (optionsOption === 0) {
     await openMessage('controls', [`Controls
       {Yellow}Move{White} - [Arrows]
-      {Yellow}Interact{White} - [Space]
+      {Yellow}Confirm{White} - [Z]
+      {Yellow}Cancel{White} - [X]
+      {Yellow}Card/Run{White} - [A]
+      {Yellow}Menu{White} - [S]
 
-      {Yellow}Dev Mode{White} - [Esc]
-      {Yellow}Reset{White} - [Backspace]`], { x: 70,  y: 50, width: undefined, height: undefined, channel: 1 }, true, undefined);
+      {Yellow}Dev Mode{White} - [Esc]`], { x: 70,  y: 50, width: undefined, height: undefined, channel: 1 }, true, undefined);
       closeAllWindows();
       optionsSelect();
   }
@@ -114,7 +116,7 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
   closeAllWindows();
 
   if (option === 0) {
-    await fadeSpring.start(0);
+    await fadeSpring.start(0, 500);
     closeAllWindows();
     useGlobalStore.getState().systemSfxController.play(37, 0, 127, 128);
     useGlobalStore.setState({
@@ -124,7 +126,7 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
   }
 
   if (option === 1) {
-    await fadeSpring.start(0);
+    await fadeSpring.start(0, 500);
     closeAllWindows();
     loadGame();
     useGlobalStore.getState().systemSfxController.play(37, 0, 127, 128);
