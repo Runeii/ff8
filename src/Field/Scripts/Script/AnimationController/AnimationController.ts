@@ -18,7 +18,8 @@ type AnimationItem = {
   isLooping: boolean;
   shouldHoldLastFrame: boolean;
 
-  needsZAdjustment: boolean;
+  hasBeenZAdjusted: boolean;
+  needsRealtimeZAdjustment: boolean;
 }
 
 type RunState = {
@@ -42,10 +43,6 @@ export const createAnimationController = (id: string | number) => {
 
     activeAnimation: undefined as AnimationItem | undefined,
     animationSpeed: 16, // Default speed, can be adjusted later
-
-    // Do we need these
-    needsZAdjustment: false,
-    animations: [],
   }));
 
   let currentRunState: RunState | undefined = undefined;
@@ -143,7 +140,7 @@ export const createAnimationController = (id: string | number) => {
       priority?: number;
       speed?: number;
       direction?: number;
-      needsZAdjustment?: boolean;
+      needsRealtimeZAdjustment?: boolean;
     }) => {
     const clip = getState().clips[clipId]
     if (!clip) {
@@ -174,7 +171,8 @@ export const createAnimationController = (id: string | number) => {
       shouldHoldLastFrame: options?.shouldHoldLastFrame ?? false,
       priority: options?.priority ?? 5,
       speed: options?.speed ?? 1,
-      needsZAdjustment: options?.needsZAdjustment ?? true
+      hasBeenZAdjusted: false,
+      needsRealtimeZAdjustment: options?.needsRealtimeZAdjustment ?? true
     }
 
     currentRunState = undefined;
@@ -256,7 +254,7 @@ export const createAnimationController = (id: string | number) => {
     playAnimation(animationId, {
       isLooping: true,
       shouldHoldLastFrame: true,
-      needsZAdjustment: false
+      needsRealtimeZAdjustment: false
     });
   }
 
@@ -268,7 +266,7 @@ export const createAnimationController = (id: string | number) => {
     setState({
       activeAnimation: {
         ...activeAnimation,
-        needsZAdjustment: !hasAdjustedZ,
+        hasBeenZAdjusted: hasAdjustedZ,
       }
     })
   }

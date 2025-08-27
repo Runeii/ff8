@@ -62,6 +62,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
 
     if (newPosition) {
       movementController.setPosition(newPosition);
+      window.startPos = newPosition;
     } else {
       console.warn("Tried to set character position to an invalid position", initialPosition);
     }

@@ -197,13 +197,14 @@ const Model = ({animationController, models, scriptController, movementControlle
       return;
     }
     const rootBonePosition = rootBone.getWorldPosition(new Vector3());
-    const needsZAdjustment = animationController.getState().activeAnimation?.needsZAdjustment;
+    const hasHadZAdjusted = animationController.getState().activeAnimation?.hasBeenZAdjusted;
+    const needsRealtimeZAdjustment = animationController.getState().activeAnimation?.needsRealtimeZAdjustment;
     
     if (animationController.getState().activeAnimation?.clipId === animationController.getSavedAnimationId('standing') && standingBoundingBox.isEmpty()) {
       standingBoundingBox.setFromObject(animationGroupRef.current, true);
     }
 
-    if (!needsZAdjustment) {
+    if (hasHadZAdjusted && !needsRealtimeZAdjustment) {
       return;
     }
 
@@ -256,6 +257,7 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
   const isSolid = useScriptStateStore(state => state.isSolid);
+  const isVisible = useScriptStateStore(state => state.isVisible);
 
   const talkRadius = useScriptStateStore(state => state.talkRadius);
   const pushRadius = useScriptStateStore(state => state.pushRadius);
@@ -288,7 +290,7 @@ const Model = ({animationController, models, scriptController, movementControlle
         position={[0, 0, characterDimensions.z / 2.5]}
         name="hitbox"
         userData={{
-          isSolid: isSolid && (!isLeadCharacter && !isFollower)
+          isSolid: isSolid && isVisible && (!isLeadCharacter && !isFollower)
         }}
         visible={isDebugMode}
         >

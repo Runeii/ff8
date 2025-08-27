@@ -23,7 +23,6 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     hasMoved: false,
     id,
     movementSpeed: 2560,
-    needsZAdjustment: true,
     position: {
       current: new Vector3(-999, 0, 0),
       duration: 0 as number | undefined,
@@ -92,7 +91,6 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
 
     setState({
       hasBeenPlaced: true,
-      needsZAdjustment: true,
       position: {
         ...getState().position,
         goal: position,
@@ -424,12 +422,6 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     });
   }
 
-  const setHasAdjustedZ = (hasAdjustedZ: boolean) => {
-    setState({
-      needsZAdjustment: !hasAdjustedZ,
-    });
-  }
-
   const reset = () => {
     resolvePendingOffsetSignal();
     resolvePendingPositionSignal();
@@ -438,7 +430,6 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       hasBeenPlaced: false,
       hasMoved: false,
       movementSpeed: 2560,
-      needsZAdjustment: true,
       isClimbingLadder: false,
       speedBeforeClimbingLadder: 0,
       position: {
@@ -494,7 +485,6 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     resetFootsteps,
     setIsClimbingLadder,
     tick,
-    setHasAdjustedZ,
     reset,
     resume,
     setHasMoved,
