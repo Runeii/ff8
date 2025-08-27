@@ -1,3 +1,4 @@
+import { CONTROLS_MAP, PSX_CONTROLS_MAP } from "../../../constants/controls";
 import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
 import { openMessage } from "./utils";
@@ -32,13 +33,13 @@ export const isTouching = (thisId: number, targetName: string, scene: Scene) => 
 
 
 export const KEY_FLAGS = {
-  16: 'w', // 'Cancel'
-  32: '', // 'Menu'
-  64: ' ', // 'OK/Accept'
-  128: '', //'Card game button'
+  16: PSX_CONTROLS_MAP.circle, // 'Cancel'
+  32: PSX_CONTROLS_MAP.triangle, // 'Menu'
+  64: PSX_CONTROLS_MAP.cross, // 'OK/Accept'
+  128: PSX_CONTROLS_MAP.square, //'Card game button'
 
   // Used by KEYON
-  192: ' ', // 'OK/Accept',
+  192: PSX_CONTROLS_MAP.cross, // 'OK/Accept',
 
   4096: 'ArrowUp',
   32768: 'ArrowLeft',
@@ -68,15 +69,15 @@ const keydownListener = (event: KeyboardEvent) => {
   if (currentMessages.length > 0) {
     return;
   }
-  DOWN.push(event.key);
-  if (KEYS_PRESSED.includes(event.key)) {
+  DOWN.push(event.code);
+  if (KEYS_PRESSED.includes(event.code)) {
     return;
   }
-  KEYS_PRESSED.push(event.key);
+  KEYS_PRESSED.push(event.code);
 }
 
 const keyupListener = (event: KeyboardEvent) => {
-  DOWN = DOWN.filter(key => key !== event.key);
+  DOWN = DOWN.filter(key => key !== event.code);
 }
 
 export const attachKeyDownListeners = () => {

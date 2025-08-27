@@ -6,6 +6,7 @@ import useIntersection from "../useIntersection";
 import LineBlock from "../../../LineBlock/LineBlock";
 import createScriptController from "../ScriptController/ScriptController";
 import { isValidActionableMethod } from "../utils";
+import { CONTROLS_MAP } from "../../../../constants/controls";
 
 type LocationProps = {
   scriptController: ReturnType<typeof createScriptController>;
@@ -38,7 +39,8 @@ const Location = ({ scriptController, useScriptStateStore }: LocationProps) => {
     }
 
     event.stopImmediatePropagation();
-    if (event.key !== ' ') {
+    console.log(event.code, CONTROLS_MAP);
+    if (event.code !== CONTROLS_MAP.confirm) {
       return;
     }
 

@@ -39,7 +39,7 @@ const createScriptController = ({
   useScriptStateStore: ReturnType<typeof createScriptState>;
 }) => {
   const STACK: number[] = [];
-  const TEMP_STACK = {};
+  const TEMP_STACK: Record<number, number> = {};
 
   const { getState, setState } = create(() => ({
     isProcessingAQueueItem: false,
@@ -259,12 +259,17 @@ const createScriptController = ({
 
   const isTalkingToPlayer = () => getState().queue[0]?.method.methodId === 'talk';
 
+  const setTempVariable = (key: number, value: number) => {
+    TEMP_STACK[key] = value;
+  };
+
   return {
     script,
     tick,
     triggerMethod,
     isTalkingToPlayer,
     triggerMethodByIndex,
+    setTempVariable,
   }
 }
 

@@ -9,6 +9,7 @@ import useGlobalStore from "../../store.ts"
 import { FontColor, Modifier, Placement } from "../textTypes.ts"
 import { saveGame } from "../../Field/fieldUtils.ts"
 import { closeMessage } from "../../Field/Scripts/Script/utils.ts"
+import { CONTROLS_MAP } from "../../constants/controls.ts"
 
 type MessageBoxProps = {
   isCloseableFocus: boolean;
@@ -60,7 +61,8 @@ const MessageBox = ({ isCloseableFocus, isSavePoint, message, worldScene }: Mess
     text: [`【Save Point】\nSave the game?\nYes\nNo`],
     askOptions: {
       first: 2,
-      default: 2
+      default: 2,
+      cancel: 1
     }
   } : message;
 
@@ -126,7 +128,7 @@ const MessageBox = ({ isCloseableFocus, isSavePoint, message, worldScene }: Mess
         return;
       }
 
-      if (!options && event.code === 'Space' && isCloseable) {
+      if (!options && event.code === CONTROLS_MAP.confirm && isCloseable) {
         setCurrentPage(prev => prev + 1);
         return;
       }
@@ -135,7 +137,7 @@ const MessageBox = ({ isCloseableFocus, isSavePoint, message, worldScene }: Mess
         return;
       }
 
-      if (event.code === 'Space') {
+      if (event.code === CONTROLS_MAP.confirm) {
         if (isSavePoint && currentIndex === 0) {
           saveGame(worldScene);
         }
@@ -144,23 +146,24 @@ const MessageBox = ({ isCloseableFocus, isSavePoint, message, worldScene }: Mess
           return;
         }
 
-        if (askOptions && currentIndex !== askOptions.cancel && !isSavePoint) {
-          useGlobalStore.getState().systemSfxController.play(1, 0, 127, 128);
+        if (askOptions && currentIndex !== askOptions.cancel) {
+          const confirmId = isSavePoint ? 28 : 1;
+          useGlobalStore.getState().systemSfxController.play(confirmId, 0, 127, 128);
         }
         
-        if (askOptions && currentIndex === askOptions.cancel || isSavePoint && currentIndex === 1) {
+        if (askOptions && currentIndex === askOptions.cancel) {
           useGlobalStore.getState().systemSfxController.play(9, 0, 127, 128);
         }
         setCurrentPage(prev => prev + 1);
       }
 
-      if (event.key === 'ArrowUp') {
+      if (event.code === 'ArrowUp') {
         useGlobalStore.getState().systemSfxController.play(1, 0, 127, 128);
         invalidate();
         setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
       }
 
-      if (event.key === 'ArrowDown') {
+      if (event.code === 'ArrowDown') {
         useGlobalStore.getState().systemSfxController.play(1, 0, 127, 128);
         invalidate();
         setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, options.length - 1));

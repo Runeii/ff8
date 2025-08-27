@@ -6,6 +6,7 @@ import useGlobalStore from "../../../../store";
 import { ScriptStateStore } from "../state";
 import createScriptController from "../ScriptController/ScriptController";
 import { getPlayerEntity } from "./modelUtils";
+import { CONTROLS_MAP } from "../../../../constants/controls";
 
 type useTalkRadiusProps = {
   isActive: boolean;
@@ -65,11 +66,15 @@ const useTalkRadius = ({ isActive, scriptController, talkMethod, useScriptStateS
 
     const onKeyDown = (event: KeyboardEvent) => {
       event.stopImmediatePropagation();
-      if (event.key !== ' ') {
+
+      const isTalk = event.code === CONTROLS_MAP.confirm;
+      const isCards = event.code === CONTROLS_MAP.card;
+      if (!isTalk && !isCards) {
         return;
       }
 
       useGlobalStore.setState({ hasActiveTalkMethod: true });
+      scriptController.setTempVariable(0, isTalk ? 0 : 1);
       scriptController.triggerMethod('talk').then(() => {
         useGlobalStore.setState({ hasActiveTalkMethod: false });
       });

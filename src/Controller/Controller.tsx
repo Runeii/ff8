@@ -1,18 +1,19 @@
+import styles from './Controller.module.css';
 import { MouseEvent, TouchEvent, useEffect, useRef } from "react";
 import JoystickController from "joystick-controller";
+import { PSX_CONTROLS_MAP } from '../constants/controls';
 
 const Controller = () => {
   const joystickRef = useRef<HTMLDivElement>(null);
   const handleDown = (event: MouseEvent | TouchEvent) => {
     const keyEvent = new KeyboardEvent('keydown', {
-      code: (event.target as HTMLButtonElement).dataset.key ?? '',
+      code: PSX_CONTROLS_MAP[(event.target as HTMLButtonElement).dataset.key as keyof typeof PSX_CONTROLS_MAP] ?? '',
     });
-
     window.dispatchEvent(keyEvent);
   }
   const handleUp = (event: MouseEvent | TouchEvent) => {
     const keyEvent = new KeyboardEvent('keyup', {
-      code: (event.target as HTMLButtonElement).dataset.key ?? '',
+      code: PSX_CONTROLS_MAP[(event.target as HTMLButtonElement).dataset.key as keyof typeof PSX_CONTROLS_MAP] ?? '',
     });
 
     window.dispatchEvent(keyEvent);
@@ -61,10 +62,16 @@ const Controller = () => {
   }, []);
 
   return (
-    <nav className="controls">
-      <div ref={joystickRef} className="joystick"></div>
-      <div className="buttons">
-        <button className="space" data-key="Space" onPointerDown={handleDown} onPointerUp={handleUp} onTouchEnd={handleUp}></button>
+    <nav className={styles.controls}>
+      <div ref={joystickRef} className={styles.joystick}></div>
+      <div className={styles.buttons}>
+        <div className={styles.container}>
+          {
+            ['triangle', 'square', 'circle', 'cross'].map((shape) => (
+              <button key={shape} className={styles[shape]} data-key={shape} onPointerDown={handleDown} onPointerUp={handleUp} onTouchEnd={handleUp}></button>
+            ))
+          }
+        </div>
       </div>
     </nav>
   )

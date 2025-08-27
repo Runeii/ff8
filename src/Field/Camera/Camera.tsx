@@ -10,6 +10,7 @@ import useGlobalStore from "../../store";
 import Focus from "./Focus/Focus";
 import useScrollTransition from "../useScrollTransition";
 import LerpValue from "../../LerpValue";
+import { CONTROLS_MAP } from "../../constants/controls";
 
 type CameraProps = {
   backgroundPanRef: MutableRefObject<CameraPanAngle>;
@@ -182,7 +183,7 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.code === CONTROLS_MAP.debug) {
         setIsDebugModeActive(state => !state);
       }
     }

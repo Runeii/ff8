@@ -54,6 +54,10 @@ export default function App() {
       <div className="container">
         <Canvas camera={undefined} className="canvas" gl={{
           logarithmicDepthBuffer: true,
+          antialias: false,
+          alpha: false,
+          depth: false,
+          stencil: false,
         }} frameloop={isTabActive ? 'demand' : 'never'}>
           <EffectComposer>
             <PerspectiveCamera
@@ -89,7 +93,7 @@ export default function App() {
           }}
           linear={true}
           flat={true}
-          frameloop="always"
+          frameloop={isTabActive ? 'demand' : 'never'}
         >
           <Ui worldScene={worldScene} />
         </Canvas>
