@@ -1,4 +1,4 @@
-import { LoopRepeat, Scene, Vector3 } from "three";
+import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script } from "../types";
@@ -182,7 +182,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       STACK.push(-value2);
     } else if (currentOpcode.param === 6) {
       STACK.push(value1 === value2 ? 1 : 0);
-      console.log('CAL EQ', value1, value2)
     } else if (currentOpcode.param === 7) {
       STACK.push(value1 > value2 ? 1 : 0);
     } else if (currentOpcode.param === 8) {
@@ -317,7 +316,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     })
   },
   BGOFF: ({ script }) => {
-    console.log('BGOFF', script)
     useGlobalStore.setState({
       backgroundLayerVisibility: {
         ...useGlobalStore.getState().backgroundLayerVisibility,
@@ -768,7 +766,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       console.log('ANIMEKEEP START', animationId)
     }
     await animationController.playAnimation(animationId, {
-      keepLastFrame: true,
+      shouldHoldLastFrame: true,
     });
     if (script.groupId === 3) {
       console.log('ANIMEKEEP END', animationId)
@@ -792,7 +790,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await animationController.playAnimation(animationId, {
       startFrame: firstFrame,
       endFrame: lastFrame,
-      keepLastFrame: true,
+      shouldHoldLastFrame: true,
     });
   },
   RANIME: ({ animationController, currentOpcode }) => {
@@ -804,7 +802,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const animationId = currentOpcode.param;
 
     animationController.playAnimation(animationId, {
-      keepLastFrame: true,
+      shouldHoldLastFrame: true,
     });
   },
   RCANIME: ({ animationController, currentOpcode, STACK }) => {
@@ -825,14 +823,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     animationController.playAnimation(animationId, {
       startFrame: firstFrame,
       endFrame: lastFrame,
-      keepLastFrame: true,
+      shouldHoldLastFrame: true,
     })
   },
   RANIMELOOP: ({ animationController, currentOpcode, }) => {
     const animationId = currentOpcode.param;
 
     animationController.playAnimation(animationId, {
-      loop: LoopRepeat,
+      isLooping: true,
     })
   },
   RCANIMELOOP: ({ animationController, currentOpcode, STACK }) => {
@@ -843,7 +841,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     animationController.playAnimation(animationId, {
       startFrame,
       endFrame,
-      loop: LoopRepeat,
+      isLooping: true,
     })
   },
   LADDERANIME: ({ animationController, currentOpcode, STACK }) => {
@@ -2206,7 +2204,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   COLSYNC: async () => { 
     while (useGlobalStore.getState().isTransitioningColorOverlay) {
-      console.log('Color overlay transitioning...');
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },

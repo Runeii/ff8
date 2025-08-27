@@ -136,6 +136,47 @@ const Model = ({animationController, models, scriptController, movementControlle
   const rootBoneDistanceFromStanding = useRef<number>(0);
 
   const walkmeshController = useGlobalStore(state => state.walkmeshController);
+
+  const frameWaitTimerRef = useRef(0);
+  useFrame(() => {
+    const isAnimatingTowardsTarget = movementController.getState().position.isAnimationEnabled;
+
+    if (!isAnimatingTowardsTarget) {
+      return;
+    }
+
+    const isMoving = movementController.isMoving();
+
+    const isCurrentlyStanding = animationController.getSavedAnimation().standingId === animationController.getState().activeAnimation?.clipId;
+    const isCurrentlyWalking = animationController.getSavedAnimation().walkingId === animationController.getState().activeAnimation?.clipId;
+    const isCurrentlyRunning = animationController.getSavedAnimation().runningId === animationController.getState().activeAnimation?.clipId;
+
+    if (!isMoving && !isCurrentlyStanding) {
+      frameWaitTimerRef.current += 1;
+
+      if (frameWaitTimerRef.current >= 5) {
+        animationController.playMovementAnimation('standing');
+        frameWaitTimerRef.current = 0;
+      }
+
+      return;
+    }
+    
+    if (!isMoving) {
+      return;
+    }
+    
+    const movementSpeed = movementController.getMovementSpeed();
+
+    if (movementSpeed > 2560 && !isCurrentlyRunning) {
+      animationController.playMovementAnimation('running');
+    }
+
+    if (movementSpeed <= 2560 && !isCurrentlyWalking) {
+      animationController.playMovementAnimation('walking');
+    }
+  });
+
   useFrame(() => {
     if (!animationGroupRef.current) {
       return;
@@ -156,41 +197,32 @@ const Model = ({animationController, models, scriptController, movementControlle
       return;
     }
     const rootBonePosition = rootBone.getWorldPosition(new Vector3());
-    const needsZAdjustment = animationController.getState().needsZAdjustment || movementController.getState().needsZAdjustment;
+    const needsZAdjustment = animationController.getState().activeAnimation?.needsZAdjustment;
+    
+    if (animationController.getState().activeAnimation?.clipId === animationController.getSavedAnimationId('standing') && standingBoundingBox.isEmpty()) {
+      standingBoundingBox.setFromObject(animationGroupRef.current, true);
+    }
 
-    if (movementController.getState().isClimbingLadder) {
+    if (!needsZAdjustment) {
       return;
     }
-    if (needsZAdjustment) {
-      if (!animationController.getState().animations.currentAnimation || animationController.getState().animations.currentAnimation?.animationId === animationController.getMovementAnimationId('stand')) {
-        standingBoundingBox.setFromObject(animationGroupRef.current, true);
-      }
 
-      setCharacterDimensions(new Vector3(
-        boundingbox.max.x - boundingbox.min.x,
-        boundingbox.max.y - boundingbox.min.y,
-        boundingbox.max.z - boundingbox.min.z
-      ));
-      
-      baseRootBoneZOffset.current = rootBone.position.z;
-      baseBoundingBoxZOffset.current = boundingbox.min.z;
-      rootBoneDistanceFromStanding.current = rootBonePosition.z - boundingbox.min.z;
-      
-      const centrePointOnWalkmesh = walkmeshController.getPositionOnWalkmesh(boundingbox.getCenter(boundingBoxCentre), boundingbox.max.z - boundingbox.min.z);
-      const zPosition = centrePointOnWalkmesh?.z ?? position.z
-      const z = zPosition - boundingbox.min.z
-      animationGroupRef.current.position.z = z
-      
-      movementController.setHasAdjustedZ(true);
-      animationController.setHasAdjustedZ(true);
-    }
+    setCharacterDimensions(new Vector3(
+      boundingbox.max.x - boundingbox.min.x,
+      boundingbox.max.y - boundingbox.min.y,
+      boundingbox.max.z - boundingbox.min.z
+    ));
     
-    if (!animationController.getState().animations.isCurrentAnimationABaseAnime) {
-      const centrePointOnWalkmesh = walkmeshController.getPositionOnWalkmesh(boundingbox.getCenter(boundingBoxCentre), boundingbox.max.z - boundingbox.min.z)
-      const zPosition = centrePointOnWalkmesh?.z ?? position.z
-      const z = zPosition - boundingbox.min.z
-      animationGroupRef.current.position.z = z
-    }
+    baseRootBoneZOffset.current = rootBone.position.z;
+    baseBoundingBoxZOffset.current = boundingbox.min.z;
+    rootBoneDistanceFromStanding.current = rootBonePosition.z - boundingbox.min.z;
+    
+    const centrePointOnWalkmesh = walkmeshController.getPositionOnWalkmesh(boundingbox.getCenter(boundingBoxCentre), boundingbox.max.z - boundingbox.min.z);
+    const zPosition = centrePointOnWalkmesh?.z ?? position.z
+    const z = zPosition - boundingbox.min.z
+    animationGroupRef.current.position.z = z
+
+    animationController.setHasAdjustedZ(true);
   })
 
   const talkRadiusRef = useRef<Mesh>(null);

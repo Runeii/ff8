@@ -1,7 +1,6 @@
 import { Object3D, Scene, Vector3 } from "three";
 import { create } from "zustand";
 import { numberToFloatingPoint } from "../../../../utils";
-import { createAnimationController } from "../AnimationController/AnimationController";
 import PromiseSignal from "../../../../PromiseSignal";
 import useGlobalStore from "../../../../store";
 import createRotationController from "../RotationController/RotationController";
@@ -18,9 +17,7 @@ type MoveOptions = {
   distanceToStopAnimationFromTarget: number;
 }
 
-const createMovementController = (id: string | number, animationController: ReturnType<typeof createAnimationController>, useScriptStateStore: ReturnType<typeof createScriptState>) => {
-  let isStopping = false;
-
+const createMovementController = (id: string | number, useScriptStateStore: ReturnType<typeof createScriptState>) => {
   const {getState, setState, subscribe} = create(() => ({
     hasBeenPlaced: false,
     hasMoved: false,
@@ -177,13 +174,6 @@ const createMovementController = (id: string | number, animationController: Retu
       },
     });
 
-    isStopping = false;
-
-    const movementSpeed = userControlledSpeed !== undefined ? userControlledSpeed : getState().movementSpeed;
-    if (isAnimationEnabled) {
-      animationController.playMovementAnimation(movementSpeed > 2695 ? 'run' : 'walk');
-    }
-
     await signal.promise;
   }
 
@@ -334,19 +324,12 @@ const createMovementController = (id: string | number, animationController: Retu
     })
 
   const tick = (entity: Object3D, delta: number) => {
-    const { position, offset, movementSpeed: baseMovementSpeed } = getState();
-
-    const { isAnimationEnabled } = position;
+    const { position, offset } = getState();
 
     const { walkmeshController } = useGlobalStore.getState();
 
     if (!walkmeshController) {
       return;
-    }
-
-    if (isStopping && isAnimationEnabled) {
-      animationController.playMovementAnimation('stand');
-      isStopping = false;
     }
 
     if (position.isPaused && offset.isPaused) {
@@ -357,8 +340,10 @@ const createMovementController = (id: string | number, animationController: Retu
       return;
     }
    
-    const { current: currentPosition, duration, isAllowedToCrossBlockedTriangles, isAllowedToLeaveWalkmesh, goal: positionGoal, userControlledSpeed } = position;
-    const movementSpeed = (userControlledSpeed !== undefined ? userControlledSpeed : baseMovementSpeed) * 0.75;
+    const { current: currentPosition, duration, isAllowedToCrossBlockedTriangles, isAllowedToLeaveWalkmesh, goal: positionGoal } = position;
+
+    const movementSpeed = getMovementSpeed();
+    
     if (positionGoal) {
       const speed = movementSpeed / 2560
       const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
@@ -376,7 +361,6 @@ const createMovementController = (id: string | number, animationController: Retu
             isPaused: true,
           }
         });
-        isStopping = true;
       } else {
         const direction = positionGoal.clone().sub(currentPosition).normalize();
         const desiredNextPos = currentPosition.clone().add(direction.multiplyScalar(maxDistance).divideScalar(10));
@@ -418,11 +402,9 @@ const createMovementController = (id: string | number, animationController: Retu
 
     entity.position.set(getPosition().x, getPosition().y, getPosition().z);
 
-
     if (useScriptStateStore.getState().partyMemberId !== useGlobalStore.getState().party[0]) {
       return;
     }
-
     useGlobalStore.setState(state => {
       state.hasMoved = true;
 
@@ -485,6 +467,15 @@ const createMovementController = (id: string | number, animationController: Retu
     });
   }
 
+  const isMoving = () => {
+    return getState().position.goal !== undefined && getState().position.isPaused === false;
+  }
+
+  const getMovementSpeed = () => {
+    const { movementSpeed, position: { userControlledSpeed } } = getState();
+    return userControlledSpeed !== undefined ? userControlledSpeed : movementSpeed;
+  }
+
   return {
     getState,
     getPosition,
@@ -506,7 +497,9 @@ const createMovementController = (id: string | number, animationController: Retu
     setHasAdjustedZ,
     reset,
     resume,
-    setHasMoved
+    setHasMoved,
+    isMoving,
+    getMovementSpeed
   }
 }
 

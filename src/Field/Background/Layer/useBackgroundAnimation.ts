@@ -34,9 +34,11 @@ const useBackgroundAnimation = (backgroundParamId: number) => {
     frameCountRef.current = 0;
 
     const { start, end, isLooping } = animation;
-    const nextStep = currentStateRef.current + 1;
+    const adjustment = start > end ? -1 : 1;
+    const nextStep = currentStateRef.current + adjustment;
 
-    if (nextStep <= end) {
+    const conditional = start > end ? nextStep >= start : nextStep <= end;
+    if (conditional) {
       currentStateRef.current = nextStep;
       return;
     }
