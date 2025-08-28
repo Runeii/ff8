@@ -101,9 +101,9 @@ const useFollower = ({ animationController, isActive, movementController, partyM
 
     if (speed === 0 && !isCurrentlyStanding) {
       animationController.playMovementAnimation('standing');
-    } else if (speed > 2560 && !isCurrentlyRunning) {
+    } else if (speed > 4000 && !isCurrentlyRunning) {
       animationController.playMovementAnimation('running');
-    } else if (speed <= 2560 && !isCurrentlyWalking) {
+    } else if (speed <= 4000 && !isCurrentlyWalking) {
       animationController.playMovementAnimation('walking');
     }
     rotationController.turnToFaceAngle(angle, 0);

@@ -130,20 +130,8 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
     let clampedPanX = clamp(panX, xLeft, xRight);
     let clampedPanY = clamp(panY, yTop, yBottom);
 
-    if (layerScroll.current.positioning === 'camera') {
-      if (layerScroll.current.x !== 0) {
-        clampedPanX -= layerScroll.current.x;
-      }
-      if (layerScroll.current.y !== 0) {
-        clampedPanY -= layerScroll.current.y;
-      }
-    } else {
-      clampedPanX += layerScroll.current.x;
-      clampedPanY += layerScroll.current.y;
-    }
-
-    let ratioAdjustedX = panX;
-    let ratioAdjustedY = panY;
+    let ratioAdjustedX = clampedPanX;
+    let ratioAdjustedY = clampedPanY;
 
     if (ratio) {
       const standardXRange = xRight - xLeft;
@@ -177,6 +165,18 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
       ratioAdjustedY = -yOffset + adjustedY;
     }
   
+    if (layerScroll.current.positioning === 'camera') {
+      if (layerScroll.current.x !== 0) {
+        ratioAdjustedX -= layerScroll.current.x;
+      }
+      if (layerScroll.current.y !== 0) {
+        ratioAdjustedY -= layerScroll.current.y;
+      }
+    } else {
+      ratioAdjustedX += layerScroll.current.x;
+      ratioAdjustedY += layerScroll.current.y;
+    }
+
     const directions = getCameraDirections(camera);
 
     layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(ratioAdjustedX * widthUnits));

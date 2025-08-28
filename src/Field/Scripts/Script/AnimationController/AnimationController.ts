@@ -86,6 +86,7 @@ export const createAnimationController = (id: string | number) => {
     // New run
     if (!currentRunState) {
       currentRunState = {
+        hasCompletedALoop: false,
         isComplete: false,
         time: startTime,
         direction: direction,

@@ -179,12 +179,12 @@ const Model = ({animationController, models, scriptController, movementControlle
     
     const movementSpeed = movementController.getMovementSpeed();
 
-    if (movementSpeed > 2560 && !isCurrentlyRunning) {
+    if (movementSpeed > 4000 && !isCurrentlyRunning) {
       animationController.playMovementAnimation('running');
       hasAppliedMovementAnimation.current = true;
     }
 
-    if (movementSpeed <= 2560 && !isCurrentlyWalking) {
+    if (movementSpeed <= 4000 && !isCurrentlyWalking) {
       animationController.playMovementAnimation('walking');
       hasAppliedMovementAnimation.current = true;
     }
