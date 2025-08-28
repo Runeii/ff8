@@ -874,7 +874,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     animationController.setAnimationSpeed(STACK.pop() as number)
   },
   ANIMESYNC: async ({ animationController }) => {
-    while (animationController.getIsPlaying()) {
+    while (!animationController.getIsSafeToMoveOn()) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },

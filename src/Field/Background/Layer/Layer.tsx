@@ -179,8 +179,8 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
   
     const directions = getCameraDirections(camera);
 
-    layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(clampedPanX * widthUnits));
-    layerRef.current.position.add(directions.upVector.clone().multiplyScalar(clampedPanY * heightUnits));
+    layerRef.current.position.add(directions.rightVector.clone().multiplyScalar(ratioAdjustedX * widthUnits));
+    layerRef.current.position.add(directions.upVector.clone().multiplyScalar(ratioAdjustedY * heightUnits));
   })
 
   const isDebugMode = useGlobalStore(state => state.isDebugMode);

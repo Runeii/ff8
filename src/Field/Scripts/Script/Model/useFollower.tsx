@@ -2,7 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
 import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Vector3 } from "three";
 import { createAnimationController } from "../AnimationController/AnimationController";
 import { getPartyMemberModelComponent, getPlayerEntity } from "./modelUtils";
@@ -20,17 +20,23 @@ const useFollower = ({ animationController, isActive, movementController, partyM
   const [currentPosition] = useState(new Vector3());
   const [targetPosition] = useState(new Vector3());
 
+  const needsCleanUpRef = useRef(false);
   useFrame(({scene}) => {
     if (!isActive || !movementController || !rotationController) {
       return;
     }
 
     const { congaWaypointHistory, party, isUserControllable } = useGlobalStore.getState();
+    
     if (!isUserControllable) {
       if (congaWaypointHistory.length > 0) {
         useGlobalStore.setState({
           congaWaypointHistory: []
         })
+      }
+      if (needsCleanUpRef.current) {
+        animationController.playMovementAnimation('standing');
+        needsCleanUpRef.current = false;
       }
       return;
     }
@@ -61,6 +67,7 @@ const useFollower = ({ animationController, isActive, movementController, partyM
     if (!history) {
       return;
     }
+    needsCleanUpRef.current = true;
     const { position, angle, speed } = history;
     
     const followerPosition = movementController.getPosition();

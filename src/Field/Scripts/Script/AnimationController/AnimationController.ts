@@ -26,6 +26,7 @@ type AnimationItem = {
 
 type RunState = {
   direction: number;
+  hasCompletedALoop: boolean;
   isComplete: boolean;
   time: number;
 }
@@ -112,10 +113,12 @@ export const createAnimationController = (id: string | number) => {
 
     if (currentRunState.time >= endTime && activeAnimation.isLooping && direction === 1) {
       currentRunState.time = startTime;
+      currentRunState.hasCompletedALoop = true;
     }
     
     if (currentRunState.time <= startTime && activeAnimation.isLooping && direction === -1) {
       currentRunState.time = endTime;
+      currentRunState.hasCompletedALoop = true;
     }
 
     // Completed, clean it up
@@ -212,15 +215,18 @@ export const createAnimationController = (id: string | number) => {
 
   const setAnimationSpeed = (speed: number) => setState({ animationSpeed: speed });
 
-  const getIsPlaying = () => {
+  const getIsSafeToMoveOn = () => {
     const activeAnimation = getState().activeAnimation;
     if (!activeAnimation) {
-      return false;
+      return true;
     }
     if (activeAnimation && currentRunState?.isComplete) {
-      return false;
+      return true;
     }
-    return true;
+    if (activeAnimation.isLooping && currentRunState?.hasCompletedALoop) {
+      return true;
+    }
+    return false;
   }
 
   const setIdleAnimations = (standingId: number, walkingId: number, runningId: number) => {
@@ -302,7 +308,7 @@ export const createAnimationController = (id: string | number) => {
     playAnimation,
     initialize,
     setAnimationSpeed,
-    getIsPlaying,
+    getIsSafeToMoveOn,
     getSavedAnimation,
     setIdleAnimations,
     playMovementAnimation,
