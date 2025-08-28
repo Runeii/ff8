@@ -3,6 +3,7 @@ import { FieldData } from "../Field";
 import Script from "./Script/Script";
 import { Script as ScriptType } from "./types";
 import useGlobalStore from "../../store";
+import { sendToDebugger } from "../../Debugger/debugUtils";
 
 type ScriptsProps = {
   doors: FieldData['doors'],
@@ -32,22 +33,42 @@ const Scripts = ({ doors, models, scripts, sounds }: ScriptsProps) => {
 
   const [scriptsMounted, setScriptsMounted] = useState<number>(0);
   const handleScriptSetupCompleted = useCallback(() => {
-    setScriptsMounted((prev) => prev + 1);
+    setScriptsMounted((prev) => {
+      sendToDebugger('setup-state', JSON.stringify({
+        state: 'scripts-mounted',
+        value: prev + 1
+      }))
+      return prev + 1
+    });
   }, []);
   
   const [runningScripts, setRunningScripts] = useState<number>(0);
   const onStarted = useCallback(() => {
-    setRunningScripts(prev => prev + 1);
+    setRunningScripts(prev => {
+      sendToDebugger('setup-state', JSON.stringify({
+        state: 'running-scripts',
+        value: prev + 1
+      }))
+      return prev + 1
+    });
   }, []);
 
   const [hasMountedMainScripts, setHasMountedMainScripts] = useState<boolean>(false);
 
   const handleMainScriptMounted = useCallback(() => {
     setHasMountedMainScripts(true);
+    sendToDebugger('setup-state', JSON.stringify({
+      state: 'main-script-mounted',
+      value: true
+    }));
   }, []);
 
   const handleStartedMain = useCallback(() => {
     const {fieldId, fadeSpring} = useGlobalStore.getState();
+    sendToDebugger('setup-state', JSON.stringify({
+      state: 'main-script-started',
+      value: true
+    }));
     if (fieldId === 'bghoke_2') {
       fadeSpring.start(1, 10);
     }

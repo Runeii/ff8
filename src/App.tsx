@@ -58,7 +58,7 @@ export default function App() {
           alpha: false,
           depth: false,
           stencil: false,
-        }} frameloop={isTabActive ? 'demand' : 'never'}>
+        }} frameloop={isTabActive ? 'always' : 'never'}>
           <EffectComposer>
             <PerspectiveCamera
               makeDefault

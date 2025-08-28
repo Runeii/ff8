@@ -18,6 +18,7 @@ import { AREA_NAMES } from '../constants/areaNames';
 import { preloadMapSoundBank } from './Scripts/Script/SFXController/webAudio';
 import { Sphere } from '@react-three/drei';
 import { Vector3 } from 'three';
+import { sendToDebugger } from '../Debugger/debugUtils';
 
 export type RawFieldData = typeof data;
 
@@ -139,7 +140,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
         MEMORY[87] = 1;
       }
       
-      //sendToDebugger('reset')
+      sendToDebugger('reset')
       setData(null);
       gl.clear();
 

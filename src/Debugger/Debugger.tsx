@@ -31,7 +31,9 @@ const Debugger = () => {
   const [storeState, setStoreState] = useState<string>('');
   const [scriptStates, setScriptStates] = useState<Record<number, string>>({});
   const [scriptControllerStates, setScriptControllerStates] = useState<Record<number, string>>({});
-  const [log, setLog] = useState<Record<number, Log[]>>({});
+  const [logByScript, setLogByScript] = useState<Record<number, Log[]>>({});
+  const [log, setLog] = useState<Log[]>([]);
+  const [setupStates, setSetupStates] = useState<Record<number, string[]>>({});
   const [queue, setQueue] = useState<Record<number, Log[]>>({});
 
   const [layers, setLayers] = useState<Record<number, Layer>>({});
@@ -61,8 +63,25 @@ const Debugger = () => {
           [payload.script.groupId]: payload,
         }));
       }
+      if (type === 'setup-state') {
+        setSetupStates((prev) => ({
+          ...prev,
+          [payload.state]: [
+            ...(prev[payload.state] ?? []),
+            payload.value
+          ]
+        }));
+      }
       if (type === 'command') {
-        setLog(state => ({
+        setLog(state => ([
+          ...state,
+          {
+            id: payload.id,
+            uuid: payload.uuid,
+            opcode: payload.opcode,
+          }
+        ]));
+        setLogByScript(state => ({
           ...state,
           [payload.id]: [
             ...(state[payload.id] ?? []),
@@ -104,11 +123,12 @@ const Debugger = () => {
         setLog([]);
         setLayers({});
         setQueue({});
+        setSetupStates({});
       }
     };
   }, []);
 
-  const [view, setView] = useState<'state' | 'queue' | 'script-state' | 'logs' | 'layers'>('state');
+  const [view, setView] = useState<'state' | 'setup-states' | 'queue' | 'script-state' | 'logs' | 'layers'>('state');
   const [scriptId, setScriptId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -132,6 +152,7 @@ const Debugger = () => {
     <div className={styles.debugger}>
       <div className={styles.menu}>
         <button onClick={() => setView('state')}>State</button>
+        <button onClick={() => setView('setup-states')}>Setup States</button>
         <button onClick={() => setView('logs')}>Logs</button>
         <button onClick={() => setView('queue')}>Queue</button>
         <button onClick={() => setView('layers')}>Layers</button>
@@ -145,13 +166,23 @@ const Debugger = () => {
       <div className={styles.content}>
         {view === 'logs' && (
           <div className={styles.logs}>
-          {Object.values(log).flat().map(entry => (
+          {log.map(entry => (
             <div key={`${entry.uuid}`} className={styles.log}>
               <div className={styles.actor}>{`Actor ${entry.id}`}</div>
               <div className={styles.opcode}>{`Opcode ${entry.opcode}`}</div>
             </div>
           ))}
         </div>
+        )}
+        {view === 'setup-states' && (
+          <>
+          {Object.entries(setupStates).map(([id, states]) => (
+            <div key={id}>
+              <h4>{`Script ${id}`}</h4>
+              <pre>{JSON.stringify(states, null, 2)}</pre>
+            </div>
+          ))}
+          </>
         )}
         {view === 'state' && <pre>{JSON.stringify({
           ...storeState,
@@ -164,7 +195,7 @@ const Debugger = () => {
           <>
           <pre>Script state: {JSON.stringify(scriptStates[scriptId], null, 2)}</pre>
           <pre>Script controller state: {JSON.stringify(scriptControllerStates[scriptId], null, 2)}</pre>
-          <pre>Logs: {JSON.stringify(log[scriptId], null, 2)}</pre>
+          <pre>Logs: {JSON.stringify(logByScript[scriptId], null, 2)}</pre>
           </>
         )}
         {view === 'layers' && (

@@ -1,11 +1,10 @@
-import { Object3D, Scene, Vector3 } from "three";
+import { Line3, Object3D, QuadraticBezierCurve3, Scene, Vector3 } from "three";
 import { create } from "zustand";
 import { numberToFloatingPoint } from "../../../../utils";
 import PromiseSignal from "../../../../PromiseSignal";
 import useGlobalStore from "../../../../store";
 import createRotationController from "../RotationController/RotationController";
 import createScriptState from "../state";
-import { invalidate } from "@react-three/fiber";
 
 type MoveOptions = {
   customMovementTarget: Vector3 | undefined;
@@ -45,6 +44,14 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       signal: undefined as PromiseSignal | undefined,
       totalDistance: 0
     },
+    jump: {
+      current: new Vector3(0,0,0),
+      directLine: null as Line3 | null,
+      duration: 0,
+      curve: null as QuadraticBezierCurve3 | null,
+      progress: 0,
+      signal: undefined as PromiseSignal | undefined,
+    },
     footsteps: {
       isActive: false,
       leftSound: undefined as Howl | undefined,
@@ -74,6 +81,19 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       setState({
         offset: {
           ...offset,
+          signal: undefined,
+        }
+      });
+    }
+  }
+
+  const resolvePendingJumpSignal = () => {
+    const { jump } = getState();
+    if (jump.signal) {
+      jump.signal.resolve();
+      setState({
+        jump: {
+          ...jump,
           signal: undefined,
         }
       });
@@ -189,6 +209,31 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     await moveToPoint(target, passedOptions)
   }
 
+  const jumpToPosition = (height: number, x: number, y: number, z: number, duration: number) => {
+    const end = new Vector3(...[x, y, z].map(numberToFloatingPoint));
+    const jumpHeight = numberToFloatingPoint(height);
+
+    const start = getState().position.current.clone();
+    const midPoint = start.clone().lerp(end, 0.5);
+    midPoint.y += jumpHeight;
+
+    const jumpCurve = new QuadraticBezierCurve3(start, midPoint, end);
+    const directLine = new Line3(start, end);
+
+    resolvePendingJumpSignal();
+    const signal = new PromiseSignal();
+    setState({
+      jump: {
+        current: start.clone(),
+        curve: jumpCurve,
+        directLine,
+        duration,
+        progress: 0,
+        signal
+      }
+    })
+  }
+
   const moveToOffset = async (x: number, y: number, z:number, duration: number) => {
     const target = new Vector3(...[x,y,z].map(numberToFloatingPoint));
     const currentOffset = getState().offset.current;
@@ -207,7 +252,13 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       }
     });
 
+    if (id ===8) {
+      console.log('Setting offset', target)
+    }
     await signal.promise;
+    if (id ===8) {
+    console.log('Offset reached', getState().offset.current)
+    }
   }
 
   const getPosition = () => {
@@ -323,7 +374,7 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     })
 
   const tick = (entity: Object3D, delta: number) => {
-    const { position, offset } = getState();
+    const { position, offset, jump } = getState();
 
     const { walkmeshController } = useGlobalStore.getState();
 
@@ -334,8 +385,8 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     if (position.isPaused && offset.isPaused) {
       return;
     }
-    
-    if (!position.goal && !offset.goal) {
+
+    if (!position.goal && !offset.goal && !jump.directLine) {
       return;
     }
    
@@ -344,7 +395,6 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     const movementSpeed = getMovementSpeed();
     
     if (positionGoal) {
-      invalidate();
       const speed = movementSpeed / 2560
       const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
 
@@ -376,7 +426,6 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     const { current: currentOffset, goal: offsetGoal, duration: offsetDuration, totalDistance } = offset;
 
     if (offsetGoal) {
-      invalidate();
       const durationInSeconds = offsetDuration / 25;
       const remainingDistance = currentOffset.distanceTo(offsetGoal);
 
@@ -401,11 +450,62 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       }
     }
 
-    entity.position.set(getPosition().x, getPosition().y, getPosition().z);
+    const { current: currentJumpPosition, directLine, curve, duration: jumpDuration, progress } = jump;
+    let jumpTemporaryProgress = 0;
+    if (directLine) {
+      const durationInSeconds = jumpDuration / 25;
+      const remainingProgress = Math.abs(1 - progress);
+
+      if (remainingProgress < 0.001 || durationInSeconds <= 0) {
+        // Snap to goal if we're basically there
+        currentJumpPosition.copy(directLine.end);
+        jumpTemporaryProgress = 1;
+        resolvePendingJumpSignal();
+        setState({
+          jump: {
+            ...getState().jump,
+            curve: null,
+            directLine: null,
+          }
+        });
+      } else {
+        const progressSpeed = 1 / durationInSeconds; // progress units per second (1 means full progress in 1 second)
+        const maxProgressStep = progressSpeed * delta; // progress to move this frame
+        const stepProgress = Math.min(maxProgressStep, remainingProgress);
+
+        const newProgress = Math.max(0, Math.min(1, progress + stepProgress));
+        const positionOnCurve = directLine.start.clone().lerp(directLine.end, newProgress);
+
+        currentJumpPosition.copy(positionOnCurve);
+        jumpTemporaryProgress = newProgress;
+        
+        setState({
+          jump: {
+            ...getState().jump,
+            progress: newProgress,
+          }
+        })
+      }
+    }
+
+    let jumpHeightAdjustment = 0;
+    if (curve && jumpTemporaryProgress) {
+      const positionOnLine = currentJumpPosition;
+      const positionOnCurve = curve.getPointAt(jumpTemporaryProgress)
+      console.log(positionOnLine, positionOnCurve, jumpTemporaryProgress)
+      jumpHeightAdjustment = positionOnCurve.z - positionOnLine.z;
+    }
+
+    entity.position.set(
+      getPosition().x,
+      getPosition().y,
+      getPosition().z + jumpHeightAdjustment,
+    );
 
     if (useScriptStateStore.getState().partyMemberId !== useGlobalStore.getState().party[0]) {
       return;
     }
+
     useGlobalStore.setState(state => {
       state.hasMoved = true;
 
@@ -492,7 +592,8 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     resume,
     setHasMoved,
     isMoving,
-    getMovementSpeed
+    getMovementSpeed,
+    jumpToPosition
   }
 }
 

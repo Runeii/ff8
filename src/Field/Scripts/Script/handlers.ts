@@ -1082,13 +1082,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     OPCODE_HANDLERS?.PMOVEA?.(args);
   },
 
+  JUMP3: ({ currentOpcode, movementController, STACK }) => {
+    const height = currentOpcode.param;
+    const duration = STACK.pop() as number;
+    const z = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
 
-  JUMP3: ({ currentOpcode, STACK }) => {
-    console.log(currentOpcode.param) //
-    STACK.pop() as number; //     STACK.pop() as number; // 
-    STACK.pop() as number; //     STACK.pop() as number; // 
-    STACK.pop() as number; //     STACK.pop() as number; // 
-    STACK.pop() as number; //     STACK.pop() as number; // 
+    movementController.jumpToPosition(height, x, y, z, duration);
   },
   JUMP: ({ currentOpcode, STACK }) => {
     console.log(currentOpcode.param) //const walkmeshTriangleId = 
@@ -1412,8 +1413,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     const layerID = STACK.pop() as number;
 
-    setLayerScroll(layerID, x, y, duration, 'camera');
+    setLayerScroll(layerID, x, y, duration, 'camera', true);
   },
+  // This is never used in a working map (only broken field bg2f_1a)
   CSCROLL3: async ({ STACK }) => {
     const duration = STACK.pop() as number;
     const endY = STACK.pop() as number;

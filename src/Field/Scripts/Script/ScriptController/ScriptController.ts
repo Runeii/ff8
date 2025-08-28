@@ -94,16 +94,27 @@ const createScriptController = ({
   const addToQueue = (newItem: QueueItem) => {
     const currentQueue = getState().queue;
 
-    const newQueue = [...currentQueue];
+    // Implementation details:
+    // - Priority is only used for ordering queued items (lower number = higher priority)
+    // - If an item is looping (ie: is default), this can always be interrupted
+    // - Do not interrupt an active item otherwise
+    const frozenQueue = [...currentQueue];
+    const [activeItem, ...queuedItems] = frozenQueue;
 
+    if (!activeItem || (frozenQueue.length === 1 && activeItem.isLooping)) {
+      // If there's no active item or the only item is looping, add it to the front and immediately run
+      setState({ queue: [newItem, ...currentQueue] });
+      return;
+    }
+  
     // 0 is highest
-    const insertAtIndex = newQueue.findIndex(item => item.priority > newItem.priority);
+    const insertAtIndex = queuedItems.findIndex(item => item.priority > newItem.priority);
     const isTopPriority = insertAtIndex === -1;
 
     if (isTopPriority) {
-      newQueue.unshift(newItem);
+      queuedItems.unshift(newItem);
     } else {
-      newQueue.splice(insertAtIndex + 1, 0, newItem);
+      queuedItems.splice(insertAtIndex, 0, newItem);
     }
 
     sendToDebugger('queue', JSON.stringify({
@@ -111,8 +122,10 @@ const createScriptController = ({
       id: script.groupId,
       opcode: `QUEUE: ADD ${newItem.uniqueId} ${newItem.method.methodId}`,
     }));
+    
+    const updatedQueueItem = [activeItem, ...queuedItems];
 
-    setState({ queue: newQueue });
+    setState({ queue: updatedQueueItem });
   }
 
   const removeQueueItem = (uniqueId: string) => {
@@ -210,7 +223,7 @@ const createScriptController = ({
     // eslint-disable-next-line no-async-promise-executor
     new Promise<void>(async (resolve) => {
       const nextIndex = await Promise.race([promise]);
-
+      
       handleTickCleanup(nextIndex, uniqueId)
       sendToDebugger('command', JSON.stringify({
         uuid: generateUUID(),

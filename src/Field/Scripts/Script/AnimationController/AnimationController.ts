@@ -1,7 +1,6 @@
 import { AnimationAction, AnimationClip, AnimationMixer, Object3D } from "three";
 import { create } from "zustand"
 import { applyAnimationAtTime } from "./animationUtils";
-import { invalidate } from "@react-three/fiber";
 
 type AnimationItem = {
   id: string;
@@ -21,6 +20,8 @@ type AnimationItem = {
 
   hasBeenZAdjusted: boolean;
   needsRealtimeZAdjustment: boolean;
+
+  isFromMovement: boolean;
 }
 
 type RunState = {
@@ -80,7 +81,6 @@ export const createAnimationController = (id: string | number) => {
     const { action, direction, startTime, endTime } = activeAnimation;
 
     action.enabled = true;
-    invalidate();
   
     // New run
     if (!currentRunState) {
@@ -143,6 +143,7 @@ export const createAnimationController = (id: string | number) => {
       speed?: number;
       direction?: number;
       needsRealtimeZAdjustment?: boolean;
+      isFromMovement?: boolean;
     }) => {
     const clip = getState().clips[clipId]
     if (!clip) {
@@ -174,7 +175,8 @@ export const createAnimationController = (id: string | number) => {
       priority: options?.priority ?? 5,
       speed: options?.speed ?? 1,
       hasBeenZAdjusted: false,
-      needsRealtimeZAdjustment: options?.needsRealtimeZAdjustment ?? true
+      needsRealtimeZAdjustment: options?.needsRealtimeZAdjustment ?? true,
+      isFromMovement: options?.isFromMovement ?? false
     }
 
     currentRunState = undefined;
@@ -227,6 +229,10 @@ export const createAnimationController = (id: string | number) => {
       walkingId,
       runningId
     })
+
+    if (getState().activeAnimation === undefined) {
+      playMovementAnimation('standing');
+    }
   }
 
   const getSavedAnimationId =  (type: 'standing' | 'walking' | 'running') => {
@@ -247,17 +253,35 @@ export const createAnimationController = (id: string | number) => {
     }
 
     const { activeAnimation } = getState();
+
     if (animationId === activeAnimation?.clipId && activeAnimation?.isLooping) {
       return;
     }
-    if (id === 1) {
-      console.log(`Playing ${animationName} animation`);
-    }
+
     playAnimation(animationId, {
       isLooping: true,
       shouldHoldLastFrame: true,
-      needsRealtimeZAdjustment: false
+      needsRealtimeZAdjustment: false,
+      isFromMovement: true
     });
+  }
+
+  const isSafeToApplyMovementAnimation = () => {
+    const { activeAnimation } = getState();
+
+    if (!activeAnimation) {
+      return true;
+    }
+
+    if (activeAnimation.isFromMovement) {
+      return true;
+    }
+
+    if (activeAnimation.shouldHoldLastFrame && currentRunState?.isComplete) {
+      return true;
+    }
+
+    return false;
   }
 
   const setHasAdjustedZ = (hasAdjustedZ: boolean) => {
@@ -286,6 +310,7 @@ export const createAnimationController = (id: string | number) => {
     setHasAdjustedZ,
     
     getState,
+    isSafeToApplyMovementAnimation,
 
     subscribe: () => {},
     stopAnimation: () => {},

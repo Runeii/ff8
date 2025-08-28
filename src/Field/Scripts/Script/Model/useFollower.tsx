@@ -21,11 +21,11 @@ const useFollower = ({ isActive, movementController, partyMemberId, rotationCont
   const [targetPosition] = useState(new Vector3());
 
   useFrame(({scene}) => {
-    if (!isActive || !movementController || !rotationController || partyMemberId === undefined) {
+    if (!isActive || !movementController || !rotationController) {
       return;
     }
 
-    const { congaWaypointHistory, isPartyFollowing, party, isUserControllable } = useGlobalStore.getState();
+    const { congaWaypointHistory, party, isUserControllable } = useGlobalStore.getState();
     if (!isUserControllable) {
       if (congaWaypointHistory.length > 0) {
         useGlobalStore.setState({
@@ -35,9 +35,6 @@ const useFollower = ({ isActive, movementController, partyMemberId, rotationCont
       return;
     }
 
-    if (!isPartyFollowing || !party.includes(partyMemberId)) {
-      return;
-    }
     const offset = party.findIndex(id => id === partyMemberId);
     const history = congaWaypointHistory.at(-1 * offset * DISTANCE - 1);
     if (!history && !movementController.getState().hasBeenPlaced) {
@@ -73,7 +70,7 @@ const useFollower = ({ isActive, movementController, partyMemberId, rotationCont
     }
   
     movementController.moveToPoint(position, {
-      isAnimationEnabled: true,
+      isAnimationEnabled: false,
       isAllowedToLeaveWalkmesh: true,
       userControlledSpeed: speed
     });

@@ -101,14 +101,14 @@ const constructScrollTransition = (currentTransition: CameraScrollTransition, ne
 
 export const setCameraScroll = (x: number, y: number, duration: number, positioning: ScrollPositionMode) => {
   const currentTransition = useGlobalStore.getState().cameraScrollOffset;
-  const transition = constructScrollTransition(currentTransition, x, y, duration, positioning);
+  const transition = constructScrollTransition(currentTransition, x, -y, duration, positioning);
 
   useGlobalStore.setState({ cameraScrollOffset: transition });
 }
 
-export const setLayerScroll = (layerIndex: number, x: number, y: number, duration: number, positioning: ScrollPositionMode) => {
-  if (positioning === 'camera') {
-    setCameraScroll(-x / 2, -y / 2, duration, 'camera');
+export const setLayerScroll = (layerIndex: number, x: number, y: number, duration: number, positioning: ScrollPositionMode, shouldCameraRemainFocusedOnLayer = false) => {
+  if (shouldCameraRemainFocusedOnLayer) {
+    setCameraScroll(-x / 2, y / 2, duration, 'camera');
   }
 
   const currentTransition = useGlobalStore.getState().layerScrollOffsets[layerIndex!];
@@ -128,7 +128,6 @@ export const setCameraAndLayerFocus = (object: Object3D | null, duration: number
   Object.keys(layerScrollOffsets).forEach((layerIndex) => {
     setLayerScroll(Number(layerIndex), 0, 0, duration, 'camera');
   });
-  console.log('Layer focus reset', object);
 
   setCameraScroll(0, 0, duration, 'camera');
   useGlobalStore.setState({

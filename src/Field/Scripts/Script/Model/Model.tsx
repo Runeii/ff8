@@ -138,20 +138,26 @@ const Model = ({animationController, models, scriptController, movementControlle
   const walkmeshController = useGlobalStore(state => state.walkmeshController);
 
   const frameWaitTimerRef = useRef(0);
+  const hasAppliedMovementAnimation = useRef(false);
   useFrame(() => {
     const isAnimatingTowardsTarget = movementController.getState().position.isAnimationEnabled;
 
     if (!isAnimatingTowardsTarget) {
+      hasAppliedMovementAnimation.current = false;
       return;
     }
 
+    if (!animationController.isSafeToApplyMovementAnimation()) {
+      hasAppliedMovementAnimation.current = false;
+      return;
+    }
     const isMoving = movementController.isMoving();
 
     const isCurrentlyStanding = animationController.getSavedAnimation().standingId === animationController.getState().activeAnimation?.clipId;
     const isCurrentlyWalking = animationController.getSavedAnimation().walkingId === animationController.getState().activeAnimation?.clipId;
     const isCurrentlyRunning = animationController.getSavedAnimation().runningId === animationController.getState().activeAnimation?.clipId;
 
-    if (!isMoving && !isCurrentlyStanding) {
+    if (!isMoving && !isCurrentlyStanding && hasAppliedMovementAnimation.current) {
       frameWaitTimerRef.current += 1;
 
       if (frameWaitTimerRef.current >= 5) {
@@ -170,10 +176,12 @@ const Model = ({animationController, models, scriptController, movementControlle
 
     if (movementSpeed > 2560 && !isCurrentlyRunning) {
       animationController.playMovementAnimation('running');
+      hasAppliedMovementAnimation.current = true;
     }
 
     if (movementSpeed <= 2560 && !isCurrentlyWalking) {
       animationController.playMovementAnimation('walking');
+      hasAppliedMovementAnimation.current = true;
     }
   });
 
