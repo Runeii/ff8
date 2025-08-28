@@ -1,4 +1,4 @@
-const FPS = 25;
+const FPS = 12;
 
 class LerpValue {
   private currentValue: number;

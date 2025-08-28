@@ -322,10 +322,10 @@ export const createAnimationController = (id: string | number) => {
     subscribe: () => {},
     stopAnimation: () => {},
     setHeadBone: (head: Bone) => {
-      console.log(head)
+      //console.log(head)
     },
     setLadderAnimation: (ladderAnimationId1: number, ladderAnimationId2: number, ladderAnimationId3: number) => {
-      console.log(ladderAnimationId1, ladderAnimationId2, ladderAnimationId3);
+      //console.log(ladderAnimationId1, ladderAnimationId2, ladderAnimationId3);
     },
     stopLadderAnimation: () => {},
     playLadderTopAnimation: () => {},

@@ -954,6 +954,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       isTalkable: true,
     })
   },
+  // We don't use actor codes for REQ etc, this seems to work fine.
   SETGETA: ({ STACK }) => {
     // const actorId = 
     STACK.pop() as number;
@@ -1085,23 +1086,39 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     OPCODE_HANDLERS?.PMOVEA?.(args);
   },
 
+  // I think these are identical. Maybe in reality they use different curves. Jump is used only 3 times though.
+  JUMP: ({ movementController, STACK }) => {
+    const duration = STACK.pop() as number;
+    const z = STACK.pop() as number;
+    const y = STACK.pop() as number;
+    const x = STACK.pop() as number;
+
+    const target = vectorToFloatingPoint({x, y, z})
+
+    movementController.jumpToPosition(target, duration);
+  },
   JUMP3: ({ movementController, STACK }) => {
     const duration = STACK.pop() as number;
     const z = STACK.pop() as number;
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
 
-    movementController.jumpToPosition(x, y, z, duration);
+    const target = vectorToFloatingPoint({x, y, z})
+
+    movementController.jumpToPosition(target, duration);
   },
-  JUMP: ({ currentOpcode, STACK }) => {
-    console.log(currentOpcode.param) //const walkmeshTriangleId = 
-    STACK.pop() as number; // const x = 
-    STACK.pop() as number; // const y = 
-    STACK.pop() as number; // const speed = 
-  },
-  PJUMPA: ({ STACK }) => {
-    STACK.pop() as number; // const distance = 
-    STACK.pop() as number; // const partyMemberId = 
+  PJUMPA: ({ movementController, scene, STACK }) => {
+    //STACK.pop() as number;
+    const actorId = STACK.pop() as number;
+    const player = getPartyMemberModelComponent(scene, actorId)
+    if (!player) {
+      console.warn('No player found for party member ID', actorId);
+      return;
+    }
+
+    const targetPoint = player.getWorldPosition(new Vector3());
+
+    movementController.jumpToPosition(targetPoint, 32);
   },
   UNKNOWN11: async ({ rotationController, STACK }) => {
     const startAngle = STACK.pop() as number;

@@ -209,11 +209,8 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     await moveToPoint(target, passedOptions)
   }
 
-  const jumpToPosition = (x: number, y: number, z: number, duration: number) => {
-    const end = new Vector3(...[x, y, z].map(numberToFloatingPoint));
-
+  const jumpToPosition = (end: Vector3, duration: number) => {
     const start = getState().position.current.clone();
-  
 
     const directLine = new Line3(start, end);
     const jumpCurve = new JumpCurve(start, end, duration);
