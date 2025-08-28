@@ -1082,14 +1082,13 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     OPCODE_HANDLERS?.PMOVEA?.(args);
   },
 
-  JUMP3: ({ currentOpcode, movementController, STACK }) => {
-    const height = currentOpcode.param;
+  JUMP3: ({ movementController, STACK }) => {
     const duration = STACK.pop() as number;
     const z = STACK.pop() as number;
     const y = STACK.pop() as number;
     const x = STACK.pop() as number;
 
-    movementController.jumpToPosition(height, x, y, z, duration);
+    movementController.jumpToPosition(x, y, z, duration);
   },
   JUMP: ({ currentOpcode, STACK }) => {
     console.log(currentOpcode.param) //const walkmeshTriangleId = 

@@ -211,7 +211,9 @@ const Model = ({animationController, models, scriptController, movementControlle
     }
     const rootBonePosition = rootBone.getWorldPosition(new Vector3());
     const hasHadZAdjusted = animationController.getState().activeAnimation?.hasBeenZAdjusted;
-    const needsRealtimeZAdjustment = animationController.getState().activeAnimation?.needsRealtimeZAdjustment;
+    const needsRealtimeZAdjustment =
+      animationController.getState().activeAnimation?.needsRealtimeZAdjustment
+      && !movementController.getState().jump.directLine;
     
     if (animationController.getState().activeAnimation?.clipId === animationController.getSavedAnimationId('standing') && standingBoundingBox.isEmpty()) {
       standingBoundingBox.setFromObject(animationGroupRef.current, true);
