@@ -509,8 +509,8 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     useGlobalStore.setState(state => {
       state.hasMoved = true;
 
-      const latestCongaWaypoint = state.congaWaypointHistory[0];
-      if (latestCongaWaypoint && latestCongaWaypoint.position.distanceTo(entity.position) < 0.005) {
+      const latestCongaWaypoint = state.congaWaypointHistory.at(-1);
+      if (latestCongaWaypoint && latestCongaWaypoint.position.distanceTo(entity.position) < 0.002) {
         return state;
       }
       state.congaWaypointHistory.push({

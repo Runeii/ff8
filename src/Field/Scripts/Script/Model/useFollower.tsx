@@ -15,8 +15,8 @@ type UseFollowerProps = {
   partyMemberId: number | undefined;
 }
 
-const DISTANCE = 35;
-const useFollower = ({ isActive, movementController, partyMemberId, rotationController }: UseFollowerProps) => {
+const DISTANCE = 20;
+const useFollower = ({ animationController, isActive, movementController, partyMemberId, rotationController }: UseFollowerProps) => {
   const [currentPosition] = useState(new Vector3());
   const [targetPosition] = useState(new Vector3());
 
@@ -52,6 +52,7 @@ const useFollower = ({ isActive, movementController, partyMemberId, rotationCont
           leaderRotationController.getCurrentDirection().multiplyScalar(0.03 * offset)
         )
       );
+      animationController.playMovementAnimation('standing');
       rotationController.turnToFaceAngle(leaderRotationController.getState().angle.get(), 0);
       
       return;
@@ -65,7 +66,23 @@ const useFollower = ({ isActive, movementController, partyMemberId, rotationCont
     const followerPosition = movementController.getPosition();
     currentPosition.set(followerPosition.x, followerPosition.y, followerPosition.z);
     targetPosition.set(position.x, position.y, position.z);
+
+    const isCurrentlyStanding = animationController.getSavedAnimation().standingId === animationController.getState().activeAnimation?.clipId;
+    const isCurrentlyWalking = animationController.getSavedAnimation().walkingId === animationController.getState().activeAnimation?.clipId;
+    const isCurrentlyRunning = animationController.getSavedAnimation().runningId === animationController.getState().activeAnimation?.clipId;
+
     if (currentPosition.distanceTo(targetPosition) === 0) {
+      const leaderEntity = getPlayerEntity(scene);
+      if (!leaderEntity) {
+        return;
+      }
+      
+      const leaderAnimationController = leaderEntity.userData.animationController as ReturnType<typeof createAnimationController>;
+      const isLeaderCurrentlyStanding = leaderAnimationController.getSavedAnimation().standingId === leaderAnimationController.getState().activeAnimation?.clipId;
+
+      if (isLeaderCurrentlyStanding && !isCurrentlyStanding) {
+        animationController.playMovementAnimation('standing');
+      }
       return;
     }
   
@@ -75,7 +92,13 @@ const useFollower = ({ isActive, movementController, partyMemberId, rotationCont
       userControlledSpeed: speed
     });
 
-
+    if (speed === 0 && !isCurrentlyStanding) {
+      animationController.playMovementAnimation('standing');
+    } else if (speed > 2560 && !isCurrentlyRunning) {
+      animationController.playMovementAnimation('running');
+    } else if (speed <= 2560 && !isCurrentlyWalking) {
+      animationController.playMovementAnimation('walking');
+    }
     rotationController.turnToFaceAngle(angle, 0);
   });
 }

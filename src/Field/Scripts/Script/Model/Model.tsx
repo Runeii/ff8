@@ -140,6 +140,11 @@ const Model = ({animationController, models, scriptController, movementControlle
   const frameWaitTimerRef = useRef(0);
   const hasAppliedMovementAnimation = useRef(false);
   useFrame(() => {
+    // If this character is a follower, don't apply movement animations
+    // Not the most DRY way of doing things but proves a headache otherwise
+    if (isFollower) {
+      return;
+    }
     const isAnimatingTowardsTarget = movementController.getState().position.isAnimationEnabled;
 
     if (!isAnimatingTowardsTarget) {

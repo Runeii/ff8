@@ -52,6 +52,7 @@ declare global {
     'executeScript': CustomEvent<ExecuteScriptEventDetail>;
     'scriptFinished': CustomEvent<{ key: string }>;
     'scriptEnd': CustomEvent<string>;
+    'animationEnd': CustomEvent<string>;
     'messageClosed': CustomEvent<{ id: string, selectedOption: number }>;
   }
   type MovementFlags = {

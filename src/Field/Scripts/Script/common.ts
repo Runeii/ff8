@@ -1,4 +1,4 @@
-import { CONTROLS_MAP, PSX_CONTROLS_MAP } from "../../../constants/controls";
+import { PSX_CONTROLS_MAP } from "../../../constants/controls";
 import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
 import { openMessage } from "./utils";

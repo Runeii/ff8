@@ -175,6 +175,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
       ref={entityRef}
       name={`entity--${script.groupId}`}
       userData={{
+        animationController,
         hasBeenPlaced: false,
         scriptController,
         partyMemberId,
