@@ -39,7 +39,8 @@ declare global {
   interface ExecuteScriptEventDetail {
     key: string;
     scriptLabel: number;
-    priority: number
+    priority: number;
+    isGuaranteed: boolean;
   }
 
   type RemoteExecutionRequest = {

@@ -10,7 +10,7 @@ export const unusedCommand = () => { }
 
 export const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const remoteExecute = async (scriptLabel: number, priority = 10) => new Promise<void>((resolve) => {
+export const remoteExecute = async (scriptLabel: number, priority = 10, isGuaranteed = false) => new Promise<void>((resolve) => {
   const key = Math.random().toString(36).substring(7);
 
   const handler = ({ detail }: { detail: { key: string }}) => {
@@ -28,11 +28,12 @@ export const remoteExecute = async (scriptLabel: number, priority = 10) => new P
       key,
       scriptLabel,
       priority,
+      isGuaranteed,
     } as ExecuteScriptEventDetail
   }));
 });
 
-export const remoteExecutePartyMember = async (scene: Scene, partyMemberIndex: number, scriptLabel: number, priority = 10) => {
+export const remoteExecutePartyMember = async (scene: Scene, partyMemberIndex: number, scriptLabel: number, priority = 10, isGuaranteed = false) => {
   const actor = getPartyMemberModelComponent(scene, partyMemberIndex);
   if (!actor) {
     console.warn(`Party member index ${partyMemberIndex} not found`);
@@ -46,7 +47,7 @@ export const remoteExecutePartyMember = async (scene: Scene, partyMemberIndex: n
     return;
   }
   console.log(`Executing script ${scriptLabel} on party member ${partyMemberIndex} ${partyMemberIndex}`);
-  await scriptController.triggerMethodByIndex(scriptLabel, priority);
+  await scriptController.triggerMethodByIndex(scriptLabel, priority, isGuaranteed);
   console.log(`Finished script ${scriptLabel} on party member ${partyMemberIndex} ${partyMemberIndex}`);
 }
 

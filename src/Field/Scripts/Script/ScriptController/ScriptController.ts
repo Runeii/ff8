@@ -14,6 +14,7 @@ type QueueItem = {
   activeOpcodeIndex: number;
   method: ScriptMethod;
   isAwaiting: boolean;
+  isGuaranteed: boolean;
   isLooping: boolean;
   priority: number;
   uniqueId: string;
@@ -47,16 +48,16 @@ const createScriptController = ({
     script,
   }));
 
-  const triggerMethodByIndex = async (methodIndex: number, priority = 10) => {
+  const triggerMethodByIndex = async (methodIndex: number, priority = 10, isGuaranteed = false) => {
     const method = script.methods[methodIndex]
     if (!method) {
       console.trace(`Method with index ${methodIndex} not found in script for ${script.groupId}`);
       return;
     }
-    await triggerMethod(method.methodId, priority);
+    await triggerMethod(method.methodId, priority, isGuaranteed);
   }
 
-  const triggerMethod = async (methodId: string, priority = 10, canDuplicate = false) => {
+  const triggerMethod = async (methodId: string, priority = 10, canDuplicate = false, isGuaranteed = false) => {
     const method = script.methods.find(method => method.methodId === methodId);
     if (!method) {
       console.warn(`Method with id ${methodId} not found in script for ${script.groupId}`);
@@ -75,6 +76,7 @@ const createScriptController = ({
       activeOpcodeIndex: 0,
       method,
       isAwaiting: false,
+      isGuaranteed,
       isLooping,
       priority,
       uniqueId,
@@ -95,13 +97,14 @@ const createScriptController = ({
     const currentQueue = getState().queue;
 
     // Implementation details:
+    // - If is guaranteed, it should always interrupt the current item
     // - Priority is only used for ordering queued items (lower number = higher priority)
     // - If an item is looping (ie: is default), this can always be interrupted
     // - Do not interrupt an active item otherwise
     const frozenQueue = [...currentQueue];
     const [activeItem, ...queuedItems] = frozenQueue;
 
-    if (!activeItem || (frozenQueue.length === 1 && activeItem.isLooping)) {
+    if (newItem.isGuaranteed || !activeItem || (frozenQueue.length === 1 && activeItem.isLooping)) {
       // If there's no active item or the only item is looping, add it to the front and immediately run
       setState({ queue: [newItem, ...currentQueue] });
       return;

@@ -646,14 +646,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   REQSW: ({ STACK }) => {
     const label = STACK.pop() as number;
     const priority = STACK.pop();
-    remoteExecute(label, priority)
+    remoteExecute(label, priority, true)
   },
   REQEW: async ({ script, STACK }) => {
     const label = STACK.pop() as number;
     const priority = STACK.pop();
 
     console.log('REQEW', script.name, label, priority)
-    await remoteExecute(label, priority)
+    await remoteExecute(label, priority, true)
   },
   PREQ: ({ currentOpcode, scene, STACK }) => {
     const partyMemberIndex = currentOpcode.param as number;
@@ -666,14 +666,14 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const partyMemberIndex = currentOpcode.param as number;
     const label = STACK.pop() as number;
     const priority = STACK.pop() as number;
-    remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
+    remoteExecutePartyMember(scene, partyMemberIndex, label, priority, true)
   },
   PREQEW: async ({ currentOpcode, scene, STACK }) => {
     const partyMemberIndex = currentOpcode.param as number;
     const label = STACK.pop() as number;
     const priority = STACK.pop() as number;
     console.log('start preqew', partyMemberIndex, label, priority)
-    await remoteExecutePartyMember(scene, partyMemberIndex, label, priority)
+    await remoteExecutePartyMember(scene, partyMemberIndex, label, priority, true)
     console.log('end preqew', partyMemberIndex, label, priority)
   },
   ISPARTY: ({ STACK, TEMP_STACK }) => {

@@ -89,13 +89,13 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
       return;
     }
 
-    const handleExecutionRequest = async ({ detail: { key, scriptLabel, priority } }: {detail: ExecuteScriptEventDetail}) => {
+    const handleExecutionRequest = async ({ detail: { key, scriptLabel, priority, isGuaranteed } }: {detail: ExecuteScriptEventDetail}) => {
       const matchingMethod = script.methods.find((method) => method.scriptLabel === scriptLabel);
       if (!matchingMethod) {
         return;
       }
       try {
-        await scriptController.triggerMethod(matchingMethod.methodId, priority, true)
+        await scriptController.triggerMethod(matchingMethod.methodId, priority, true, isGuaranteed)
         document.dispatchEvent(new CustomEvent('scriptFinished', { detail: { key} }));
       } catch (error) {
         console.error('Error executing script:', error);
