@@ -89,8 +89,6 @@ export const checkForIntersections = (object: Object3D, target: Vector3, blockag
   object.getWorldPosition(needlePosition);
   const direction = new Vector3().subVectors(target, needlePosition).normalize();
   intersectionRaycaster.set(needlePosition, direction);
-  window.needlePos = needlePosition;
-  window.targetPos = target;
   intersectionRaycaster.far = needlePosition.distanceTo(target);
   intersectionRaycaster.near = 0;
   intersectionRaycaster.camera = camera;

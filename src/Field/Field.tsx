@@ -5,7 +5,7 @@ import type data from '../../public/output/escouse2.json';
 import Gateways from './Gateways/Gateways';
 import Camera from './Camera/Camera';
 import Background from './Background/Background';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useThree } from '@react-three/fiber';
 import Scripts from './Scripts/Scripts';
 import useGlobalStore from '../store';
 import { Script } from './Scripts/types';
@@ -16,8 +16,6 @@ import { getFieldData } from './fieldUtils';
 import Onboarding from '../Onboarding/Onboarding';
 import { AREA_NAMES } from '../constants/areaNames';
 import { preloadMapSoundBank } from './Scripts/Script/SFXController/webAudio';
-import { Sphere } from '@react-three/drei';
-import { Vector3 } from 'three';
 import { sendToDebugger } from '../Debugger/debugUtils';
 
 export type RawFieldData = typeof data;
@@ -69,32 +67,8 @@ const Field = ({ data }: FieldProps) => {
     
   }, [currentLocationPlaceName, data.id]);
 
-  const needleRef = useRef<Sphere>(null);
-  const targetRef = useRef<Sphere>(null);
-  const startRef = useRef<Sphere>(null);
-  const requestRef = useRef<Sphere>(null);
-
-  useFrame(() => {
-    needleRef.current.position.copy(window.needlePos ?? new Vector3(0,0,-999));
-    targetRef.current.position.copy(window.targetPos ?? new Vector3(0,0,-999));
-    startRef.current.position.copy(window.startPos ?? new Vector3(0,0,-999));
-    requestRef.current.position.copy(window.requestPos ?? new Vector3(0,0,-999));
-    //console.log(window.needlePos, window.targetPos)
-  });
   return (
     <group>
-      <Sphere args={[0.005, 16, 16]} ref={startRef} position={[0,0,0]}>
-        <meshBasicMaterial color="yellow" opacity={1} wireframe />
-      </Sphere>
-      <Sphere args={[0.005, 16, 16]} ref={requestRef} position={[0,0,0]}>
-        <meshBasicMaterial color="pink" opacity={1} wireframe />
-      </Sphere>
-      <Sphere args={[0.005, 16, 16]} ref={needleRef} position={[0,0,0]}>
-        <meshBasicMaterial color="white" opacity={1} wireframe />
-      </Sphere>
-      <Sphere args={[0.005, 16, 16]} ref={targetRef} position={[0,0,0]}>
-        <meshBasicMaterial color="blue" opacity={1} wireframe />
-      </Sphere>
       <WalkMesh walkmesh={data.walkmesh} />
       <Camera backgroundPanRef={backgroundPanRef} data={data} />
       <Scripts

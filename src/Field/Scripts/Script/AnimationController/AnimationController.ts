@@ -1,4 +1,4 @@
-import { AnimationAction, AnimationClip, AnimationMixer, Object3D } from "three";
+import { AnimationAction, AnimationClip, AnimationMixer, Bone, Object3D } from "three";
 import { create } from "zustand"
 import { applyAnimationAtTime } from "./animationUtils";
 
@@ -321,8 +321,12 @@ export const createAnimationController = (id: string | number) => {
 
     subscribe: () => {},
     stopAnimation: () => {},
-    setHeadBone: () => {},
-    setLadderAnimation: () => {},
+    setHeadBone: (head: Bone) => {
+      console.log(head)
+    },
+    setLadderAnimation: (ladderAnimationId1: number, ladderAnimationId2: number, ladderAnimationId3: number) => {
+      console.log(ladderAnimationId1, ladderAnimationId2, ladderAnimationId3);
+    },
     stopLadderAnimation: () => {},
     playLadderTopAnimation: () => {},
     playLadderBottomAnimation: () => {},

@@ -52,7 +52,7 @@ const Ui = ({ worldScene }: UiProps) => {
         bottom={-(SCREEN_HEIGHT / 2)}
         position={[SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2, 0]}
       />
-      {messagesArray.map((messages) => (
+      {worldScene && messagesArray.map((messages) => (
         <MessageBox
           isCloseableFocus={messages[0].id === closeableMessages.at(-1)?.[0].id}
           key={`message--${messages[0].id}`}

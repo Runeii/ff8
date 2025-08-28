@@ -127,18 +127,15 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
     const yTop = top * 256;
     const yBottom = bottom * 256;
 
-    let clampedPanX = clamp(panX, xLeft, xRight);
-    let clampedPanY = clamp(panY, yTop, yBottom);
-
-    let ratioAdjustedX = clampedPanX;
-    let ratioAdjustedY = clampedPanY;
+    let ratioAdjustedX = clamp(panX, xLeft, xRight);
+    let ratioAdjustedY = clamp(panY, yTop, yBottom);
 
     if (ratio) {
       const standardXRange = xRight - xLeft;
       const standardYRange = yBottom - yTop;
 
-      ratioAdjustedX = clampedPanX * (standardXRange / ratio.x);
-      ratioAdjustedY = clampedPanY * (standardYRange / ratio.y);
+      ratioAdjustedX = ratioAdjustedX * (standardXRange / ratio.x);
+      ratioAdjustedY = ratioAdjustedY * (standardYRange / ratio.y);
     }
 
     if (Number.isNaN(ratioAdjustedX) || !Number.isFinite(ratioAdjustedX)) {

@@ -32,7 +32,7 @@ export const handleLadder = async (
       isAllowedToLeaveWalkmesh: true,
       isAnimationEnabled: false
     }),
-    hasStartedWithPlayerOnLadder ? Promise.resolve() : enterAnimation('enter')    
+    hasStartedWithPlayerOnLadder ? Promise.resolve() : enterAnimation()    
   ]);
 
   await movementController.moveToPoint(endLadderClimbPosition, {
@@ -58,7 +58,7 @@ export const handleLadder = async (
       isAllowedToLeaveWalkmesh: true,
       isAnimationEnabled: false
     }),
-    exitAnimation('exit')
+    exitAnimation()
   ])
 
   if (!checkIfIsStillOnMap()) {
@@ -67,5 +67,5 @@ export const handleLadder = async (
   console.log('Has finished climbing ladder');
   useGlobalStore.setState({ isPlayerClimbingLadder: false });
   movementController.setIsClimbingLadder(false);
-  animationController.playMovementAnimation('stand');
+  animationController.playMovementAnimation('standing');
 };

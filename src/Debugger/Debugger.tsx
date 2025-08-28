@@ -185,6 +185,7 @@ const Debugger = () => {
           </>
         )}
         {view === 'state' && <pre>{JSON.stringify({
+          // @ts-expect-error CBA typing debug
           ...storeState,
           availableMessages: 'blanked out',
           walkmesh: 'blanked out',

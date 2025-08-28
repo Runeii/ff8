@@ -466,7 +466,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
         [script.backgroundParamId]: lerpValue
       }
     })
-    while (useGlobalStore.getState().backgroundAnimations[script.backgroundParamId].isAnimating) {
+    while (useGlobalStore.getState().backgroundAnimations[script.backgroundParamId]?.isAnimating) {
+      if (!useGlobalStore.getState().backgroundAnimations[script.backgroundParamId]) {
+        return;
+      }
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
