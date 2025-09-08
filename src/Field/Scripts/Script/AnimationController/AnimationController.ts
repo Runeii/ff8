@@ -22,6 +22,7 @@ type AnimationItem = {
   needsRealtimeZAdjustment: boolean;
 
   isFromMovement: boolean;
+  isFromLadder: boolean;
 }
 
 type RunState = {
@@ -36,6 +37,10 @@ export const createAnimationController = (id: string | number) => {
     standingId: 0,
     walkingId: 1,
     runningId: 2,
+
+    ladderClimbId: 3,
+    ladderTopId: 4,
+    ladderBottomId: 5,
   }));
 
   const { getState, setState } = create(() => ({
@@ -148,6 +153,7 @@ export const createAnimationController = (id: string | number) => {
       direction?: number;
       needsRealtimeZAdjustment?: boolean;
       isFromMovement?: boolean;
+      isFromLadder?: boolean;
     }) => {
     const clip = getState().clips[clipId]
     if (!clip) {
@@ -180,7 +186,8 @@ export const createAnimationController = (id: string | number) => {
       speed: options?.speed ?? 1,
       hasBeenZAdjusted: false,
       needsRealtimeZAdjustment: options?.needsRealtimeZAdjustment ?? true,
-      isFromMovement: options?.isFromMovement ?? false
+      isFromMovement: options?.isFromMovement ?? false,
+      isFromLadder: options?.isFromLadder ?? false,
     }
 
     currentRunState = undefined;
@@ -304,6 +311,31 @@ export const createAnimationController = (id: string | number) => {
     })
   }
 
+  const setLadderAnimation = (ladderAnimationId1: number, ladderAnimationId2: number, ladderAnimationId3: number) => {
+    // Top and Bottom are not implemented
+    setSavedAnimation({
+      ladderTopId: ladderAnimationId3,
+      ladderClimbId: ladderAnimationId2,
+      ladderBottomId: ladderAnimationId1,
+    })
+  }
+
+  const playLadderAnimation = async () => {
+    return playAnimation(getSavedAnimation().ladderClimbId, {
+      isLooping: true,
+      shouldHoldLastFrame: false,
+      needsRealtimeZAdjustment: false,
+      isFromLadder: true
+    });
+  }
+
+  const stopLadderAnimation = () => {
+    const { activeAnimation } = getState();
+    if (activeAnimation?.isFromLadder) {
+      handleAnimationEnded(activeAnimation.id, activeAnimation.shouldHoldLastFrame);
+    }
+  }
+
   return {
     tick,
     playAnimation,
@@ -324,12 +356,8 @@ export const createAnimationController = (id: string | number) => {
     setHeadBone: (head: Bone) => {
       //console.log(head)
     },
-    setLadderAnimation: (ladderAnimationId1: number, ladderAnimationId2: number, ladderAnimationId3: number) => {
-      //console.log(ladderAnimationId1, ladderAnimationId2, ladderAnimationId3);
-    },
-    stopLadderAnimation: () => {},
-    playLadderTopAnimation: () => {},
-    playLadderBottomAnimation: () => {},
-    playLadderAnimation: () => {},
+    setLadderAnimation,
+    playLadderAnimation,
+    stopLadderAnimation,
   }
 }

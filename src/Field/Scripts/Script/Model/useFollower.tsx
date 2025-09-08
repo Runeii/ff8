@@ -2,8 +2,8 @@ import { useFrame } from "@react-three/fiber";
 import useGlobalStore from "../../../../store";
 import createMovementController from "../MovementController/MovementController";
 import createRotationController from "../RotationController/RotationController";
-import { useRef, useState } from "react";
-import { Vector3 } from "three";
+import { useCallback, useRef, useState } from "react";
+import { Scene, Vector3 } from "three";
 import { createAnimationController } from "../AnimationController/AnimationController";
 import { getPartyMemberModelComponent, getPlayerEntity } from "./modelUtils";
 
@@ -21,7 +21,8 @@ const useFollower = ({ animationController, isActive, movementController, partyM
   const [targetPosition] = useState(new Vector3());
 
   const needsCleanUpRef = useRef(false);
-  useFrame(({scene}) => {
+  const isMovingToWaypointRef = useRef(false);
+  const moveToWaypoint = useCallback(async (scene: Scene) => {
     if (!isActive || !movementController || !rotationController) {
       return;
     }
@@ -68,7 +69,7 @@ const useFollower = ({ animationController, isActive, movementController, partyM
       return;
     }
     needsCleanUpRef.current = true;
-    const { position, angle, speed } = history;
+    const { position, angle, speed, isClimbingLadder } = history;
     
     const followerPosition = movementController.getPosition();
     currentPosition.set(followerPosition.x, followerPosition.y, followerPosition.z);
@@ -78,7 +79,7 @@ const useFollower = ({ animationController, isActive, movementController, partyM
     const isCurrentlyWalking = animationController.getSavedAnimation().walkingId === animationController.getState().activeAnimation?.clipId;
     const isCurrentlyRunning = animationController.getSavedAnimation().runningId === animationController.getState().activeAnimation?.clipId;
 
-    if (currentPosition.distanceTo(targetPosition) === 0) {
+    if (currentPosition.distanceTo(targetPosition) === 0 && !isClimbingLadder) {
       const leaderEntity = getPlayerEntity(scene);
       if (!leaderEntity) {
         return;
@@ -92,21 +93,36 @@ const useFollower = ({ animationController, isActive, movementController, partyM
       }
       return;
     }
-  
-    movementController.moveToPoint(position, {
-      isAnimationEnabled: false,
-      isAllowedToLeaveWalkmesh: true,
-      userControlledSpeed: speed
-    });
 
-    if (speed === 0 && !isCurrentlyStanding) {
+    rotationController.turnToFaceAngle(angle, 0);
+    if (isClimbingLadder) {
+      animationController.playLadderAnimation();
+    } else if (speed === 0 && !isCurrentlyStanding) {
       animationController.playMovementAnimation('standing');
     } else if (speed > 4000 && !isCurrentlyRunning) {
       animationController.playMovementAnimation('running');
     } else if (speed <= 4000 && !isCurrentlyWalking) {
       animationController.playMovementAnimation('walking');
     }
-    rotationController.turnToFaceAngle(angle, 0);
+
+    await movementController.moveToPoint(position, {
+      isAnimationEnabled: false,
+      isFacingTarget: false,
+      isClimbingLadder,
+      isAllowedToLeaveWalkmesh: true,
+      isAllowedToCrossBlockedTriangles: true,
+      userControlledSpeed: speed
+    });
+  }, [animationController, currentPosition, isActive, movementController, partyMemberId, rotationController, targetPosition]);
+
+  useFrame((state) => {
+    if (isMovingToWaypointRef.current) {
+      return;
+    }
+    isMovingToWaypointRef.current = true;
+    moveToWaypoint(state.scene).then(() => {
+      isMovingToWaypointRef.current = false;
+    });
   });
 }
 

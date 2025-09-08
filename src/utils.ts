@@ -1,7 +1,6 @@
 import { Camera, Object3D, Raycaster, Vector3 } from "three";
 import { FieldData } from "./Field/Field";
 import gateways from './gateways.ts';
-import useGlobalStore from "./store.ts";
 
 export const numberToFloatingPoint = (value: number) => value / 4096;
 

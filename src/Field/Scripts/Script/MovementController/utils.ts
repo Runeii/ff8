@@ -12,6 +12,7 @@ export const handleLadder = async (
 ) => {
   const hasStartedWithPlayerOnLadder = useGlobalStore.getState().isPlayerClimbingLadder;
   console.log('Has started climbing ladder:', hasStartedWithPlayerOnLadder);
+  console.log('isUp:', isUp);
   const startedClimbingOnFieldId = useGlobalStore.getState().fieldId;
   movementController.setIsClimbingLadder(true);
   useGlobalStore.setState({ isPlayerClimbingLadder: true });
@@ -23,23 +24,20 @@ export const handleLadder = async (
   const endLadderClimbPosition = new Vector3(middle.x, middle.y, end.z);
   const finalStandingPosition = new Vector3(end.x, end.y, end.z);
 
-  const enterAnimation = isUp ? animationController.playLadderTopAnimation : animationController.playLadderBottomAnimation
-
-  await Promise.all([
-    movementController.moveToPoint(startLadderClimbPosition, {
-      isFacingTarget: false,
-      isAllowedToCrossBlockedTriangles: true,
-      isAllowedToLeaveWalkmesh: true,
-      isAnimationEnabled: false
-    }),
-    hasStartedWithPlayerOnLadder ? Promise.resolve() : enterAnimation()    
-  ]);
-
-  await movementController.moveToPoint(endLadderClimbPosition, {
+  await movementController.moveToPoint(startLadderClimbPosition, {
     isFacingTarget: false,
     isAllowedToCrossBlockedTriangles: true,
     isAllowedToLeaveWalkmesh: true,
     isAnimationEnabled: false
+  })
+
+  animationController.playLadderAnimation();
+  await movementController.moveToPoint(endLadderClimbPosition, {
+    isFacingTarget: false,
+    isAllowedToCrossBlockedTriangles: true,
+    isAllowedToLeaveWalkmesh: true,
+    isAnimationEnabled: false,
+    isClimbingLadder: true
   })
 
   const checkIfIsStillOnMap = () =>
@@ -50,21 +48,19 @@ export const handleLadder = async (
     return;
   }
 
-  const exitAnimation = isUp ? animationController.playLadderTopAnimation : animationController.playLadderBottomAnimation;
-  await Promise.all([
-    movementController.moveToPoint(finalStandingPosition, {
-      isFacingTarget: false,
-      isAllowedToCrossBlockedTriangles: true,
-      isAllowedToLeaveWalkmesh: true,
-      isAnimationEnabled: false
-    }),
-    exitAnimation()
-  ])
+  await movementController.moveToPoint(finalStandingPosition, {
+    isFacingTarget: false,
+    isAllowedToCrossBlockedTriangles: true,
+    isAllowedToLeaveWalkmesh: true,
+    isAnimationEnabled: false
+  })
 
   if (!checkIfIsStillOnMap()) {
     return;
   }
-  console.log('Has finished climbing ladder');
+
+  animationController.stopLadderAnimation();
+
   useGlobalStore.setState({ isPlayerClimbingLadder: false });
   movementController.setIsClimbingLadder(false);
   animationController.playMovementAnimation('standing');

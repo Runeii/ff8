@@ -199,7 +199,7 @@ const Model = ({animationController, models, scriptController, movementControlle
       return;
     }
 
-    if (movementController.getState().jump.directLine) {
+    if (movementController.getState().jump.directLine || movementController.getState().position.isClimbingLadder) {
       return;
     }
 

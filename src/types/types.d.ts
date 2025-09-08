@@ -142,6 +142,7 @@ declare global {
     position: Vector3;
     angle: number;
     speed: number;
+    isClimbingLadder: boolean;
   }
 
 

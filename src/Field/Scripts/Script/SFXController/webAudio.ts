@@ -64,6 +64,7 @@ const loadAudioBuffer = async (url: string): Promise<AudioBuffer> => {
 export const preloadSound = async (soundId: number) => {
   const sound = getSoundFromId(soundId);
   const src = `/audio/effects/${sound}.mp3`;
+
   try {
     const buffer = await loadAudioBuffer(src);
     preloadedSoundBank[soundId] = buffer;
@@ -81,6 +82,11 @@ export const preloadMapSoundBank = async (sounds: number[]): Promise<void> => {
   preloadedSoundBank = {};
 
   const soundsToLoad = sounds.slice(0, 10);
+
+  // Todo: fix export
+  if ((soundsToLoad[0] as unknown as string) === 'no sounds available') {
+    return;
+  }
   const loadPromises = soundsToLoad.map(preloadSound);
 
   await Promise.allSettled(loadPromises);

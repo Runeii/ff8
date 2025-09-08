@@ -14,6 +14,7 @@ type MoveOptions = {
   isAllowedToCrossBlockedTriangles: boolean;
   isFacingTarget: boolean;
   isAllowedToLeaveWalkmesh: boolean;
+  isClimbingLadder: boolean;
   userControlledSpeed: number | undefined;
   distanceToStopAnimationFromTarget: number;
 }
@@ -32,6 +33,7 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       isAllowedToCrossBlockedTriangles: true,
       isAllowedToLeaveWalkmesh: false,
       isFacingTarget: true,
+      isClimbingLadder: false,
       isPaused: false,
       userControlledSpeed: undefined as number | undefined,
       goal: undefined as Vector3 | undefined,
@@ -149,6 +151,7 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       isFacingTarget: true,
       isAllowedToCrossBlockedTriangles: true,
       isAllowedToLeaveWalkmesh: false,
+      isClimbingLadder: false,
       userControlledSpeed: undefined,
       distanceToStopAnimationFromTarget: 0
     }
@@ -160,6 +163,7 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       isAllowedToCrossBlockedTriangles,
       isAllowedToLeaveWalkmesh,
       isFacingTarget,
+      isClimbingLadder,
       userControlledSpeed,
     } = {
       ...defaultOptions,
@@ -187,6 +191,7 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
         isAllowedToCrossBlockedTriangles,
         isAllowedToLeaveWalkmesh,
         isFacingTarget,
+        isClimbingLadder,
         isPaused: false,
         userControlledSpeed,
         signal
@@ -473,9 +478,6 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       const positionOnLine = directLine.start.clone().lerp(directLine.end, newProgress);
       const positionOnCurve = curve.getPointAt(newProgress);
 
-      if (id === 7) {
-        console.log('Difference', positionOnCurve.x - positionOnLine.x, positionOnCurve.y - positionOnLine.y, positionOnCurve.z - positionOnLine.z);
-      }
       currentPosition.copy(positionOnLine);
       currentPosition.z += positionOnCurve.z - positionOnLine.z;
 
@@ -505,10 +507,12 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       if (latestCongaWaypoint && latestCongaWaypoint.position.distanceTo(entity.position) < 0.002) {
         return state;
       }
+
       state.congaWaypointHistory.push({
         position: entity.position.clone(),
         angle: (entity.userData.rotationController as ReturnType<typeof createRotationController>).getState().angle.get(),
-        speed: movementSpeed
+        speed: movementSpeed,
+        isClimbingLadder: position.isClimbingLadder,
       })
       if (state.congaWaypointHistory.length > 100) {
         state.congaWaypointHistory.shift();
