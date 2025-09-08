@@ -74,7 +74,7 @@ class WalkmeshMovementController {
   public getPositionOnWalkmesh(position: Vector3, maxDistance = 1, isAllowedToCrossBlockedTriangles = true): Vector3 | null {
     for (const direction of [DIRECTION_DOWN, DIRECTION_UP]) {
       this.raycaster.set(position, direction);
-      const intersects = this.raycaster.intersectObject(this.walkmesh, true);
+      const intersects = this.raycaster.intersectObject(this.walkmesh, true).sort((a, b) => a.distance - b.distance);
       for (const intersect of intersects) {
         if (intersect.distance > maxDistance) continue;
         const triangleId = parseInt(intersect.object.name);

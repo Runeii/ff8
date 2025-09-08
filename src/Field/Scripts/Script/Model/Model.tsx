@@ -236,7 +236,9 @@ const Model = ({animationController, models, scriptController, movementControlle
     baseBoundingBoxZOffset.current = boundingbox.min.z;
     rootBoneDistanceFromStanding.current = rootBonePosition.z - boundingbox.min.z;
     
-    const centrePointOnWalkmesh = walkmeshController.getPositionOnWalkmesh(boundingbox.getCenter(boundingBoxCentre), 1);
+    const centreOfBase = boundingbox.getCenter(boundingBoxCentre);
+    centreOfBase.z = boundingbox.min.z;
+    const centrePointOnWalkmesh = walkmeshController.getPositionOnWalkmesh(centreOfBase, 1, true);
     const zPosition = centrePointOnWalkmesh?.z ?? position.z
     const z = zPosition - boundingbox.min.z;
 

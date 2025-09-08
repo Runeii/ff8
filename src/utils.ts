@@ -48,41 +48,6 @@ export const getInitialEntrance = (initialField: FieldData) => {
   return vectorToFloatingPoint(entrance);
 }
 
-
-const raycaster = new Raycaster();
-const DIRECTION_UP = new Vector3(0, 0, -1);
-const DIRECTION_DOWN = new Vector3(0, 0, 1);
-export const getPositionOnWalkmesh = (desiredPosition: Vector3, walkmesh: Object3D, maxDistance?: number) => {
-  let intersects = [];
-  raycaster.set(desiredPosition, DIRECTION_DOWN);
-  raycaster.firstHitOnly = true;
-  intersects.push(raycaster.intersectObject(walkmesh, true));
-
-  raycaster.set(desiredPosition, DIRECTION_UP);
-  intersects.push(raycaster.intersectObject(walkmesh, true));
-  
-  intersects = intersects.flat();
-
-  if (maxDistance) {
-    intersects = intersects.filter((intersect) => intersect.distance < maxDistance);
-  }
-  
-  if (intersects.length === 0) {
-    return null;
-  }
-  
-  const hit = intersects[0];
-  
-  const triangleId = parseInt(hit.object.name);
-  const { lockedTriangles } = useGlobalStore.getState();
-  
-  if (lockedTriangles.includes(triangleId)) {
-    return null;
-  }
-  
-  return hit.point;
-}
-
 const intersectionRaycaster = new Raycaster();
 export const checkForIntersections = (object: Object3D, target: Vector3, blockages: Object3D[], camera: Camera) => {
   const needlePosition = new Vector3();

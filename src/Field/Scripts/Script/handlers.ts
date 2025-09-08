@@ -904,12 +904,18 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SHOW: ({ setState }) => {
     setState({ isVisible: true })
   },
-  SET: ({ movementController, scene, STACK }) => {
+  SET: ({ movementController, STACK }) => {
     const lastTwo = STACK.splice(-2);
-    const walkmesh = scene.getObjectByName('walkmesh') as Group;
     const knownPosition = lastTwo.map(numberToFloatingPoint) as [number, number];
     const vector = new Vector3(knownPosition[0], knownPosition[1], 0);
-    const position = getPositionOnWalkmesh(vector, walkmesh);
+    
+    const walkmeshController = useGlobalStore(state => state.walkmeshController);
+    if (!walkmeshController) {
+      console.warn('No walkmesh controller');
+      return;
+    }
+
+    const position = walkmeshController.getPositionOnWalkmesh(vector);
     if (!position) {
       console.warn('Position not found on walkmesh', vector);
       return;
