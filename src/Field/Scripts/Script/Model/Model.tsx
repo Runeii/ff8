@@ -199,6 +199,10 @@ const Model = ({animationController, models, scriptController, movementControlle
       return;
     }
 
+    if (movementController.getState().jump.directLine) {
+      return;
+    }
+
     animationGroupRef.current.position.z = 0;
     animationGroupRef.current.updateMatrixWorld(true);
     boundingbox.setFromObject(animationGroupRef.current, true);
@@ -212,8 +216,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     const rootBonePosition = rootBone.getWorldPosition(new Vector3());
     const hasHadZAdjusted = animationController.getState().activeAnimation?.hasBeenZAdjusted;
     const needsRealtimeZAdjustment =
-      animationController.getState().activeAnimation?.needsRealtimeZAdjustment
-      && !movementController.getState().jump.directLine;
+      animationController.getState().activeAnimation?.needsRealtimeZAdjustment;
     
     if (animationController.getState().activeAnimation?.clipId === animationController.getSavedAnimationId('standing') && standingBoundingBox.isEmpty()) {
       standingBoundingBox.setFromObject(animationGroupRef.current, true);
@@ -233,9 +236,10 @@ const Model = ({animationController, models, scriptController, movementControlle
     baseBoundingBoxZOffset.current = boundingbox.min.z;
     rootBoneDistanceFromStanding.current = rootBonePosition.z - boundingbox.min.z;
     
-    const centrePointOnWalkmesh = walkmeshController.getPositionOnWalkmesh(boundingbox.getCenter(boundingBoxCentre), boundingbox.max.z - boundingbox.min.z);
+    const centrePointOnWalkmesh = walkmeshController.getPositionOnWalkmesh(boundingbox.getCenter(boundingBoxCentre), 1);
     const zPosition = centrePointOnWalkmesh?.z ?? position.z
-    const z = zPosition - boundingbox.min.z
+    const z = zPosition - boundingbox.min.z;
+
     animationGroupRef.current.position.z = z
 
     animationController.setHasAdjustedZ(true);

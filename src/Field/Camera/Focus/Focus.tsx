@@ -12,6 +12,7 @@ const Focus = () => {
 
   const { cameraFocusObject, cameraFocusSpring } = useGlobalStore();
 
+  const activeZAdjustmentRef = useRef(0);
   useFrame(({scene}) => {
     if (!focusRef.current) {
       return;
@@ -31,25 +32,16 @@ const Focus = () => {
 
     const playerBoundingBox = targetMesh.userData.standingBoundingBox as Box3;
 
-    let longestDimension: 'x' | 'y' | 'z';
-    const lengthLongestDimension = Math.max(
-      playerBoundingBox.max.x - playerBoundingBox.min.x,
-      playerBoundingBox.max.y - playerBoundingBox.min.y,
-      playerBoundingBox.max.z - playerBoundingBox.min.z
-    );
-
-    if (lengthLongestDimension === playerBoundingBox.max.x - playerBoundingBox.min.x) {
-      longestDimension = 'x';
-    } else if (lengthLongestDimension === playerBoundingBox.max.y - playerBoundingBox.min.y) {
-      longestDimension = 'y';
-    } else {
-      longestDimension = 'z';
-    }
-
-    const height = lengthLongestDimension;
+    const height = playerBoundingBox.max.z - playerBoundingBox.min.z;
     const characterPosition = targetMesh.getWorldPosition(FOCUS_VECTOR);
 
-    characterPosition.z = characterPosition[longestDimension] + (height / 256) * useGlobalStore.getState().cameraFocusHeight;
+    const idealZ = characterPosition.z + (height / 256) * useGlobalStore.getState().cameraFocusHeight;
+    // Skip a frame before applying z adjustment to avoid jitter
+    if (idealZ !== activeZAdjustmentRef.current) {
+      activeZAdjustmentRef.current = idealZ
+      return;
+    }
+    characterPosition.z = activeZAdjustmentRef.current;
 
     if (!cameraFocusSpring) {
       focusRef.current.position.copy(characterPosition);
