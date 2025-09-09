@@ -1,12 +1,12 @@
 import { Sphere } from "@react-three/drei";
 import useGlobalStore from "../../../store";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Box3, Group, Mesh, Object3D, Vector3 } from "three";
+import { useEffect, useRef, useState } from "react";
+import { Group, Mesh, Object3D, Vector3 } from "three";
 import { getPartyMemberModelComponent } from "../../Scripts/Script/Model/modelUtils";
-import LerpValue from "../../../LerpValue";
 
-const FOCUS_VECTOR = new Vector3(0, 0, 0);
+const START_FOCUS_VECTOR = new Vector3(0, 0, 0);
+const END_FOCUS_VECTOR = new Vector3(0, 0, 0);
 
 const Focus = () => {
   const focusRef = useRef<Mesh>(null);
@@ -70,7 +70,7 @@ const Focus = () => {
       return;
     }
 
-    const startFocusPosition = currentFocusObject.getWorldPosition(new Vector3());
+    const startFocusPosition = currentFocusObject.getWorldPosition(START_FOCUS_VECTOR);
     startFocusPosition.z = currentFocusObject.userData.focusZPosition;
 
     if (currentFocusObject === targetFocusObject) {
@@ -83,9 +83,9 @@ const Focus = () => {
 
     const springValue = cameraFocusSpring.get();
 
-    const endFocusPosition = targetFocusObject.getWorldPosition(new Vector3());
+    const endFocusPosition = targetFocusObject.getWorldPosition(END_FOCUS_VECTOR);
     endFocusPosition.z = targetFocusObject.userData.focusZPosition;
-    console.log('lerping focus from', startFocusPosition, ' to ', endFocusPosition, ' at ', spring.get());
+
     focusRef.current.position.lerpVectors(
       startFocusPosition,
       endFocusPosition,
@@ -97,7 +97,7 @@ const Focus = () => {
 
   return (
     <Sphere args={[0.01, 32, 32]} name="focus" position={[0,0,0]} ref={focusRef}>
-      <meshBasicMaterial color="pink" transparent opacity={0.8} visible={true} />
+      <meshBasicMaterial color="pink" transparent opacity={0.8} visible={isDebugMode} />
     </Sphere>
   )
 }

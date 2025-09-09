@@ -40,8 +40,7 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
 
   const camera = useThree(({ scene }) => scene.getObjectByName("sceneCamera") as PerspectiveCamera);
 
-  const layerPanRef = useRef<{panX: number, panY: number}>({panX: 0, panY: 0});
-  const layerScroll = useCameraScroll('layer', layerPanRef, layer.renderID);
+  const layerScroll = useCameraScroll('layer', layer.renderID);
 
   useFrame(() => {
     if (!layerRef.current) {
