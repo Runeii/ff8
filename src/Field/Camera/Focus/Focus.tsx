@@ -71,7 +71,7 @@ const Focus = () => {
     }
 
     const startFocusPosition = currentFocusObject.getWorldPosition(START_FOCUS_VECTOR);
-    startFocusPosition.z = currentFocusObject.userData.focusZPosition;
+    startFocusPosition.z += currentFocusObject.userData.focusZPosition;
 
     if (currentFocusObject === targetFocusObject) {
       console.log('Focus is on target already', currentFocusObject.id, targetFocusObject.id);
@@ -84,7 +84,7 @@ const Focus = () => {
     const springValue = cameraFocusSpring.get();
 
     const endFocusPosition = targetFocusObject.getWorldPosition(END_FOCUS_VECTOR);
-    endFocusPosition.z = targetFocusObject.userData.focusZPosition;
+    endFocusPosition.z += targetFocusObject.userData.focusZPosition;
 
     focusRef.current.position.lerpVectors(
       startFocusPosition,

@@ -246,7 +246,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     animationGroupRef.current.position.z = z
 
     const height = standingBoundingBox.max.z - standingBoundingBox.min.z;
-    setFocusZPosition(zPosition + (height / 256) * useGlobalStore.getState().cameraFocusHeight);
+    setFocusZPosition((height / 256) * useGlobalStore.getState().cameraFocusHeight);
 
     animationController.setHasAdjustedZ(true);
   })

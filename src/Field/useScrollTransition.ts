@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { RefObject, useCallback, useRef } from "react";
 import useGlobalStore from "../store";
 import { useFrame, useThree } from "@react-three/fiber";
 import { MathUtils } from "three";
