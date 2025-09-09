@@ -120,7 +120,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     if (!isTransitioningMap) {
       return;
     }
-    animationController.stopAnimation();
+    animationController.pauseAnimation(true);
     movementController.pause();
   }, [animationController, isTransitioningMap, movementController, useScriptStateStore]);
 

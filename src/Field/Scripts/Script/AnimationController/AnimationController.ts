@@ -51,6 +51,8 @@ export const createAnimationController = (id: string | number) => {
 
     activeAnimation: undefined as AnimationItem | undefined,
     animationSpeed: 16, // Default speed, can be adjusted later
+
+    isPaused: false,
   }));
 
   let currentRunState: RunState | undefined = undefined;
@@ -78,6 +80,11 @@ export const createAnimationController = (id: string | number) => {
   }
 
   const tick = (delta: number) => {
+    const isPaused = getState().isPaused;
+    if (isPaused) {
+      return;
+    }
+
     const activeAnimation = getState().activeAnimation;
     if (!activeAnimation) {
       return;
@@ -198,7 +205,8 @@ export const createAnimationController = (id: string | number) => {
     }
 
     setState({
-      activeAnimation: animation
+      activeAnimation: animation,
+      isPaused: false,
     });
 
     return new Promise<void>((resolve) => {
@@ -219,6 +227,10 @@ export const createAnimationController = (id: string | number) => {
       mesh,
     })
     mixer.update(0);
+  }
+
+  const pauseAnimation = (shouldPause: boolean) => {
+    setState({ isPaused: shouldPause });
   }
 
   const setAnimationSpeed = (speed: number) => setState({ animationSpeed: speed });
@@ -352,7 +364,7 @@ export const createAnimationController = (id: string | number) => {
     isSafeToApplyMovementAnimation,
 
     subscribe: () => {},
-    stopAnimation: () => {},
+    pauseAnimation,
     setHeadBone: (head: Bone) => {
       //console.log(head)
     },

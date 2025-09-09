@@ -881,7 +881,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     }
   },
   ANIMESTOP: ({ animationController }) => {
-    animationController.stopAnimation();
+    animationController.pauseAnimation(true);
   },
   POPANIME: () => { },
   PUSHANIME: () => { },
