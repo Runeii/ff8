@@ -55,8 +55,8 @@ const useScrollTransition = (
 
     if (currentTransition !== transitionState.current.currentTransition) {
       transitionState.current.currentTransition = currentTransition;
-      transitionState.current.initialX = backgroundPanRef.current.panX;
-      transitionState.current.initialY = backgroundPanRef.current.panY;
+      transitionState.current.initialX = currentValue.current.x;
+      transitionState.current.initialY = currentValue.current.y;
       transitionState.current.startTime = state.clock.elapsedTime;
     }
 

@@ -1,10 +1,9 @@
 import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
-import { floatingPointToNumber, getPositionOnWalkmesh, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
+import { floatingPointToNumber, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script } from "../types";
 import { closeMessage, dummiedCommand, openMessage, enableMessageToClose, remoteExecute, remoteExecutePartyMember, unusedCommand, wait } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
-import { Group } from "three";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
 import { displayMessage, isKeyDown, KEY_FLAGS, isTouching, setCameraAndLayerFocus, wasKeyPressed, setCameraScroll, setLayerScroll } from "./common";
 import createScriptState, { ScriptState } from "./state";
@@ -1472,6 +1471,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const partyMemberId = STACK.pop() as number;
 
     const mesh = getPartyMemberModelComponent(scene, partyMemberId);
+    if (!mesh) {
+      console.warn('No mesh found for party member ID', partyMemberId, ' DSCROLLP');
+      return;
+    }
     setCameraAndLayerFocus(mesh, 0);
   },
   LSCROLLP: ({ scene, STACK }) => {
@@ -1479,6 +1482,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const partyMemberId = STACK.pop() as number;
 
     const mesh = getPartyMemberModelComponent(scene, partyMemberId);
+    if (!mesh) {
+      console.warn('No mesh found for party member ID', partyMemberId, ' LSCROLLP');
+      return;
+    }
     setCameraAndLayerFocus(mesh, duration);
   },
   CSCROLLP: ({ scene, STACK }) => {
@@ -1486,7 +1493,10 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const partyMemberId = STACK.pop() as number;
 
     const mesh = getPartyMemberModelComponent(scene, partyMemberId);
-    console.log('CSROLLP', partyMemberId, duration)
+    if (!mesh) {
+      console.warn('No mesh found for party member ID', partyMemberId, ' CSCROLLP');
+      return;
+    }
     setCameraAndLayerFocus(mesh, duration);
   },
   DSCROLLA: async ({ scene, STACK }) => {
@@ -1533,8 +1543,11 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     setCameraAndLayerFocus(mesh, duration);
   },
   SCROLLSYNC: async () => {
-    while (useGlobalStore.getState().cameraScrollOffset.isInProgress || Object.values(useGlobalStore.getState().layerScrollOffsets).some(transition => transition.isInProgress)) {
-      console.log('waiting for sync')
+    while (
+      useGlobalStore.getState().cameraScrollOffset.isInProgress ||
+      Object.values(useGlobalStore.getState().layerScrollOffsets).some(transition => transition.isInProgress) ||
+      useGlobalStore.getState().cameraFocusSpring?.isAnimating
+    ) {
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },

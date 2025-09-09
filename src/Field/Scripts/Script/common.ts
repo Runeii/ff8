@@ -1,4 +1,5 @@
 import { PSX_CONTROLS_MAP } from "../../../constants/controls";
+import LerpValue from "../../../LerpValue";
 import useGlobalStore from "../../../store";
 import { getScriptEntity } from "./Model/modelUtils";
 import { openMessage } from "./utils";
@@ -93,9 +94,9 @@ const constructScrollTransition = (currentTransition: CameraScrollTransition, ne
     endY: newY,
     duration,
     positioning,
-    isInProgress: true
+    isInProgress: true,
   }
-
+  console.log('Constructed scroll transition:', 'from', transition.startX, transition.startY, ' to ', transition.endX, transition.endY, ' over ', duration, 'ms, positioning:', positioning);
   return transition;
 }
 
@@ -123,14 +124,22 @@ export const setLayerScroll = (layerIndex: number, x: number, y: number, duratio
 }
 
 // This could probably smooth out resetting any set X/Ys
-export const setCameraAndLayerFocus = (object: Object3D | null, duration: number) => {
+export const setCameraAndLayerFocus = async (object: Object3D, duration: number) => {
   const { layerScrollOffsets } = useGlobalStore.getState();
   Object.keys(layerScrollOffsets).forEach((layerIndex) => {
-    setLayerScroll(Number(layerIndex), 0, 0, duration, 'camera');
+    setLayerScroll(Number(layerIndex), 0, 0, duration, 'camera', false);
   });
 
   setCameraScroll(0, 0, duration, 'camera');
+
+  const spring = new LerpValue(0);
   useGlobalStore.setState({
-    cameraFocusObject: object ?? undefined,
+    cameraFocusObject: object,
+    cameraFocusSpring: spring,
   })
+
+  spring.start(1, duration);
+  while (spring.isAnimating) {
+    await new Promise(requestAnimationFrame);
+  }
 }

@@ -95,11 +95,10 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
       backgroundPanRef.current.panY = 0
       return
     }
-    const cameraFocusObject = useGlobalStore.getState().cameraFocusObject;
 
-    const player = cameraFocusObject ?? scene.getObjectByName("focus");
+    const focusObject = scene.getObjectByName("focus");
 
-    if (!initialCameraTargetPosition || !player) {
+    if (!initialCameraTargetPosition || !focusObject) {
       return
     }
 
@@ -107,8 +106,8 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     const initialCameraRotation = camera.rotation.clone();
     const initialCameraQuaternion = new Quaternion().setFromEuler(initialCameraRotation);
 
-    const position = player.position.clone();
-    player.getWorldPosition(position);
+    const position = focusObject.position.clone();
+    focusObject.getWorldPosition(position);
     camera.lookAt(position);
 
     const currentCameraQuaternion = new Quaternion().setFromEuler(camera.rotation);

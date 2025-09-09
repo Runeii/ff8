@@ -190,6 +190,7 @@ const Model = ({animationController, models, scriptController, movementControlle
     }
   });
 
+  const [focusZPosition, setFocusZPosition] = useState<number>(0);
   useFrame(() => {
     if (!animationGroupRef.current) {
       return;
@@ -243,6 +244,9 @@ const Model = ({animationController, models, scriptController, movementControlle
     const z = zPosition - boundingbox.min.z;
 
     animationGroupRef.current.position.z = z
+
+    const height = standingBoundingBox.max.z - standingBoundingBox.min.z;
+    setFocusZPosition(zPosition + (height / 256) * useGlobalStore.getState().cameraFocusHeight);
 
     animationController.setHasAdjustedZ(true);
   })
@@ -319,7 +323,8 @@ const Model = ({animationController, models, scriptController, movementControlle
       </Box>
       <group name="model" ref={animationGroupRef} userData={{
         boundingbox,
-        standingBoundingBox
+        standingBoundingBox,
+        focusZPosition
       }}>
         <ModelComponent
           mapName={fieldId}
