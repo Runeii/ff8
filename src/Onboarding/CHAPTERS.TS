@@ -1,4 +1,9 @@
 export const CHAPTERS = {
+  'Intro': {
+    fieldId: 'start0',
+    progress: 0,
+    party: [0]
+  },
   'The Landing': {
     fieldId: 'bvcar_1',
     progress: 0
@@ -6,6 +11,7 @@ export const CHAPTERS = {
   'First Laguna dream': {
     fieldId: 'testbl6',
     progress: 22,
+    party: [8,9,10]
   },
   'Winhill': {
     fieldId: 'gfelone2',

@@ -1,24 +1,11 @@
 import { useEffect } from "react";
 import { openMessage } from "../Field/Scripts/Script/utils";
-import MAP_NAMES from "../constants/maps";
 import useGlobalStore from "../store";
 import { loadGame } from "../Field/fieldUtils";
 import { offlineController } from "../OfflineController";
-
-const points: Record<string, typeof MAP_NAMES[number]> = {
-  "Balamb Garden": 'bghall_1',
-  "Balamb": 'bcgate_1',
-  "Dollet Town": 'dosea_1',
-  "Timber": 'tigate1',
-  "Deling City": 'glsta1',
-  "Fisherman's Horizon": 'fhwisef2',
-  "Esthar": 'ecpview1',
-  "Winhill": 'gflain1a',
-  "Deep Sea Research Centre": 'sdisle1',
-  "Tear's Point": 'eeview1',
-  "Shumi Village": 'tmdome1',
-  "Lab": 'edview1b',
-}
+import { CHAPTERS } from "./CHAPTERS";
+import { MEMORY } from "../Field/Scripts/Script/handlers";
+import MAP_NAMES from "../constants/maps";
 
 const closeAllWindows = () => {
   useGlobalStore.setState({
@@ -29,12 +16,12 @@ const closeAllWindows = () => {
 const hasSavedData = !!(window.localStorage.getItem('saveData'));
 
 const fieldSelect = async (set = 0) => {
-  const options = Object.keys(points).slice(set * 8, set * 8 + 8);
+  const options = Object.keys(CHAPTERS).slice(set * 8, set * 8 + 8);
   const isFirstPage = set === 0;
   const selectedOption = await openMessage('fieldSelect', [`Field Select\n${options.join('\n')}\n{Blue}${isFirstPage ? 'Next Page' : 'Previous Page'}{White}\nCancel`], { channel: 1, x: 0,  y:15, width: undefined, height: undefined }, true, {
     first: 1,
     default: 1,
-    cancel: Object.keys(points).length - 1,
+    cancel: Object.keys(CHAPTERS).length - 1,
     last: undefined,
     blocked: undefined
    });
@@ -50,10 +37,20 @@ const fieldSelect = async (set = 0) => {
     return;
   }
 
-  useGlobalStore.setState({
+  const selection = Object.values(CHAPTERS)[selectedOption + set * 8];
+  if (!selection) {
+    mainMenuSelect(3);
+    return;
+  }
+
+  useGlobalStore.setState(state => ({
     fieldId: undefined,
-    pendingFieldId: Object.values(points)[selectedOption + set * 8],
-  })
+    pendingFieldId: selection.fieldId! as typeof MAP_NAMES[number],
+    // @ts-expect-error Not sepecified in all chapters
+    party: selection.party ?? state.party
+  }));
+
+  MEMORY[256] = selection.progress;
 }
 
 const optionsSelect = async () => {
