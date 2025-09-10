@@ -11,7 +11,7 @@ export const getPartyMemberModelComponent = (scene: Scene, partyMemberIndex: num
   if (partyMemberId === undefined) {
     return null;
   }
-  const partyMemberGroup= scene.getObjectByName(`party--${partyMemberId}`) as Object3D;
+  const partyMemberGroup = scene.getObjectByName(`party--${partyMemberId}`) as Object3D;
   if (!partyMemberGroup) {
     //console.warn(`Party member model ${partyMemberId}/${partyMemberIndex} not found`);
     return null;

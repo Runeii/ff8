@@ -3,7 +3,7 @@ import useGlobalStore from "../../../store";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { Group, Mesh, Object3D, Vector3 } from "three";
-import { getPartyMemberModelComponent } from "../../Scripts/Script/Model/modelUtils";
+import { getPlayerEntity } from "../../Scripts/Script/Model/modelUtils";
 
 const START_FOCUS_VECTOR = new Vector3(0, 0, 0);
 const END_FOCUS_VECTOR = new Vector3(0, 0, 0);
@@ -18,22 +18,6 @@ const Focus = () => {
   const [targetFocusObject, setTargetFocusObject] = useState<Object3D | null>(null);
 
   const scene = useThree(state => state.scene);
-
-  useFrame(() => {
-    if (currentFocusObject) {
-      return;
-    }
-
-    const player = getPartyMemberModelComponent(scene, 0);
-    const targetMesh = player?.getObjectByName("model") as Group;
-    if (!targetMesh) {
-      console.warn('No player model found for focus');
-      return;
-    }
-    
-    setCurrentFocusObject(targetMesh);
-    setTargetFocusObject(targetMesh);
-  });
 
   useEffect(() => {
     if (!cameraFocusObject) {
@@ -61,13 +45,19 @@ const Focus = () => {
       return;
     }
 
+    let focusObject = currentFocusObject;
     if (!currentFocusObject) {
+      const player = getPlayerEntity(scene);
+      focusObject = player?.getObjectByName("model") as Group;
+    }
+
+    if (!focusObject) {
       return;
     }
 
-    const startFocusPosition = currentFocusObject.getWorldPosition(START_FOCUS_VECTOR);
+    const startFocusPosition = focusObject.getWorldPosition(START_FOCUS_VECTOR);
+    startFocusPosition.z += focusObject.userData.focusZPosition;
 
-    startFocusPosition.z += currentFocusObject.userData.focusZPosition;
     if (!targetFocusObject || currentFocusObject === targetFocusObject || !cameraFocusSpring) {
       focusRef.current.position.copy(startFocusPosition);
       return;

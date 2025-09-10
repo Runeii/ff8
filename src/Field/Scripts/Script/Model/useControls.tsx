@@ -10,8 +10,8 @@ import createRotationController from "../RotationController/RotationController";
 import { getPlayerEntity } from "./modelUtils";
 
 const SPEED = {
-  WALKING: 1.2,
-  RUNNING: 0.6,
+  WALKING: 0.1,
+  RUNNING: 0.2,
 }
 
 type useControlsProps = {
@@ -21,7 +21,6 @@ type useControlsProps = {
   rotationController: ReturnType<typeof createRotationController>;
 }
 
-const direction = new Vector3();
 const desiredPosition = new Vector3(0, 0, 0);
 
 const useControls = ({ characterHeight, isActive, movementController, rotationController }: useControlsProps) => {
@@ -104,18 +103,16 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
 
   const [forwardDirection] = useState(new Vector3(0, -1, 0));
   const [upDirection] = useState(new Vector3(0, 0, 1));
-
-  const handleFrame = useCallback(async (camera: PerspectiveCamera, scene: Scene, delta: number) => {
-    if (!isActive || !isUserControllable || !hasPlacedCharacter || isTransitioningMap) {
-      return;
-    }
+  const handleFrame = useCallback(async (
+    camera: PerspectiveCamera,
+    scene: Scene,
+    delta: number
+  ) => {
+    if (!isActive || !isUserControllable || !hasPlacedCharacter || isTransitioningMap) return;
 
     const { goal, userControlledSpeed, isPaused } = movementController.getState().position;
+    if (goal && userControlledSpeed !== undefined && !isPaused) return;
 
-    if (goal && userControlledSpeed !== undefined && !isPaused) {
-      return;
-    }
-    
     const player = getPlayerEntity(scene);
     if (!player) {
       console.warn("No player entity found in scene");
@@ -123,68 +120,71 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     }
 
     const isTurning = rotationController.getState().angle.isAnimating;
-    if (!walkmeshController || !isUserControllable || isTurning) {
-      return;
-    }
+    if (!walkmeshController || !isUserControllable || isTurning) return;
 
     const movementAngle = handleMovement();
+    if (movementAngle === null) return;
 
-    if (movementAngle === null) {
-      return;
-    }
-
+    // Rotate character to face movement direction
     rotationController.turnToFaceAngle(movementAngle, 0);
 
+    // Determine movement speed
     const isWalking = !isRunEnabled || movementFlags.isWalking;
-    const speed = isWalking ? SPEED.WALKING : SPEED.RUNNING
-    direction.normalize().multiplyScalar(speed).multiplyScalar(delta);
-    const movementSpeed = isWalking ? 2560 : 7560
+    const speed = isWalking ? SPEED.WALKING : SPEED.RUNNING; // units per second
 
     const currentPosition = movementController.getPosition();
-    if (!currentPosition) {
-      return;
-    }
+    if (!currentPosition) return;
 
+    // Calculate movement direction in world space
     upDirection.set(0, 0, 1);
     const meshUp = upDirection.applyQuaternion(player.quaternion).normalize();
 
     forwardDirection.set(0, -1, 0);
-    const meshForward = forwardDirection.applyAxisAngle(meshUp, convert256ToRadians(movementAngle));
+    const meshForward = forwardDirection.applyAxisAngle(meshUp, convert256ToRadians(movementAngle)).normalize();
 
-    const directionAdjustmentForSpeed = speed * 1000;
-    desiredPosition.set(
-      currentPosition.x,
-      currentPosition.y,
-      currentPosition.z
-    ).add(meshForward.divideScalar(directionAdjustmentForSpeed))
+    // Compute movement distance scaled by delta
+    const moveDistance = speed * delta;
+    desiredPosition.copy(currentPosition).add(meshForward.multiplyScalar(moveDistance));
 
+    // Snap to walkmesh
     const newPosition = walkmeshController.getPositionOnWalkmesh(
       desiredPosition,
       characterHeight / 2,
-      false,
+      false
     );
+    if (!newPosition) return;
 
-    if (!newPosition) {
-      return
-    }
-
+    // Check collisions
     const blockages: Object3D[] = [];
-    scene.traverse((object) => {
-      if (object.userData.isSolid) {
-        blockages.push(object);
-      }
+    scene.traverse(object => {
+      if (object.userData.isSolid) blockages.push(object);
     });
 
     const isPermitted = checkForIntersections(player, newPosition, blockages, camera);
+    if (!isPermitted) return;
 
-    if (!isPermitted) {
-      return;
-    }
-
+    // Apply movement
     movementController.setPosition(newPosition);
     movementController.setHasMoved(true);
+
+    // Return updated info (optional)
+    const movementSpeed = isWalking ? 2560 : 7560;
     return [newPosition, movementSpeed];
-  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking, upDirection, forwardDirection, characterHeight]);
+  }, [
+    isActive,
+    isUserControllable,
+    hasPlacedCharacter,
+    isTransitioningMap,
+    movementController,
+    rotationController,
+    walkmeshController,
+    handleMovement,
+    isRunEnabled,
+    movementFlags.isWalking,
+    upDirection,
+    forwardDirection,
+    characterHeight
+  ]);
 
   const handleUpdateCongaWaypoint = useCallback((newPosition: Vector3 | null, movementSpeed: number) => {
     const isClimbingLadder = movementController.getState().isClimbingLadder;
