@@ -405,9 +405,9 @@ export const createAnimationController = (id: string | number) => {
 
     subscribe: () => {},
     pauseAnimation,
-    setHeadBone: (head: Bone) => {
-      console.log(head)
-    },
+    // @eslint-disable-next-line @typescript-eslint/no-empty-function
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setHeadBone: (_head: Bone) => {},
     setLadderAnimation,
     playLadderAnimation,
     stopLadderAnimation,
