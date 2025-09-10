@@ -716,7 +716,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
     await animationController.playAnimation(animationId);
   },
-  ANIMEKEEP: async ({ animationController, currentOpcode, script }) => {
+  ANIMEKEEP: async ({ animationController, currentOpcode }) => {
     const animationId = currentOpcode.param;
 
     await animationController.playAnimation(animationId, {
