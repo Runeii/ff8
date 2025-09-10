@@ -1,6 +1,7 @@
-import { AnimationAction, AnimationClip, AnimationMixer, Bone, Object3D } from "three";
+import { AnimationAction, AnimationClip, AnimationMixer, Bone, Object3D, Vector3 } from "three";
 import { create } from "zustand"
 import { applyAnimationAtTime } from "./animationUtils";
+import createMovementController from "../MovementController/MovementController";
 
 type AnimationItem = {
   id: string;
@@ -53,6 +54,7 @@ export const createAnimationController = (id: string | number) => {
     animationSpeed: 16, // Default speed, can be adjusted later
 
     isPaused: false,
+    isMovementTickEnabled: true,
   }));
 
   let currentRunState: RunState | undefined = undefined;
@@ -164,7 +166,9 @@ export const createAnimationController = (id: string | number) => {
     }) => {
     const clip = getState().clips[clipId]
     if (!clip) {
-      console.warn(`Animation with ID ${clipId} not found`);
+      if (!options || !options.isFromMovement) {
+        console.warn(`Animation with ID ${clipId} not found for model ${id}`);
+      }
       return;
     }
 
@@ -303,7 +307,7 @@ export const createAnimationController = (id: string | number) => {
       return true;
     }
 
-    if (activeAnimation.shouldHoldLastFrame && currentRunState?.isComplete) {
+    if (!activeAnimation.shouldHoldLastFrame && currentRunState?.isComplete) {
       return true;
     }
 
@@ -348,8 +352,36 @@ export const createAnimationController = (id: string | number) => {
     }
   }
 
+  const lastPosition = new Vector3();
+
+  const movementAnimationTick = (movementController: ReturnType<typeof createMovementController>) => {
+    if (!isSafeToApplyMovementAnimation()) {
+      return;
+    }
+
+    const currentPosition = movementController.getState().position.current;
+
+    if (currentPosition.equals(lastPosition)) {
+      playMovementAnimation('standing');
+      return;
+    }
+    
+    const movementSpeed = movementController.getMovementSpeed();
+    
+    if (!movementSpeed) {
+      playMovementAnimation('standing');
+    } else if (movementSpeed > 3600) {
+      playMovementAnimation('running');
+    } else {
+      playMovementAnimation('walking');
+    }
+
+    lastPosition.copy(currentPosition);
+  }
+
   return {
     tick,
+    movementAnimationTick,
     playAnimation,
     initialize,
     setAnimationSpeed,

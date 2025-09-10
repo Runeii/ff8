@@ -3,7 +3,6 @@ import { create } from "zustand";
 import { numberToFloatingPoint } from "../../../../utils";
 import PromiseSignal from "../../../../PromiseSignal";
 import useGlobalStore from "../../../../store";
-import createRotationController from "../RotationController/RotationController";
 import createScriptState from "../state";
 import JumpCurve from "./JumpCurve";
 
@@ -251,13 +250,7 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       }
     });
 
-    if (id ===8) {
-      console.log('Setting offset', target)
-    }
     await signal.promise;
-    if (id ===8) {
-    console.log('Offset reached', getState().offset.current)
-    }
   }
 
   const getPosition = () => {
@@ -392,7 +385,7 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     const { current: currentPosition, duration, isAllowedToCrossBlockedTriangles, isAllowedToLeaveWalkmesh, goal: positionGoal } = position;
 
     const movementSpeed = getMovementSpeed();
-    
+
     if (positionGoal) {
       const speed = movementSpeed / 2560
       const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
@@ -495,30 +488,6 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
       getPosition().y,
       getPosition().z
     );
-
-    if (useScriptStateStore.getState().partyMemberId !== useGlobalStore.getState().party[0]) {
-      return;
-    }
-
-    useGlobalStore.setState(state => {
-      state.hasMoved = true;
-
-      const latestCongaWaypoint = state.congaWaypointHistory.at(-1);
-      if (latestCongaWaypoint && latestCongaWaypoint.position.distanceTo(entity.position) < 0.002) {
-        return state;
-      }
-
-      state.congaWaypointHistory.push({
-        position: entity.position.clone(),
-        angle: (entity.userData.rotationController as ReturnType<typeof createRotationController>).getState().angle.get(),
-        speed: movementSpeed,
-        isClimbingLadder: position.isClimbingLadder,
-      })
-      if (state.congaWaypointHistory.length > 100) {
-        state.congaWaypointHistory.shift();
-      }
-      return state;
-    });
   }
 
   const reset = () => {
@@ -566,6 +535,15 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     return userControlledSpeed !== undefined ? userControlledSpeed : movementSpeed;
   }
 
+  const setUserControlledSpeed = (speed: number | undefined) => {
+    setState({
+      position: {
+        ...getState().position,
+        userControlledSpeed: speed,
+      }
+    })
+  }
+
   return {
     getState,
     getPosition,
@@ -589,7 +567,8 @@ const createMovementController = (id: string | number, useScriptStateStore: Retu
     setHasMoved,
     isMoving,
     getMovementSpeed,
-    jumpToPosition
+    jumpToPosition,
+    setUserControlledSpeed
   }
 }
 

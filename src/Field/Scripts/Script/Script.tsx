@@ -82,6 +82,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     }
 
     animationController.tick(delta);
+    animationController.movementAnimationTick(movementController);
   });
 
   useEffect(() => {
@@ -129,7 +130,7 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
     if (!entityRef.current || script.type !== 'model') {
       return;
     }
-
+    
     movementController.tick(entityRef.current, delta);
 
     entityRef.current.quaternion.identity();

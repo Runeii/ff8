@@ -180,13 +180,33 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     if (!isPermitted) {
       return;
     }
-    await movementController.moveToPoint(newPosition, {
-      isAnimationEnabled: true,
-      isAllowedToCrossBlockedTriangles: false,
-      userControlledSpeed: movementSpeed,
-    });
+
+    movementController.setPosition(newPosition);
     movementController.setHasMoved(true);
+    return [newPosition, movementSpeed];
   }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking, upDirection, forwardDirection, characterHeight]);
+
+  const handleUpdateCongaWaypoint = useCallback((newPosition: Vector3 | null, movementSpeed: number) => {
+    const isClimbingLadder = movementController.getState().isClimbingLadder;
+
+    if (!newPosition) {
+      return;
+    }
+    useGlobalStore.setState(state => {
+      state.hasMoved = true;
+
+      state.congaWaypointHistory.push({
+        position: newPosition.clone(),
+        angle: rotationController.getState().angle.get(),
+        speed: movementSpeed,
+        isClimbingLadder,
+      })
+      if (state.congaWaypointHistory.length > 100) {
+        state.congaWaypointHistory.shift();
+      }
+      return state;
+    });
+  }, [movementController, rotationController]);
 
   useFrame(({ scene }, delta) => {
     if (!isActive) {
@@ -199,7 +219,11 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     }
 
     const camera = scene.getObjectByName("sceneCamera") as PerspectiveCamera;
-    handleFrame(camera as PerspectiveCamera, scene, delta);
+    handleFrame(camera as PerspectiveCamera, scene, delta).then((returnedValue) => {
+      const [newPosition, movementSpeed] = (returnedValue ?? [null, 0]) as [Vector3 | null, number];
+      movementController.setUserControlledSpeed(movementSpeed > 0 ? movementSpeed : undefined);
+      handleUpdateCongaWaypoint(newPosition,movementSpeed);
+    });
   });
 }
 

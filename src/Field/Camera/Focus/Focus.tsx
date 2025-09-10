@@ -27,23 +27,22 @@ const Focus = () => {
     const player = getPartyMemberModelComponent(scene, 0);
     const targetMesh = player?.getObjectByName("model") as Group;
     if (!targetMesh) {
-      console.log('No player model found for focus');
+      console.warn('No player model found for focus');
       return;
     }
     
     setCurrentFocusObject(targetMesh);
     setTargetFocusObject(targetMesh);
-    console.log('Set defaults. Current:', targetMesh, ' Target:', targetMesh)
   });
 
   useEffect(() => {
-    if (!cameraFocusObject || !cameraFocusSpring) {
+    if (!cameraFocusObject) {
       return;
     }
 
     const targetMesh = cameraFocusObject.getObjectByName("model") as Group;
     if (!targetMesh) {
-      console.log('Bad camera focus, no inner model!');
+      console.warn('Bad camera focus, no inner model!');
       return;
     }
 
@@ -55,9 +54,6 @@ const Focus = () => {
       setCurrentFocusObject(currentValue);
       return targetMesh;
     });
-    console.log('updated target focus', targetMesh, ' from ', cameraFocusObject);
-    cameraFocusSpring.set(0);
-    cameraFocusSpring.start(1, 16);
   }, [cameraFocusObject, cameraFocusSpring, targetFocusObject]);
 
   useFrame(() => {
@@ -66,16 +62,12 @@ const Focus = () => {
     }
 
     if (!currentFocusObject) {
-      console.log('No current focus object');
       return;
     }
 
     const startFocusPosition = currentFocusObject.getWorldPosition(START_FOCUS_VECTOR);
-    startFocusPosition.z += currentFocusObject.userData.focusZPosition;
 
-    if (currentFocusObject === targetFocusObject) {
-      console.log('Focus is on target already', currentFocusObject.id, targetFocusObject.id);
-    }
+    startFocusPosition.z += currentFocusObject.userData.focusZPosition;
     if (!targetFocusObject || currentFocusObject === targetFocusObject || !cameraFocusSpring) {
       focusRef.current.position.copy(startFocusPosition);
       return;

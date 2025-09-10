@@ -137,59 +137,6 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   const walkmeshController = useGlobalStore(state => state.walkmeshController);
 
-  const frameWaitTimerRef = useRef(0);
-  const hasAppliedMovementAnimation = useRef(false);
-  useFrame(() => {
-    // If this character is a follower, don't apply movement animations
-    // Not the most DRY way of doing things but proves a headache otherwise
-    if (isFollower) {
-      return;
-    }
-    const isAnimatingTowardsTarget = movementController.getState().position.isAnimationEnabled;
-
-    if (!isAnimatingTowardsTarget) {
-      hasAppliedMovementAnimation.current = false;
-      return;
-    }
-
-    if (!animationController.isSafeToApplyMovementAnimation()) {
-      hasAppliedMovementAnimation.current = false;
-      return;
-    }
-    const isMoving = movementController.isMoving();
-
-    const isCurrentlyStanding = animationController.getSavedAnimation().standingId === animationController.getState().activeAnimation?.clipId;
-    const isCurrentlyWalking = animationController.getSavedAnimation().walkingId === animationController.getState().activeAnimation?.clipId;
-    const isCurrentlyRunning = animationController.getSavedAnimation().runningId === animationController.getState().activeAnimation?.clipId;
-
-    if (!isMoving && !isCurrentlyStanding && hasAppliedMovementAnimation.current) {
-      frameWaitTimerRef.current += 1;
-
-      if (frameWaitTimerRef.current >= 5) {
-        animationController.playMovementAnimation('standing');
-        frameWaitTimerRef.current = 0;
-      }
-
-      return;
-    }
-    
-    if (!isMoving) {
-      return;
-    }
-    
-    const movementSpeed = movementController.getMovementSpeed();
-
-    if (movementSpeed > 4000 && !isCurrentlyRunning) {
-      animationController.playMovementAnimation('running');
-      hasAppliedMovementAnimation.current = true;
-    }
-
-    if (movementSpeed <= 4000 && !isCurrentlyWalking) {
-      animationController.playMovementAnimation('walking');
-      hasAppliedMovementAnimation.current = true;
-    }
-  });
-
   const [focusZPosition, setFocusZPosition] = useState<number>(0);
   useFrame(() => {
     if (!animationGroupRef.current) {
@@ -221,6 +168,8 @@ const Model = ({animationController, models, scriptController, movementControlle
     
     if (animationController.getState().activeAnimation?.clipId === animationController.getSavedAnimationId('standing') && standingBoundingBox.isEmpty()) {
       standingBoundingBox.setFromObject(animationGroupRef.current, true);
+      const height = standingBoundingBox.max.z - standingBoundingBox.min.z;
+      setFocusZPosition((height / 256) * useGlobalStore.getState().cameraFocusHeight);
     }
 
     if (hasHadZAdjusted && !needsRealtimeZAdjustment) {
@@ -244,9 +193,6 @@ const Model = ({animationController, models, scriptController, movementControlle
     const z = zPosition - boundingbox.min.z;
 
     animationGroupRef.current.position.z = z
-
-    const height = standingBoundingBox.max.z - standingBoundingBox.min.z;
-    setFocusZPosition((height / 256) * useGlobalStore.getState().cameraFocusHeight);
 
     animationController.setHasAdjustedZ(true);
   })

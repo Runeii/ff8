@@ -51,7 +51,7 @@ export let MEMORY: Record<number, number> = {
   1024: 0,
   1025: 0,
   
-  84: 566, // last area visited
+  84: 201, // last area visited
 
   256: 0, // progress
   528: 0, // subprogress
@@ -908,7 +908,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const knownPosition = lastTwo.map(numberToFloatingPoint) as [number, number];
     const vector = new Vector3(knownPosition[0], knownPosition[1], 0);
     
-    const walkmeshController = useGlobalStore(state => state.walkmeshController);
+    const walkmeshController = useGlobalStore.getState().walkmeshController;
     if (!walkmeshController) {
       console.warn('No walkmesh controller');
       return;

@@ -1,4 +1,4 @@
-const FPS = 12;
+const FPS = 30;
 
 class LerpValue {
   private currentValue: number;
@@ -19,7 +19,7 @@ class LerpValue {
   }
 
   calculateDuration(speed: number): number {
-    return speed * 2 / FPS * 1000;
+    return speed / FPS * 1000;
   }
 
   start(targetValue: number, duration: number, delay: number = 0, isLooping: boolean = false): Promise<void> {
