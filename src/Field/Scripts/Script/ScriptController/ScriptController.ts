@@ -181,10 +181,6 @@ const createScriptController = ({
       return;
     }
 
-    if (script.groupId === 1) {
-      console.log('Is starting opcode', method.opcodes[activeOpcodeIndex], activeOpcodeIndex, method.opcodes.length, structuredClone(queueSnapshot));
-    }
-
     updateQueueItem({
       ...queueItem,
       isAwaiting: true,
@@ -238,9 +234,7 @@ const createScriptController = ({
         id: script.groupId,
         opcode: `Completed: ${activeOpcode.name}`,
       }));
-      if (script.groupId === 1) {
-        console.log('Resolved opcode', activeOpcode.name, nextIndex, structuredClone(queueSnapshot));
-      }
+
       resolve();
     })
   }

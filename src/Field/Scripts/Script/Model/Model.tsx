@@ -220,7 +220,6 @@ const Model = ({animationController, models, scriptController, movementControlle
   
   useFollower({
     isActive: !!isFollower,
-    animationController,
     movementController,
     rotationController,
     partyMemberId

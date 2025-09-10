@@ -23,7 +23,7 @@ export const handleLadder = async (
   const startLadderClimbPosition = new Vector3(middle.x, middle.y, standingPosition.z);
   const endLadderClimbPosition = new Vector3(middle.x, middle.y, end.z);
   const finalStandingPosition = new Vector3(end.x, end.y, end.z);
-  console.log('start', startLadderClimbPosition);
+
   await movementController.moveToPoint(startLadderClimbPosition, {
     isFacingTarget: false,
     isAllowedToCrossBlockedTriangles: true,
@@ -31,7 +31,6 @@ export const handleLadder = async (
     isAnimationEnabled: false
   })
   
-  console.log('mod');
   animationController.playLadderAnimation();
   await movementController.moveToPoint(endLadderClimbPosition, {
     isFacingTarget: false,
@@ -40,7 +39,6 @@ export const handleLadder = async (
     isAnimationEnabled: false,
     isClimbingLadder: true
   })
-  console.log('end');
 
   const checkIfIsStillOnMap = () =>
     useGlobalStore.getState().fieldId === startedClimbingOnFieldId &&
