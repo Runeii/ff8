@@ -28,6 +28,7 @@ if (namedField) {
     pendingFieldId: namedField as typeof MAP_NAMES[number]
   })
 }
+
 export default function App() {
   const isTabActive = useIsTabActive();
 

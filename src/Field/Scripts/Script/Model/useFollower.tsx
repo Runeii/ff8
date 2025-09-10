@@ -26,7 +26,6 @@ const useFollower = ({ isActive, movementController, partyMemberId, rotationCont
     const history = congaWaypointHistory.at(-1 * offset * DISTANCE - 1);
 
     if (!isUserControllable) {
-      console.log('Resetting conga history');
       if (congaWaypointHistory.length > 0) {
         useGlobalStore.setState({
           congaWaypointHistory: []
@@ -60,15 +59,17 @@ const useFollower = ({ isActive, movementController, partyMemberId, rotationCont
       return;
     }
 
-    const { isClimbingLadder, position, speed, angle } = history;
-    console.log(history)
+    const { position, speed, angle } = history;
+
     if (position.equals(movementController.getPosition()) && angle === rotationController.getState().angle.get()) {
       return;
     }
 
     rotationController.turnToFaceAngle(angle, 0);
-    movementController.setUserControlledSpeed(speed);
-    movementController.setPosition(position);
+
+    movementController.moveToPoint(position, {
+      userControlledSpeed: speed,
+    });
   }, [isActive, movementController, partyMemberId, rotationController]);
 
   useFrame((state) => {

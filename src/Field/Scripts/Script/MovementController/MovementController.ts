@@ -3,7 +3,6 @@ import { create } from "zustand";
 import { numberToFloatingPoint } from "../../../../utils";
 import PromiseSignal from "../../../../PromiseSignal";
 import useGlobalStore from "../../../../store";
-import createScriptState from "../state";
 import JumpCurve from "./JumpCurve";
 
 type MoveOptions = {
@@ -18,7 +17,7 @@ type MoveOptions = {
   distanceToStopAnimationFromTarget: number;
 }
 
-const createMovementController = (id: string | number, useScriptStateStore: ReturnType<typeof createScriptState>) => {
+const createMovementController = (id: string | number) => {
   const {getState, setState, subscribe} = create(() => ({
     hasBeenPlaced: false,
     hasMoved: false,

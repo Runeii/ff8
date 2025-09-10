@@ -102,7 +102,7 @@ const createScriptController = ({
     // - If an item is looping (ie: is default), this can always be interrupted
     // - Do not interrupt an active item otherwise
     const frozenQueue = [...currentQueue];
-    const [activeItem, ...queuedItems] = frozenQueue;
+    const [activeItem] = frozenQueue;
 
     if (newItem.isGuaranteed || !activeItem || (frozenQueue.length === 1 && activeItem.isLooping)) {
       // If there's no active item or the only item is looping, add it to the front and immediately run
@@ -110,14 +110,15 @@ const createScriptController = ({
       return;
     }
   
+    const [cleanActiveItem, ...cleanQueue] = frozenQueue.filter(item => item.method.methodId !== newItem.method.methodId || item.isGuaranteed);
     // 0 is highest
-    const insertAtIndex = queuedItems.findIndex(item => item.priority > newItem.priority);
+    const insertAtIndex = cleanQueue.findIndex(item => item.priority > newItem.priority);
     const isTopPriority = insertAtIndex === -1;
 
     if (isTopPriority) {
-      queuedItems.unshift(newItem);
+      cleanQueue.unshift(newItem);
     } else {
-      queuedItems.splice(insertAtIndex, 0, newItem);
+      cleanQueue.splice(insertAtIndex, 0, newItem);
     }
 
     sendToDebugger('queue', JSON.stringify({
@@ -126,7 +127,7 @@ const createScriptController = ({
       opcode: `QUEUE: ADD ${newItem.uniqueId} ${newItem.method.methodId}`,
     }));
     
-    const updatedQueueItem = [activeItem, ...queuedItems];
+    const updatedQueueItem = [cleanActiveItem, ...cleanQueue].filter(Boolean);
 
     setState({ queue: updatedQueueItem });
   }
@@ -178,6 +179,10 @@ const createScriptController = ({
 
     if (isAwaiting) {
       return;
+    }
+
+    if (script.groupId === 1) {
+      console.log('Is starting opcode', method.opcodes[activeOpcodeIndex], activeOpcodeIndex, method.opcodes.length, structuredClone(queueSnapshot));
     }
 
     updateQueueItem({
@@ -233,7 +238,9 @@ const createScriptController = ({
         id: script.groupId,
         opcode: `Completed: ${activeOpcode.name}`,
       }));
-
+      if (script.groupId === 1) {
+        console.log('Resolved opcode', activeOpcode.name, nextIndex, structuredClone(queueSnapshot));
+      }
       resolve();
     })
   }

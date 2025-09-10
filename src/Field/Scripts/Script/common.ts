@@ -1,6 +1,7 @@
 import { PSX_CONTROLS_MAP } from "../../../constants/controls";
 import LerpValue from "../../../LerpValue";
 import useGlobalStore from "../../../store";
+import { checkForIntersectingMeshes } from "../../Gateways/gatewayUtils";
 import { getScriptEntity } from "./Model/modelUtils";
 import { openMessage } from "./utils";
 import { Group, Object3D, Scene, Vector3 } from "three";
@@ -26,10 +27,12 @@ export const isTouching = (thisId: number, targetName: string, scene: Scene) => 
     return false;
   }
 
+  const isIntersecting = checkForIntersectingMeshes(thisMesh, targetMesh);
+
   const thisPosition = thisMesh.getWorldPosition(new Vector3());
   const targetPosition = targetMesh.getWorldPosition(new Vector3());
 
-  return thisPosition.distanceTo(targetPosition) < 0.001;
+  return thisPosition.distanceTo(targetPosition) < 0.04 || isIntersecting;
 }
 
 

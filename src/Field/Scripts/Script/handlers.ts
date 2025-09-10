@@ -87,63 +87,21 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     STACK.push(currentOpcode.param);
   },
   PSHM_B: ({ currentOpcode, STACK }) => {
-    window.dispatchEvent(
-      new CustomEvent(
-        'memory-read',
-        {
-          detail: MEMORY[currentOpcode.param]
-        }
-      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   PSHM_W: ({ currentOpcode, STACK }) => {
-    window.dispatchEvent(
-      new CustomEvent(
-        'memory-read',
-        {
-          detail: MEMORY[currentOpcode.param]
-        }
-      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   PSHM_L: ({ currentOpcode, STACK }) => {
-    window.dispatchEvent(
-      new CustomEvent(
-        'memory-read',
-        {
-          detail: MEMORY[currentOpcode.param]
-        }
-      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   PSHSM_B: ({ currentOpcode, STACK }) => {
-    window.dispatchEvent(
-      new CustomEvent(
-        'memory-read',
-        {
-          detail: MEMORY[currentOpcode.param]
-        }
-      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   PSHSM_W: ({ currentOpcode, STACK }) => {
-    window.dispatchEvent(
-      new CustomEvent(
-        'memory-read',
-        {
-          detail: MEMORY[currentOpcode.param]
-        }
-      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   PSHSM_L: ({ currentOpcode, STACK }) => {
-    window.dispatchEvent(
-      new CustomEvent(
-        'memory-read',
-        {
-          detail: MEMORY[currentOpcode.param]
-        }
-      ));
     STACK.push(MEMORY[currentOpcode.param] ?? 0);
   },
   POPM_L: ({ currentOpcode, STACK }) => {
@@ -761,15 +719,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   ANIMEKEEP: async ({ animationController, currentOpcode, script }) => {
     const animationId = currentOpcode.param;
 
-    if (script.groupId === 3) {
-      console.log('ANIMEKEEP START', animationId)
-    }
     await animationController.playAnimation(animationId, {
       shouldHoldLastFrame: true,
     });
-    if (script.groupId === 3) {
-      console.log('ANIMEKEEP END', animationId)
-    }
   },
   CANIME: async ({ animationController, currentOpcode, STACK }) => {
     const animationId = currentOpcode.param;

@@ -59,6 +59,13 @@ export const createAnimationController = (id: string | number) => {
 
   let currentRunState: RunState | undefined = undefined;
 
+  const clearAnimation = () => {
+    const mixer = getState().mixer;
+    mixer.stopAllAction();
+    mixer.update(0);
+    setState({ activeAnimation: undefined });
+  }
+
   const handleAnimationEnded = (uniqueId: string, shouldHoldLastFrame: boolean) => {
     if (!currentRunState) {
       return;
@@ -74,11 +81,8 @@ export const createAnimationController = (id: string | number) => {
     if (shouldHoldLastFrame) {
       return
     }
-    
-    const mixer = getState().mixer;
-    mixer.stopAllAction();
-    mixer.update(0);
-    setState({ activeAnimation: undefined });
+   
+    clearAnimation();
   }
 
   const tick = (delta: number) => {
@@ -355,17 +359,21 @@ export const createAnimationController = (id: string | number) => {
   const lastPosition = new Vector3();
 
   const movementAnimationTick = (movementController: ReturnType<typeof createMovementController>) => {
+    const currentPosition = movementController.getState().position.current;
+
+    if (!currentPosition.equals(lastPosition) && currentRunState?.isComplete && getState().activeAnimation?.shouldHoldLastFrame) {
+      clearAnimation();
+    }
+
     if (!isSafeToApplyMovementAnimation()) {
       return;
     }
-
-    const currentPosition = movementController.getState().position.current;
 
     if (currentPosition.equals(lastPosition)) {
       playMovementAnimation('standing');
       return;
     }
-    
+
     const movementSpeed = movementController.getMovementSpeed();
     
     if (!movementSpeed) {
@@ -398,7 +406,7 @@ export const createAnimationController = (id: string | number) => {
     subscribe: () => {},
     pauseAnimation,
     setHeadBone: (head: Bone) => {
-      //console.log(head)
+      console.log(head)
     },
     setLadderAnimation,
     playLadderAnimation,
