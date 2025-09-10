@@ -2,6 +2,7 @@ import styles from './Controller.module.css';
 import { MouseEvent, TouchEvent, useEffect, useRef } from "react";
 import JoystickController from "joystick-controller";
 import { PSX_CONTROLS_MAP } from '../constants/controls';
+import useGlobalStore from '../store';
 
 const Controller = () => {
   const joystickRef = useRef<HTMLDivElement>(null);
@@ -20,46 +21,63 @@ const Controller = () => {
   }
 
   useEffect(() => {
+    let prevState = { left: false, right: false, up: false, down: false };
+
     const joystick = new JoystickController({
       dynamicPosition: true,
       dynamicPositionTarget: joystickRef.current,
       level: 1
     }, (data) => {
-      const isLeft = data.x < 20;
-      const isRight = data.x > -20;
+      const isLeft = data.x < -20;
+      const isRight = data.x > 20;
+      const isUp = data.y > 20;
+      const isDown = data.y < -20;
 
-      const isUp = data.y > -20;
-      const isDown = data.y < 20;
+      const isTapRequired = useGlobalStore.getState().currentMessages.some(message => message.askOptions)
+      if (isTapRequired) {
+        // Only fire keydown if it was previously not pressed
+        if (isLeft && !prevState.left) {
+          window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowLeft' }));
+        } 
+        if (!isLeft && prevState.left) {
+          window.dispatchEvent(new KeyboardEvent('keyup', { code: 'ArrowLeft' }));
+        }
 
-      const keyEvent = new KeyboardEvent(isLeft ? 'keydown' : 'keyup', {
-        code: 'ArrowLeft',
-      });
+        if (isRight && !prevState.right) {
+          window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowRight' }));
+        } 
+        if (!isRight && prevState.right) {
+          window.dispatchEvent(new KeyboardEvent('keyup', { code: 'ArrowRight' }));
+        }
 
-      window.dispatchEvent(keyEvent);
-      
-      const keyEvent2 = new KeyboardEvent(isRight ? 'keydown' : 'keyup', {
-        code: 'ArrowRight',
-      });
+        if (isUp && !prevState.up) {
+          window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowUp' }));
+        } 
+        if (!isUp && prevState.up) {
+          window.dispatchEvent(new KeyboardEvent('keyup', { code: 'ArrowUp' }));
+        }
 
-      window.dispatchEvent(keyEvent2);
+        if (isDown && !prevState.down) {
+          window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowDown' }));
+        } 
+        if (!isDown && prevState.down) {
+          window.dispatchEvent(new KeyboardEvent('keyup', { code: 'ArrowDown' }));
+        }
+      } else {
+        // Normal behavior: fire keydown / keyup continuously
+        window.dispatchEvent(new KeyboardEvent(isLeft ? 'keydown' : 'keyup', { code: 'ArrowLeft' }));
+        window.dispatchEvent(new KeyboardEvent(isRight ? 'keydown' : 'keyup', { code: 'ArrowRight' }));
+        window.dispatchEvent(new KeyboardEvent(isUp ? 'keydown' : 'keyup', { code: 'ArrowUp' }));
+        window.dispatchEvent(new KeyboardEvent(isDown ? 'keydown' : 'keyup', { code: 'ArrowDown' }));
+      }
 
-      const keyEvent3 = new KeyboardEvent(isUp ? 'keydown' : 'keyup', {
-        code: 'ArrowUp',
-      });
-
-      window.dispatchEvent(keyEvent3);
-
-      const keyEvent4 = new KeyboardEvent(isDown ? 'keydown' : 'keyup', {
-        code: 'ArrowDown',
-      });
-
-      window.dispatchEvent(keyEvent4);
+      // Update previous state
+      prevState = { left: isLeft, right: isRight, up: isUp, down: isDown };
     });
 
-    return () => {
-      joystick.destroy();
-    }
+    return () => joystick.destroy();
   }, []);
+
 
   return (
     <nav className={styles.controls}>

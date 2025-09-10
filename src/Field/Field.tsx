@@ -60,9 +60,9 @@ const Field = ({ data }: FieldProps) => {
     // Remove `{Term [x]}` string but keep the [x] part
     if (name) {
       const cleanedString = name.replace(/\{Term ([^}]+)\}/, "$1");
-      document.title = `FF8 GL - ${cleanedString}`;
+      document.title = `${cleanedString} - Final Fantasy VIII GL`;
     } else {
-      document.title = `FF8 GL - ${data.id}`;
+      document.title = `${data.id} - Final Fantasy VIII GL`;
     }
     
   }, [currentLocationPlaceName, data.id]);
