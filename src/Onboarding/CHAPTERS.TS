@@ -37,4 +37,8 @@ export const CHAPTERS = {
     fieldId: 'testbl6',
     progress: 900,
   },
+  'The Castle': {
+    fieldId: 'ffbrdg1',
+    progress: 4020,
+  },
 }
