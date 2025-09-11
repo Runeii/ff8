@@ -17,6 +17,7 @@ import { DRAW_POINTS } from "../../../constants/drawPoints";
 import { preloadSound } from "./SFXController/webAudio";
 import { handleLadder } from "./MovementController/utils";
 import LerpValue from "../../../LerpValue";
+import { SPEEDS } from "../../../constants/speeds";
 
 const musicController = MusicController();
 
@@ -257,7 +258,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   BGDRAW: ({ script, STACK }) => {
     const frame = STACK.pop() as number;
 
-    const lerpValue = new LerpValue(frame);
+    const lerpValue = new LerpValue(frame, SPEEDS.BG);
     
     useGlobalStore.setState({
       backgroundAnimations: {
@@ -308,7 +309,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const start = STACK.pop() as number
 
     const speed = useGlobalStore.getState().backgroundLayerSpeeds[script.backgroundParamId];
-    const lerpValue = new LerpValue(start);
+    const lerpValue = new LerpValue(start, SPEEDS.BG);
     const duration = lerpValue.calculateDuration(speed);
     lerpValue.start(end, duration, 0);
 
@@ -328,7 +329,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const start = STACK.pop() as number
 
     const speed = useGlobalStore.getState().backgroundLayerSpeeds[script.backgroundParamId];
-    const lerpValue = new LerpValue(start);
+    const lerpValue = new LerpValue(start, SPEEDS.BG);
     const duration = lerpValue.calculateDuration(speed);
     lerpValue.start(end, duration, 0, true);
 
@@ -409,7 +410,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const start = STACK.pop() as number;
 
     const speed = useGlobalStore.getState().backgroundLayerSpeeds[script.backgroundParamId];
-    const lerpValue = new LerpValue(start);
+    const lerpValue = new LerpValue(start, SPEEDS.BG);
     const duration = lerpValue.calculateDuration(speed);
     lerpValue.start(end, duration, 0);
 

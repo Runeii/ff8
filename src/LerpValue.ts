@@ -10,16 +10,19 @@ class LerpValue {
   public isAnimating: boolean = false;
   private isLooping: boolean = false;
 
-  constructor(initialValue: number = 0) {
+  private speedMultiplier: number = 1.0;
+
+  constructor(initialValue: number = 0, speedMultiplier: number = 1.0) {
     this.currentValue = initialValue;
     this.targetValue = initialValue;
     this.startValue = initialValue;
     this.duration = 0;
     this.startTime = 0;
+    this.speedMultiplier = speedMultiplier; 
   }
 
   calculateDuration(speed: number): number {
-    return speed / FPS * 1000;
+    return speed / FPS * 1000 * this.speedMultiplier;
   }
 
   start(targetValue: number, duration: number, delay: number = 0, isLooping: boolean = false): Promise<void> {
