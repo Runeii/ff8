@@ -100,6 +100,14 @@ export default function App() {
         </Canvas>
         {isDebugMode && <Queues />}
         {isDebugMode && <Memory />}
+        <div className="disclaimer">
+          <p>
+            Final Fantasy VIII, all characters, stories, locations, graphics and music are © SQUARE ENIX CO., LTD. All Rights Reserved.
+          </p>
+          <p>
+            This is a fan-made project not affiliated with or endorsed by Square Enix.
+          </p>
+        </div>
       </div>
       <Controller />
     </>
