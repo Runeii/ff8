@@ -10,8 +10,8 @@ import createRotationController from "../RotationController/RotationController";
 import { getPlayerEntity } from "./modelUtils";
 
 const SPEED = {
-  WALKING: 0.1,
-  RUNNING: 0.2,
+  WALKING: 0.06,
+  RUNNING: 0.175,
 }
 
 type useControlsProps = {

@@ -13,7 +13,7 @@ type UseFollowerProps = {
   partyMemberId: number | undefined;
 }
 
-const DISTANCE = 30;
+const DISTANCE = 40;
 const useFollower = ({ isActive, movementController, partyMemberId, rotationController }: UseFollowerProps) => {
   const moveToWaypoint = useCallback((scene: Scene) => {
     if (!isActive || !movementController || !rotationController) {
