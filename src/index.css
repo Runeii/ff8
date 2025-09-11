@@ -125,6 +125,9 @@ body,
     opacity: var(--text-opacity, 0);
   }
 }
+  .disclaimer.isHidden {
+    display: none;
+  }
 
 @keyframes showDisclaimer {
 0% {

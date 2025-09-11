@@ -36,6 +36,8 @@ export default function App() {
   const progress = MEMORY[256];
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
 
+  const [isDisclaimerHidden, setIsDisclaimerHidden] = useState(!namedField?.includes('wm'));
+
   useEffect(() => {
     if (!fieldId) {
       return;
@@ -46,6 +48,9 @@ export default function App() {
 
     url.searchParams.set('progress', progress.toString());
     window.history.pushState({}, '', url.toString());
+    if (!fieldId.includes('wm')) {
+      setIsDisclaimerHidden(true);
+    }
   }, [fieldId, progress])
 
   const [worldScene, setWorldScene] = useState<Scene>();
@@ -100,7 +105,7 @@ export default function App() {
         </Canvas>
         {isDebugMode && <Queues />}
         {isDebugMode && <Memory />}
-        <div className="disclaimer">
+        <div className={`disclaimer ${isDisclaimerHidden ? 'isHidden' : ''}`}>
           <p>
             Final Fantasy VIII, all characters, stories, locations, graphics and music are © SQUARE ENIX CO., LTD. All Rights Reserved.
           </p>
