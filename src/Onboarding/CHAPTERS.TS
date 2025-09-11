@@ -4,45 +4,37 @@ export const CHAPTERS = {
     progress: 0,
     party: [0]
   },
-  'The Landing': {
-    fieldId: 'bvcar_1',
-    progress: 0
-  },
   'First Laguna dream': {
     fieldId: 'testbl6',
     progress: 22,
     party: [8,9,10]
   },
-  'Winhill': {
-    fieldId: 'gfelone2',
-    progress: 400
+  'Disk Two': {
+    fieldId: 'testbl6',
+    progress: 392,
   },
-  'Fisherman\'s Horizon: Occupation': {
-    fieldId: 'fhtown22',
-    progress: 651,
+  'Fisherman\'s Horizon: landing': {
+    fieldId: 'fhdeck1',
+    progress: 610,
   },
-  'Edea\'s House: On GFs': {
-    fieldId: 'ehblan1',
-    progress: 780
+  'Disk Three': {
+    fieldId: 'testbl6',
+    progress: 900,
   },
-  'NORG': {
-    fieldId: 'norg',
-    progress: 890
+  'Esthar: arrival': {
+    fieldId: 'ectake1',
+    progress: 1900
   },
-  'Edea\'s House: Now': {
-    fieldId: 'ehenter2',
-    progress: 900
+  'Shumi Village': {
+    fieldId: 'tmdome1',
+    progress: 2000,
   },
-  'Odine\'s Lab': {
-    fieldId: 'epwork1',
-    progress: 3606
-  },
-  'The Final Mission': {
+  'Approaching Lunatic Pandora': {
     fieldId: 'rgcock2',
     progress: 3850
   },
-  'The Castle: Anchor point': {
-    fieldId: 'ehenter3',
-    progress: 400
-  }
+  'Disk Four': {
+    fieldId: 'testbl6',
+    progress: 900,
+  },
 }

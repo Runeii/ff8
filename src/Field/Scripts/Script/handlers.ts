@@ -944,6 +944,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   MOVESYNC: async ({ movementController }) => {
     while (movementController.getState().position.goal) {
+      console.log('waiting for move to finish', movementController.getState().position, movementController.getState().position.goal);
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -1033,8 +1034,17 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   RFMOVE: async (args) => {
     OPCODE_HANDLERS?.FMOVE?.(args);
   },
-  RCMOVE: async (args) => {
-    OPCODE_HANDLERS?.CMOVE?.(args);
+  RCMOVE: async ({ STACK, movementController }) => {
+    const distanceToStopAnimationFromTarget = STACK.pop() as number;
+    const lastThree = STACK.splice(-3);
+    const target = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
+
+    await movementController.moveToPoint(target, {
+      isAnimationEnabled: false,
+      isFacingTarget: true,
+      isAllowedToLeaveWalkmesh: true,
+      distanceToStopAnimationFromTarget
+    });
   },
   RMOVEA: async (args) => {
     OPCODE_HANDLERS?.MOVEA?.(args);
