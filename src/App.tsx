@@ -36,7 +36,7 @@ export default function App() {
   const progress = MEMORY[256];
   const isDebugMode = useGlobalStore(state => state.isDebugMode);
 
-  const [isDisclaimerHidden, setIsDisclaimerHidden] = useState(!namedField?.includes('wm'));
+  const [isDisclaimerHidden, setIsDisclaimerHidden] = useState((namedField && !namedField.includes('wm')) || import.meta.env.DEV);
 
   useEffect(() => {
     if (!fieldId) {
@@ -48,7 +48,8 @@ export default function App() {
 
     url.searchParams.set('progress', progress.toString());
     window.history.pushState({}, '', url.toString());
-    if (!fieldId.includes('wm')) {
+
+    if (fieldId && !fieldId.includes('wm')) {
       setIsDisclaimerHidden(true);
     }
   }, [fieldId, progress])
@@ -110,7 +111,7 @@ export default function App() {
             Final Fantasy VIII, all characters, stories, locations, graphics and music are © SQUARE ENIX CO., LTD. All Rights Reserved.
           </p>
           <p>
-            This is a fan-made project not affiliated with or endorsed by Square Enix.
+            This is a fan-made project not affiliated with or endorsed by Square Enix. It is an experiment, a toy, and completely uncommercial.
           </p>
         </div>
       </div>

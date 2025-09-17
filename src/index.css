@@ -116,18 +116,24 @@ body,
   background-color: rgba(0, 0, 0, 1);
   color: white;
   text-align: center;
-  font-size: 1rem;
-  padding: 0 25%;
+  font-size: 0.7rem;
+  padding: 0 15%;
   animation: showDisclaimer 5s ease-in-out forwards;
   pointer-events: none;
+  
+  @media (min-width: 600px) {
+    font-size: 1rem;
+    padding: 0 25%;
+  }
 
   p {
     opacity: var(--text-opacity, 0);
   }
 }
-  .disclaimer.isHidden {
-    display: none;
-  }
+
+.disclaimer.isHidden {
+  display: none;
+}
 
 @keyframes showDisclaimer {
 0% {
