@@ -24,15 +24,64 @@ class WalkmeshMovementController {
           return;
         }
 
-        for (let i = 0; i < positionAttribute.count; i += 3) {
-          const a = new Vector3().fromBufferAttribute(positionAttribute, i).applyMatrix4(child.matrixWorld);
-          const b = new Vector3().fromBufferAttribute(positionAttribute, i + 1).applyMatrix4(child.matrixWorld);
-          const c = new Vector3().fromBufferAttribute(positionAttribute, i + 2).applyMatrix4(child.matrixWorld);
-          
+        if (positionAttribute.count >= 3) {
+          const a = new Vector3().fromBufferAttribute(positionAttribute, 0).applyMatrix4(child.matrixWorld);
+          const b = new Vector3().fromBufferAttribute(positionAttribute, 1).applyMatrix4(child.matrixWorld);
+          const c = new Vector3().fromBufferAttribute(positionAttribute, 2).applyMatrix4(child.matrixWorld);
           this.triangleCache.set(triangleId, new Triangle(a, b, c));
         }
       }
     });
+  }
+
+
+  public getTriangleCentre(triangleId: number): Vector3 {
+    const triangle = this.triangleCache.get(triangleId)!;
+    if (!triangle) {
+      console.error(`Triangle ID ${triangleId} not found in walkmesh.`);
+      return new Vector3();
+    }
+
+    const centre = new Vector3();
+    centre.addVectors(triangle.a, triangle.b);
+    centre.add(triangle.c);
+    centre.divideScalar(3);
+    
+    return centre;
+  }
+
+  public getTriangleForPosition(position: Vector3): number | null {
+    for (const [triangleId, triangle] of this.triangleCache.entries()) {
+      if (this.isPointInTriangle(position, triangle)) {
+        return triangleId;
+      }
+    }
+    
+    return null;
+  }
+
+  public getPositionOnTriangle(position: Vector3, triangleId: number): Vector3 | null {
+    const triangle = this.triangleCache.get(triangleId);
+    if (!triangle) {
+      return null;
+    }
+
+    // Find the closest point on the triangle to the given position
+    const closestPoint = new Vector3();
+    triangle.closestPointToPoint(position, closestPoint);
+    
+    return closestPoint;
+  }
+
+  private isPointInTriangle(point: Vector3, triangle: Triangle): boolean {
+    const barycoord = new Vector3();
+    triangle.getBarycoord(point, barycoord);
+
+    const tolerance = 0.001;
+    return barycoord.x >= -tolerance && 
+           barycoord.y >= -tolerance && 
+           barycoord.z >= -tolerance &&
+           Math.abs(barycoord.x + barycoord.y + barycoord.z - 1.0) < tolerance;
   }
 
   public moveToward(currentPos: Vector3, desiredNextPos: Vector3, isAllowedToCrossBlockedTriangles: boolean): Vector3 {

@@ -36,6 +36,7 @@ const createMovementController = (id: string | number) => {
       userControlledSpeed: undefined as number | undefined,
       goal: undefined as Vector3 | undefined,
       signal: undefined as PromiseSignal| undefined,
+      walkmeshTriangle: null as number | null,
     },
     offset: {
       current: new Vector3(0,0,0),
@@ -106,7 +107,13 @@ const createMovementController = (id: string | number) => {
     });
   }
 
-  const setPosition = async (position: Vector3) => {
+  const setPosition = async (position: Vector3, walkmeshTriangle?: number) => {
+    let triangle = walkmeshTriangle;
+    if (!triangle) {
+      const { walkmeshController } = useGlobalStore.getState();
+      triangle = walkmeshController!.getTriangleForPosition(position)!;
+    }
+
     resolvePendingPositionSignal();
     const signal = new PromiseSignal();
 
@@ -120,6 +127,7 @@ const createMovementController = (id: string | number) => {
         isFacingTarget: false,
         isPaused: false,
         signal,
+        walkmeshTriangle: triangle
       },
     });
 
@@ -192,7 +200,8 @@ const createMovementController = (id: string | number) => {
         isClimbingLadder,
         isPaused: false,
         userControlledSpeed,
-        signal
+        signal,
+        walkmeshTriangle: getState().position.walkmeshTriangle,
       },
     });
 
@@ -508,6 +517,7 @@ const createMovementController = (id: string | number) => {
         userControlledSpeed: undefined,
         goal: undefined,
         signal: undefined,
+        walkmeshTriangle: null
       },
       offset: {
         ...state.offset,

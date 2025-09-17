@@ -856,7 +856,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   SHOW: ({ setState }) => {
     setState({ isVisible: true })
   },
-  SET: ({ movementController, STACK }) => {
+  SET: ({ currentOpcode, movementController, STACK }) => {
     const lastTwo = STACK.splice(-2);
     const knownPosition = lastTwo.map(numberToFloatingPoint) as [number, number];
     const vector = new Vector3(knownPosition[0], knownPosition[1], 0);
@@ -873,12 +873,12 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
       return;
     }
 
-    movementController.setPosition(position);
+    movementController.setPosition(position, currentOpcode.param);
   },
-  SET3: async ({ movementController, STACK }) => {
+  SET3: async ({ currentOpcode, movementController, STACK }) => {
     const lastThree = STACK.splice(-3);
     const position = new Vector3(...lastThree.map(numberToFloatingPoint) as [number, number, number]);
-    movementController.setPosition(position);
+    movementController.setPosition(position, currentOpcode.param);
   },
   TALKRADIUS: ({ setState, STACK }) => {
     const radius = STACK.pop() as number;

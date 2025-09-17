@@ -62,7 +62,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     if (newPosition) {
       movementController.setPosition(newPosition);
     } else {
-      console.warn("Tried to set character position to an invalid position", initialPosition);
+      console.error("Tried to set character position to an invalid position", initialPosition);
     }
 
     setHasPlacedCharacter(true);
@@ -125,24 +125,20 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     const movementAngle = handleMovement();
     if (movementAngle === null) return;
 
-    // Rotate character to face movement direction
     rotationController.turnToFaceAngle(movementAngle, 0);
 
-    // Determine movement speed
     const isWalking = !isRunEnabled || movementFlags.isWalking;
-    const speed = isWalking ? SPEED.WALKING : SPEED.RUNNING; // units per second
+    const speed = isWalking ? SPEED.WALKING : SPEED.RUNNING;
 
     const currentPosition = movementController.getPosition();
     if (!currentPosition) return;
 
-    // Calculate movement direction in world space
     upDirection.set(0, 0, 1);
     const meshUp = upDirection.applyQuaternion(player.quaternion).normalize();
 
     forwardDirection.set(0, -1, 0);
     const meshForward = forwardDirection.applyAxisAngle(meshUp, convert256ToRadians(movementAngle)).normalize();
 
-    // Compute movement distance scaled by delta
     const moveDistance = speed * delta;
     desiredPosition.copy(currentPosition).add(meshForward.multiplyScalar(moveDistance));
 
@@ -152,7 +148,9 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
       characterHeight / 2,
       false
     );
-    if (!newPosition) return;
+    if (!newPosition) {
+      return;
+    };
 
     // Check collisions
     const blockages: Object3D[] = [];
@@ -161,7 +159,9 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     });
 
     const isPermitted = checkForIntersections(player, newPosition, blockages, camera);
-    if (!isPermitted) return;
+    if (!isPermitted) {
+      return;
+    };
 
     // Apply movement
     movementController.setPosition(newPosition);

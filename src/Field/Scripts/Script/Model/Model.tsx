@@ -14,6 +14,7 @@ import useFootsteps from "./useFootsteps";
 import useTalkRadius from "./useTalkRadius";
 import useFollower from "./useFollower";
 import usePushRadius from "./usePushRadius";
+import { getLowestTriangleBelowMesh } from "./modelUtils";
 
 type ModelProps = {
   animationController: ReturnType<typeof createAnimationController>;
@@ -126,18 +127,14 @@ const Model = ({animationController, models, scriptController, movementControlle
   });
 
   const animationGroupRef = useRef<Group>(null);
-  const [boundingbox] = useState(new Box3());
-  const [standingBoundingBox] = useState(new Box3());
   const pushableSphereRef = useRef<Mesh>(null);
-
-  const baseRootBoneZOffset = useRef<number>(0);
-  const baseBoundingBoxZOffset = useRef<number>(0);
-  const [boundingBoxCentre] = useState(new Vector3());
-  const rootBoneDistanceFromStanding = useRef<number>(0);
-
+  
   const walkmeshController = useGlobalStore(state => state.walkmeshController);
-
+  
+  const [boundingbox] = useState(new Box3());
   const [focusZPosition, setFocusZPosition] = useState<number>(0);
+
+  const standingOffsetRef = useRef<number>(0);
   useFrame(() => {
     if (!animationGroupRef.current) {
       return;
@@ -154,47 +151,33 @@ const Model = ({animationController, models, scriptController, movementControlle
     animationGroupRef.current.position.z = 0;
     animationGroupRef.current.updateMatrixWorld(true);
     boundingbox.setFromObject(animationGroupRef.current, true);
-    
-    const position = movementController.getPosition();
 
-    const rootBone = animationGroupRef.current.getObjectByName('bone_0');
-    if (!rootBone) {
-      return;
-    }
-    const rootBonePosition = rootBone.getWorldPosition(new Vector3());
-    const hasHadZAdjusted = animationController.getState().activeAnimation?.hasBeenZAdjusted;
-    const needsRealtimeZAdjustment =
-      animationController.getState().activeAnimation?.needsRealtimeZAdjustment;
-    
-    if (animationController.getState().activeAnimation?.clipId === animationController.getSavedAnimationId('standing') && standingBoundingBox.isEmpty()) {
-      standingBoundingBox.setFromObject(animationGroupRef.current, true);
-      const height = standingBoundingBox.max.z - standingBoundingBox.min.z;
-      setFocusZPosition((height / 256) * useGlobalStore.getState().cameraFocusHeight);
+    const searchResult = getLowestTriangleBelowMesh(boundingbox, script.groupId === 0);
+
+    let trianglePosition: Vector3 | null = null;
+    let modelBoundaryPosition: Vector3 | null = null;
+    if (searchResult) {
+      const {triangleId, cornerPosition} = searchResult;
+      trianglePosition = walkmeshController.getPositionOnTriangle(cornerPosition, triangleId)!;
+      modelBoundaryPosition = cornerPosition;
+    } else {
+      trianglePosition = walkmeshController.getTriangleCentre(movementController.getState().position.walkmeshTriangle!)
+      modelBoundaryPosition = boundingbox.min
     }
 
-    if (hasHadZAdjusted && !needsRealtimeZAdjustment) {
-      return;
+    if (script.groupId === 0) {
+      window.activeTriangle = movementController.getState().position.walkmeshTriangle;
+      window.closestTriangle = searchResult?.triangleId;
+      console.log(window.activeTriangle)
     }
-
-    setCharacterDimensions(new Vector3(
-      boundingbox.max.x - boundingbox.min.x,
-      boundingbox.max.y - boundingbox.min.y,
-      boundingbox.max.z - boundingbox.min.z
-    ));
     
-    baseRootBoneZOffset.current = rootBone.position.z;
-    baseBoundingBoxZOffset.current = boundingbox.min.z;
-    rootBoneDistanceFromStanding.current = rootBonePosition.z - boundingbox.min.z;
-    
-    const centreOfBase = boundingbox.getCenter(boundingBoxCentre);
-    centreOfBase.z = boundingbox.min.z;
-    const centrePointOnWalkmesh = walkmeshController.getPositionOnWalkmesh(centreOfBase, 1, true);
-    const zPosition = centrePointOnWalkmesh?.z ?? position.z
-    const z = zPosition - boundingbox.min.z;
-
-    animationGroupRef.current.position.z = z
-
-    animationController.setHasAdjustedZ(true);
+    const standingTrianglePosition = walkmeshController.getPositionOnTriangle(
+      movementController.getState().position.current,
+      movementController.getState().position.walkmeshTriangle!
+    )
+    const targetZ = Math.max(trianglePosition.z, standingTrianglePosition?.z ?? -9999999);
+    animationGroupRef.current.position.z = targetZ - modelBoundaryPosition.z;
+    animationGroupRef.current.updateMatrixWorld(true);
   })
 
   const talkRadiusRef = useRef<Mesh>(null);
@@ -268,7 +251,6 @@ const Model = ({animationController, models, scriptController, movementControlle
       </Box>
       <group name="model" ref={animationGroupRef} userData={{
         boundingbox,
-        standingBoundingBox,
         focusZPosition
       }}>
         <ModelComponent
