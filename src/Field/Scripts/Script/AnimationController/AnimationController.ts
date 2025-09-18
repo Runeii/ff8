@@ -300,6 +300,20 @@ export const createAnimationController = (id: string | number) => {
     });
   }
 
+  const isPlayingMovementAnimation = () => {
+    const { activeAnimation } = getState();
+
+    if (!activeAnimation) {
+      return false;
+    }
+
+    if (!activeAnimation.isFromMovement) {
+      return false;
+    }
+
+    return true;
+  }
+
   const isSafeToApplyMovementAnimation = () => {
     const { activeAnimation } = getState();
 
@@ -401,6 +415,7 @@ export const createAnimationController = (id: string | number) => {
     setHasAdjustedZ,
     
     getState,
+    isPlayingMovementAnimation,
     isSafeToApplyMovementAnimation,
 
     subscribe: () => {},

@@ -409,6 +409,7 @@ const createMovementController = (id: string | number) => {
             userControlledSpeed: undefined,
             goal: undefined,
             isPaused: true,
+            walkmeshTriangle: walkmeshController.getTriangleForPosition(positionGoal),
           }
         });
       } else {
@@ -416,6 +417,15 @@ const createMovementController = (id: string | number) => {
         const desiredNextPos = currentPosition.clone().add(direction.multiplyScalar(maxDistance).divideScalar(10));
         const newPos = isAllowedToLeaveWalkmesh ? desiredNextPos : walkmeshController.moveToward(currentPosition, desiredNextPos, isAllowedToCrossBlockedTriangles);
         currentPosition.copy(newPos);
+        const triangle = walkmeshController.getTriangleForPosition(currentPosition);
+        if (triangle !== null && triangle !== undefined && triangle !== getState().position.walkmeshTriangle) {
+          setState({
+            position: {
+              ...getState().position,
+              walkmeshTriangle: triangle,
+            }
+          })
+        }
       }
 
       setState({

@@ -117,7 +117,7 @@ const Model = ({animationController, models, scriptController, movementControlle
 
   useFootsteps({ movementController });
 
-  const [characterDimensions, setCharacterDimensions] = useState<Vector3>(new Vector3());
+  const [characterDimensions] = useState<Vector3>(new Vector3());
 
   useControls({
     characterHeight: characterDimensions.y,
@@ -131,10 +131,11 @@ const Model = ({animationController, models, scriptController, movementControlle
   
   const walkmeshController = useGlobalStore(state => state.walkmeshController);
   
+  const [standingBoundingBox] = useState(new Box3());
   const [boundingbox] = useState(new Box3());
-  const [focusZPosition, setFocusZPosition] = useState<number>(0);
+  const [focusZPosition] = useState<number>(0);
 
-  const standingOffsetRef = useRef<number>(0);
+  const standingBoxSize = useRef<Vector3>(new Vector3());
   useFrame(() => {
     if (!animationGroupRef.current) {
       return;
@@ -148,11 +149,24 @@ const Model = ({animationController, models, scriptController, movementControlle
       return;
     }
 
+    if (movementController.getState().position.walkmeshTriangle === null) {
+      return;
+    }
+
     animationGroupRef.current.position.z = 0;
     animationGroupRef.current.updateMatrixWorld(true);
+
+    const isStanding = animationController.getState().activeAnimation?.clipId === animationController.getSavedAnimationId('standing');
+    if (isStanding) {
+      standingBoundingBox.setFromObject(animationGroupRef.current, true);
+      standingBoundingBox.getSize(standingBoxSize.current);
+    }
+
     boundingbox.setFromObject(animationGroupRef.current, true);
 
-    const searchResult = getLowestTriangleBelowMesh(boundingbox, script.groupId === 0);
+    characterDimensions.copy(boundingbox.getSize(new Vector3()));
+
+    const searchResult = getLowestTriangleBelowMesh(boundingbox);
 
     let trianglePosition: Vector3 | null = null;
     let modelBoundaryPosition: Vector3 | null = null;
@@ -168,15 +182,21 @@ const Model = ({animationController, models, scriptController, movementControlle
     if (script.groupId === 0) {
       window.activeTriangle = movementController.getState().position.walkmeshTriangle;
       window.closestTriangle = searchResult?.triangleId;
-      console.log(window.activeTriangle)
     }
-    
+  
     const standingTrianglePosition = walkmeshController.getPositionOnTriangle(
       movementController.getState().position.current,
       movementController.getState().position.walkmeshTriangle!
     )
+
     const targetZ = Math.max(trianglePosition.z, standingTrianglePosition?.z ?? -9999999);
-    animationGroupRef.current.position.z = targetZ - modelBoundaryPosition.z;
+
+    animationGroupRef.current.position.z = targetZ - modelBoundaryPosition.z
+
+    const isFromMovement = animationController.isPlayingMovementAnimation();
+    const changeDuringMovement = isFromMovement ? characterDimensions.z - standingBoxSize.current.z : 0;
+    animationGroupRef.current.position.z -= changeDuringMovement;
+
     animationGroupRef.current.updateMatrixWorld(true);
   })
 

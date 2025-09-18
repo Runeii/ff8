@@ -1426,8 +1426,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     // Pop layer ID from stack
     const layerID = STACK.pop() as number;
 
-    setLayerScroll(layerID, startX, startY, 0, 'level');
-    setLayerScroll(layerID, endX, endY, duration, 'level');
+    setLayerScroll(layerID, -startX, -startY, 0, 'level');
+    setLayerScroll(layerID, -endX, -endY, duration, 'level');
   },
 
   DSCROLLP: async ({ scene, STACK }) => {
