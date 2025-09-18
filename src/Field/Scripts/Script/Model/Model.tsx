@@ -197,6 +197,9 @@ const Model = ({animationController, models, scriptController, movementControlle
     const changeDuringMovement = isFromMovement ? characterDimensions.z - standingBoxSize.current.z : 0;
     animationGroupRef.current.position.z -= changeDuringMovement;
 
+    const requestedOffsetAboveGround = movementController.getState().position.current.z - movementController.getPosition().z;
+    animationGroupRef.current.position.z -= requestedOffsetAboveGround;
+
     animationGroupRef.current.updateMatrixWorld(true);
   })
 
