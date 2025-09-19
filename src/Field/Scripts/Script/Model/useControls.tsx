@@ -122,10 +122,14 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     }
 
     const isTurning = rotationController.getState().angle.isAnimating;
-    if (!walkmeshController || !isUserControllable || isTurning) return;
+    if (!walkmeshController || !isUserControllable || isTurning) {
+      return;
+    };
 
     const movementAngle = handleMovement();
-    if (movementAngle === null) return;
+    if (movementAngle === null) {
+      return;
+    };
 
     rotationController.turnToFaceAngle(movementAngle, 0);
 
@@ -133,7 +137,9 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     const speed = isWalking ? SPEED.WALKING : SPEED.RUNNING;
 
     const currentPosition = movementController.getPosition();
-    if (!currentPosition) return;
+    if (!currentPosition) {
+      return;
+    };
 
     upDirection.set(0, 0, 1);
     const meshUp = upDirection.applyQuaternion(player.quaternion).normalize();
@@ -144,11 +150,14 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     const moveDistance = speed * delta;
     desiredPosition.copy(currentPosition).add(meshForward.multiplyScalar(moveDistance));
 
-    // Snap to walkmesh
-    const newPosition = walkmeshController.getPositionOnWalkmesh(
-      desiredPosition,
-      movementController.getState().position.walkmeshTriangle!
+    console.log('Trying')
+    const newPosition = walkmeshController.getNextPositionOnWalkmesh(
+      new Vector3(currentPosition.x, currentPosition.y, currentPosition.z),
+      meshForward,
+      moveDistance,
+      movementController.getState().position.walkmeshTriangle!,
     );
+
     if (!newPosition) {
       return;
     };

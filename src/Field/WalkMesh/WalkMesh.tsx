@@ -57,7 +57,7 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
       <group name="walkmesh">
         {walkMeshGeometry.map((geometry, index) => (
           <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={true}>
-            <meshBasicMaterial color={lockedTriangles.includes(index) ? 'red' : 'green'} transparent opacity={1} side={DoubleSide} />
+            <meshBasicMaterial color={lockedTriangles.includes(index) ? 'yellow' : 'green'} transparent opacity={1} side={DoubleSide} />
           </mesh>
         ))}
       </group>
