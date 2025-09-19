@@ -102,6 +102,14 @@ const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
   const {fadeSpring} = useGlobalStore.getState();
   openMessage('welcome', ['Welcome'], { channel: 0, x: 0,  y: 0, width: undefined, height: undefined }, false, undefined);
 
+    await openMessage('controls', [`Controls
+      {Yellow}Move{White} - [Arrows]
+      {Yellow}Confirm{White} - [Z]
+      {Yellow}Cancel{White} - [X]
+      {Yellow}Card/Run{White} - [A]
+      {Yellow}Menu{White} - [S]
+
+      {Yellow}Dev Mode{White} - [Esc]`], { x: 70,  y: 50, width: undefined, height: undefined, channel: 1 }, true, undefined);
   const option = await openMessage('menu', [`New Game\n${hasSavedData ? '' : '{Grey}'}Resume Game{White}\nJump Points\nOptions`], { channel: 1, x: 100,  y: 80, width: undefined, height: undefined }, true, {
     first: 0,
     default: defaultValue,
