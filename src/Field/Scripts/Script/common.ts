@@ -19,9 +19,9 @@ export const displayMessage = async (id: number, x: number, y: number, channel: 
   }, isCloseable, undefined);
 }
 
-export const isTouching = (thisId: number, targetName: string, scene: Scene) => {
+export const isTouching = (thisId: number, target: string | Object3D, scene: Scene) => {
   const thisMesh = getScriptEntity(scene, thisId) as Group;
-  const targetMesh = scene.getObjectByName(targetName) as Group;
+  const targetMesh = target instanceof Object3D ? target : scene.getObjectByName(target) as Group;
 
   if (!thisMesh || !targetMesh) {
     return false;

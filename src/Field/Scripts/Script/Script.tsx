@@ -131,14 +131,14 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
       return;
     }
     
-    movementController.tick(entityRef.current, delta);
+    movementController.tick(entityRef.current, delta, scene);
 
     entityRef.current.quaternion.identity();
     const meshUp = new Vector3(0, 0, 1).applyQuaternion(entityRef.current.quaternion).normalize();
 
-    const { isFacingTarget, goal } = movementController.getState().position
-    if (goal && isFacingTarget) {
-      rotationController.turnToFaceVector(goal, 0);
+    const { isFacingTarget, waypoints } = movementController.getState().position
+    if (waypoints && isFacingTarget) {
+      rotationController.turnToFaceVector(waypoints[0], 0);
     }
 
     const isTalkingToPlayer = scriptController.isTalkingToPlayer();

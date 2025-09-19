@@ -179,11 +179,6 @@ const Model = ({animationController, models, scriptController, movementControlle
       modelBoundaryPosition = boundingbox.min
     }
 
-    if (script.groupId === 0) {
-      window.activeTriangle = movementController.getState().position.walkmeshTriangle;
-      window.closestTriangle = searchResult?.triangleId;
-    }
-  
     const standingTrianglePosition = walkmeshController.getPositionOnTriangle(
       movementController.getState().position.current,
       movementController.getState().position.walkmeshTriangle!

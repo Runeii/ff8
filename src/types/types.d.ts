@@ -25,6 +25,8 @@ declare global {
       activeRemoteExecutions: Record<string, ScriptDump>
     }
     getScriptState: (() => unknown)[],
+    activeTriangle: number | null | undefined,
+    closestTriangle: number | null | undefined,
   }
   interface WindowEventMap {
     // Define your custom event type

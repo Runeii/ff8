@@ -1,5 +1,5 @@
 import { BufferAttribute, BufferGeometry, DoubleSide, Object3D } from "three";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import useGlobalStore from "../../store";
 import { FieldData } from "../Field";
 import { vectorToFloatingPoint } from "../../utils";
@@ -44,44 +44,20 @@ const WalkMesh = ({ walkmesh }: WalkMeshProps) => {
 
   const lockedTriangles = useGlobalStore(state => state.lockedTriangles);
 
-  const [id, setId] = useState<number | null>(null);
-  const [id2, setId2] = useState<number | null>(null);
   useFrame(({scene}) => {
     if (!useGlobalStore.getState().walkmeshController) {
       useGlobalStore.setState({
         walkmeshController: new WalkmeshMovementController(scene.getObjectByName('walkmesh') as Object3D)
       })
     }
-    if (window.activeTriangle !== null && window.activeTriangle !== undefined) {
-      setId(window.activeTriangle)
-    } else {
-      setId(null)
-    }
-    if (window.closestTriangle !== null && window.closestTriangle !== undefined) {
-      setId2(window.closestTriangle)
-    } else {
-      setId2(null)
-    }
   })
 
-  const getColor = (index: number) => {
-    if (lockedTriangles.includes(index)) {
-      return 'red';
-    }
-    if (index === id) {
-      return 'blue';
-    }
-    if (index === id2) {
-      return 'orange';
-    }
-    return 'green';
-  }
   return (
     <Bvh firstHitOnly>
       <group name="walkmesh">
         {walkMeshGeometry.map((geometry, index) => (
           <mesh key={index} name={`${index}`} geometry={geometry} onClick={handleClick} visible={true}>
-            <meshBasicMaterial color={getColor(index)} transparent opacity={1} side={DoubleSide} />
+            <meshBasicMaterial color={lockedTriangles.includes(index) ? 'red' : 'green'} transparent opacity={1} side={DoubleSide} />
           </mesh>
         ))}
       </group>

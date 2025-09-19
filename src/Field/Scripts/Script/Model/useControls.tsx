@@ -57,7 +57,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     }
 
     const initialPosition = new Vector3(initialFieldPosition.x, initialFieldPosition.y, initialFieldPosition.z);
-    const newPosition = walkmeshController.getPositionOnWalkmesh(initialPosition, 3, false);
+    const newPosition = walkmeshController.getPositionOnWalkmesh(initialPosition);
 
     if (newPosition) {
       movementController.setPosition(newPosition);
@@ -110,8 +110,10 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
   ) => {
     if (!isActive || !isUserControllable || !hasPlacedCharacter || isTransitioningMap) return;
 
-    const { goal, userControlledSpeed, isPaused } = movementController.getState().position;
-    if (goal && userControlledSpeed !== undefined && !isPaused) return;
+    const { waypoints, userControlledSpeed, isPaused } = movementController.getState().position;
+    if (waypoints && userControlledSpeed !== undefined && !isPaused) {
+      return;
+    }
 
     const player = getPlayerEntity(scene);
     if (!player) {
@@ -145,8 +147,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     // Snap to walkmesh
     const newPosition = walkmeshController.getPositionOnWalkmesh(
       desiredPosition,
-      characterHeight / 2,
-      false
+      movementController.getState().position.walkmeshTriangle!
     );
     if (!newPosition) {
       return;
@@ -170,21 +171,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     // Return updated info (optional)
     const movementSpeed = isWalking ? 2560 : 7560;
     return [newPosition, movementSpeed];
-  }, [
-    isActive,
-    isUserControllable,
-    hasPlacedCharacter,
-    isTransitioningMap,
-    movementController,
-    rotationController,
-    walkmeshController,
-    handleMovement,
-    isRunEnabled,
-    movementFlags.isWalking,
-    upDirection,
-    forwardDirection,
-    characterHeight
-  ]);
+  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking, upDirection, forwardDirection]);
 
   const handleUpdateCongaWaypoint = useCallback((newPosition: Vector3 | null, movementSpeed: number) => {
     const isClimbingLadder = movementController.getState().isClimbingLadder;

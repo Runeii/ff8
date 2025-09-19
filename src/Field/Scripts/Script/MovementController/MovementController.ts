@@ -4,6 +4,7 @@ import { numberToFloatingPoint } from "../../../../utils";
 import PromiseSignal from "../../../../PromiseSignal";
 import useGlobalStore from "../../../../store";
 import JumpCurve from "./JumpCurve";
+import { isTouching } from "../common";
 
 type MoveOptions = {
   customMovementTarget: Vector3 | undefined;
@@ -17,7 +18,7 @@ type MoveOptions = {
   distanceToStopAnimationFromTarget: number;
 }
 
-const createMovementController = (id: string | number) => {
+const createMovementController = (id: number) => {
   const {getState, setState, subscribe} = create(() => ({
     hasBeenPlaced: false,
     hasMoved: false,
@@ -34,8 +35,9 @@ const createMovementController = (id: string | number) => {
       isClimbingLadder: false,
       isPaused: false,
       userControlledSpeed: undefined as number | undefined,
-      goal: undefined as Vector3 | undefined,
+      waypoints: undefined as Vector3[] | undefined,
       signal: undefined as PromiseSignal| undefined,
+      targetObject: undefined as Object3D | undefined,
       walkmeshTriangle: null as number | null,
     },
     offset: {
@@ -121,13 +123,13 @@ const createMovementController = (id: string | number) => {
       hasBeenPlaced: true,
       position: {
         ...getState().position,
-        goal: position,
         duration: 0,
         isAnimationEnabled: false,
         isFacingTarget: false,
         isPaused: false,
         signal,
-        walkmeshTriangle: triangle
+        walkmeshTriangle: triangle,
+        waypoints: [position],
       },
     });
 
@@ -149,7 +151,7 @@ const createMovementController = (id: string | number) => {
     });
   }
 
-  const moveToPoint = async (target: Vector3, passedOptions?: Partial<MoveOptions>) => {
+  const moveToPoint = async (target: Vector3, passedOptions?: Partial<MoveOptions>, targetObject?: Object3D) => {
     const defaultOptions: MoveOptions = {
       customMovementTarget: undefined,
       duration: undefined,
@@ -185,12 +187,16 @@ const createMovementController = (id: string | number) => {
       return;
     }
 
-    const goal = isAllowedToLeaveWalkmesh ? target : walkmeshController.getPositionOnWalkmesh(target);
+    const waypoints = walkmeshController.findPath(
+      getState().position.current,
+      target,
+      isAllowedToCrossBlockedTriangles
+    )
 
     setState({
       position: {
         current: getState().position.current,
-        goal: goal ?? target,
+        waypoints: waypoints ?? [target],
         duration: duration && duration > 0 ? duration : undefined,
         distanceToStopAnimationFromTarget,
         isAnimationEnabled,
@@ -201,6 +207,7 @@ const createMovementController = (id: string | number) => {
         isPaused: false,
         userControlledSpeed,
         signal,
+        targetObject,
         walkmeshTriangle: getState().position.walkmeshTriangle,
       },
     });
@@ -218,7 +225,7 @@ const createMovementController = (id: string | number) => {
 
     const target = targetActor.getWorldPosition(new Vector3());
 
-    await moveToPoint(target, passedOptions)
+    await moveToPoint(target, passedOptions, targetActor)
   }
 
   const jumpToPosition = (end: Vector3, duration: number) => {
@@ -277,7 +284,7 @@ const createMovementController = (id: string | number) => {
     setState({
       position: {
         ...getState().position,
-        goal: undefined
+        waypoints: undefined
       },
       offset: {
         ...getState().offset,
@@ -373,7 +380,7 @@ const createMovementController = (id: string | number) => {
       speedBeforeClimbingLadder: isClimbingLadder ? getState().movementSpeed : 0,
     })
 
-  const tick = (entity: Object3D, delta: number) => {
+  const tick = (entity: Object3D, delta: number, scene: Scene) => {
     const { position, offset, jump } = getState();
 
     const { walkmeshController } = useGlobalStore.getState();
@@ -386,19 +393,35 @@ const createMovementController = (id: string | number) => {
       return;
     }
 
-    if (!position.goal && !offset.goal && !jump.directLine) {
+    if (!position.waypoints && !offset.goal && !jump.directLine) {
       return;
     }
-   
-    const { current: currentPosition, duration, isAllowedToCrossBlockedTriangles, isAllowedToLeaveWalkmesh, goal: positionGoal } = position;
+
+    const { current: currentPosition, duration, targetObject, waypoints } = position;
 
     const movementSpeed = getMovementSpeed();
 
+    const positionGoal = waypoints?.[0];
     if (positionGoal) {
       const speed = movementSpeed / 2560
       const maxDistance = speed * delta * (duration && duration > 0 ? duration : 1);
 
       const remainingDistance = currentPosition.distanceTo(positionGoal);
+
+      const isTouchingTarget = targetObject ? isTouching(id, targetObject, scene) : false;
+      if (isTouchingTarget){
+        resolvePendingPositionSignal();
+        setState({
+          position: {
+            ...getState().position,
+            userControlledSpeed: undefined,
+            isPaused: true,
+            walkmeshTriangle: walkmeshController.getTriangleForPosition(positionGoal),
+            waypoints: undefined,
+          }
+        });
+        return;
+      }
 
       if (remainingDistance <= maxDistance || duration === 0) {
         currentPosition.copy(positionGoal);
@@ -407,16 +430,15 @@ const createMovementController = (id: string | number) => {
           position: {
             ...getState().position,
             userControlledSpeed: undefined,
-            goal: undefined,
             isPaused: true,
             walkmeshTriangle: walkmeshController.getTriangleForPosition(positionGoal),
+            waypoints: waypoints.length > 1 ? waypoints.slice(1) : undefined,
           }
         });
       } else {
         const direction = positionGoal.clone().sub(currentPosition).normalize();
         const desiredNextPos = currentPosition.clone().add(direction.multiplyScalar(maxDistance).divideScalar(10));
-        const newPos = isAllowedToLeaveWalkmesh ? desiredNextPos : walkmeshController.moveToward(currentPosition, desiredNextPos, isAllowedToCrossBlockedTriangles);
-        currentPosition.copy(newPos);
+        currentPosition.copy(desiredNextPos);
         const triangle = walkmeshController.getTriangleForPosition(currentPosition);
         if (triangle !== null && triangle !== undefined && triangle !== getState().position.walkmeshTriangle) {
           setState({
@@ -546,7 +568,7 @@ const createMovementController = (id: string | number) => {
   }
 
   const isMoving = () => {
-    return getState().position.goal !== undefined && getState().position.isPaused === false;
+    return getState().position.waypoints !== undefined && getState().position.isPaused === false;
   }
 
   const getMovementSpeed = () => {

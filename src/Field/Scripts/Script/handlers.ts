@@ -944,8 +944,8 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   PMOVECANCEL: () => {},
 
   MOVESYNC: async ({ movementController }) => {
-    while (movementController.getState().position.goal) {
-      console.log('waiting for move to finish', movementController.getState().position, movementController.getState().position.goal);
+    while (movementController.getState().position.waypoints) {
+      console.log('waiting for move to finish', movementController.getState().position, movementController.getState().position.waypoints);
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },
@@ -967,7 +967,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     const actorId = STACK.pop() as number;
 
     await movementController.moveToObject(`entity--${actorId}`, scene, {
-      distanceToStopAnimationFromTarget
+      distanceToStopAnimationFromTarget,
     });
   },
 
@@ -1097,15 +1097,15 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   UNKNOWN12: () => {}, // "PIVOT_SYNC"
 
   // Turn to angle
-  CTURNL: ({ rotationController, STACK }) => {
+  CTURNL: async ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    rotationController.turnToFaceAngle(angle, duration, 'left');
+    await rotationController.turnToFaceAngle(angle, duration, 'left');
   },
-  CTURNR: ({ rotationController, STACK }) => {
+  CTURNR: async ({ rotationController, STACK }) => {
     const duration = STACK.pop() as number;
     const angle = STACK.pop() as number;
-    rotationController.turnToFaceAngle(angle, duration, 'right');
+    await rotationController.turnToFaceAngle(angle, duration, 'right');
   },
   DIR: ({ rotationController, STACK }) => {
     const angle = STACK.pop() as number;

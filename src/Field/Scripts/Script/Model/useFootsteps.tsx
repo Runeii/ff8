@@ -21,7 +21,7 @@ const useFootsteps = ({ movementController }: useFootstepsProps) => {
     const { isClimbingLadder, footsteps, movementSpeed, position } = movementController.getState();
 
     const camera = scene.getObjectByName("sceneCamera") as PerspectiveCamera;
-    const isAnimating = position.goal;
+    const isAnimating = position.waypoints;
     const hasFootsteps = footsteps.isActive;
     const isWalking = movementSpeed < 2695
 
