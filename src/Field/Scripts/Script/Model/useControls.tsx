@@ -103,6 +103,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
 
   const [forwardDirection] = useState(new Vector3(0, -1, 0));
   const [upDirection] = useState(new Vector3(0, 0, 1));
+  const [POSITION_VECTOR] = useState(new Vector3());
   const handleFrame = useCallback(async (
     camera: PerspectiveCamera,
     scene: Scene,
@@ -150,9 +151,8 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     const moveDistance = speed * delta;
     desiredPosition.copy(currentPosition).add(meshForward.multiplyScalar(moveDistance));
 
-    console.log('Trying')
     const newPosition = walkmeshController.getNextPositionOnWalkmesh(
-      new Vector3(currentPosition.x, currentPosition.y, currentPosition.z),
+      POSITION_VECTOR.set(currentPosition.x, currentPosition.y, currentPosition.z),
       meshForward,
       moveDistance,
       movementController.getState().position.walkmeshTriangle!,
@@ -180,7 +180,7 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     // Return updated info (optional)
     const movementSpeed = isWalking ? 2560 : 7560;
     return [newPosition, movementSpeed];
-  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking, upDirection, forwardDirection]);
+  }, [isActive, isUserControllable, hasPlacedCharacter, isTransitioningMap, movementController, rotationController, walkmeshController, handleMovement, isRunEnabled, movementFlags.isWalking, upDirection, forwardDirection, POSITION_VECTOR]);
 
   const handleUpdateCongaWaypoint = useCallback((newPosition: Vector3 | null, movementSpeed: number) => {
     const isClimbingLadder = movementController.getState().isClimbingLadder;

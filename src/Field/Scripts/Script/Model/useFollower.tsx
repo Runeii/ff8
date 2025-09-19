@@ -43,12 +43,15 @@ const useFollower = ({ isActive, movementController, partyMemberId, rotationCont
       
       const leaderMovementController = leaderEntity.userData.movementController as ReturnType<typeof createMovementController>;
       const leaderRotationController = leaderEntity.userData.rotationController as ReturnType<typeof createRotationController>;
-      const position = leaderMovementController.getPosition();
-      movementController.setPosition(
-        new Vector3(position.x, position.y, position.z).sub(
-          leaderRotationController.getCurrentDirection().multiplyScalar(0.03 * offset)
-        )
+      const leaderPosition = leaderMovementController.getPosition();
+
+      const walkmeshController = useGlobalStore.getState().walkmeshController!;
+      const position = walkmeshController.getNextPositionOnWalkmesh(
+        new Vector3().copy(leaderPosition),
+        leaderRotationController.getCurrentDirection().negate(),
+        0.03,
       );
+      movementController.setPosition(position);
 
       rotationController.turnToFaceAngle(leaderRotationController.getState().angle.get(), 0);
       
@@ -66,9 +69,9 @@ const useFollower = ({ isActive, movementController, partyMemberId, rotationCont
     }
 
     rotationController.turnToFaceAngle(angle, 0);
-
     movementController.moveToPoint(position, {
       userControlledSpeed: speed,
+      isAllowedToLeaveWalkmesh: true,
     });
   }, [isActive, movementController, partyMemberId, rotationController]);
 

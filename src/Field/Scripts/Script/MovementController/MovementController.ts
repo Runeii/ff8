@@ -187,7 +187,7 @@ const createMovementController = (id: number) => {
       return;
     }
 
-    const waypoints = walkmeshController.findPath(
+    const waypoints = isAllowedToLeaveWalkmesh ? undefined : walkmeshController.findPath(
       getState().position.current,
       target,
       isAllowedToCrossBlockedTriangles

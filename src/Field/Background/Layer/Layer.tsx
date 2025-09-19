@@ -30,6 +30,8 @@ type LayerProps = {
   layer: Layer;
 };
 
+const CAMERA_WORLD_DIRECTION = new Vector3();
+const CAMERA_WORLD_POSITION = new Vector3();
 const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
   const layerRef = useRef<Sprite | Mesh>(null);
 
@@ -78,8 +80,8 @@ const Layer = ({ backgroundPanRef, isTiled, layer }: LayerProps) => {
     line.end.copy(initialTargetPosition);
     const length = line.distance();
 
-    const direction = camera.getWorldDirection(new Vector3());
-    line.start.copy(camera.getWorldPosition(new Vector3()));
+    const direction = camera.getWorldDirection(CAMERA_WORLD_DIRECTION);
+    line.start.copy(camera.getWorldPosition(CAMERA_WORLD_POSITION));
     line.end.copy(line.start).add(direction.clone().multiplyScalar(length));
 
     layerRef.current.quaternion.copy(camera.quaternion);

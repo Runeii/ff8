@@ -430,18 +430,14 @@ class WalkmeshMovementController {
     moveDirection: Vector3,
     moveDistance: number,
     currentTriangleId?: number
-  ): Vector3 | null {
+  ): Vector3 {
     // Ensure move direction is normalized and on X-Y plane
     const normalizedDirection = moveDirection.clone().normalize();
     normalizedDirection.z = 0;
 
     // Get current triangle if not provided
     if (currentTriangleId === undefined) {
-      const foundTriangleId = this.getTriangleForPosition(currentPosition);
-      if (foundTriangleId === null) {
-        console.warn("Current position not on walkmesh");
-        return null;
-      }
+      const foundTriangleId = this.getTriangleForPosition(currentPosition)!;
       currentTriangleId = foundTriangleId;
     }
 
@@ -449,12 +445,6 @@ class WalkmeshMovementController {
     const targetPosition = currentPosition.clone().add(
       normalizedDirection.clone().multiplyScalar(moveDistance)
     );
-
-    // Get current triangle and its neighbors
-    const currentTriangle = this.triangleCache.get(currentTriangleId);
-    if (!currentTriangle) {
-      return null;
-    }
 
     // Get two levels of adjacency for better navigation
     const adjacentTriangles = this.getAdjacentTriangles(currentTriangleId);
@@ -497,7 +487,7 @@ class WalkmeshMovementController {
 
     if (!hitEdge) {
       // No clear edge hit, return null
-      return null;
+      return currentPosition.clone();
     }
 
     // Slide along the edge
@@ -828,6 +818,275 @@ class WalkmeshMovementController {
     const closest = this.getClosestPointOnSegment(point, edgeStart, edgeEnd);
     return point.distanceTo(closest);
   }
+  public getAdjacentTrianglesWithDepth(
+    triangleId: number,
+    depth: number = 1,
+    includeBlocked: boolean = true
+  ): number[] {
+    if (depth < 1) {
+      return [];
+    }
+
+    const visited = new Set<number>();
+    const result = new Set<number>();
+
+    // Initialize with the starting triangle
+    visited.add(triangleId);
+
+    // Current level to process
+    let currentLevel = new Set<number>([triangleId]);
+
+    // Process each depth level
+    for (let d = 0; d < depth; d++) {
+      const nextLevel = new Set<number>();
+
+      // For each triangle in the current level
+      for (const currentId of currentLevel) {
+        const neighbors = this.getAdjacentTriangles(currentId);
+
+        // Add each neighbor to the next level if not already visited
+        for (const neighborId of neighbors) {
+          if (!visited.has(neighborId)) {
+            // Check if we should include blocked triangles
+            if (!includeBlocked && this.isTriangleLocked(neighborId)) {
+              continue;
+            }
+
+            visited.add(neighborId);
+            nextLevel.add(neighborId);
+            result.add(neighborId);
+          }
+        }
+      }
+
+      // Move to the next level
+      currentLevel = nextLevel;
+
+      // If no more triangles to process, we're done
+      if (currentLevel.size === 0) {
+        break;
+      }
+    }
+
+    return Array.from(result);
+  }
+/**
+ * Find the nearest triangles in a given direction from a starting triangle
+ * Always returns at least one triangle - if none match the angle tolerance, returns the closest directional matches
+ * @param triangleId - The starting triangle ID
+ * @param direction - The direction vector to search (will be normalized, Z component ignored)
+ * @param maxDepth - Maximum depth to search (default: 3)
+ * @param angleToleranceDegrees - Maximum angle deviation from direction to consider a triangle (default: 45 degrees)
+ * @returns Array of up to 2 best matching triangle IDs, ordered by score (best first)
+ */
+public getTriangleInDirection(
+  triangleId: number,
+  direction: Vector3,
+  maxDepth: number = 3,
+  angleToleranceDegrees: number = 45
+): number[] {
+  const startTriangle = this.triangleCache.get(triangleId);
+  if (!startTriangle) {
+    return [];
+  }
+  
+  // Normalize direction and ensure it's on X-Y plane
+  const searchDirection = direction.clone().normalize();
+  searchDirection.z = 0;
+  
+  // If direction is zero, return first two adjacent triangles as fallback
+  if (searchDirection.length() < 0.001) {
+    const adjacent = this.getAdjacentTriangles(triangleId);
+    return adjacent.slice(0, 2);
+  }
+  
+  // Get center of starting triangle
+  const startCenter = this.getTriangleCentre(triangleId);
+  
+  // Build a map of triangle depths as we search
+  const triangleDepths = new Map<number, number>();
+  
+  // Search level by level to build depth map
+  for (let d = 1; d <= maxDepth; d++) {
+    const trianglesAtCurrentDepth = d === 1 
+      ? this.getAdjacentTriangles(triangleId)
+      : this.getAdjacentTrianglesWithDepth(triangleId, d, true)
+          .filter(id => !triangleDepths.has(id));
+    
+    for (const id of trianglesAtCurrentDepth) {
+      if (!triangleDepths.has(id)) {
+        triangleDepths.set(id, d);
+      }
+    }
+  }
+  
+  // If no adjacent triangles at all, return empty array
+  if (triangleDepths.size === 0) {
+    return [];
+  }
+  
+  // Track all candidates with their scores
+  const candidates: Array<{
+    id: number;
+    score: number;
+    angleDeviation: number;
+    depth: number;
+    withinTolerance: boolean;
+  }> = [];
+  
+  // Evaluate each candidate triangle
+  for (const [candidateId, depth] of triangleDepths.entries()) {
+    const candidateCenter = this.getTriangleCentre(candidateId);
+    
+    // Calculate direction from start to candidate
+    const toCandidate = new Vector3()
+      .subVectors(candidateCenter, startCenter);
+    
+    // Skip if distance is too small to get meaningful direction
+    if (toCandidate.length() < 0.001) {
+      continue;
+    }
+    
+    toCandidate.normalize();
+    toCandidate.z = 0;
+    
+    // Calculate angle between search direction and actual direction to candidate
+    const dotProduct = searchDirection.dot(toCandidate);
+    const angleRad = Math.acos(Math.max(-1, Math.min(1, dotProduct)));
+    const angleDeg = angleRad * (180 / Math.PI);
+    
+    // Calculate distance from start to candidate
+    const distance = startCenter.distanceTo(candidateCenter);
+    
+    // Calculate a score (lower is better)
+    const depthWeight = 1.0;
+    const angleWeight = 2.0;
+    const distanceWeight = 0.1;
+    
+    // If outside tolerance, add penalty to score
+    const withinTolerance = angleDeg <= angleToleranceDegrees;
+    const tolerancePenalty = withinTolerance ? 0 : 100;
+    
+    const score = 
+      (depth * depthWeight) +
+      (angleDeg * angleWeight) +
+      (distance * distanceWeight) +
+      tolerancePenalty;
+    
+    candidates.push({
+      id: candidateId,
+      score: score,
+      angleDeviation: angleDeg,
+      depth: depth,
+      withinTolerance: withinTolerance
+    });
+  }
+  
+  // Sort candidates by score (lower is better)
+  candidates.sort((a, b) => a.score - b.score);
+  
+  // Return top 2 candidates
+  const result = candidates.slice(0, 2).map(c => c.id);
+  
+  // If we only have one candidate, return it
+  if (result.length > 0) {
+    return result;
+  }
+  
+  // Fallback: return first two adjacent triangles
+  const adjacent = this.getAdjacentTriangles(triangleId);
+  return adjacent.slice(0, 2);
+}
+
+/**
+ * Find the nearest triangle in a given direction, considering blocked triangles
+ * @param triangleId - The starting triangle ID
+ * @param direction - The direction vector to search
+ * @param maxDepth - Maximum depth to search (default: 3)
+ * @param angleToleranceDegrees - Maximum angle deviation from direction (default: 45 degrees)
+ * @param allowBlocked - Whether to return blocked triangles (default: true)
+ * @returns The ID of the best matching triangle, or null if none found
+ */
+public getReachableTriangleInDirection(
+  triangleId: number,
+  direction: Vector3,
+  maxDepth: number = 3,
+  angleToleranceDegrees: number = 45,
+  allowBlocked: boolean = true
+): number | null {
+  const startTriangle = this.triangleCache.get(triangleId);
+  if (!startTriangle) {
+    return null;
+  }
+  
+  // Normalize direction and ensure it's on X-Y plane
+  const searchDirection = direction.clone().normalize();
+  searchDirection.z = 0;
+  
+  // Get center of starting triangle
+  const startCenter = this.getTriangleCentre(triangleId);
+  
+  // Build a map of triangle depths as we search
+  const triangleDepths = new Map<number, number>();
+  
+  // Search level by level to build depth map
+  for (let d = 1; d <= maxDepth; d++) {
+    const trianglesAtCurrentDepth = d === 1 
+      ? this.getAdjacentTriangles(triangleId)
+      : this.getAdjacentTrianglesWithDepth(triangleId, d, allowBlocked)
+          .filter(id => !triangleDepths.has(id));
+    
+    for (const id of trianglesAtCurrentDepth) {
+      if (!triangleDepths.has(id)) {
+        triangleDepths.set(id, d);
+      }
+    }
+  }
+  
+  // Track best candidate
+  let bestCandidate: {
+    id: number;
+    score: number;
+    depth: number;
+  } | null = null;
+  
+  // Evaluate each candidate
+  for (const [candidateId, depth] of triangleDepths.entries()) {
+    const candidateCenter = this.getTriangleCentre(candidateId);
+    
+    // Calculate direction from start to candidate
+    const toCandidate = new Vector3()
+      .subVectors(candidateCenter, startCenter)
+      .normalize();
+    toCandidate.z = 0;
+    
+    // Calculate angle deviation
+    const dotProduct = searchDirection.dot(toCandidate);
+    const angleRad = Math.acos(Math.max(-1, Math.min(1, dotProduct)));
+    const angleDeg = angleRad * (180 / Math.PI);
+    
+    // Check if within angle tolerance
+    if (angleDeg <= angleToleranceDegrees) {
+      const distance = startCenter.distanceTo(candidateCenter);
+      
+      // Calculate score
+      const score = 
+        (depth * 1.0) +
+        (angleDeg * 2.0) +
+        (distance * 0.1);
+      
+      if (!bestCandidate || score < bestCandidate.score) {
+        bestCandidate = {
+          id: candidateId,
+          score: score,
+          depth: depth
+        };
+      }
+    }
+  }
+  
+  return bestCandidate ? bestCandidate.id : null;
+}
 }
 
 export default WalkmeshMovementController;
