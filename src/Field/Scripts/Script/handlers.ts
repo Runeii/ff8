@@ -184,11 +184,9 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     })
   },
   UCON: () => {
-    console.log('is controllable')
     useGlobalStore.setState({ isUserControllable: true });
   },
   UCOFF: () => {
-    console.log('is not controllable')
     useGlobalStore.setState({ isUserControllable: false });
   },
   LINEON: ({ setState }) => {
