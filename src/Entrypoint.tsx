@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 import useGlobalStore from "./store";
 import FieldLoader from "./Field/Field";
 import { attachKeyDownListeners } from "./Field/Scripts/Script/common";
@@ -43,9 +43,7 @@ const Entrypoint = ({ setWorldScene }: EntrypointProps) => {
 
   return (
     <>
-      <Suspense>
-        <FieldLoader />
-      </Suspense>
+      <FieldLoader />
     </>
   )
 }

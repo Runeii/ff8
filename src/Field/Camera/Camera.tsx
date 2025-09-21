@@ -212,9 +212,9 @@ const Camera = ({ backgroundPanRef, data }: CameraProps) => {
     
     const scenePosition = camera.position.clone();
     const debugPosition = camera.position.clone();
-    debugPosition.sub(forwardVector.clone().multiplyScalar(0.5));
-    debugPosition.sub(rightVector.clone().multiplyScalar(0.5));
-    debugPosition.add(upVector.clone().multiplyScalar(0.5));
+    debugPosition.sub(forwardVector.clone().multiplyScalar(0.1));
+    debugPosition.sub(rightVector.clone().multiplyScalar(0));
+    debugPosition.add(upVector.clone().multiplyScalar(0.1));
 
     moveableCamera.position.copy(scenePosition.lerp(debugPosition, pullback.get()));
 

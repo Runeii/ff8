@@ -943,7 +943,6 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
 
   MOVESYNC: async ({ movementController }) => {
     while (movementController.getState().position.waypoints) {
-      console.log('waiting for move to finish', movementController.getState().position, movementController.getState().position.waypoints);
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   },

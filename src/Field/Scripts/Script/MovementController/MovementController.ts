@@ -425,7 +425,6 @@ const createMovementController = (id: number) => {
 
       if (remainingDistance <= maxDistance || duration === 0) {
         currentPosition.copy(positionGoal);
-        resolvePendingPositionSignal();
         setState({
           position: {
             ...getState().position,
@@ -453,6 +452,10 @@ const createMovementController = (id: number) => {
       setState({
         hasBeenPlaced: true,
       })
+
+      if (!getState().position.waypoints) {
+        resolvePendingPositionSignal();
+      }
     }
 
     const { current: currentOffset, goal: offsetGoal, duration: offsetDuration, totalDistance } = offset;
