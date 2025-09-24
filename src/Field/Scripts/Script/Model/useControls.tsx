@@ -208,6 +208,10 @@ const useControls = ({ characterHeight, isActive, movementController, rotationCo
     if (!isActive) {
       return;
     }
+
+    if (!movementController.getState().hasBeenPlaced) {
+      return;
+    }
     const isClimbingLadder = movementController.getState().isClimbingLadder;
 
     if (isClimbingLadder) {

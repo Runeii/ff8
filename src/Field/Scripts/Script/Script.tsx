@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Script as ScriptType } from "../types";
 import Location from "./Location/Location";
 import Model from "./Model/Model";
@@ -187,15 +187,17 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
       position={script.type === 'model' ? [10,10,10] : [0,0,0]}
       visible={isVisible || isDrawPoint}
   >
-    <group name={`party--${partyMemberId}`} userData={{ test: 'test' }}>
-      {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
-      {script.type === 'model' && (
-        isDrawPoint ?
+    <Suspense>
+      <group name={`party--${partyMemberId}`} userData={{ test: 'test' }}>
+        {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
+        {script.type === 'model' && (
+          isDrawPoint ?
           <DrawPoint scriptController={scriptController} useScriptStateStore={useScriptStateStore} />
           : <Model scriptController={scriptController} animationController={animationController} movementController={movementController} rotationController={rotationController} models={models} script={script} useScriptStateStore={useScriptStateStore} />
-      )}
-      {script.type === 'door' && <Door scriptController={scriptController} doors={doors} script={script} useScriptStateStore={useScriptStateStore} />}
-    </group>
+        )}
+        {script.type === 'door' && <Door scriptController={scriptController} doors={doors} script={script} useScriptStateStore={useScriptStateStore} />}
+      </group>
+      </Suspense>
     </group>
   );
 }

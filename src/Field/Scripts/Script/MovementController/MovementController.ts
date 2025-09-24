@@ -120,7 +120,6 @@ const createMovementController = (id: number) => {
     const signal = new PromiseSignal();
 
     setState({
-      hasBeenPlaced: true,
       position: {
         ...getState().position,
         duration: 0,
@@ -449,10 +448,6 @@ const createMovementController = (id: number) => {
         }
       }
 
-      setState({
-        hasBeenPlaced: true,
-      })
-
       if (!getState().position.waypoints) {
         resolvePendingPositionSignal();
       }
@@ -523,7 +518,12 @@ const createMovementController = (id: number) => {
           progress: newProgress,
         }
       })
+    }
 
+    if (getState().position.current.x !== -999) {
+      setState({
+        hasBeenPlaced: true,
+      });
     }
 
     entity.position.set(
