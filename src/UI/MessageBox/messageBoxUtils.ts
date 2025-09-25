@@ -73,7 +73,6 @@ export const parseTextWithModifiers = (
     placements.push({
       rowIndex: position.rowIndex,
       columnIndex: position.columnIndex,
-      characterWidth,
       x,
       y,
     })

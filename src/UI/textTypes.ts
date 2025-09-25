@@ -3,7 +3,6 @@ export type FontColor = 'red' | 'green' | 'blue' | 'yellow' | 'magenta' | 'gray'
 export type Placement = {
   rowIndex: number;
   columnIndex: number;
-  characterWidth: number;
   x: number;
   y: number;
 }

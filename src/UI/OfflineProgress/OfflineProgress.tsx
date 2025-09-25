@@ -5,7 +5,8 @@ import { CanvasTexture, ClampToEdgeWrapping } from "three";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
 import { Placement } from "../textTypes";
-import { fontLayout, fontWidths} from "../MessageBox/fontLayout"
+import { fontLayout} from "../MessageBox/fontLayout"
+import { getCharacterWidth } from "../MessageBox/messageBoxUtils";
 
 const SOURCE_TILE_SIZE = 95.8;
 
@@ -47,13 +48,10 @@ const OfflineProgress = () => {
 
         const columnIndex = fontLayout[rowIndex].indexOf(char);
 
-        const isUppercase = char === char.toUpperCase();
-        let baseWidth = isUppercase ? 0.8 : 0.6;
-        if (Number.isInteger(parseInt(char))) {
-          baseWidth = 0.7;
-        }
-
-        const character_width = OUTPUT_TILE_SIZE * (fontWidths[char as keyof typeof fontWidths] ?? baseWidth);
+        const character_width = getCharacterWidth({
+          rowIndex,
+          columnIndex
+        })
 
         placements.push({
           rowIndex,
