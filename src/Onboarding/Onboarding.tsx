@@ -101,7 +101,6 @@ const optionsSelect = async () => {
 const mainMenuSelect = async (defaultValue = hasSavedData ? 1 : 0) => {
   const {fadeSpring} = useGlobalStore.getState();
   openMessage('welcome', ['Welcome'], { channel: 0, x: 0,  y: 0, width: undefined, height: undefined }, false, undefined);
-
     await openMessage('controls', [`Controls
       {Yellow}Move{White} - [Arrows]
       {Yellow}Confirm{White} - [Z]

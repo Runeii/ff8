@@ -4,7 +4,7 @@ import { Modifier } from "./textTypes";
 
 export const createModifier = (tag: string) => {
   let result: Modifier = {
-    type: 'general',
+    type: 'unknownModifier',
   }
 
   switch (tag) {
@@ -75,8 +75,8 @@ export const createModifier = (tag: string) => {
       default:
         break;
       }
-    
-  if (result.type !== 'general') {
+
+  if (result.type !== 'unknownModifier') {
     return result;
   }
   
@@ -87,6 +87,7 @@ export const createModifier = (tag: string) => {
     }
   }
 
+  console.log('unknownModifier', tag, result);
   return result;
 }
 
