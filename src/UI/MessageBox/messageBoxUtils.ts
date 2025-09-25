@@ -286,7 +286,7 @@ export const processTextLayout = (
       (options ? options.length * OUTPUT_LINE_HEIGHT : 0)
     : TOP_MARGIN + (options ? options.length * OUTPUT_LINE_HEIGHT : 0)
 
-  const width = message.placement.width ? message.placement.width * 2 : highestX + LEFT_MARGIN / 2
+  const width = message.placement.width ? message.placement.width * 2 : highestX + LEFT_MARGIN
   const height = message.placement.height ? message.placement.height * 2 : finalY + TOP_MARGIN / 2
 
   return { placements, width, height, selectedY }
