@@ -370,12 +370,11 @@ export const createAnimationController = (id: string | number) => {
     }
   }
 
-  const lastPosition = new Vector3();
 
   const movementAnimationTick = (movementController: ReturnType<typeof createMovementController>) => {
-    const currentPosition = movementController.getState().position.current;
+    const isMoving = movementController.isMoving();
 
-    if (!currentPosition.equals(lastPosition) && currentRunState?.isComplete && getState().activeAnimation?.shouldHoldLastFrame) {
+    if (isMoving && currentRunState?.isComplete && getState().activeAnimation?.shouldHoldLastFrame) {
       clearAnimation();
     }
 
@@ -383,7 +382,7 @@ export const createAnimationController = (id: string | number) => {
       return;
     }
 
-    if (currentPosition.equals(lastPosition)) {
+    if (!isMoving) {
       playMovementAnimation('standing');
       return;
     }
@@ -397,8 +396,6 @@ export const createAnimationController = (id: string | number) => {
     } else {
       playMovementAnimation('walking');
     }
-
-    lastPosition.copy(currentPosition);
   }
 
   return {

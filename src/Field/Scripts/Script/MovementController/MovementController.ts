@@ -428,7 +428,7 @@ const createMovementController = (id: number) => {
           position: {
             ...getState().position,
             userControlledSpeed: undefined,
-            isPaused: true,
+            isPaused: waypoints.length === 0,
             walkmeshTriangle: walkmeshController.getTriangleForPosition(positionGoal),
             waypoints: waypoints.length > 1 ? waypoints.slice(1) : undefined,
           }
