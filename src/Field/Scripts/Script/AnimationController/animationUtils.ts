@@ -1,4 +1,4 @@
-import { AnimationClip, Object3D, VectorKeyframeTrack, NumberKeyframeTrack, QuaternionKeyframeTrack, Vector3 } from 'three';
+import { AnimationClip, Object3D, VectorKeyframeTrack, NumberKeyframeTrack, QuaternionKeyframeTrack, Vector3, Quaternion } from 'three';
 
 /**
  * Extracts object name and property name from track name
@@ -10,7 +10,6 @@ const extractNamesFromTrack = (trackName: string): [string, string] => {
   return [objectName, propertyName];
 };
 
-
 export const applyAnimationAtTime = (mesh: Object3D, clip: AnimationClip, time: number): void => {
   // Process each track in the clip
   clip.tracks.forEach(track => {
@@ -18,35 +17,50 @@ export const applyAnimationAtTime = (mesh: Object3D, clip: AnimationClip, time: 
     const [objectName, propertyName] = extractNamesFromTrack(trackName);
     const object = mesh.getObjectByName(objectName);
     if (object) {
-      // @ts-expect-error Helper method
       applyTrackToObjectAtTime(track, object, propertyName, time);
     }
   });
   
-  mesh.updateMatrix();
+  mesh.updateMatrix();  
   mesh.updateMatrixWorld(true);
 };
-
 
 const applyTrackToObjectAtTime = (
   track: VectorKeyframeTrack | NumberKeyframeTrack | QuaternionKeyframeTrack,
   object: Object3D,
-  propertyName: keyof typeof object,
+  propertyName: string,
   time: number
 ): void => {
   const stride = track.getValueSize();
   const times = track.times;
   const values = track.values;
   
+  // Handle empty times array
+  if (times.length === 0) return;
+  
   // Clamp time to valid range
   const clampedTime = Math.min(Math.max(0, time), times[times.length - 1]);
   
+  // Handle edge cases
+  if (clampedTime <= times[0]) {
+    // Time is before or at first keyframe
+    applyValuesAtIndex(track, object, propertyName, values, 0, stride);
+    return;
+  }
+  
+  if (clampedTime >= times[times.length - 1]) {
+    // Time is at or after last keyframe
+    const lastIndex = (times.length - 1) * stride;
+    applyValuesAtIndex(track, object, propertyName, values, lastIndex, stride);
+    return;
+  }
+  
   // Find the keyframe indices for interpolation
   let leftIndex = 0;
-  let rightIndex = 0;
+  let rightIndex = 1;
   
   for (let i = 0; i < times.length - 1; i++) {
-    if (clampedTime >= times[i] && clampedTime <= times[i + 1]) {
+    if (clampedTime <= times[i + 1]) {
       leftIndex = i;
       rightIndex = i + 1;
       break;
@@ -70,32 +84,41 @@ const applyTrackToObjectAtTime = (
 const applyValuesAtIndex = (
   track: VectorKeyframeTrack | NumberKeyframeTrack | QuaternionKeyframeTrack,
   object: Object3D,
-  propertyName: keyof typeof object,
+  propertyName: string,
   values: Float32Array,
   index: number,
   stride: number
 ): void => {
-  if (track instanceof VectorKeyframeTrack || track instanceof NumberKeyframeTrack) {
-    const value = Array.from(values.slice(index, index + stride));
-    
-    if (stride === 3 && object[propertyName] instanceof Vector3) {
-      const [x, y, z] = value;
-      object[propertyName].set(x, y, z);
-    } else if (stride === 1) {
-      // @ts-expect-error Helper method
-      object[propertyName] = value[0];
-    }
-  } else if (track instanceof QuaternionKeyframeTrack) {
+  if (track instanceof QuaternionKeyframeTrack) {
     const quaternionValues = Array.from(values.slice(index, index + 4));
     const [x, y, z, w] = quaternionValues;
     object.quaternion.set(x, y, z, w);
+  } else if (track instanceof VectorKeyframeTrack) {
+    const value = Array.from(values.slice(index, index + stride));
+    
+    if (stride === 3) {
+      const [x, y, z] = value;
+      const targetProperty = (object as any)[propertyName] as Vector3;
+      if (targetProperty && targetProperty.isVector3) {
+        targetProperty.set(x, y, z);
+      }
+    } else if (stride === 2) {
+      const [x, y] = value;
+      const targetProperty = (object as any)[propertyName];
+      if (targetProperty && targetProperty.set) {
+        targetProperty.set(x, y);
+      }
+    }
+  } else if (track instanceof NumberKeyframeTrack) {
+    const value = values[index];
+    (object as any)[propertyName] = value;
   }
 };
 
 const interpolateAndApply = (
   track: VectorKeyframeTrack | NumberKeyframeTrack | QuaternionKeyframeTrack,
   object: Object3D,
-  propertyName: keyof typeof object,
+  propertyName: string,
   values: Float32Array,
   leftIndex: number,
   rightIndex: number,
@@ -106,27 +129,36 @@ const interpolateAndApply = (
   const rightValueIndex = rightIndex * stride;
   
   if (track instanceof QuaternionKeyframeTrack) {
-    // Quaternion interpolation (slerp)
-    const leftQuat = Array.from(values.slice(leftValueIndex, leftValueIndex + 4));
-    const rightQuat = Array.from(values.slice(rightValueIndex, rightValueIndex + 4));
-    
-    // Simple lerp for demonstration (slerp would be more accurate)
-    const interpolated = leftQuat.map((val, i) => val * (1 - t) + rightQuat[i] * t);
-    const [x, y, z, w] = interpolated;
-    object.quaternion.set(x, y, z, w);
-  } else {
-    // Linear interpolation for vectors and numbers
+    // Proper quaternion interpolation (slerp)
+    const leftQuat = new Quaternion().fromArray(values, leftValueIndex);
+    const rightQuat = new Quaternion().fromArray(values, rightValueIndex);
+    const result = new Quaternion().slerpQuaternions(leftQuat, rightQuat, t);
+    object.quaternion.copy(result);
+  } else if (track instanceof VectorKeyframeTrack) {
+    // Linear interpolation for vectors
     const leftValues = Array.from(values.slice(leftValueIndex, leftValueIndex + stride));
     const rightValues = Array.from(values.slice(rightValueIndex, rightValueIndex + stride));
     
     const interpolated = leftValues.map((val, i) => val * (1 - t) + rightValues[i] * t);
     
-    if (stride === 3 && object[propertyName] instanceof Vector3) {
+    if (stride === 3) {
       const [x, y, z] = interpolated;
-      object[propertyName].set(x, y, z);
-    } else if (stride === 1) {
-      // @ts-expect-error Helper method
-      object[propertyName] = interpolated[0];
+      const targetProperty = (object as any)[propertyName] as Vector3;
+      if (targetProperty && targetProperty.isVector3) {
+        targetProperty.set(x, y, z);
+      }
+    } else if (stride === 2) {
+      const [x, y] = interpolated;
+      const targetProperty = (object as any)[propertyName];
+      if (targetProperty && targetProperty.set) {
+        targetProperty.set(x, y);
+      }
     }
+  } else if (track instanceof NumberKeyframeTrack) {
+    // Linear interpolation for numbers
+    const leftValue = values[leftValueIndex];
+    const rightValue = values[rightValueIndex];
+    const interpolated = leftValue * (1 - t) + rightValue * t;
+    (object as any)[propertyName] = interpolated;
   }
 };
