@@ -1,4 +1,4 @@
-import { AnimationAction, AnimationClip, AnimationMixer, Bone, Object3D, Vector3 } from "three";
+import { AnimationAction, AnimationClip, AnimationMixer, Bone, Object3D } from "three";
 import { create } from "zustand"
 import { applyAnimationAtTime } from "./animationUtils";
 import createMovementController from "../MovementController/MovementController";
