@@ -16,6 +16,7 @@ import useIsTabActive from './useIsTabActive'
 import { MEMORY } from './Field/Scripts/Script/handlers'
 import MAP_NAMES from './constants/maps'
 import { Scene } from 'three'
+import Loading from './Loading/Loading'
 
 const requestedProgress = new URLSearchParams(window.location.search).get('progress');
 if (requestedProgress) {
@@ -115,6 +116,7 @@ export default function App() {
           </p>
         </div>
       </div>
+      <Loading />
       <Controller />
     </>
   )

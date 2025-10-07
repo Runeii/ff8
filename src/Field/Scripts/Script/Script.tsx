@@ -187,7 +187,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
       position={script.type === 'model' ? [10,10,10] : [0,0,0]}
       visible={isVisible || isDrawPoint}
   >
-    <Suspense>
       <group name={`party--${partyMemberId}`} userData={{ test: 'test' }}>
         {script.type === 'location' && <Location scriptController={scriptController} useScriptStateStore={useScriptStateStore} />}
         {script.type === 'model' && (
@@ -197,7 +196,6 @@ const Script = ({ doors, isActive, models, onSetupCompleted, onStarted, script, 
         )}
         {script.type === 'door' && <Door scriptController={scriptController} doors={doors} script={script} useScriptStateStore={useScriptStateStore} />}
       </group>
-      </Suspense>
     </group>
   );
 }

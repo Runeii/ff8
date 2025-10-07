@@ -12,7 +12,7 @@ interface GlobalState {
   isDebugMode: boolean,
   isOfflineSupported: boolean,
 
-  isFieldLoaded: boolean,
+  isLoading: boolean,
   isMapSuspended: boolean,
 
   fieldDirection: number,
@@ -120,7 +120,7 @@ const INITIAL_STATE: GlobalState = {
     isDebugMode: false,
     isOfflineSupported: false,
 
-    isFieldLoaded: false,
+    isLoading: false,
     isMapSuspended: false,
   
     fieldDirection: 0,

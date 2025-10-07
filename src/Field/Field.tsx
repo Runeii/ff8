@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import WalkMesh from './WalkMesh/WalkMesh';
 
 import type data from '../../public/output/escouse2.json';
@@ -17,6 +17,7 @@ import Onboarding from '../Onboarding/Onboarding';
 import { AREA_NAMES } from '../constants/areaNames';
 import { preloadMapSoundBank } from './Scripts/Script/SFXController/webAudio';
 import { sendToDebugger } from '../Debugger/debugUtils';
+import LoadingController from './LoadingController';
 
 export type RawFieldData = typeof data;
 
@@ -68,18 +69,20 @@ const Field = ({ data }: FieldProps) => {
   }, [currentLocationPlaceName, data.id]);
 
   return (
-    <group>
-      <WalkMesh walkmesh={data.walkmesh} />
-      <Camera backgroundPanRef={backgroundPanRef} data={data} />
-      <Scripts
-        doors={data.doors}
-        models={data.models}
-        scripts={data.scripts}
-        sounds={data.sounds}
-      />
-      <Background backgroundPanRef={backgroundPanRef} data={data} />
-      <Gateways fieldId={data.id}  />
-    </group>
+    <Suspense fallback={<LoadingController />}>
+      <group>
+        <WalkMesh walkmesh={data.walkmesh} />
+        <Camera backgroundPanRef={backgroundPanRef} data={data} />
+        <Scripts
+          doors={data.doors}
+          models={data.models}
+          scripts={data.scripts}
+          sounds={data.sounds}
+        />
+        <Background backgroundPanRef={backgroundPanRef} data={data} />
+        <Gateways fieldId={data.id}  />
+      </group>
+    </Suspense>
   );
 }
 
