@@ -21,11 +21,11 @@ interface GLTFAction extends THREE.AnimationClip {
 
 type GLTFResult = GLTF & {
   nodes: {
-    p179: THREE.SkinnedMesh
+    p179_mesh_0: THREE.SkinnedMesh
     bone_0: THREE.Bone
   }
   materials: {
-    p179_texture_0: THREE.MeshStandardMaterial
+    p179_mesh_0_texture_0: THREE.MeshStandardMaterial
   }
   animations: GLTFAction[]
 }
@@ -45,7 +45,7 @@ export default React.forwardRef(function p179(props: JSX.IntrinsicElements['grou
         <group name="p179_armature">
           <primitive object={nodes.bone_0} />
         </group>
-        <skinnedMesh name="p179" geometry={nodes.p179.geometry} material={materials.p179_texture_0} skeleton={nodes.p179.skeleton} />
+        <skinnedMesh name="p179_mesh_0" geometry={nodes.p179_mesh_0.geometry} material={materials.p179_mesh_0_texture_0} skeleton={nodes.p179_mesh_0.skeleton} />
       </group>
     </group>
  ); })

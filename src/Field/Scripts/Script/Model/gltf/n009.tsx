@@ -21,15 +21,15 @@ interface GLTFAction extends THREE.AnimationClip {
 
 type GLTFResult = GLTF & {
   nodes: {
-    n009_mesh: THREE.SkinnedMesh
-    n009_mesh_1: THREE.SkinnedMesh
-    n009_mesh_2: THREE.SkinnedMesh
+    n009_mesh_0_mesh: THREE.SkinnedMesh
+    n009_mesh_0_mesh_1: THREE.SkinnedMesh
+    n009_mesh_0_mesh_2: THREE.SkinnedMesh
     bone_0: THREE.Bone
   }
   materials: {
-    n009_texture_0: THREE.MeshStandardMaterial
-    n009_texture_1: THREE.MeshStandardMaterial
-    n009_texture_2: THREE.MeshStandardMaterial
+    n009_mesh_0_texture_0: THREE.MeshStandardMaterial
+    n009_mesh_0_texture_1: THREE.MeshStandardMaterial
+    n009_mesh_0_texture_2: THREE.MeshStandardMaterial
   }
   animations: GLTFAction[]
 }
@@ -49,10 +49,10 @@ export default React.forwardRef(function n009(props: JSX.IntrinsicElements['grou
         <group name="n009_armature">
           <primitive object={nodes.bone_0} />
         </group>
-        <group name="n009">
-          <skinnedMesh name="n009_mesh" geometry={nodes.n009_mesh.geometry} material={materials.n009_texture_0} skeleton={nodes.n009_mesh.skeleton} />
-          <skinnedMesh name="n009_mesh_1" geometry={nodes.n009_mesh_1.geometry} material={materials.n009_texture_1} skeleton={nodes.n009_mesh_1.skeleton} />
-          <skinnedMesh name="n009_mesh_2" geometry={nodes.n009_mesh_2.geometry} material={materials.n009_texture_2} skeleton={nodes.n009_mesh_2.skeleton} />
+        <group name="n009_mesh_0">
+          <skinnedMesh name="n009_mesh_0_mesh" geometry={nodes.n009_mesh_0_mesh.geometry} material={materials.n009_mesh_0_texture_0} skeleton={nodes.n009_mesh_0_mesh.skeleton} />
+          <skinnedMesh name="n009_mesh_0_mesh_1" geometry={nodes.n009_mesh_0_mesh_1.geometry} material={materials.n009_mesh_0_texture_1} skeleton={nodes.n009_mesh_0_mesh_1.skeleton} />
+          <skinnedMesh name="n009_mesh_0_mesh_2" geometry={nodes.n009_mesh_0_mesh_2.geometry} material={materials.n009_mesh_0_texture_2} skeleton={nodes.n009_mesh_0_mesh_2.skeleton} />
         </group>
       </group>
     </group>

@@ -21,17 +21,27 @@ interface GLTFAction extends THREE.AnimationClip {
 
 type GLTFResult = GLTF & {
   nodes: {
-    n014_mesh: THREE.SkinnedMesh
-    n014_mesh_1: THREE.SkinnedMesh
-    n014_mesh_2: THREE.SkinnedMesh
-    n014_mesh_3: THREE.SkinnedMesh
+    n014_mesh_0_mesh: THREE.SkinnedMesh
+    n014_mesh_0_mesh_1: THREE.SkinnedMesh
+    n014_mesh_0_mesh_2: THREE.SkinnedMesh
+    n014_mesh_0_mesh_3: THREE.SkinnedMesh
+    n014_mesh_1_mesh: THREE.SkinnedMesh
+    n014_mesh_1_mesh_1: THREE.SkinnedMesh
+    n014_mesh_2_mesh: THREE.SkinnedMesh
+    n014_mesh_2_mesh_1: THREE.SkinnedMesh
+    n014_mesh_3_mesh: THREE.SkinnedMesh
+    n014_mesh_3_mesh_1: THREE.SkinnedMesh
+    n014_mesh_4_mesh: THREE.SkinnedMesh
+    n014_mesh_4_mesh_1: THREE.SkinnedMesh
+    n014_mesh_5: THREE.SkinnedMesh
+    n014_mesh_6: THREE.SkinnedMesh
     bone_0: THREE.Bone
   }
   materials: {
-    n014_texture_0: THREE.MeshStandardMaterial
-    n014_texture_1: THREE.MeshStandardMaterial
-    n014_texture_2: THREE.MeshStandardMaterial
-    n014_texture_3: THREE.MeshStandardMaterial
+    n014_mesh_0_texture_0: THREE.MeshStandardMaterial
+    n014_mesh_0_texture_1: THREE.MeshStandardMaterial
+    n014_mesh_0_texture_2: THREE.MeshStandardMaterial
+    n014_mesh_0_texture_3: THREE.MeshStandardMaterial
   }
   animations: GLTFAction[]
 }
@@ -51,12 +61,30 @@ export default React.forwardRef(function n014(props: JSX.IntrinsicElements['grou
         <group name="n014_armature">
           <primitive object={nodes.bone_0} />
         </group>
-        <group name="n014">
-          <skinnedMesh name="n014_mesh" geometry={nodes.n014_mesh.geometry} material={materials.n014_texture_0} skeleton={nodes.n014_mesh.skeleton} />
-          <skinnedMesh name="n014_mesh_1" geometry={nodes.n014_mesh_1.geometry} material={materials.n014_texture_1} skeleton={nodes.n014_mesh_1.skeleton} />
-          <skinnedMesh name="n014_mesh_2" geometry={nodes.n014_mesh_2.geometry} material={materials.n014_texture_2} skeleton={nodes.n014_mesh_2.skeleton} />
-          <skinnedMesh name="n014_mesh_3" geometry={nodes.n014_mesh_3.geometry} material={materials.n014_texture_3} skeleton={nodes.n014_mesh_3.skeleton} />
+        <group name="n014_mesh_0">
+          <skinnedMesh name="n014_mesh_0_mesh" geometry={nodes.n014_mesh_0_mesh.geometry} material={materials.n014_mesh_0_texture_0} skeleton={nodes.n014_mesh_0_mesh.skeleton} />
+          <skinnedMesh name="n014_mesh_0_mesh_1" geometry={nodes.n014_mesh_0_mesh_1.geometry} material={materials.n014_mesh_0_texture_1} skeleton={nodes.n014_mesh_0_mesh_1.skeleton} />
+          <skinnedMesh name="n014_mesh_0_mesh_2" geometry={nodes.n014_mesh_0_mesh_2.geometry} material={materials.n014_mesh_0_texture_2} skeleton={nodes.n014_mesh_0_mesh_2.skeleton} />
+          <skinnedMesh name="n014_mesh_0_mesh_3" geometry={nodes.n014_mesh_0_mesh_3.geometry} material={materials.n014_mesh_0_texture_3} skeleton={nodes.n014_mesh_0_mesh_3.skeleton} />
         </group>
+        <group name="n014_mesh_1">
+          <skinnedMesh name="n014_mesh_1_mesh" geometry={nodes.n014_mesh_1_mesh.geometry} material={materials.n014_mesh_0_texture_0} skeleton={nodes.n014_mesh_1_mesh.skeleton} />
+          <skinnedMesh name="n014_mesh_1_mesh_1" geometry={nodes.n014_mesh_1_mesh_1.geometry} material={materials.n014_mesh_0_texture_2} skeleton={nodes.n014_mesh_1_mesh_1.skeleton} />
+        </group>
+        <group name="n014_mesh_2">
+          <skinnedMesh name="n014_mesh_2_mesh" geometry={nodes.n014_mesh_2_mesh.geometry} material={materials.n014_mesh_0_texture_0} skeleton={nodes.n014_mesh_2_mesh.skeleton} />
+          <skinnedMesh name="n014_mesh_2_mesh_1" geometry={nodes.n014_mesh_2_mesh_1.geometry} material={materials.n014_mesh_0_texture_2} skeleton={nodes.n014_mesh_2_mesh_1.skeleton} />
+        </group>
+        <group name="n014_mesh_3">
+          <skinnedMesh name="n014_mesh_3_mesh" geometry={nodes.n014_mesh_3_mesh.geometry} material={materials.n014_mesh_0_texture_0} skeleton={nodes.n014_mesh_3_mesh.skeleton} />
+          <skinnedMesh name="n014_mesh_3_mesh_1" geometry={nodes.n014_mesh_3_mesh_1.geometry} material={materials.n014_mesh_0_texture_1} skeleton={nodes.n014_mesh_3_mesh_1.skeleton} />
+        </group>
+        <group name="n014_mesh_4">
+          <skinnedMesh name="n014_mesh_4_mesh" geometry={nodes.n014_mesh_4_mesh.geometry} material={materials.n014_mesh_0_texture_0} skeleton={nodes.n014_mesh_4_mesh.skeleton} />
+          <skinnedMesh name="n014_mesh_4_mesh_1" geometry={nodes.n014_mesh_4_mesh_1.geometry} material={materials.n014_mesh_0_texture_1} skeleton={nodes.n014_mesh_4_mesh_1.skeleton} />
+        </group>
+        <skinnedMesh name="n014_mesh_5" geometry={nodes.n014_mesh_5.geometry} material={materials.n014_mesh_0_texture_2} skeleton={nodes.n014_mesh_5.skeleton} />
+        <skinnedMesh name="n014_mesh_6" geometry={nodes.n014_mesh_6.geometry} material={materials.n014_mesh_0_texture_2} skeleton={nodes.n014_mesh_6.skeleton} />
       </group>
     </group>
  ); })

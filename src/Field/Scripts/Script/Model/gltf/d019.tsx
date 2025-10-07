@@ -21,13 +21,13 @@ interface GLTFAction extends THREE.AnimationClip {
 
 type GLTFResult = GLTF & {
   nodes: {
-    d019_mesh: THREE.SkinnedMesh
-    d019_mesh_1: THREE.SkinnedMesh
+    d019_mesh_0_mesh: THREE.SkinnedMesh
+    d019_mesh_0_mesh_1: THREE.SkinnedMesh
     bone_0: THREE.Bone
   }
   materials: {
-    d019_texture_0: THREE.MeshStandardMaterial
-    d019_texture_1: THREE.MeshStandardMaterial
+    d019_mesh_0_texture_0: THREE.MeshStandardMaterial
+    d019_mesh_0_texture_1: THREE.MeshStandardMaterial
   }
   animations: GLTFAction[]
 }
@@ -47,9 +47,9 @@ export default React.forwardRef(function d019(props: JSX.IntrinsicElements['grou
         <group name="d019_armature">
           <primitive object={nodes.bone_0} />
         </group>
-        <group name="d019">
-          <skinnedMesh name="d019_mesh" geometry={nodes.d019_mesh.geometry} material={materials.d019_texture_0} skeleton={nodes.d019_mesh.skeleton} />
-          <skinnedMesh name="d019_mesh_1" geometry={nodes.d019_mesh_1.geometry} material={materials.d019_texture_1} skeleton={nodes.d019_mesh_1.skeleton} />
+        <group name="d019_mesh_0">
+          <skinnedMesh name="d019_mesh_0_mesh" geometry={nodes.d019_mesh_0_mesh.geometry} material={materials.d019_mesh_0_texture_0} skeleton={nodes.d019_mesh_0_mesh.skeleton} />
+          <skinnedMesh name="d019_mesh_0_mesh_1" geometry={nodes.d019_mesh_0_mesh_1.geometry} material={materials.d019_mesh_0_texture_1} skeleton={nodes.d019_mesh_0_mesh_1.skeleton} />
         </group>
       </group>
     </group>

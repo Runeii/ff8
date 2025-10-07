@@ -21,13 +21,19 @@ interface GLTFAction extends THREE.AnimationClip {
 
 type GLTFResult = GLTF & {
   nodes: {
-    n023_mesh: THREE.SkinnedMesh
-    n023_mesh_1: THREE.SkinnedMesh
+    n023_mesh_0_mesh: THREE.SkinnedMesh
+    n023_mesh_0_mesh_1: THREE.SkinnedMesh
+    n023_mesh_1_mesh: THREE.SkinnedMesh
+    n023_mesh_1_mesh_1: THREE.SkinnedMesh
+    n023_mesh_2_mesh: THREE.SkinnedMesh
+    n023_mesh_2_mesh_1: THREE.SkinnedMesh
+    n023_mesh_3_mesh: THREE.SkinnedMesh
+    n023_mesh_3_mesh_1: THREE.SkinnedMesh
     bone_0: THREE.Bone
   }
   materials: {
-    n023_texture_0: THREE.MeshStandardMaterial
-    n023_texture_1: THREE.MeshStandardMaterial
+    n023_mesh_0_texture_0: THREE.MeshStandardMaterial
+    n023_mesh_0_texture_1: THREE.MeshStandardMaterial
   }
   animations: GLTFAction[]
 }
@@ -47,9 +53,21 @@ export default React.forwardRef(function n023(props: JSX.IntrinsicElements['grou
         <group name="n023_armature">
           <primitive object={nodes.bone_0} />
         </group>
-        <group name="n023">
-          <skinnedMesh name="n023_mesh" geometry={nodes.n023_mesh.geometry} material={materials.n023_texture_0} skeleton={nodes.n023_mesh.skeleton} />
-          <skinnedMesh name="n023_mesh_1" geometry={nodes.n023_mesh_1.geometry} material={materials.n023_texture_1} skeleton={nodes.n023_mesh_1.skeleton} />
+        <group name="n023_mesh_0">
+          <skinnedMesh name="n023_mesh_0_mesh" geometry={nodes.n023_mesh_0_mesh.geometry} material={materials.n023_mesh_0_texture_0} skeleton={nodes.n023_mesh_0_mesh.skeleton} />
+          <skinnedMesh name="n023_mesh_0_mesh_1" geometry={nodes.n023_mesh_0_mesh_1.geometry} material={materials.n023_mesh_0_texture_1} skeleton={nodes.n023_mesh_0_mesh_1.skeleton} />
+        </group>
+        <group name="n023_mesh_1">
+          <skinnedMesh name="n023_mesh_1_mesh" geometry={nodes.n023_mesh_1_mesh.geometry} material={materials.n023_mesh_0_texture_0} skeleton={nodes.n023_mesh_1_mesh.skeleton} />
+          <skinnedMesh name="n023_mesh_1_mesh_1" geometry={nodes.n023_mesh_1_mesh_1.geometry} material={materials.n023_mesh_0_texture_1} skeleton={nodes.n023_mesh_1_mesh_1.skeleton} />
+        </group>
+        <group name="n023_mesh_2">
+          <skinnedMesh name="n023_mesh_2_mesh" geometry={nodes.n023_mesh_2_mesh.geometry} material={materials.n023_mesh_0_texture_0} skeleton={nodes.n023_mesh_2_mesh.skeleton} />
+          <skinnedMesh name="n023_mesh_2_mesh_1" geometry={nodes.n023_mesh_2_mesh_1.geometry} material={materials.n023_mesh_0_texture_1} skeleton={nodes.n023_mesh_2_mesh_1.skeleton} />
+        </group>
+        <group name="n023_mesh_3">
+          <skinnedMesh name="n023_mesh_3_mesh" geometry={nodes.n023_mesh_3_mesh.geometry} material={materials.n023_mesh_0_texture_0} skeleton={nodes.n023_mesh_3_mesh.skeleton} />
+          <skinnedMesh name="n023_mesh_3_mesh_1" geometry={nodes.n023_mesh_3_mesh_1.geometry} material={materials.n023_mesh_0_texture_1} skeleton={nodes.n023_mesh_3_mesh_1.skeleton} />
         </group>
       </group>
     </group>
