@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Script as ScriptType } from "../types";
 import Location from "./Location/Location";
 import Model from "./Model/Model";
