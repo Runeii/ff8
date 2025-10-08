@@ -18,6 +18,8 @@ const hasSavedData = !!(window.localStorage.getItem('saveData'));
 const fieldSelect = async (set = 0) => {
   const options = Object.keys(CHAPTERS).slice(set * 8, set * 8 + 8);
   const isFirstPage = set === 0;
+  
+  openMessage('warning', [`{YellowBlink}Jump points are a\ncrude form of navigation\nand may not work\nas expected.{Grey}`], { channel: 0, x: 320,  y: 0, width: undefined, height: undefined }, false);
   const selectedOption = await openMessage('fieldSelect', [`Field Select\n${options.join('\n')}\n{Blue}${isFirstPage ? 'Next Page' : 'Previous Page'}{White}\nCancel`], { channel: 1, x: 0,  y:15, width: undefined, height: undefined }, true, {
     first: 1,
     default: 1,

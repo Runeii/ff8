@@ -4,7 +4,7 @@ export const CHAPTERS = {
     progress: 0,
     party: [0]
   },
-  'First Laguna dream': {
+  '1st Laguna dream': {
     fieldId: 'testbl6',
     progress: 22,
     party: [8,9,10]
@@ -13,7 +13,7 @@ export const CHAPTERS = {
     fieldId: 'testbl6',
     progress: 392,
   },
-  'Fisherman\'s Horizon: landing': {
+  'Fisherman\'s H': {
     fieldId: 'fhdeck1',
     progress: 610,
   },
@@ -29,7 +29,7 @@ export const CHAPTERS = {
     fieldId: 'tmdome1',
     progress: 2000,
   },
-  'Approaching Lunatic Pandora': {
+  'Lunatic Pandora': {
     fieldId: 'rgcock2',
     progress: 3850
   },
