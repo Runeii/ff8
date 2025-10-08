@@ -18,6 +18,7 @@ import { AREA_NAMES } from '../constants/areaNames';
 import { preloadMapSoundBank } from './Scripts/Script/SFXController/webAudio';
 import { sendToDebugger } from '../Debugger/debugUtils';
 import LoadingController from './LoadingController';
+import { syncToUrl } from './Scripts/Script/utils';
 
 export type RawFieldData = typeof data;
 
@@ -143,6 +144,7 @@ const FieldLoader = (props: FieldLoaderProps) => {
         MEMORY[261] = 0;
       }
 
+      syncToUrl();
       useGlobalStore.setState({
         fieldData: data,
         fieldDirection: data.controlDirection,
@@ -197,7 +199,8 @@ const FieldLoader = (props: FieldLoaderProps) => {
 
         congaWaypointHistory: [],
       });
-
+      
+      syncToUrl();
       preloadMapSoundBank(data.sounds);
     }
 

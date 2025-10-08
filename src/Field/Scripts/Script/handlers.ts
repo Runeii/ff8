@@ -2,7 +2,7 @@ import { Scene, Vector3 } from "three";
 import useGlobalStore from "../../../store";
 import { floatingPointToNumber, numberToFloatingPoint, vectorToFloatingPoint } from "../../../utils";
 import { Opcode, OpcodeObj, Script } from "../types";
-import { closeMessage, dummiedCommand, openMessage, enableMessageToClose, remoteExecute, remoteExecutePartyMember, unusedCommand, wait } from "./utils";
+import { closeMessage, dummiedCommand, openMessage, enableMessageToClose, remoteExecute, remoteExecutePartyMember, unusedCommand, wait, syncToUrl } from "./utils";
 import MAP_NAMES from "../../../constants/maps";
 import { getPartyMemberModelComponent, getScriptEntity } from "./Model/modelUtils";
 import { displayMessage, isKeyDown, KEY_FLAGS, isTouching, setCameraAndLayerFocus, wasKeyPressed, setCameraScroll, setLayerScroll } from "./common";
@@ -107,16 +107,20 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
   },
   POPM_L: ({ currentOpcode, STACK }) => {
     MEMORY[currentOpcode.param] = STACK.pop() as number;
+    syncToUrl();
   },
   POPM_B: ({ currentOpcode, STACK }) => {
     const value = STACK.pop() as number;
     MEMORY[currentOpcode.param] = value;
+    syncToUrl();
   },
   POPM_W: ({ currentOpcode, STACK }) => {
     MEMORY[currentOpcode.param] = STACK.pop() as number;
+    syncToUrl();
   },
   CLEAR: () => {
     MEMORY = {};
+    syncToUrl();
   },
   PSHAC: ({ currentOpcode, STACK }) => {
     STACK.push(currentOpcode.param);
@@ -1854,7 +1858,7 @@ export const OPCODE_HANDLERS: Record<Opcode, HandlerFuncWithPromise> = {
     await openMessage('drawpoint', [`Found a draw point!\n${DRAW_POINTS[drawPointId]} found.`], {
       x: 110,
       y: 90,
-      width: 120,
+      width: 150,
       height: 40,
       channel: 0,
     }, true);

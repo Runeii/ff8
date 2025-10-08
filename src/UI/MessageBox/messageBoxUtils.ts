@@ -14,14 +14,12 @@ export const TOP_MARGIN = OUTPUT_TILE_HEIGHT / 2
 
 export const LETTER_SPACING = 3;
 
-// Character width calculation
 export const getCharacterWidth = ({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }): number => {
   const characterWidth = fontWidths[rowIndex][columnIndex]
 
   return OUTPUT_TILE_WIDTH * (characterWidth / 16)
 }
 
-// Font position calculation
 export const getFontPosition = (char: string): { rowIndex: number; columnIndex: number } | null => {
   const rowIndex = fontLayout.findIndex((layoutRow) => layoutRow.includes(char))
   if (rowIndex < 0) {
@@ -33,7 +31,6 @@ export const getFontPosition = (char: string): { rowIndex: number; columnIndex: 
   return { rowIndex, columnIndex }
 }
 
-// Parse text with modifiers
 export const parseTextWithModifiers = (
   text: string,
   startX: number,
@@ -90,7 +87,6 @@ export const parseTextWithModifiers = (
   return { placements, maxX, finalY: y }
 }
 
-// Safe placement calculation
 export const calculateSafePlacement = (
   message: { placement: { x?: number, y?: number } },
   width: number,
@@ -113,7 +109,6 @@ export const calculateSafePlacement = (
   return { x: finalX, y: finalY }
 }
 
-// Draw gradient background
 export const drawGradientBackground = (
   ctx: CanvasRenderingContext2D,
   xPos: number,
@@ -133,7 +128,6 @@ export const drawGradientBackground = (
   ctx.fillRect(xPos, yPos, width, height)
 }
 
-// Draw borders
 export const drawBorders = (
   ctx: CanvasRenderingContext2D,
   xPos: number,
@@ -141,7 +135,6 @@ export const drawBorders = (
   width: number,
   height: number
 ): void => {
-  // Light border (top-left)
   ctx.strokeStyle = '#848484'
   ctx.lineWidth = 1
   ctx.beginPath()
@@ -151,7 +144,6 @@ export const drawBorders = (
   ctx.lineTo(xPos, yPos + height)
   ctx.stroke()
 
-  // Dark border (bottom-right)
   ctx.strokeStyle = '#3a3a3a'
   ctx.lineWidth = 1
   ctx.beginPath()
@@ -162,7 +154,6 @@ export const drawBorders = (
   ctx.stroke()
 }
 
-// Calculate scaled dimensions
 export const calculateScaledDimensions = (
   baseWidth: number,
   baseHeight: number,
@@ -175,14 +166,12 @@ export const calculateScaledDimensions = (
   return { width, height, xOffset, yOffset }
 }
 
-// Update scale with animation
 export const updateScale = (currentScale: number, delta: number, speed: number): number => {
   if (currentScale >= 1) return 1
   const nextScale = currentScale + delta * speed
   return Math.min(nextScale, 1)
 }
 
-// Check if blink should be off
 export const isBlinkOff = (progress: number, blinkDelay: number): boolean => {
   const positionInCycle = progress % blinkDelay
   return positionInCycle > blinkDelay / 2
@@ -193,16 +182,14 @@ const adjustBrightness = (ctx: CanvasRenderingContext2D, x: number, y: number, w
   const data = imageData.data;
 
   for (let i = 0; i < data.length; i += 4) {
-    data[i] = Math.min(255, data[i] * brightness);     // R
-    data[i + 1] = Math.min(255, data[i + 1] * brightness); // G
-    data[i + 2] = Math.min(255, data[i + 2] * brightness); // B
-    // data[i + 3] is alpha, leave unchanged
+    data[i] = Math.min(255, data[i] * brightness);    
+    data[i + 1] = Math.min(255, data[i + 1] * brightness);
+    data[i + 2] = Math.min(255, data[i + 2] * brightness);
   }
   
   ctx.putImageData(imageData, x, y);
 };
 
-// Draw character
 export const drawCharacter = (
   ctx: CanvasRenderingContext2D,
   fontImage: HTMLImageElement,

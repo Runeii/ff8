@@ -17,6 +17,13 @@ import { MEMORY } from './Field/Scripts/Script/handlers'
 import MAP_NAMES from './constants/maps'
 import { Scene } from 'three'
 import Loading from './Loading/Loading'
+import { recoverMemoryFromUrl } from './Field/Scripts/Script/utils'
+
+const memory = new URLSearchParams(window.location.search).get('memory');
+if (memory) {
+  recoverMemoryFromUrl();
+  console.log('Recovered memory from URL', MEMORY);
+}
 
 const requestedProgress = new URLSearchParams(window.location.search).get('progress');
 if (requestedProgress) {
